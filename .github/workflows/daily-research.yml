@@ -1,0 +1,48 @@
+name: Daily research radar
+
+on:
+  schedule:
+    # Runs around 09:15 Asia/Seoul. GitHub may delay scheduled workflows.
+    - cron: '15 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-radar-daily
+  cancel-in-progress: false
+
+jobs:
+  research-update:
+    if: github.repository == 'vpraise00/vpraise00.github.io'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install PDF parser for optional AI analyses
+        run: python -m pip install -r requirements.txt
+      - name: Validate sources and preview builder
+        run: python -m unittest discover -s tests -v
+      - name: Fetch latest papers and create evidence-aware reviews
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-4.1-mini' }}
+        run: python scripts/update_papers.py
+      - name: Build individual article pages, RSS and sitemap
+        run: python scripts/build_site.py
+      - name: Save daily research updates
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/papers.json papers/ feed.xml sitemap.xml robots.txt
+          if git diff --cached --quiet; then
+            echo 'No changes to publish.'
+          else
+            git commit -m 'chore(research): daily paper feed and posts'
+            git push origin HEAD:main
+          fi

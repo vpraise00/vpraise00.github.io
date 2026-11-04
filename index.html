@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f6f7f5" />
+  <title>Embodied Research Radar — VLA · WAM · Robotics</title>
+  <meta name="description" content="Vision-Language-Action, World-Action Models, Robotics의 최신 논문과 심층 해설. 매일 arXiv 수집, 개인 분류, 하이라이트, GPT 질문." />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="alternate" type="application/rss+xml" href="feed.xml" title="Research Radar RSS" />
+  <script defer src="assets/shared.js"></script>
+  <script defer src="assets/home.js"></script>
+</head>
+<body class="home-page">
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar" aria-label="사이트 메뉴">
+      <a class="brand" href="./" aria-label="Research Radar 홈">
+        <span class="brand-mark"><span class="brand-orbit"></span>R</span>
+        <span class="brand-copy"><strong>RESEARCH<br/>RADAR</strong><small>EMBODIED INTELLIGENCE</small></span>
+      </a>
+      <div class="side-label">WORKSPACE <span class="side-label-rule"></span></div>
+      <nav class="main-nav" id="main-nav">
+        <button type="button" class="nav-link active" data-view="all"><span class="nav-symbol">▦</span> 전체 논문 <span class="nav-count" id="count-all">—</span></button>
+        <button type="button" class="nav-link" data-view="saved"><span class="nav-symbol">☆</span> 북마크 <span class="nav-count" id="count-saved">0</span></button>
+        <button type="button" class="nav-link" data-view="noted"><span class="nav-symbol">▤</span> 내 연구 노트 <span class="nav-count" id="count-noted">0</span></button>
+      </nav>
+      <div class="side-label">RESEARCH CHANNELS <span class="side-label-rule"></span></div>
+      <nav class="channels-nav" id="channels-nav" aria-label="분야 분류"></nav>
+      <button type="button" class="customize-link" id="customize-btn"><span>＋</span> 분류 직접 설정하기</button>
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-bottom">
+        <div class="side-mini-card"><span class="pulse-dot"></span><small>DAILY INTELLIGENCE</small><strong>Stay curious.<br/>Stay ahead.</strong><p>매일 새로운 연구를 모으고, 중요한 논문을 깊이 읽습니다.</p></div>
+        <a href="https://github.com/vpraise00/vpraise00.github.io" target="_blank" rel="noopener noreferrer" class="side-footer-link">↗ GitHub Repository</a>
+      </div>
+    </aside>
+
+    <main class="main-panel">
+      <header class="topbar">
+        <div class="topbar-left"><button class="icon-button mobile-menu" aria-label="메뉴 열기" id="menu-button">☰</button><span class="breadcrumb muted">LAB /</span> <span class="breadcrumb-current">DISCOVER</span></div>
+        <div class="topbar-right"><div class="sync-indicator"><span class="pulse-dot"></span><span id="sync-status">Research feed synced</span></div><button type="button" class="icon-button" id="theme-toggle" title="테마 전환" aria-label="테마 전환">◐</button><button type="button" class="avatar-button" id="settings-btn" title="분류 설정">VS</button></div>
+      </header>
+      <div class="page-content">
+        <section class="intro-row"><div><div class="eyebrow"><span class="eyebrow-line"></span> YOUR DAILY RESEARCH BRIEFING</div><h1>Ideas at the <em>frontier.</em></h1><p class="intro-sub">VLA, World-Action Models, Robotics의 진화를 한곳에서.<br class="desktop-only" /> 발견부터 깊이 있는 논문 읽기까지, 나만의 연구 레이더.</p></div><div class="intro-date" id="today-date"></div></section>
+        <section class="hero" aria-label="연구 트렌드">
+          <div class="hero-copy"><div class="hero-kicker"><span class="hero-live"></span> RESEARCH FRONTIER <span class="hero-separator">/</span> 2026 EDITION</div><h2>From perception<br/>to <i>physical intelligence.</i></h2><p>보는 것에서 행동하는 것으로. 로봇이 세계를 이해하고 미래를 예측하는 최신 흐름을 추적합니다.</p><button type="button" class="hero-action" id="hero-browse">Explore the papers <span>↗</span></button></div>
+          <div class="hero-art" aria-hidden="true"><div class="hero-disc disc-outer"></div><div class="hero-disc disc-middle"></div><div class="hero-disc disc-inner"></div><div class="hero-center">V<span>·</span>W<span>·</span>R</div><span class="orbit-label ol-a">SENSE</span><span class="orbit-label ol-b">PREDICT</span><span class="orbit-label ol-c">ACT</span><div class="art-grid"></div></div>
+          <div class="hero-bottom-tag">01 / EMBODIED WORLD MODELS</div>
+        </section>
+        <section class="stats-grid" aria-label="논문 요약"><div class="stat-block"><div class="stat-icon"><span>▦</span></div><div><span class="stat-value" id="total-count">—</span><span class="stat-desc">Indexed papers</span></div></div><div class="stat-block"><div class="stat-icon teal"><span>◇</span></div><div><span class="stat-value" id="fresh-count">—</span><span class="stat-desc">Recently published</span></div></div><div class="stat-block"><div class="stat-icon orange"><span>✳</span></div><div><span class="stat-value" id="channel-count">03</span><span class="stat-desc">Research channels</span></div></div><div class="stat-block"><div class="stat-icon purple"><span>☆</span></div><div><span class="stat-value" id="bookmarks-count">0</span><span class="stat-desc">Your bookmarks</span></div></div></section>
+        <section class="spotlight-section" id="spotlight-section"><div class="section-top"><div><div class="section-kicker">EDITOR'S SELECTION</div><h2>In the spotlight <span class="section-spark">✴</span></h2></div><span class="micro-note">CURATED & EVIDENCE-LINKED</span></div><div class="spotlight-grid" id="spotlight-grid"></div></section>
+        <section class="library-section" id="library-section"><div class="section-top library-heading"><div><div class="section-kicker">THE RESEARCH LIBRARY</div><h2>Explore all papers<span class="section-period">.</span></h2></div><span class="micro-note" id="result-count"></span></div>
+          <div class="library-toolbar"><div class="filter-tabs" id="filter-tabs"><button class="filter-tab active" data-filter="all">All Papers</button></div><div class="toolbar-actions"><label class="search-box"><span>⌕</span><input type="search" id="paper-search" placeholder="논문, 키워드 검색..." autocomplete="off" aria-label="논문 검색" /><kbd>/</kbd></label><select id="sort-select" class="sort-select" aria-label="정렬"><option value="latest">Newest first</option><option value="featured">Editor's picks</option><option value="title">Title A–Z</option></select></div></div>
+          <div class="paper-grid" id="paper-grid"><div class="loading-placeholder">논문을 불러오는 중...</div></div><div class="empty-results hidden" id="empty-results"><span>⌕</span><h3>조건에 맞는 논문이 없습니다.</h3><p>검색어를 변경하거나 다른 분류를 선택해 보세요.</p><button type="button" id="reset-filters">전체 논문 보기</button></div>
+        </section>
+        <footer class="footer"><div><strong>RESEARCH RADAR</strong><span>Built for curious roboticists.</span></div><div><a href="feed.xml">RSS Feed ↗</a><a href="https://arxiv.org/" target="_blank" rel="noopener noreferrer">arXiv ↗</a><a href="https://github.com/vpraise00/vpraise00.github.io/edit/main/config/topics.json" target="_blank" rel="noopener noreferrer">Edit categories ↗</a></div><span>Powered by curiosity, not hype.</span></footer>
+      </div>
+    </main>
+  </div>
+  <div class="modal-backdrop hidden" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title"><div class="settings-panel"><div class="settings-head"><div><div class="section-kicker">MAKE IT YOURS</div><h2 id="settings-title">나만의 연구 분류</h2><p>분류 이름·키워드·순서를 내 브라우저에 저장합니다.</p></div><button type="button" class="close-btn" id="close-settings" aria-label="설정 닫기">×</button></div><div class="settings-body"><div class="settings-warning">개인 설정·북마크·메모는 현재 브라우저에 저장됩니다. 다른 기기에서 쓰려면 내보내기/가져오기를 이용하세요. 전체 사이트의 자동 수집 기준은 GitHub의 <code>config/topics.json</code>을 수정하세요.</div><h3>분류 편집 <small id="category-edit-count"></small></h3><div id="category-editor"></div><form id="add-category-form" class="add-category-form"><label>새 분류 이름<input required id="new-category-label" maxlength="34" placeholder="예: Dexterous Manipulation" /></label><label>자동 매칭 키워드 (쉼표로 구분)<input id="new-category-keywords" placeholder="dexterous, tactile, grasping" /></label><button class="primary-btn" type="submit">＋ 분류 추가</button></form><div class="settings-divide"></div><h3>연구 노트 백업</h3><p class="settings-hint">북마크, 표시한 문장, 메모, 맞춤 분류를 JSON 파일로 백업합니다.</p><div class="settings-actions"><button class="secondary-btn" id="export-data" type="button">↓ 내 설정 / 노트 내보내기</button><label class="secondary-btn file-input-label">↑ 백업 가져오기<input id="import-data" type="file" accept="application/json" /></label></div><div class="settings-divide"></div><a class="github-config-link" href="https://github.com/vpraise00/vpraise00.github.io/edit/main/config/topics.json" target="_blank" rel="noopener noreferrer">GitHub에서 서버 전체 분류 기준 수정하기 ↗</a></div><div class="settings-foot"><button class="text-btn" id="reset-categories" type="button">기본 분류로 복원</button><button class="primary-btn" type="button" id="done-settings">완료</button></div></div></div>
+  <div class="toast hidden" id="toast" role="status"></div>
+</body>
+</html>

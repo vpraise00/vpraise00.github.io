@@ -1,0 +1,38 @@
+{
+  "site_title": "Embodied Research Radar",
+  "site_subtitle": "VLA · World-Action Models · Robotics",
+  "update": {
+    "max_new_per_run": 9,
+    "max_results_per_query": 24,
+    "min_abstract_characters": 240
+  },
+  "categories": [
+    {
+      "id": "vla",
+      "label": "VLA",
+      "subtitle": "Vision · Language · Action",
+      "description": "언어와 시각을 로봇 행동에 연결하는 범용 정책",
+      "color": "#2a8a82",
+      "keywords": ["vision-language-action", "vision language action", "vla", "flow matching", "action expert", "cross-embodiment"],
+      "queries": ["all:\"vision-language-action\"", "all:\"robot foundation model\""]
+    },
+    {
+      "id": "wam",
+      "label": "WAM",
+      "subtitle": "World · Action · Models",
+      "description": "미래 상태 예측과 행동 생성을 결합하는 접근",
+      "color": "#cf744f",
+      "keywords": ["world-action model", "world action model", "action-conditioned video", "future prediction", "world model", "dynamics model"],
+      "queries": ["all:\"world-action model\"", "all:\"action-conditioned world model\""]
+    },
+    {
+      "id": "robotics",
+      "label": "Robotics",
+      "subtitle": "Embodied · Systems · Data",
+      "description": "조작·휴머노이드·데이터셋·벤치마크·Sim2Real",
+      "color": "#6376b1",
+      "keywords": ["robot manipulation", "robotics", "humanoid", "benchmark", "sim-to-real", "robot dataset", "droid", "robocasa"],
+      "queries": ["all:\"robot manipulation\"", "all:\"humanoid robot\""]
+    }
+  ]
+}

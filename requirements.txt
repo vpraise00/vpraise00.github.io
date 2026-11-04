@@ -1,0 +1,4 @@
+# Optional for PDF-based evidence extraction on automated updates
+PyMuPDF>=1.24,<2
+# Optional for securely registering an OpenAI API key as a GitHub Actions secret
+PyNaCl>=1.5,<2
