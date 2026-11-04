@@ -1,0 +1,789 @@
+{
+  "2610.07922": {
+    "intro": "OpenWAM의 진짜 연구 질문은 “미래 영상을 잘 생성하면 로봇 행동도 좋아지는가?”에서 한 걸음 더 나아간다. **비디오와 액션이 언제, 어떤 방향으로 정보를 주고받느냐**가 동일한 모델·데이터·평가 조건에서 성능 차이를 낳는지를 분리해 검증한다. 아래 첫 번째 그림은 논문 아키텍처를, 두 번째는 결합 방식의 차이를, 세 번째는 모듈 재사용 실험을 읽도록 만든 편집 도식이다.",
+    "official": {
+      "title": "원저자 프로젝트의 OpenWAM 전체 구조도",
+      "src": "https://openwam.stanford.edu/assets/openwam-modes-structure.svg?v=20260603-training-architecture-wide",
+      "source": "https://openwam.stanford.edu/",
+      "alt": "OpenWAM 공식 프로젝트의 비디오·액션 학습 및 아키텍처 도해",
+      "credit": "OpenWAM 연구팀 · 공식 프로젝트 페이지 제공 자료. 페이지 업데이트 시 arXiv 논문 버전의 도식과 다를 수 있음.",
+      "how": "원본 그림에서 비디오 토큰과 액션 토큰이 같은 계산을 공유하는 부분, 실제 디코더가 분리되는 부분을 먼저 찾는다. 이를 바꾸지 않고 주의(attention) 방향만 바꿀 수 있다는 점이 비교 실험의 기반이다."
+    },
+    "figures": [
+      {
+        "slug": "architecture",
+        "style": "flow",
+        "title": "01 · 비디오 기반에서 행동 정책까지",
+        "subtitle": "Causal video pretraining → shared video/action transformer → executable actions",
+        "nodes": [
+          [
+            "로봇 영상",
+            "14.64k h 규모",
+            "비디오만 사용"
+          ],
+          [
+            "인과 비디오 사전학습",
+            "Wan2.2-5B 기반",
+            "미래 변화 예측"
+          ],
+          [
+            "공유 표현",
+            "시각·동작 문맥",
+            "동일 원인 분석"
+          ],
+          [
+            "Action expert",
+            "행동 생성 분기",
+            "결합 규칙 선택"
+          ],
+          [
+            "Robot rollout",
+            "정렬된 action chunk",
+            "LIBERO / 실제 로봇"
+          ]
+        ],
+        "explain": [
+          [
+            "영상으로 먼저 배우는 이유",
+            "처음부터 정밀한 행동 라벨이 필요한 것은 아니다. 영상 자체에 물체가 움직이고 접촉하며 상태가 바뀌는 패턴이 포함돼 있다. 다만 영상만으로는 어떤 명령을 내려야 하는지 알 수 없으므로 action expert를 별도로 결합한다."
+          ],
+          [
+            "Causal이 중요한 이유",
+            "미래 프레임을 미리 들여다보는 비인과적 학습과 달리, 현재·과거만 보고 미래를 예측하도록 적응시켜 실제 제어 시점의 정보 제약에 맞춘다. 원문에서는 이 causal robot-video adaptation이 VTA 실험에서 중요했다고 보고한다."
+          ],
+          [
+            "공유한다는 뜻과 공유하지 않는 것",
+            "비디오와 액션이 같은 프로젝트/학습 인터페이스와 일부 표현을 공유한다고 해서 모든 파라미터가 동일하다는 뜻은 아니다. 논문은 Mixture-of-Transformers 기반의 비디오/액션 연결과 여러 생성 규칙을 비교한다."
+          ],
+          [
+            "어디까지가 원문인가",
+            "도식은 논문 방법을 독해하기 위해 재배열한 흐름도이다. 14.64k h는 공식 자료에 제시된 원천 영상 총량이며, 특정 실험의 필터링 후 유효 학습량과 동일하게 해석하면 안 된다."
+          ]
+        ],
+        "takeaway": "핵심: 영상의 시간적 인과 구조를 학습한 뒤, 행동 생성 분기와 정보 교환 규칙을 실험 변수로 만든다.",
+        "locator": "논문 Method / causal video pretraining; 공식 프로젝트 Overview"
+      },
+      {
+        "slug": "mechanism",
+        "style": "cards",
+        "title": "02 · Video–Action 결합 규칙 네 가지",
+        "subtitle": "바뀌는 것은 “누가 무엇을 언제 볼 수 있는가”",
+        "nodes": [
+          [
+            "V → A",
+            "미래 비디오를 먼저 확정",
+            "그 다음 행동 생성"
+          ],
+          [
+            "A → V",
+            "액션을 먼저 확정",
+            "그 다음 미래 영상"
+          ],
+          [
+            "Joint",
+            "같은 구간에서 상호 참조",
+            "두 스트림 공동 생성"
+          ],
+          [
+            "Decoupled",
+            "같은 시점 간 접근 차단",
+            "완전 분리 대조군"
+          ]
+        ],
+        "explain": [
+          [
+            "Video → Action",
+            "예측된 시각적 미래가 행동 정책의 조건이 된다. “먼저 결과를 상상한 뒤 실제 행동을 고른다”는 직관과 가깝지만, 영상 생성 오류가 다음 정책의 입력으로 전달될 수 있다."
+          ],
+          [
+            "Action → Video",
+            "먼저 행동 가설을 만들고 그 결과 장면을 예측한다. 제어와 예측의 선후가 뒤집히므로, 제어에는 부족한 미래 피드백이 생길 수 있다."
+          ],
+          [
+            "Joint",
+            "비디오/행동 표현을 같은 시간 구간에서 상호 조건화한다. 분리 방식과 달리 추론 시 같은 구간의 상대 스트림이 보이는지, 노이즈가 낀 상태에서도 보이는지를 정확히 비교해야 한다."
+          ],
+          [
+            "비교 설계에서 확인할 것",
+            "예측 길이·관측 prefix·액션 시간 정렬·loss masking·rollout 설정이 동일하지 않으면 “구조 차이”라는 결론을 내릴 수 없다. 공식 프로젝트는 이를 strict semantics라고 명시한다."
+          ]
+        ],
+        "takeaway": "단순히 WAM이 VLA보다 낫다는 주장보다, video-action 정보 흐름의 인과 순서를 통제해 측정한다는 것이 이 연구의 실질적 기여다.",
+        "locator": "논문 interaction patterns / 공식 프로젝트 Interaction programs"
+      },
+      {
+        "slug": "results",
+        "style": "bars",
+        "title": "03 · 반사실적 데이터가 바꾸는 성능",
+        "subtitle": "Held-out LIBERO-90 tasks · 독립 inverse dynamics 재사용 실험",
+        "bars": [
+          [
+            "Counterfactual + local IDM",
+            84.0
+          ],
+          [
+            "Full-context IDM",
+            47.0
+          ],
+          [
+            "Demo-only local IDM",
+            21.5
+          ]
+        ],
+        "explain": [
+          [
+            "“Counterfactual”이 의미하는 것",
+            "성공한 시연 경로 하나만 모으면 “다르게 움직였다면 무슨 일이 생겼는가”를 알기 어렵다. 반사실적(action-alternative) 전이는 여러 가능한 행동–결과 연결을 배울 기회를 주기 때문에 독립 dynamics 모듈의 전이 일반화를 돕는다."
+          ],
+          [
+            "막대의 비교 조건",
+            "숫자는 논문이 보고한 held-out LIBERO-90 4개 과제의 평균 성공률이다. 동일한 로봇 환경에서 모델 내부 조건을 바꾸어 비교한 값이지, 모든 VLA/WAM의 글로벌 리더보드를 의미하지 않는다."
+          ],
+          [
+            "다른 결과와 혼동하지 않기",
+            "VTA LIBERO-Long 성능 68.4%→97.8%는 causal video adaptation 실험이고, 위의 84.0%는 독립 IDM 재사용 실험이다. 둘을 같은 그래프에서 직접 비교하지 않았다."
+          ]
+        ],
+        "takeaway": "시연 데이터의 범위 밖의 상태–행동 전이가 중요하다. 원문은 forward dynamics에서도 RGB 오차 34.5% 감소와 결과 식별률 21.1%→71.3%를 보고한다.",
+        "locator": "논문 abstract / counterfactual dynamics evaluation"
+      }
+    ],
+    "research_take": "실제로 VLA/로봇 정책을 구현한다면, **(i) video foundation 유무**, **(ii) V→A vs Joint 결합**, **(iii) counterfactual transitions 유무**를 각각 독립 축으로 실험해야 한다. 각 조건에서 LIBERO-Long 성공률뿐 아니라 추론 지연, 상상된 미래와 실제 다음 관측 간 오차, 데이터셋 분포 이탈 정도도 기록하자.",
+    "sources": [
+      "https://arxiv.org/abs/2610.07922",
+      "https://openwam.stanford.edu/"
+    ]
+  },
+  "2608.01397": {
+    "intro": "SG-WAM은 영상 생성 자체보다 **행동을 생성하는 policy 표현 공간에서 미래를 예측**하도록 설계한다. 예측의 정답도 외부의 다른 임베딩 모델이 아닌 EMA로 업데이트한 자기 정책에서 가져오고, 별도의 3D 교사 모델로 이미지 토큰에 기하학적 구조를 학습한다. 훈련과 추론 단계가 어떻게 다른지 그림을 따라가면 핵심이 선명해진다.",
+    "official": {
+      "title": "원저자 Figure · SG-WAM framework",
+      "src": "https://sg-wam.github.io/sg-wam-overview.png",
+      "source": "https://sg-wam.github.io/",
+      "alt": "SG-WAM 공식 프레임워크: VGGT, EMA policy, SGWP, VLM, Action Expert 연결도",
+      "credit": "Ruiteng Zhao 외 · SG-WAM 공식 프로젝트 원본 개요 그림",
+      "how": "아래의 main image·wrist image·language 입력이 VLM으로 모이는 부분을 보고, 상단 파란 VGGT와 분홍 EMA/SGWP가 훈련 보조 경로라는 점을 확인한다. 실제 로봇 추론에는 이 세 보조 분기가 빠진다."
+    },
+    "figures": [
+      {
+        "slug": "architecture",
+        "style": "flow",
+        "title": "01 · SG-WAM의 한 장짜리 구조",
+        "subtitle": "Policy state → action-conditioned world prediction → same-policy future target",
+        "nodes": [
+          [
+            "멀티뷰 관측",
+            "main / wrist image",
+            "언어 지시"
+          ],
+          [
+            "VLM + Q tokens",
+            "이미지 토큰 + 언어",
+            "학습 가능한 dynamics"
+          ],
+          [
+            "현재 policy state",
+            "z(t)⁽Q⁾",
+            "행동 관련 잠재표현"
+          ],
+          [
+            "SGWP",
+            "행동 구간으로 조건화",
+            "미래 z(t+Δ) 예측"
+          ],
+          [
+            "EMA target",
+            "future obs 경로",
+            "Stop-gradient 정답"
+          ]
+        ],
+        "explain": [
+          [
+            "Dynamics tokens(Q)의 역할",
+            "Q는 화면 전체를 다시 생성하는 이미지 토큰이 아니라, 관측·언어와 상호작용하며 미래 행동 변화를 설명할 간결한 정책 표현이다. 논문에서는 토큰 수를 늘릴 때 성능이 무조건 증가하지 않음을 보여준다."
+          ],
+          [
+            "중간의 action conditioning",
+            "미래는 “t초 뒤”라고만 결정되는 것이 아니다. t부터 t+Δ까지 어떤 행동을 하였는가에 따라 미래 접촉과 물체 위치가 바뀌므로, SGWP에 중간 action sequence를 조건으로 공급한다."
+          ],
+          [
+            "EMA 정책을 정답으로 쓰는 이유",
+            "학습 중인 온라인 VLM의 특징을 즉시 정답으로 쓰면 타깃도 같이 요동친다. EMA copy는 더 느리게 변하는 동질의 표현을 제공한다. stop-gradient로 타깃을 고정해 예측 경로를 학습한다."
+          ],
+          [
+            "정확히 무엇을 예측하나",
+            "픽셀 영상 자체가 아니라 미래 관측을 EMA policy에 통과시킨 Q-token 잠재표현이다. 따라서 “실제로 장면을 그리는 생성 모델”이라고 설명하면 부정확하다."
+          ]
+        ],
+        "takeaway": "월드모델 손실이 곧 action expert가 읽는 표현을 조직하도록 만드는 것이 SG-WAM의 설계 핵심이다.",
+        "locator": "논문 §3.1–3.3 / Figure 2"
+      },
+      {
+        "slug": "mechanism",
+        "style": "cards",
+        "title": "02 · 학습 때 쓰는 세 개의 보조 경로",
+        "subtitle": "추론 시간에는 VLM + Action Expert만 남는다",
+        "nodes": [
+          [
+            "Geometry",
+            "Frozen VGGT teacher",
+            "공간 구조를 이미지 토큰에"
+          ],
+          [
+            "Future target",
+            "EMA copy of policy",
+            "미래 표현의 안정적 정답"
+          ],
+          [
+            "Dynamics",
+            "SGWP + action chunk",
+            "실행한 동작 후 상태 예측"
+          ],
+          [
+            "Action",
+            "Flow-matching expert",
+            "현재 이미지·지시 → 행동"
+          ]
+        ],
+        "explain": [
+          [
+            "Geometry teacher가 주는 정보",
+            "메인 카메라 특징을 3D foundation model의 구조와 정렬해 로봇/물체의 위치 관계를 쉽게 포착하도록 한다. VLM이 표면 텍스처나 배경만 보고 학습하는 것을 완화하려는 목적이다."
+          ],
+          [
+            "Self-guided라고 부르는 이유",
+            "외부의 고정된 미래 표현이 아니라 같은 정책의 EMA backbone이 미래 잠재 상태를 생산한다. 이 점이 “정책과 타깃의 표현 불일치”를 줄인다는 가설과 연결된다."
+          ],
+          [
+            "세 loss가 같이 작동한다",
+            "Flow-matching 행동 생성, 미래 잠재 상태 예측, geometry alignment를 함께 최적화한다. 계산량 증가는 훈련 단계의 auxiliary paths에 집중되고, 추론 때는 별도의 VGGT/SGWP/EMA를 요구하지 않는다고 설명한다."
+          ],
+          [
+            "오해하기 쉬운 부분",
+            "SG-WAM이 “3D를 실시간으로 렌더링한다”는 뜻은 아니다. 보조 supervision으로 공간적으로 유용한 특징을 학습한 뒤 실제 행동은 0.9B 정책과 액션 전문가가 생성한다."
+          ]
+        ],
+        "takeaway": "정답 생성은 self-guided, 정책 표현은 geometry-aware, 행동은 flow matching. 서로 다른 세 목적을 한 정책 공간에 결합한다.",
+        "locator": "논문 §3.3–3.5 / Figure 2, Appendix C"
+      },
+      {
+        "slug": "results",
+        "style": "bars",
+        "title": "03 · 분포가 바뀐 뒤에도 살아남는가?",
+        "subtitle": "LIBERO-Plus zero-shot success · 같은 벤치마크 내 비교",
+        "bars": [
+          [
+            "SG-WAM 0.9B",
+            73.0
+          ],
+          [
+            "OpenVLA-OFT 7B",
+            69.6
+          ],
+          [
+            "VLA-JEPA 2B",
+            62.9
+          ],
+          [
+            "Fast-WAM 6B",
+            50.0
+          ]
+        ],
+        "explain": [
+          [
+            "LIBERO와 LIBERO-Plus 차이",
+            "LIBERO는 익숙한 과제 분포의 성공률을 평가하고, LIBERO-Plus는 카메라·로봇 상태·조명·배경·노이즈·레이아웃 등 perturbation 이후 정책의 견고함을 본다. 두 데이터셋의 점수는 같은 의미가 아니다."
+          ],
+          [
+            "모델 크기를 함께 봐야 한다",
+            "SG-WAM의 파라미터는 0.9B이며 큰 규모의 embodied pretraining 없이 위 성능을 보고한다. 그러나 다른 baselines는 모델 용량·학습 데이터·구현이 달라 파라미터 차이 자체가 효과 원인이라고 단정할 수 없다."
+          ],
+          [
+            "Ablation에 있는 중요한 단서",
+            "Q dynamics token 수를 1개에서 8개로 늘리면 LIBERO 평균이 96.1%→98.5%, Long은 90.2%→96.2%로 상승하지만 16개에서는 전체 97.2%로 떨어진다. 모델 용량·표현 적합성의 균형 문제다."
+          ]
+        ],
+        "takeaway": "가장 설득력 있는 부분은 단지 평균 점수보다 분포 변화 테스트와 부가 손실 제거 실험이 결합돼 있다는 점이다.",
+        "locator": "논문 §4 / Table 1, Table 2, ablation Figure 4"
+      }
+    ],
+    "research_take": "새로운 카메라 높이·배경·그리퍼 형태에 대한 robust VLA를 만든다면, 동일 backbone에 **(a) action-only**, **(b) +EMA future prediction**, **(c) +geometry**, **(d) 둘 다** 조건을 마련하자. 특히 Q 토큰 수(1/4/8/16)와 미래 예측 간격 Δ를 sweep하고, 추론 FPS 및 VRAM이 실제로 동일한지도 검증하는 게 좋다.",
+    "sources": [
+      "https://arxiv.org/html/2608.01397",
+      "https://sg-wam.github.io/"
+    ]
+  },
+  "2504.16054": {
+    "intro": "π0.5는 “범용 로봇 정책을 만들기 위해 로봇 시연만 더 모으면 되는가?”라는 질문에 **다양한 데이터 출처를 섞어 학습하고 의미적 하위 과제를 먼저 예측하자**고 답한다. 미지의 가정에서 10~15분 길이 작업까지 수행한 사례는 단일 성공률보다 ‘어떤 지식이 어떤 계층으로 이전되는가’를 보는 게 중요하다.",
+    "figures": [
+      {
+        "slug": "architecture",
+        "style": "flow",
+        "title": "01 · 하나의 정책을 만드는 두 번의 학습",
+        "subtitle": "Pretrain discrete FAST tokens → Post-train flow matching → runtime action",
+        "nodes": [
+          [
+            "혼합 데이터",
+            "모바일 · 정적 · 타 로봇",
+            "웹 · 언어 하위 과제"
+          ],
+          [
+            "Pre-training",
+            "VLM + FAST token",
+            "자기회귀적 discrete"
+          ],
+          [
+            "Post-training",
+            "모바일 로봇 적응",
+            "언어 지도 + Flow"
+          ],
+          [
+            "High-level inference",
+            "현재 상황 → subtask",
+            "예: 접시 집기"
+          ],
+          [
+            "Low-level inference",
+            "Action expert",
+            "연속 행동 chunk"
+          ]
+        ],
+        "explain": [
+          [
+            "왜 처음부터 연속 행동으로 학습하지 않나",
+            "다양한 데이터셋에서 텍스트 토큰처럼 행동을 다루면 언어·시각·행동을 하나의 시퀀스 예측 체계로 묶기 쉽다. π0.5는 사전학습에서 FAST로 압축된 discrete action tokens를 사용한다."
+          ],
+          [
+            "Flow matching으로 전환하는 이유",
+            "실제 로봇은 짧은 시간 안에 정밀한 연속 관절 제어가 필요하다. 토큰을 하나씩 뽑는 디코딩보다 action expert의 연속 action-chunk 생성이 실시간 제어에 유리하다고 논문은 설명한다."
+          ],
+          [
+            "High-level과 Low-level의 역할 구분",
+            "전자는 “지금 어떤 일을 해야 하는가”를 언어 하위 과제로 지정하고 후자는 이 지시에 맞춰 물리 동작을 생성한다. 완전히 별개 모델 두 개를 붙이는 방식이 아니라 같은 VLA를 두 단계의 추론에 활용한다."
+          ],
+          [
+            "이 그림을 정독할 때",
+            "도식의 단계는 훈련 절차와 실행 절차를 이어서 보여준다. 매 타임스텝마다 사전학습과 파인튜닝을 반복한다는 뜻이 아니다."
+          ]
+        ],
+        "takeaway": "범용 지식의 폭은 pretraining mixture에서, 실제 운동의 정밀도는 post-training flow action expert에서 가져온다.",
+        "locator": "원문 §IV, Figure 3"
+      },
+      {
+        "slug": "mechanism",
+        "style": "cards",
+        "title": "02 · 학습 데이터에서 일반화로 이어지는 네 연결",
+        "subtitle": "어떤 데이터가 어떤 능력을 길러주는가 — 정량적 인과 분해는 아님",
+        "nodes": [
+          [
+            "Robot demos",
+            "MM · ME · CE",
+            "신체·환경·물리 조작"
+          ],
+          [
+            "Web multimodal",
+            "VQA · detection",
+            "물체 의미·시각적 개념"
+          ],
+          [
+            "High-level labels",
+            "subtask prediction",
+            "장기작업의 순서 선택"
+          ],
+          [
+            "Verbal guidance",
+            "사람의 단계별 지시",
+            "실행 순서·수정 신호"
+          ]
+        ],
+        "explain": [
+          [
+            "MM / ME / CE의 차이",
+            "MM은 주 타깃인 mobile manipulator, ME는 다양한 환경의 비이동 로봇, CE는 이종 로봇 데이터다. 셋을 하나로 “로봇 데이터”라고 묶으면 무엇이 옮겨지는지 보이지 않는다."
+          ],
+          [
+            "웹 멀티모달 데이터의 역할",
+            "웹 영상·객체 탐지·시각 질의응답은 로봇 모터 명령을 직접 가르치진 못해도 낯선 물체의 의미와 관련된 단서에 기여할 수 있다. 실제 효과는 논문의 no-WD ablation과 함께 봐야 한다."
+          ],
+          [
+            "High-level과 언어 코칭의 차이",
+            "High-level examples는 “다음에 어떤 하위 행동을 할까?”의 타깃이고, verbal instruction은 인간이 여러 단계를 언어로 안내한 시연이다. 둘 다 semantic planning에 기여하지만 감독 신호의 성격이 다르다."
+          ],
+          [
+            "현실적인 한계",
+            "혼합 데이터의 효과는 상호작용한다. 한 소스를 뺀 실험은 그 소스의 중요성을 보여주지만, 각 출처가 어떤 행동 실패를 얼마나 줄였는지 인과적으로 전부 해명하지는 못한다."
+          ]
+        ],
+        "takeaway": "학습 데이터 97.6%가 타깃 모바일 가정 조작 시연이 아닌 출처에서 온다는 원문 수치에 주목하자.",
+        "locator": "원문 §I, §IV-C, Figure 4, data ablations"
+      },
+      {
+        "slug": "results",
+        "style": "cards",
+        "title": "03 · 성능 그래프에서 먼저 확인할 평가 설계",
+        "subtitle": "성공률이 아니라 task progress로 채점하는 장기 조작 과제",
+        "nodes": [
+          [
+            "Dishes in Sink",
+            "최대 8점",
+            "집기·싱크대 넣기"
+          ],
+          [
+            "Items in Drawer",
+            "최대 4점",
+            "열기·집기·닫기"
+          ],
+          [
+            "Laundry Basket",
+            "최대 3점",
+            "줍기·바구니 넣기"
+          ],
+          [
+            "Make the Bed",
+            "최대 5점",
+            "이불·베개 정리"
+          ]
+        ],
+        "explain": [
+          [
+            "왜 성공/실패만 보면 안 될까",
+            "“접시 4개 중 3개만 정리했다”는 결과는 모든 단계를 완료하지 못했지만 장기작업의 상당 부분을 수행했다. 연구진은 항목별 점수를 부여하고 완료 비율을 task progress로 보고한다."
+          ],
+          [
+            "평가 단위 주의",
+            "새로운 실제 가정 3곳, 장면을 흉내 낸 mock 평가 환경, 여러 대상 로봇 등 조건이 섞여 있다. 도식은 appendix rubric의 항목별 최대점이지 논문에 등장한 모든 막대의 성공률을 재현한 게 아니다."
+          ],
+          [
+            "실험의 진짜 난도",
+            "주방 정리나 침실 정리는 수십 초의 한 번 집기보다 장면 탐색, 장소 이해, 대상 위치 판단, 실패 후 재시도 등 서로 다른 서브스킬을 연달아 조합해야 한다."
+          ],
+          [
+            "재현할 때 체크",
+            "Scene-unseen 분할, 사용자 명령 빈도, 사람 개입 허용 범위, task progress 계산법, 하위 과제 업데이트 주기를 함께 공개해야 비교가 된다."
+          ]
+        ],
+        "takeaway": "π0.5의 결과는 하나의 높은 수치보다 “완전히 새로운 집에서 길게 작동하는가”를 평가한다는 점에서 읽어야 한다.",
+        "locator": "원문 §V, Figure 7, Appendix A-B rubric"
+      }
+    ],
+    "research_take": "동일 로봇·동일 시험 가정에서 **robot-only**, **+web data**, **+subtask supervision**, **+verbal guidance**, **full recipe**를 비교하고, 액션 성공률 외에 “하위 목표 선택 오류 / 동작 실행 오류 / 누적 실패”를 따로 측정하면 π0.5의 장기 일반화 기여를 분석할 수 있다.",
+    "sources": [
+      "https://arxiv.org/html/2504.16054",
+      "https://www.pi.website/blog/pi05"
+    ]
+  },
+  "2610.42021": {
+    "intro": "Nexus-VLA의 어려운 문제는 사람 머리 장착 카메라로 본 “컵을 옮기는 동작”과 로봇 관절 명령이 **동일한 행동 벡터가 아니라는 것**이다. 논문은 intent·공간·운동·접촉 등 여러 수준의 의미를 공유 잠재표현에 학습시키고, 그 표현을 액션 생성에 직접 연결한다. 사람 영상이 무엇을 가르칠 수 있고, 무엇은 로봇 시연이 가르쳐야 하는지 그림으로 분리해 읽자.",
+    "figures": [
+      {
+        "slug": "architecture",
+        "style": "flow",
+        "title": "01 · 사람 경험과 로봇 경험의 공통 통로",
+        "subtitle": "Offline semantic labels + shared latent + action generation",
+        "nodes": [
+          [
+            "Human videos",
+            "EgoDex 일인칭 경험",
+            "손목 궤적 중심"
+          ],
+          [
+            "Robot demos",
+            "RoboCasa-GR1 학습",
+            "관절 + 손목 행동"
+          ],
+          [
+            "Frozen SMEs",
+            "intent·spatial·motion",
+            "interaction 감독"
+          ],
+          [
+            "Shared z_sem",
+            "VLM에서 학습된",
+            "semantic latent"
+          ],
+          [
+            "Flow action head",
+            "인간–로봇 공동 학습",
+            "로봇 동작 출력"
+          ]
+        ],
+        "explain": [
+          [
+            "공통 표현이 필요한 이유",
+            "사람과 로봇은 카메라 높이, 팔의 자유도, 관절 정의가 다르다. 픽셀과 로봇 joint space를 그대로 일치시키는 대신 “잡기 전에 접근하고, 접촉해 운반한다”처럼 둘이 공유하는 task progress를 학습해야 한다."
+          ],
+          [
+            "Frozen SME 네 그룹",
+            "Intent(다음 하위작업), Spatial(대상·목표 위치), Motion(미래 손목 경로), Interaction(손–물체 접촉)을 각각 감독 신호로 만든다. 논문 부록에서 Qwen3-VL, SAM3, CoTracker3, HaMeR 같은 모델을 오프라인 라벨 생성기로 사용한다."
+          ],
+          [
+            "Latent가 action head로 가는 이유",
+            "단순히 contrastive loss로 사람·로봇 특징을 비슷하게 만드는 것만이 목표가 아니다. 네 수준의 의미로 조직한 동일 z_sem을 로봇 continuous action의 생성 조건으로 공급한다."
+          ],
+          [
+            "주의할 점",
+            "그림에서 사람 영상과 로봇 데이터가 같은 action dimension을 모두 제공하는 것처럼 보이면 잘못이다. 공유할 수 없는 joint 차원은 마스킹한다."
+          ]
+        ],
+        "takeaway": "사람 경험의 의미와 로봇 경험의 관절 행동을 한 모델에서 공유하되, 감독 가능 차원은 명시적으로 가린다.",
+        "locator": "원문 §3 / Figure 2, Appendix A"
+      },
+      {
+        "slug": "mechanism",
+        "style": "cards",
+        "title": "02 · Hierarchical Semantic Latent의 네 질문",
+        "subtitle": "하나의 잠재 토큰이 네 가지 감독을 받지만, 4개의 독립 추론 모듈은 아님",
+        "nodes": [
+          [
+            "Intent",
+            "무엇을 할까?",
+            "Subtask text"
+          ],
+          [
+            "Spatial",
+            "어디를 집을까?",
+            "Object / target boxes"
+          ],
+          [
+            "Motion",
+            "어떻게 움직일까?",
+            "Future wrist trajectory"
+          ],
+          [
+            "Interaction",
+            "언제 닿을까?",
+            "Hand–object contacts"
+          ]
+        ],
+        "explain": [
+          [
+            "Intent → Spatial",
+            "컵을 옮긴다는 언어 목적만으로는 어떤 컵을 선택할지, 어디에 놓을지 모호하다. 공간 라벨은 조작 대상(manipuland)과 목적지(target)의 시각적 grounding을 돕는다."
+          ],
+          [
+            "Spatial → Motion",
+            "무엇을 어디에 놓는지 알아도 실제 접근·파지·운반의 궤적이 결정되지는 않는다. 모션 감독은 인간 손목과 로봇 말단의 비교 가능한 움직임 단서를 제공한다."
+          ],
+          [
+            "Motion → Interaction",
+            "미래 궤적이 물체와 접촉한 시점을 정확히 설명하지 못하면 grasp/release를 구분하기 어렵다. 접촉은 “실제 상호작용이 언제 일어나는가”를 표현 공간에 보강한다."
+          ],
+          [
+            "“계층” 주장에 대한 비판적 읽기",
+            "논문은 서로 다른 단계의 semantic labels를 공유 latent로 묶지만, 네 projector loss가 명시적인 순차 연산으로 구성됐다고 보기는 어렵다. 각 수준 사이 causal dependency를 직접 테스트하는 ablation이 있는지 확인해야 한다."
+          ]
+        ],
+        "takeaway": "네 구분은 의미적 coarse-to-fine 독해 틀이다. 실제 학습은 shared latent + 여러 projector supervision이며, 추론 때 projector들은 제거된다.",
+        "locator": "원문 §3.1.3 / Appendix projector architecture"
+      },
+      {
+        "slug": "results",
+        "style": "bars",
+        "title": "03 · 진짜 사람 영상의 기여는 얼마나 되나?",
+        "subtitle": "RoboCasa-GR1 평균 성공률 · 논문에서 보고된 비교",
+        "bars": [
+          [
+            "Nexus-VLA",
+            80.5
+          ],
+          [
+            "ACE-Ego-0",
+            72.8
+          ],
+          [
+            "ZR-0",
+            69.3
+          ],
+          [
+            "DyPES-VLA",
+            59.3
+          ]
+        ],
+        "explain": [
+          [
+            "지표와 평가 규모",
+            "RoboCasa-GR1 24개 manipulation task 평균 성공률이라는 조건을 봐야 한다. 특정 task 하나의 성공률이나 새로운 실제 로봇 환경의 통과율과는 다른 지표다."
+          ],
+          [
+            "사람 데이터 이득을 과장하지 않기",
+            "저자 ablation에서는 robot-only 기본 모델이 72.42%, 네 종류의 의미 감독 + shared latent를 사용한 robot-only 모델이 78.25%, human 공동학습을 포함한 설정은 80%대에 이른다. 모든 향상분이 인간 영상 때문이라는 해석은 부정확하다."
+          ],
+          [
+            "실제 로봇 OOD 결과는 별도",
+            "실제 환경의 4종류 OOD와 standard 실험을 합쳐 평균 74.0%를 보고한다. 실험 설정별 50 rollout 규모이므로 몇 percentage point 차이에는 통계적 불확실성을 함께 고려해야 한다."
+          ],
+          [
+            "재현성 체크",
+            "인간:로봇 샘플링 1:2, human wrist 차원 마스킹, 150k/180k/200k 체크포인트 선택, baseline 재학습 여부에 대한 표기를 확인해야 공정한 비교를 할 수 있다."
+          ]
+        ],
+        "takeaway": "80.5%의 막대보다 **공동학습 이전의 semantic supervision이 얼마를 설명하는지**가 더 중요한 연구 질문이다.",
+        "locator": "논문 Table 1 / Table 3 / Figure 5"
+      }
+    ],
+    "research_take": "새로 수집한 ego-hand video를 VLA에 통합한다면 **(1) robot-only**, **(2) +4개 semantic targets**, **(3) +human video masked wrist**, **(4) latent 공유 제거** 실험을 같은 robot-token exposure와 유사 계산량으로 맞춰 비교하자. human video scaling은 0/25/50/75/100%로 나누고 OOD object·rollout별 신뢰구간까지 기록해야 한다.",
+    "sources": [
+      "https://arxiv.org/abs/2610.42021",
+      "https://thelatestinai.com/papers/2610.42021"
+    ]
+  },
+  "2610.40026": {
+    "intro": "RoboSeed는 “누가 몇 % 성공했는가”만으로 모델을 선택하는 방식에 반론을 제기한다. 성능이 같더라도 추가 학습 비용과 배포 자원, 연구 증거의 재현 가능성은 다르기 때문이다. 아래 도식은 논문이 정의한 **5개 평가 차원**과 결측치를 다루는 규칙을 시각화한 것이다. 이 논문은 통합 세계 1위 모델을 뽑는 리더보드가 아니다.",
+    "figures": [
+      {
+        "slug": "architecture",
+        "style": "flow",
+        "title": "01 · 모델 선택에서 끝까지 따라가야 할 5차원",
+        "subtitle": "Task capability → adaptation cost → serving cost → evidence quality",
+        "nodes": [
+          [
+            "Capability",
+            "과제 성공률",
+            "동일 protocol?"
+          ],
+          [
+            "Training cost",
+            "GPU-hours·recipe",
+            "재현 가능한가?"
+          ],
+          [
+            "Deployment",
+            "메모리·지연",
+            "실서비스 가능한가?"
+          ],
+          [
+            "Research value",
+            "로컬 검증",
+            "다른 실험에 도움?"
+          ],
+          [
+            "Reproduction",
+            "코드·설정·로그",
+            "근거 수준이 충분?"
+          ]
+        ],
+        "explain": [
+          [
+            "Capability만 높으면 끝인가",
+            "특정 benchmark에서 90%를 달성해도 1개 과제에 수십 GPU-day가 필요하거나 실시간 제어가 되지 않으면 로봇 연구실의 현실적인 선택이 다를 수 있다."
+          ],
+          [
+            "훈련 예산과 배포 예산은 별개",
+            "추가 적응에 8×H200 자원이 필요한 모델이 inference에 반드시 무거운 것은 아니다. 반대로 작은 fine-tuning 비용을 자랑해도 추론 메모리나 로봇 제어 주기가 부담일 수 있다."
+          ],
+          [
+            "근거의 질도 수치화 대상",
+            "공개 가중치 재평가, task-level audit, 실험 구성·seed·로그, 로컬 재현 가능성 등을 차원별로 기록한다. “저자 reported number”와 “내가 재실험한 값”을 섞지 않는 태도 자체가 설계 목적이다."
+          ],
+          [
+            "0–100 정규화의 함정",
+            "논문은 각 차원의 고정 anchor로 0–100 프로필을 만든다고 설명하지만, 모든 모형에 필요한 정보가 있는 것은 아니다. 실제 측정 없이 임의의 점수를 채워 전체 순위를 매기면 취지와 정반대다."
+          ]
+        ],
+        "takeaway": "성능·비용·증거 품질의 다목적 비교 프레임이지, 성능 1등을 순위로 매기는 표가 아니다.",
+        "locator": "논문 framework / five dimensions"
+      },
+      {
+        "slug": "mechanism",
+        "style": "cards",
+        "title": "02 · 동일 숫자라도 결론이 바뀌는 세 의사결정",
+        "subtitle": "Balanced / training-constrained / deployment-constrained",
+        "nodes": [
+          [
+            "Balanced",
+            "다섯 차원 균형",
+            "연구실의 기본 비교"
+          ],
+          [
+            "Train budget",
+            "적응 비용 중시",
+            "제한된 GPU-hours"
+          ],
+          [
+            "Deployment",
+            "실행 비용 중시",
+            "제어주기·VRAM"
+          ],
+          [
+            "Missing data",
+            "점수 공란 유지",
+            "aggregate 보류"
+          ]
+        ],
+        "explain": [
+          [
+            "Balanced view",
+            "과제 성능·추가 학습·배포 자원·검증 가치·재현 증거를 모두 고려하고 싶을 때 쓰는 프로필이다. 단일 정확도 숫자가 가리는 비용 지표를 함께 노출한다."
+          ],
+          [
+            "Training-constrained view",
+            "새 로봇 작업에 자주 파인튜닝해야 하는 경우, 성능 향상 1~2점보다 반복적인 추가 학습 시간·자원비가 중요할 수 있다."
+          ],
+          [
+            "Deployment-constrained view",
+            "로봇 엣지 장치에서 실시간 실행해야 한다면 모델 다운로드 용량보다 메모리 피크, inference latency, 컨트롤 스택 병목이 선택 기준이 된다."
+          ],
+          [
+            "결측을 0점으로 해석하지 않기",
+            "추론 비용 기록이 없다면 “비싸다(0점)”도 “싸다(100점)”도 결론내릴 수 없다. RoboSeed는 필수 입력이 빠진 aggregate ranking을 보류하고 weighted coverage로 정보 부족을 노출한다."
+          ]
+        ],
+        "takeaway": "연구 목표에 따라 가중치를 변경하되 비교 가능한 protocol과 evidence coverage가 선행돼야 한다.",
+        "locator": "논문 scoring protocol / preferences / coverage"
+      },
+      {
+        "slug": "results",
+        "style": "cards",
+        "title": "03 · 재현 가능한 실험 기록은 무엇을 담나?",
+        "subtitle": "RoboSeed artifact protocol을 연구실 체크리스트로 재구성",
+        "nodes": [
+          [
+            "Train record",
+            "model / config / seed",
+            "스텝·GPU-hours"
+          ],
+          [
+            "Eval record",
+            "task / rollout",
+            "성공·실패 정의"
+          ],
+          [
+            "Runtime",
+            "VRAM / latency",
+            "서빙 추적 기록"
+          ],
+          [
+            "Audit trail",
+            "weight / code / logs",
+            "근거 공개 수준"
+          ]
+        ],
+        "explain": [
+          [
+            "재현 가능한 비교의 시작점",
+            "같은 데이터셋을 썼다는 이유만으로 동일한 실험은 아니다. 프레임 수, 정책 입력 인터페이스, 실행 주기, 액션 chunk·후처리·랜덤 시드를 고정해야 한다."
+          ],
+          [
+            "현 상태에서 순위를 보류하는 이유",
+            "논문의 초록은 incomplete serving traces와 heterogeneous protocols 때문에 전체 numerical ranking을 제시하지 않는다고 명시한다. 이 제한을 숨긴 하나의 종합 막대 그래프는 만들지 않았다."
+          ],
+          [
+            "실제 제공물의 범위",
+            "공식 저장소는 보고서·그림 원본·기계 판독 증거 자료와 재현 분석 스크립트를 소개한다. 모든 로봇 학습 코드·원시 데이터·가중치가 즉시 다운로드 가능하다고 가정하면 안 된다."
+          ],
+          [
+            "어떤 연구자에게 유용한가",
+            "새 VLA를 선택할 때 보고된 성공률뿐 아니라 재학습 가능성, 배포 제약, 근거가 누락된 셀을 평가하는 개인 연구 대시보드의 스키마로 사용할 수 있다."
+          ]
+        ],
+        "takeaway": "RoboSeed는 단일 “성능 수치”보다 측정 프로토콜과 결측·근거 관리가 중요한 논문이다.",
+        "locator": "논문 Abstract / evidence protocol / official RoboSeed repository"
+      }
+    ],
+    "research_take": "새 VLA를 도입하기 전에 RoboSeed 방식으로 **최소 실험 표준**을 정하자. 모든 모델에 대해 (1) 3개 이상 동일 task·seed 세트, (2) adaptation GPU-hours, (3) inference Hz·VRAM, (4) release artifact 상태를 수집한다. 미측정은 미측정으로 표시하고 종합 점수는 비교 가능성과 입력 커버리지가 충족될 때만 계산하자.",
+    "sources": [
+      "https://arxiv.org/abs/2610.40026",
+      "https://github.com/PrimitiveX/RoboSeed"
+    ]
+  }
+}

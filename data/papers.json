@@ -45,7 +45,7 @@
       "pdf_url": "https://arxiv.org/pdf/2610.42021",
       "project_url": "",
       "code_url": "",
-      "reading_minutes": 15,
+      "reading_minutes": 23,
       "origin": "curated",
       "deep_dive": {
         "lead": "Nexus-VLA에서 중요한 질문은 “사람의 손동작을 로봇 관절값으로 어떻게 바꿀까?”보다 앞선다. 사람과 로봇이 공통으로 이해할 수 있는 **작업 의도·행동 단계·접촉 사건**의 의미 표현을 만들고, 그 표현이 실제 action 생성 손실에 영향을 주도록 만드는 것이다. 따라서 이 논문은 단순 비디오 사전학습보다 인간–로봇 표현 정렬과 제어의 end-to-end 결합에 초점을 둔다.",
@@ -302,7 +302,7 @@
       "pdf_url": "https://arxiv.org/pdf/2610.40026",
       "project_url": "",
       "code_url": "https://github.com/PrimitiveX/RoboSeed",
-      "reading_minutes": 12,
+      "reading_minutes": 22,
       "origin": "curated",
       "deep_dive": {
         "lead": "RoboSeed는 새로운 VLA를 설계하기보다 “어떤 모델을 선택해야 하는가?”를 연구 질문으로 삼는다. 연구실마다 GPU 예산·실시간 제어 요구·허용 가능한 파인튜닝 시간·공개 증거 수준이 달라 **단일 성공률 1등 = 최선 모델**이라는 판단이 성립하지 않는다고 본다. 측정 불가능한 영역을 0점처럼 취급하지 않고 결측으로 남기는 설계가 핵심이다.",
@@ -429,7 +429,7 @@
       "pdf_url": "https://arxiv.org/pdf/2610.07922",
       "project_url": "https://openwam.stanford.edu/",
       "code_url": "",
-      "reading_minutes": 18,
+      "reading_minutes": 25,
       "origin": "curated",
       "deep_dive": {
         "lead": "OpenWAM은 “video predictor + action expert를 같이 쓰면 좋아진다”에서 끝나지 않고, **둘의 생성 순서를 바꿔가며 검증할 수 있는 공통 실험 플랫폼**을 제시한다. 로봇 비디오용 causal backbone, MoT 결합, VTA/JOIN 등의 추론 프로그램을 같은 토대 위에 올리고, counterfactual dynamics를 통해 시연 밖의 상태 전이까지 학습하는 효과를 비교한다.",
@@ -979,7 +979,7 @@
       "pdf_url": "https://arxiv.org/pdf/2608.01397",
       "project_url": "",
       "code_url": "",
-      "reading_minutes": 15,
+      "reading_minutes": 24,
       "origin": "curated",
       "deep_dive": {
         "lead": "SG-WAM은 예측 공간을 policy 외부에 따로 두지 않는다. **현재 정책 backbone의 내부 표현에서 dynamics token을 만들고 같은 정책의 EMA 복사본으로 미래 목표를 만든다.** 여기에 기하학적 감독을 넣어 미래 latent가 로봇의 접촉·공간 관계를 잃지 않게 한다. 거대한 별도 video world model 없이 행동과 미래예측을 동시에 학습하는 방향이다.",
@@ -1251,7 +1251,7 @@
       "pdf_url": "https://arxiv.org/pdf/2504.16054",
       "project_url": "https://www.pi.website/blog/pi05",
       "code_url": "https://github.com/Physical-Intelligence/openpi",
-      "reading_minutes": 15,
+      "reading_minutes": 24,
       "origin": "curated",
       "deep_dive": {
         "lead": "π0.5는 단순히 π0 모델 크기를 키운 후속작이 아니라 **서로 다른 종류의 데이터를 한 정책의 의미 이해와 제어 학습에 함께 활용하는 훈련 레시피**를 검증한다. 로봇 시연만으로는 충분히 모으기 어려운 ‘새 집에서 부엌을 정리하라’ 같은 과제를 위해 웹 데이터·타 로봇 데이터·고수준 단계 지시·연속 action을 연결한다.",

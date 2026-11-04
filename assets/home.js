@@ -40,7 +40,7 @@
   const title=e(p.title); const link=R.paperLink(p.id);
   const saved=R.isSaved(p.id);
   return `<article class="paper-card" style="${decorate(p)}">
-     <div class="paper-card-top"><div class="card-cats">${chip(p.primary_category)}${isNew(p)?'<span class="new-badge">NEW</span>':p.featured?'<span class="editor-badge">✳ PICK</span>':''}</div><button type="button" class="bookmark-btn ${saved?'is-saved':''}" data-bookmark="${e(p.id)}" aria-label="${saved?'북마크 취소':'북마크 추가'}" title="북마크">${saved?'★':'☆'}</button></div>
+     <div class="paper-card-top"><div class="card-cats">${chip(p.primary_category)}${isNew(p)?'<span class="new-badge">NEW</span>':p.featured?'<span class="editor-badge">✳ PICK</span>':''}${["2610.07922","2608.01397","2504.16054","2610.42021","2610.40026"].includes(p.id)?'<span class="visual-deep-badge">◈ 그림 해설</span>':''}</div><button type="button" class="bookmark-btn ${saved?'is-saved':''}" data-bookmark="${e(p.id)}" aria-label="${saved?'북마크 취소':'북마크 추가'}" title="북마크">${saved?'★':'☆'}</button></div>
      <a class="paper-card-link" href="${link}"><div class="card-art-pattern"><span>${e(p.primary_category.toUpperCase())}</span><b>↗</b></div><div class="paper-card-content"><div class="card-date">${e(R.showDate(p.published))} <i>·</i> ${Number(p.reading_minutes)||7} MIN READ</div><h3>${title}</h3><p>${e(p.summary_ko)}</p></div></a>
      <div class="paper-card-tags">${(p.tags||[]).slice(0,3).map(t=>`<span>#${e(t)}</span>`).join('')}</div>
      <div class="paper-card-bottom"><span>${e((p.authors||[]).slice(0,2).join(' · '))}</span><a href="${link}" title="논문 자세히 보기" aria-label="논문 자세히 보기">↗</a></div>

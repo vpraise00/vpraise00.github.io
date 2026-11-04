@@ -8,6 +8,7 @@ from html import escape as h
 from urllib.parse import quote
 from xml.sax.saxutils import escape as xml_escape
 from datetime import datetime, timezone
+from functools import lru_cache
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE_URL = 'https://vpraise00.github.io/'
@@ -87,6 +88,54 @@ def render_deep_dive(p: dict) -> tuple[str, str]:
         if lis: parts.append('<section class="article-section deep-section" id="related"><span class="section-number">RESEARCH MAP</span><h2>연결해서 읽을 논문</h2><div class="related-papers">'+''.join(lis)+'</div></section>')
     return toc, ''.join(parts)
 
+@lru_cache(maxsize=1)
+def visual_studies():
+    path=ROOT/'data/visual_studies.json'
+    return json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
+
+def render_visual_study(p: dict) -> str:
+    study=visual_studies().get(str(p['id']))
+    if not isinstance(study,dict): return ''
+    parts=['<section class="article-section visual-study" id="visual-lab">',
+      '<span class="section-number">ILLUSTRATED PAPER GUIDE / EXPANDED EDITION</span>',
+      '<h2>그림으로 논문 하나씩 뜯어보기</h2>',
+      '<p class="visual-lead">'+rich(study.get('intro',''))+'</p>',
+      '<p class="visual-provenance">원본 그림은 저자 제공 자료로 표시합니다. 어두운 배경의 SVG는 독해를 위해 새로 그린 <strong>편집 재구성도</strong>이며 논문의 원본 Figure가 아닙니다. 수치·실험 조건은 아래에 원문 위치를 표시했습니다.</p>']
+    original=study.get('official')
+    if isinstance(original,dict) and original.get('src','').startswith('https://') and original.get('source','').startswith('https://'):
+        src=h(original['src'],quote=True)
+        url=h(original['source'],quote=True)
+        parts.extend(['<figure class="research-figure original-figure">',
+        '<div class="figure-top"><span class="figure-label">ORIGINAL FIGURE · AUTHOR HOSTED</span><a href="'+url+'" target="_blank" rel="noopener noreferrer">공식 프로젝트 출처 ↗</a></div>',
+        '<h3>'+h(original.get('title','공식 그림'))+'</h3>',
+        '<div class="visual-image-scroller original-image"><a href="'+src+'" target="_blank" rel="noopener noreferrer" aria-label="원본 그림 확대 보기"><img src="'+src+'" loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="'+h(original.get('alt','연구 논문 원본 그림'),quote=True)+'"/></a></div>',
+        '<figcaption><b>원저자 원본 출처</b> '+h(original.get('credit',''))+'</figcaption>',
+        '<div class="figure-reading-prompt"><strong>읽는 순서</strong><p>'+rich(original.get('how',''))+'</p></div></figure>'])
+    for i,fig in enumerate(study.get('figures',[]),1):
+        key=fig.get('slug','')
+        if not re.fullmatch(r'[a-z0-9-]{1,30}',key): continue
+        target='visual-figure-'+str(i)
+        image='../assets/figures/'+p['id']+'-'+key+'.svg'
+        points=[]
+        for j,entry in enumerate(fig.get('explain',[])[:5],1):
+            if isinstance(entry,list) and len(entry)==2:
+                points.append('<li class="figure-detail"><span class="detail-index">'+f'{j:02d}'+'</span><div><h4>'+h(entry[0])+'</h4><p>'+rich(entry[1])+'</p></div></li>')
+        source=study.get('sources',['https://arxiv.org/abs/'+p['id']])[0]
+        parts.extend(['<figure class="research-figure editorial-figure" id="'+target+'">',
+          '<div class="figure-top"><span class="figure-label">EDITORIAL REDRAW · 도식 / 실험 해설</span><span>VISUAL '+f'{i:02d}'+'</span></div>',
+          '<h3>'+h(fig.get('title',''))+'</h3>',
+          '<p class="figure-subtitle">'+h(fig.get('subtitle',''))+'</p>',
+          '<div class="visual-image-scroller"><a href="'+h(image)+'" target="_blank" title="도식 크게 보기 (새 탭)" class="figure-zoom"><img src="'+h(image)+'" loading="lazy" decoding="async" alt="'+h(fig.get('title','연구 구조도'),quote=True)+'"/></a></div>',
+          '<figcaption>원문 위치: '+h(fig.get('locator',''))+' · <a href="'+h(source,quote=True)+'" target="_blank" rel="noopener noreferrer">논문 확인 ↗</a> · 직접 작성한 재구성도</figcaption>',
+          '<h4 class="figure-explainer-heading">그림을 단계별로 읽는 방법</h4>',
+          '<ol class="figure-explainer">'+''.join(points)+'</ol>',
+          '<div class="figure-takeaway"><strong>KEY TAKEAWAY</strong><p>'+rich(fig.get('takeaway',''))+'</p></div>',
+          '</figure>'])
+    parts.extend(['<div class="visual-research-take"><span>RESEARCHER NOTES / EDITORIAL IDEA</span><h3>실제로 구현하고 검증한다면</h3><p>'+rich(study.get('research_take',''))+'</p></div>',
+       '<div class="visual-citation"><strong>확인한 자료</strong>'+''.join('<a href="'+h(url,quote=True)+'" target="_blank" rel="noopener noreferrer">'+h(url)+'</a>' for url in study.get('sources',[]) if url.startswith('https://'))+'</div>',
+       '</section>'])
+    return ''.join(parts)
+
 def post_page(p: dict, categories: dict) -> str:
     cat = categories.get(p.get('primary_category',''), {'label':'Research','color':'#7f9992'})
     name, id = str(p['title']), clean_slug(p['id'])
@@ -115,16 +164,17 @@ def post_page(p: dict, categories: dict) -> str:
         inner = f'<div class="evidence-box"><span>✳</span><p>{rich(content)}</p></div>' if key=='findings' else f'<p>{rich(content)}</p>'
         sections.append(f'<section class="article-section" id="{key}"><span class="section-number">0{index} / {h(subtitle).upper()}</span><h2>{h(title)}</h2>{inner}</section>')
     deep_toc, deep_html = render_deep_dive(p)
+    visual_html=render_visual_study(p)
     questions = ''.join(f'<li><span class="question-icon">?</span><span>{h(q)}</span><button type="button" class="ask-question" data-question="{h(q,quote=True)}">GPT에게 묻기 ↗</button></li>' for q in review.get('questions',[])[:6])
     if not questions: questions='<li>이 논문의 평가 프로토콜과 실제 배치 성능은 얼마나 일치할까?</li>'
     abstract = p.get('abstract','')
     pub_year = date[:4]
     tags=''.join(f'<span>#{h(t)}</span>' for t in p.get('tags',[]))
-    toc = toc.replace('<a href="#questions">', deep_toc + '<a href="#questions">', 1)
+    toc = toc.replace('<a href="#questions">', ('<a href="#visual-lab">원본 그림 + 그림 해설</a>' if visual_html else '') + deep_toc + '<a href="#questions">', 1)
     deep_mode = bool(deep_html)
     if deep_mode:
         # Existing summary sections remain useful, but research sections should be accessible right away.
-        source_scope = source_scope + ' · 상세 연구 노트 포함'
+        source_scope = source_scope + ' · 상세 연구 노트 포함' + (' · 그림별 상세 설명' if visual_html else '')
 
     return f'''<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -148,6 +198,7 @@ def post_page(p: dict, categories: dict) -> str:
 <div class="article-columns"><article class="article-body" id="article-body"><div class="article-toc-inline"><strong>IN THIS DEEP DIVE</strong>{toc}</div>
 <p class="source-scope">▧ {h(source_scope)}</p>
 <section class="article-section" id="overview"><span class="section-number">00 / ONE-MINUTE RECAP</span><h2>핵심을 먼저 읽기</h2><p>{rich(review.get('one_line') or summary)}</p></section>
+{visual_html}
 {''.join(sections)}
 {deep_html}
 <section class="article-section" id="questions"><span class="section-number">06 / RESEARCH QUESTIONS</span><h2>읽고 나서 남는 질문</h2><ul class="question-list">{questions}</ul></section>

@@ -45,6 +45,36 @@ class SiteTests(unittest.TestCase):
             self.assertIn('후속 실험 제안',html,paper['id'])
             self.assertIn('초록 기반 한국어 요약',html,paper['id'])
 
+    def test_visual_paper_walkthrough_has_attribution_and_images(self):
+        ids=['2610.07922','2608.01397','2504.16054','2610.42021','2610.40026']
+        visual=json.loads((ROOT/'data/visual_studies.json').read_text(encoding='utf8'))
+        for pid in ids:
+            self.assertIn(pid,visual)
+            story=visual[pid]
+            self.assertEqual(len(story['figures']),3)
+            html=(ROOT/'papers'/f'{pid}.html').read_text(encoding='utf8')
+            self.assertIn('그림으로 논문 하나씩 뜯어보기',html)
+            self.assertIn('원본 Figure가 아닙니다',html)
+            self.assertEqual(html.count('class="research-figure editorial-figure"'),3)
+            self.assertIn('실제로 구현하고 검증한다면',html)
+            self.assertGreaterEqual(html.count('class="figure-detail"'),10)
+            for fig in story['figures']:
+                path=ROOT/'assets'/'figures'/f"{pid}-{fig['slug']}.svg"
+                self.assertTrue(path.exists(),str(path))
+                svg=path.read_text(encoding='utf8')
+                self.assertIn('viewBox="0 0 1180 470"',svg)
+                self.assertIn('편집자가 논문을 바탕으로 재구성한 개념도',svg)
+                self.assertNotIn('<script',svg)
+        self.assertIn('원저자 원본 출처',(ROOT/'papers/2608.01397.html').read_text(encoding='utf8'))
+
+    def test_visual_diagrams_are_well_formed_svg(self):
+        import xml.etree.ElementTree as ET
+        files=list((ROOT/'assets'/'figures').glob('*.svg'))
+        self.assertGreaterEqual(len(files),15)
+        for path in files:
+            root=ET.parse(path).getroot()
+            self.assertTrue(root.tag.endswith('svg'),path.name)
+
     def test_arxiv_atom_parsing(self):
         feed=b'''<feed xmlns="http://www.w3.org/2005/Atom"><entry>
         <id>http://arxiv.org/abs/2610.42021v2</id><title> New   VLA \nPaper </title>
