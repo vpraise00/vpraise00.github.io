@@ -26,6 +26,25 @@ class SiteTests(unittest.TestCase):
                 self.assertIn(k,a['review'])
         self.assertTrue(all(ca['queries'] for ca in c[:3]))
 
+    def test_curated_deep_dive_is_substantial_and_source_scoped(self):
+        papers=json.loads((ROOT/'data/papers.json').read_text(encoding='utf-8'))['papers']
+        for paper in papers:
+            if not paper.get('curated'):
+                continue
+            deep=paper.get('deep_dive') or {}
+            self.assertGreaterEqual(len(deep.get('pipeline',[])),3,paper['id'])
+            self.assertGreaterEqual(len(deep.get('mechanisms',[])),2,paper['id'])
+            self.assertGreaterEqual(len(deep.get('evidence',[])),2,paper['id'])
+            self.assertGreaterEqual(len(deep.get('reading_guide',[])),3,paper['id'])
+            self.assertTrue(deep.get('replication',{}).get('baselines'),paper['id'])
+            self.assertGreater(len(json.dumps(deep,ensure_ascii=False)),2200,paper['id'])
+            html=build_site.post_page(paper,{'vla':{'label':'VLA','color':'#238f7c'},'wam':{'label':'WAM','color':'#238f7c'},'robotics':{'label':'Robotics','color':'#238f7c'}})
+            self.assertGreaterEqual(html.count('class="pipeline-step"'),3,paper['id'])
+            self.assertGreaterEqual(html.count('class="mechanism-card"'),2,paper['id'])
+            self.assertGreaterEqual(html.count('<tr><td>'),2,paper['id'])
+            self.assertIn('후속 실험 제안',html,paper['id'])
+            self.assertIn('초록 기반 한국어 요약',html,paper['id'])
+
     def test_arxiv_atom_parsing(self):
         feed=b'''<feed xmlns="http://www.w3.org/2005/Atom"><entry>
         <id>http://arxiv.org/abs/2610.42021v2</id><title> New   VLA \nPaper </title>

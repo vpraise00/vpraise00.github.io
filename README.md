@@ -27,6 +27,13 @@ py deploy.py --dry-run
 
 페이지가 표시되지 않으면 <https://github.com/vpraise00/vpraise00.github.io/settings/pages>에서 **Deploy from a branch → main → /(root)** 를 선택합니다. GitHub Pages는 별도의 항상 켜진 서버가 아니라 정적 웹 호스팅입니다.
 
+## 논문 상세 분석 — Researcher Edition
+
+- 시작할 때 제공되는 **큐레이션 16편 모두** 한국어 기술 해설을 포함합니다. 단순 5문단 요약을 넘어 **작동 순서 3–5단계, 알고리즘·학습 신호, 근거/성능표, 기존 방법과 비교, 원문 정독 체크리스트, 재현 실험 설계와 변인 통제, 관련 논문 연결**을 제공합니다.
+- 논문 저자가 실제로 보고한 숫자와 **편집자가 제안한 후속 실험**을 별도 섹션으로 분리했습니다. arXiv 초록/공식 프로젝트 자료에서 확인할 수 없는 실험 수치는 창작하지 않습니다. 초록 영역의 큐레이션 한국어 글은 **공식 영문 Abstract의 번역이 아닌 편집자 요약**이라는 설명을 표시합니다.
+- 수기 보강 콘텐츠는 `scripts/deep_content.py`에서 수정 후 `python scripts/enrich_curated.py && python scripts/build_site.py`로 전체 페이지를 갱신할 수 있습니다. 기본 데이터는 `data/papers.json`에 저장됩니다.
+- 향후 arXiv 자동 수집 포스팅도 `OPENAI_API_KEY`가 설정되어 있고 AI 분석에 성공하면 구조화된 **Deep Dive**(모델 처리 흐름·근거표·재현안)를 생성합니다. **키가 없거나 API/PDF 분석에 실패하면 초록 기반 미리보기만** 생성합니다. 전체 PDF 검증이 불가능한 경우 출처 범위를 명시합니다. 잘못된 숫자·근거 없는 모듈 설명을 채워 넣는 대신 미확인이라고 표기합니다.
+
 ## 2. 매일 새로운 논문 자동 갱신
 
 `.github/workflows/daily-research.yml`이 **매일 UTC 00:15 / 한국시간 09:15경** 실행되어 arXiv에서 세 카테고리를 검색하고, 중복 제거·논문별 HTML·RSS·sitemap을 생성한 뒤 자동으로 커밋합니다. GitHub Actions의 스케줄은 지연될 수 있습니다.

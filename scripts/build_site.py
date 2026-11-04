@@ -32,6 +32,61 @@ def rich(s: str) -> str:
     safe = h(str(s))
     return re.sub(r'\*\*(.*?)\*\*',r'<strong>\1</strong>',safe)
 
+def render_deep_dive(p: dict) -> tuple[str, str]:
+    """Rich structured commentary with source/analyst boundaries. Escapes all inputs."""
+    d=p.get('deep_dive') or (p.get('review') or {}).get('deep_dive') or {}
+    if not isinstance(d,dict) or not d:
+        return '', ''
+    toc=''
+    parts=[]
+    def para(text):
+        return '<p>'+rich(text)+'</p>'
+    def item(text):
+        return '<li>'+rich(text)+'</li>'
+    lead=str(d.get('lead',''))
+    if lead:
+        parts.append('<section class="deep-intro"><div class="deep-heading"><span>⌁ DEEP TECHNICAL REVIEW</span><b>연구자용 상세 해설</b></div>'+para(lead)+'</section>')
+    steps=d.get('pipeline') or []
+    if steps:
+        toc+='<a href="#pipeline">모델 구조와 처리 흐름</a>'
+        cards=''.join('<li class="pipeline-step"><span class="pipeline-num">'+f'{i:02d}'+'</span><div><h3>'+h(s.get('title',''))+'</h3>'+para(s.get('detail',''))+('<span class="pipeline-io">'+h(s.get('io',''))+'</span>' if s.get('io') else '')+'</div></li>' for i,s in enumerate(steps[:7],1) if isinstance(s,dict))
+        parts.append('<section class="article-section deep-section" id="pipeline"><span class="section-number">DEEP DIVE / 01</span><h2>모델 구조와 처리 흐름</h2><p class="deep-section-help">개념적 처리 순서를 정리한 편집 다이어그램이며 원논문의 그림을 복제한 것은 아닙니다.</p><ol class="pipeline-list">'+cards+'</ol></section>')
+    notes=d.get('mechanisms') or []
+    if notes:
+        toc+='<a href="#mechanisms">알고리즘·학습 신호</a>'
+        cards=''.join('<div class="mechanism-card"><h3>'+h(n.get('title',''))+'</h3>'+para(n.get('body',''))+('<div class="mechanism-why"><b>읽기 포인트</b>'+rich(n.get('watch',''))+'</div>' if n.get('watch') else '')+'</div>' for n in notes[:8] if isinstance(n,dict))
+        parts.append('<section class="article-section deep-section" id="mechanisms"><span class="section-number">DEEP DIVE / 02</span><h2>핵심 설계·학습 신호 해설</h2><div class="mechanism-grid">'+cards+'</div></section>')
+    results=d.get('evidence') or []
+    if results:
+        toc+='<a href="#evidence">실험·성능 근거표</a>'
+        rows=''.join('<tr><td>'+h(r.get('metric',''))+'</td><td class="measure">'+h(r.get('value',''))+'</td><td>'+rich(r.get('context',''))+'</td></tr>' for r in results[:9] if isinstance(r,dict))
+        notes=h(d.get('evidence_note','해당 수치는 논문 저자들의 보고이며 서로 다른 데이터셋·설정의 수치는 직접 비교하면 안 됩니다.'))
+        parts.append('<section class="article-section deep-section" id="evidence"><span class="section-number">DEEP DIVE / 03</span><h2>실험 결과를 제대로 읽기</h2><div class="table-scroll"><table class="evidence-table"><thead><tr><th>평가 항목</th><th>보고된 결과</th><th>해석 / 실험 조건</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="evidence-note">ⓘ '+notes+'</p></section>')
+    compared=d.get('comparison') or ''
+    if compared:
+        toc+='<a href="#comparison">베이스라인과 차이</a>'
+        parts.append('<section class="article-section deep-section" id="comparison"><span class="section-number">DEEP DIVE / 04</span><h2>기존 연구와 무엇이 다른가?</h2><div class="comparison-panel">'+para(compared)+'</div></section>')
+    check=d.get('reading_guide') or []
+    if check:
+        toc+='<a href="#reading-guide">논문 정독 체크리스트</a>'
+        parts.append('<section class="article-section deep-section" id="reading-guide"><span class="section-number">DEEP DIVE / 05</span><h2>원문을 읽으면서 확인할 4가지</h2><ol class="reading-list">'+''.join(item(x) for x in check[:6])+'</ol></section>')
+    rep=d.get('replication') or {}
+    if isinstance(rep,dict) and rep:
+        toc+='<a href="#replication">재현·후속 연구 설계</a>'
+        fields=[('hypothesis','검증 가설'),('setup','구체적 실험 설계'),('baselines','비교군·Ablation'),('metrics','기록할 지표'),('risks','실패 해석·주의점')]
+        text=''.join('<div class="replication-row"><strong>'+h(label)+'</strong>'+para(rep[key])+'</div>' for key,label in fields if rep.get(key))
+        parts.append('<section class="article-section deep-section" id="replication"><span class="section-number">RESEARCH LAB / EDITORIAL PROPOSAL</span><h2>내 연구에 적용한다면?</h2><p class="proposal-disclaimer">아래는 논문 저자의 검증 결과가 아니라, 논문에서 출발해 설계한 **후속 실험 제안**입니다.</p><div class="replication-grid">'+text+'</div></section>')
+    neighbors=d.get('related') or []
+    if neighbors:
+        toc+='<a href="#related">연결해서 읽기</a>'
+        lis=[]
+        for target in neighbors[:4]:
+            try: valid=clean_slug(str(target))
+            except ValueError: continue
+            lis.append(f'<a href="{valid}.html">arXiv:{h(valid)} <span>관련 포스팅 보기 ↗</span></a>')
+        if lis: parts.append('<section class="article-section deep-section" id="related"><span class="section-number">RESEARCH MAP</span><h2>연결해서 읽을 논문</h2><div class="related-papers">'+''.join(lis)+'</div></section>')
+    return toc, ''.join(parts)
+
 def post_page(p: dict, categories: dict) -> str:
     cat = categories.get(p.get('primary_category',''), {'label':'Research','color':'#7f9992'})
     name, id = str(p['title']), clean_slug(p['id'])
@@ -52,16 +107,25 @@ def post_page(p: dict, categories: dict) -> str:
             source_links+=f'<a class="side-resource" href="{h(url,quote=True)}" target="_blank" rel="noopener noreferrer"><span>{label}</span><b>↗</b></a>'
     toc=''.join(f'<a href="#{key}">{h(title)}</a>' for key,title,_ in LABELS)
     toc+='<a href="#questions">다음 연구 질문</a><a href="#abstract">원문 · 출처</a>'
+    # The deep-dive items are inserted into the TOC after baseline sections.
+
     sections=[]
     for index,(key,title,subtitle) in enumerate(LABELS,1):
         content=review.get(key) or '자료에서 이 항목을 별도로 확인할 수 없습니다. 원문을 참고해 주세요.'
         inner = f'<div class="evidence-box"><span>✳</span><p>{rich(content)}</p></div>' if key=='findings' else f'<p>{rich(content)}</p>'
         sections.append(f'<section class="article-section" id="{key}"><span class="section-number">0{index} / {h(subtitle).upper()}</span><h2>{h(title)}</h2>{inner}</section>')
+    deep_toc, deep_html = render_deep_dive(p)
     questions = ''.join(f'<li><span class="question-icon">?</span><span>{h(q)}</span><button type="button" class="ask-question" data-question="{h(q,quote=True)}">GPT에게 묻기 ↗</button></li>' for q in review.get('questions',[])[:6])
     if not questions: questions='<li>이 논문의 평가 프로토콜과 실제 배치 성능은 얼마나 일치할까?</li>'
     abstract = p.get('abstract','')
     pub_year = date[:4]
     tags=''.join(f'<span>#{h(t)}</span>' for t in p.get('tags',[]))
+    toc = toc.replace('<a href="#questions">', deep_toc + '<a href="#questions">', 1)
+    deep_mode = bool(deep_html)
+    if deep_mode:
+        # Existing summary sections remain useful, but research sections should be accessible right away.
+        source_scope = source_scope + ' · 상세 연구 노트 포함'
+
     return f'''<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <meta name="theme-color" content="#f6f7f5"/>
@@ -85,8 +149,9 @@ def post_page(p: dict, categories: dict) -> str:
 <p class="source-scope">▧ {h(source_scope)}</p>
 <section class="article-section" id="overview"><span class="section-number">00 / ONE-MINUTE RECAP</span><h2>핵심을 먼저 읽기</h2><p>{rich(review.get('one_line') or summary)}</p></section>
 {''.join(sections)}
+{deep_html}
 <section class="article-section" id="questions"><span class="section-number">06 / RESEARCH QUESTIONS</span><h2>읽고 나서 남는 질문</h2><ul class="question-list">{questions}</ul></section>
-<section class="article-section" id="abstract"><span class="section-number">07 / ABSTRACT &amp; PROVENANCE</span><h2>원문 / 출처 확인</h2><div class="article-abstract"><p>{h(abstract)}</p></div><p style="font-size:11px;color:var(--muted);margin-top:13px">해설은 논문 저자들의 진술과 편집자의 비판적 질문을 구분합니다. 특정 지표·인과관계·재현성을 판단할 때는 반드시 <a style="color:var(--brand);text-decoration:underline" href="{source_url}" target="_blank" rel="noopener noreferrer">원문</a>의 실험 설정을 확인해 주세요.</p></section>
+<section class="article-section" id="abstract"><span class="section-number">07 / ABSTRACT &amp; PROVENANCE</span><h2>원문 / 출처 확인</h2><p class="source-caveat">{'편집자가 작성한 초록 기반 한국어 요약이며 공식 영문 초록의 원문/번역이 아닙니다.' if p.get('curated') else 'arXiv에 등록된 초록을 자동 수집했습니다.'}</p><div class="article-abstract"><p>{h(abstract)}</p></div><p style="font-size:11px;color:var(--muted);margin-top:13px">해설은 논문 저자들의 진술과 편집자의 비판적 질문을 구분합니다. 특정 지표·인과관계·재현성을 판단할 때는 반드시 <a style="color:var(--brand);text-decoration:underline" href="{source_url}" target="_blank" rel="noopener noreferrer">원문</a>의 실험 설정을 확인해 주세요.</p></section>
 <section class="article-section"><span class="section-number">08 / TOPIC TAGS</span><h2>연구 키워드</h2><div class="article-tags">{tags}</div></section>
 <div class="article-bottom-nav"><a href="../">← 모든 논문으로 돌아가기</a><a href="{source_url}" target="_blank" rel="noopener noreferrer">원문 읽기 ↗</a></div>
 </article>
