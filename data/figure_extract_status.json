@@ -1,2 +1,460 @@
 {
+  "2610.42021": {
+    "1": {
+      "local": "assets/paper-figures/2610.42021-fig1.png",
+      "source": "https://arxiv.org/html/2610.42021v1/intro_data_and_latent.png",
+      "paper_source": "https://arxiv.org/html/2610.42021",
+      "caption": "Figure 1: Nexus-VLA bridges human and robot experiences through a Hierarchical Semantic Latent, enabling cross-embodiment knowledge transfer and real-world generalization.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2030,
+        741
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2610.42021-fig2.png",
+      "source": "https://arxiv.org/html/2610.42021v1/framework.png",
+      "paper_source": "https://arxiv.org/html/2610.42021",
+      "caption": "Figure 2: Overview of the Nexus-VLA framework. Hierarchical semantic latents enable joint human–robot learning and action generation.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2043,
+        1039
+      ]
+    }
+  },
+  "2610.40373": {
+    "1": {
+      "local": "assets/paper-figures/2610.40373-fig1.png",
+      "source": "https://arxiv.org/html/2610.40373v1/motivation-new.png",
+      "paper_source": "https://arxiv.org/html/2610.40373",
+      "caption": "Figure 1 : Comparison of Foresight VLA Models. (a) Existing methods typically adopt single-horizon foresight and directly feed predictions into VLA models without selective utilization. (b) In contrast, HiFOR combines multi-horizon foresight with action-guided retrieval of relevant future information.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        321,
+        280
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2610.40373-fig2.png",
+      "source": "https://arxiv.org/html/2610.40373v1/overview1.png",
+      "paper_source": "https://arxiv.org/html/2610.40373",
+      "caption": "Figure 2 : The overview of HIFOR. (a) We augment the VLA with hierarchical foresight prediction and action-guided world retrieval, enabling the Action Expert to leverage future information during action generation. (b) Hierarchical Foresight Prediction (§ 3.4 ) predicts short-term, milestone, and goal futures through hierarchical dependency modeling. (c) Structure-Aware Latent World Modeling (§ 3.5 ) organizes future latent representations along the horizon, view, and spatial dimensions. (d) Action-Guided Factorized World Retrieval (§ 3.6 ) selectively retrieves action-relevant future information through denoising-aware factorized attention to guide action generation.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        730,
+        466
+      ]
+    }
+  },
+  "2610.40026": {
+    "1": {
+      "local": "assets/paper-figures/2610.40026-fig1.png",
+      "source": "https://arxiv.org/pdf/2610.40026",
+      "paper_source": "https://arxiv.org/abs/2610.40026",
+      "caption": "Figure 1. The RoboSeed evaluation program. (a) Four VLA/WAM families, their native model configurations and benchmarks supply the empirical assessment matrix. (b) Interface alignment, training measurements, closed-loop outcomes and evidence auditing produce the inputs to the proposed framework. (c) Five-dimensional assessment profiles are accompanied by reusable training and evaluation evidence. Chapter 5 defines scoring anchors, pref-",
+      "method": "pdf_page_crop",
+      "page": 5,
+      "clip": [
+        25.0,
+        250.9,
+        570.3,
+        643.1
+      ],
+      "review": "needs_manual_review",
+      "dimensions": [
+        982,
+        707
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2610.40026-fig2.png",
+      "source": "https://arxiv.org/pdf/2610.40026",
+      "paper_source": "https://arxiv.org/abs/2610.40026",
+      "caption": "Figure 2 shows the implemented module relationships. Multi-view images and language instructions are encoded by the VLM. A VGGT stream provides geometric features, which are projected to the back- bone’s hidden width and fused through cross-attention. The action expert conditions on fused features, available robot state, and noisy actions to predict an action sequence. Predictions are unnormalized using",
+      "method": "pdf_page_crop",
+      "page": 8,
+      "clip": [
+        25.0,
+        24.0,
+        570.3,
+        155.6
+      ],
+      "review": "needs_manual_review",
+      "dimensions": [
+        982,
+        238
+      ]
+    }
+  },
+  "2610.07922": {
+    "1": {
+      "local": "assets/paper-figures/2610.07922-fig1.png",
+      "source": "https://arxiv.org/html/2610.07922v1/openwam-fig1-combined-v4.png",
+      "paper_source": "https://arxiv.org/html/2610.07922",
+      "caption": "Figure 1 : Overview of OpenWAM . Left: Starting from Wan2.2 [ 75 ] , causal pretraining on robot and\nhuman-interaction video builds a predictive backbone without action labels,\nfollowed by video–action training on simulated and real-robot demonstrations. Top right: A shared Mixture-of-Transformers couples temporally\naligned video and action streams through joint attention while retaining\nmodality-specific experts. Middle right: Configurable cross-modal attention and generation\norder support joint, video-then-action, action-then-video, and decoupled\nprediction within the same architecture. Bottom right: Local-context inverse and forward dynamics models\nare trained independently using demonstrations and counterfactual\ntransitions. A frozen IDM translates predictions from compatible\ntask-adapted video models into actions, while an FDM predic",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1575,
+        765
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2610.07922-fig2.png",
+      "source": "https://arxiv.org/pdf/2610.07922",
+      "paper_source": "https://arxiv.org/abs/2610.07922",
+      "caption": "Figure 2. Shared MoT architecture. Two modality-specific branches keep their own normalization, projection and feed-forward parameters and meet in a single attention over the packed video",
+      "method": "pdf_page_crop",
+      "page": 5,
+      "clip": [
+        30.0,
+        25.2,
+        300.0,
+        339.3
+      ],
+      "review": "needs_manual_review",
+      "dimensions": [
+        486,
+        566
+      ]
+    }
+  },
+  "2609.23578": {
+    "1": {
+      "local": "assets/paper-figures/2609.23578-fig1.png",
+      "source": "https://arxiv.org/html/2609.23578v2/AR-WAM_overview.png",
+      "paper_source": "https://arxiv.org/html/2609.23578",
+      "caption": "Fig. 1: Overview of AR-WAM. An agent grounds the target and issues a visual prompt g g together with an atomic operation s s . A compact 0.5B world action model (a 0.2B transformer shared by a reasoning expert and a world action expert, plus a frozen 0.3B vision encoder) predicts an action chunk together with dual-level foresight signals. The reasoning expert runs once per control cycle, and the world action expert then performs multi-step denoising while reusing its KV cache.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1788,
+        654
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2609.23578-fig2.png",
+      "source": "https://arxiv.org/html/2609.23578v2/failure_recovery.png",
+      "paper_source": "https://arxiv.org/html/2609.23578",
+      "caption": "Fig. 2: Failure recovery through the agent–policy loop.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1330,
+        450
+      ]
+    }
+  },
+  "2609.19600": {
+    "1": {
+      "local": "assets/paper-figures/2609.19600-fig1.png",
+      "source": "https://arxiv.org/html/2609.19600v1/teaser.png",
+      "paper_source": "https://arxiv.org/html/2609.19600",
+      "caption": "Fig. 1: WorldContact overview. (Left): an agent-verified physical-simulation dataset, where an automated simulation agent samples the object and prescribed state and executes the resulting controls in the physical simulator. (Middle): contact-centric world model prediction and rendering of object-state trajectories into the observation modality consumed by the VLA. (Right): VLA fine-tuning for task-specific policy adaptation and subsequent real-robot deployment.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2032,
+        540
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2609.19600-fig2.png",
+      "source": "https://arxiv.org/html/2609.19600v1/pipeline.png",
+      "paper_source": "https://arxiv.org/html/2609.19600",
+      "caption": "Fig. 2: WorldContact pipeline. Given the current object state and prescribed state, WorldContact proceeds through four stages: the contact-centric vertex tokenizer encodes spatial, topological, controllable, and environmental contact information into vertex tokens; the hierarchical encoder merges vertex tokens into global tokens for long-range communication; and the global-token decoder refines vertex tokens to produce vertex-level state corrections. A differentiable projection is used to improve long-horizon rollout stability during fine-tuning.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2045,
+        991
+      ]
+    }
+  },
+  "2609.16074": {
+    "2": {
+      "local": "assets/paper-figures/2609.16074-fig2.png",
+      "source": "https://arxiv.org/html/2609.16074v1/wam_background.png",
+      "paper_source": "https://arxiv.org/html/2609.16074",
+      "caption": "Fig. 2: Conceptual overview of four foundational threads behind WAMs: (a) world models learn latent dynamics by predicting the next state from current state and action; (b) video generative models predict future visual observations conditioned on visual history and language instruction; (c) latent action pretraining infers latent actions from consecutive frames and uses them to model latent transitions; and (d) VLAs generate future action sequences directly from state and language instructions.\n(The third-row illustrations are adapted from the corresponding papers cited in each thread.)",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1601,
+        544
+      ]
+    },
+    "1": {
+      "local": "assets/paper-figures/2609.16074-fig1.png",
+      "source": "https://arxiv.org/pdf/2609.16074",
+      "paper_source": "https://arxiv.org/abs/2609.16074",
+      "caption": "Fig. 1: Evolution of World-Action Models. The timeline summarizes representative milestones from latent world-model reinforcement learning and foundation vision-language-action models to video-action models, and recent unified World-Action Models. It highlights how predictive modeling and action generation have gradually converged toward integrated frameworks for embodied robot control.",
+      "method": "pdf_page_crop",
+      "page": 1,
+      "clip": [
+        25.0,
+        24.0,
+        587.0,
+        375.2
+      ],
+      "review": "needs_manual_review",
+      "dimensions": [
+        1012,
+        633
+      ]
+    }
+  },
+  "2608.01397": {
+    "1": {
+      "local": "assets/paper-figures/2608.01397-fig1.png",
+      "source": "https://arxiv.org/html/2608.01397v2/intro.png",
+      "paper_source": "https://arxiv.org/html/2608.01397",
+      "caption": "Figure 1 : Conceptual comparison of existing WAMs and SG-WAM. Whereas explicit and auxiliary latent targets may introduce perceptual burden or target–policy mismatch, SG-WAM learns intervening-action-conditioned dynamics in geometry-structured, policy-derived representations.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1020,
+        560
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2608.01397-fig2.png",
+      "source": "https://arxiv.org/html/2608.01397v2/overview.png",
+      "paper_source": "https://arxiv.org/html/2608.01397",
+      "caption": "Figure 2 : Overview of the SG-WAM framework. The VLM jointly contextualizes multi-view observations, language, and learnable dynamics tokens for action generation. During training, a frozen VGGT teacher shapes main-view image tokens, while SGWP predicts future dynamics-token states conditioned on intervening actions and aligns them with an EMA policy target. All auxiliary branches are removed at inference.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1020,
+        450
+      ]
+    }
+  },
+  "2605.00080": {
+    "1": {
+      "local": "assets/paper-figures/2605.00080-fig1.png",
+      "source": "https://arxiv.org/html/2605.00080v1/intro2_crop.png",
+      "paper_source": "https://arxiv.org/html/2605.00080",
+      "caption": "Figure 1 : Overview of the organization of this survey. Section 3 reviews how world models are coupled with robot policies from an architectural perspective. Section 4 examines world models as simulators from an application perspective. Section 5 focuses on robotic video world models and organizes the literature by world-modeling capability.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1222,
+        669
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2605.00080-fig2.png",
+      "source": "https://arxiv.org/html/2605.00080v1/develop_crop.png",
+      "paper_source": "https://arxiv.org/html/2605.00080",
+      "caption": "Figure 2 : Temporal evolution of representative works on world models for robotic policy learning.\nThe upper branch summarizes the progression of world model for policy methods , showing a trend from early decoupled video-generation-plus-IDM pipelines toward tighter integration through single-backbone, MoE/MoT, unified VLA, and latent world-modeling designs.\nThe lower branch summarizes the progression of world model as simulator methods , where world models evolve from rollout-based validation and candidate evaluation into learned simulators for policy reinforcement learning, post-training, and co-evolving optimization.\nThese trends should be understood as dominant directions rather than strictly sequential replacements.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1364,
+        725
+      ]
+    }
+  },
+  "2504.16054": {
+    "2": {
+      "local": "assets/paper-figures/2504.16054-fig2.png",
+      "source": "https://arxiv.org/html/2504.16054v1/final_fig2.png",
+      "paper_source": "https://arxiv.org/html/2504.16054",
+      "caption": "Fig. 2 : π 0.5 \\pi_{0.5} cleaning a new kitchen. The robot is tasked with cleaning a kitchen in a home that was not in the training data. The model is given general tasks (close the cabinets, put the items in the drawer, wipe the spill, and put the dishes in the sink), which it performs by both predicting subtasks to accomplish (e.g., pick up the plate) and emitting low-level actions.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1250,
+        225
+      ]
+    },
+    "3": {
+      "local": "assets/paper-figures/2504.16054-fig3.png",
+      "source": "https://arxiv.org/html/2504.16054v1/Figure_3.png",
+      "paper_source": "https://arxiv.org/html/2504.16054",
+      "caption": "Fig. 3 : Model overview. π 0.5 \\pi_{0.5} is trained in two stages. First, a pre-training stage combines all of the different data sources to produce an initial VLA with discrete tokens. This stage uses data from diverse robotic platforms, high-level semantic action prediction, and data from the web. Robotic data uses the FAST action tokenizer to represent actions as discrete tokens [ 64 ] . Second, a post-training stage specializes the model for low-level and high-level inferences for mobile manipulation, leveraging the most task-relevant data, including verbal instructions from human supervisors. This stage uses flow matching to represent the action distribution, enabling efficient real-time inference and the ability to represent fine-grained continuous action sequences. At inference time, the model first infers a high-level subtask, and",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2028,
+        844
+      ]
+    }
+  },
+  "2503.14734": {
+    "1": {
+      "local": "assets/paper-figures/2503.14734-fig1.png",
+      "source": "https://arxiv.org/html/2503.14734v2/data_pyramid.png",
+      "paper_source": "https://arxiv.org/html/2503.14734",
+      "caption": "Figure 1 : Data Pyramid for Robot Foundation Model Training. GR00T N1’s heterogeneous training corpora can be represented as a pyramid: data quantity decreases, and embodiment-specificity increases, moving from the bottom to the top.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2032,
+        1256
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2503.14734-fig2.png",
+      "source": "https://arxiv.org/html/2503.14734v2/groot_inference_yuke_v2.png",
+      "paper_source": "https://arxiv.org/html/2503.14734",
+      "caption": "Figure 2 : GR00T N1 Model Overview. Our model is a Vision-Language-Action (VLA) model that adopts a dual-system design. We convert the image observation and language instruction into a sequence of tokens to be processed by the Vision-Language Model (VLM) backbone. The VLM outputs, together with robot state and action encodings, are passed to the Diffusion Transformer module to generate motor actions.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2041,
+        1065
+      ]
+    }
+  },
+  "2502.05855": {
+    "2": {
+      "local": "assets/paper-figures/2502.05855-fig2.png",
+      "source": "https://arxiv.org/html/2502.05855v3/framework2.png",
+      "paper_source": "https://arxiv.org/html/2502.05855",
+      "caption": "Figure 2: DexVLA architecture and embodied curriculum learning. Our model employs a three-stage training process. Stage 1 (left) trains the Diffusion Expert independently, without the VLM. Stages 2 and 3 (middle) integrate the Diffusion Expert with a VLM, discarding the visual and language components within the expert. The Diffusion Expert (right) uses multiple heads for cross-embodiment learning.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2048,
+        644
+      ]
+    },
+    "1": {
+      "local": "assets/paper-figures/2502.05855-fig1.png",
+      "source": "https://arxiv.org/pdf/2502.05855",
+      "paper_source": "https://arxiv.org/abs/2502.05855",
+      "caption": "Figure 1: Dexterous skills in diverse tasks and scenarios. Our proposed DexVLA method enables generalized dexterous manipulation across multiple embodiments in diverse scenarios.",
+      "method": "pdf_page_crop",
+      "page": 1,
+      "clip": [
+        25.0,
+        137.9,
+        587.0,
+        530.0
+      ],
+      "review": "needs_manual_review",
+      "dimensions": [
+        1012,
+        706
+      ]
+    }
+  },
+  "2410.24164": {
+    "2": {
+      "local": "assets/paper-figures/2410.24164-fig2.png",
+      "source": "https://arxiv.org/html/2410.24164v4/figures/fig2_final.jpeg",
+      "paper_source": "https://arxiv.org/html/2410.24164",
+      "caption": "Fig. 2: 𝝅 𝟎 \\bm{\\pi_{0}} controls a mobile manipulator to fold laundry. Our model is pre-trained on diverse data from 7 distinct robot configurations and 68 tasks, and can then either be prompted directly or fine-tuned to complex downstream tasks, as in the case of this laundry folding policy, which fetches laundry from a dryer, packs it into a hamper, brings the hamper to a folding table, and then folds each article of clothing.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        3950,
+        540
+      ]
+    },
+    "3": {
+      "local": "assets/paper-figures/2410.24164-fig3.png",
+      "source": "https://arxiv.org/html/2410.24164v4/overview.png",
+      "paper_source": "https://arxiv.org/html/2410.24164",
+      "caption": "Fig. 3: Overview of our framework. We start with a pre-training mixture, which consists of both our own dexterous manipulation datasets and open-source data. We use this mixture to train our flow matching VLA model, which consists of a larger VLM backbone and a smaller action expert for processing robot states and actions. The VLM backbone weights are initialized from PaliGemma [ 5 ] , providing representations learned from large-scale Internet pre-training. The resulting π 0 \\pi_{0} model can be used to control multiple robot embodiments with differing action spaces to accomplish a wide variety of tasks.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2033,
+        568
+      ]
+    }
+  },
+  "2406.09246": {
+    "2": {
+      "local": "assets/paper-figures/2406.09246-fig2.png",
+      "source": "https://arxiv.org/html/2406.09246v3/openvla_model.png",
+      "paper_source": "https://arxiv.org/html/2406.09246",
+      "caption": "Figure 2: OpenVLA model architecture. Given an image observation and a language instruction, the model predicts 7-dimensional robot control actions. The architecture consists of three key components: (1) a vision encoder that concatenates Dino V2 [ 25 ] and SigLIP [ 79 ] features, (2) a projector that maps visual features to the language embedding space, and (3) the LLM backbone , a Llama 2 7B-parameter large language model [ 10 ] .",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2033,
+        755
+      ]
+    },
+    "1": {
+      "local": "assets/paper-figures/2406.09246-fig1.png",
+      "source": "https://arxiv.org/pdf/2406.09246",
+      "paper_source": "https://arxiv.org/abs/2406.09246",
+      "caption": "Figure 1: We present OpenVLA, a 7B-parameter open-source vision-language-action model (VLA), trained on 970k robot episodes from the Open X-Embodiment dataset [1]. OpenVLA sets a new state of the art for generalist robot manipulation policies. It supports controlling multiple robots out of the box and can be quickly adapted to new robot domains via parameter-efficient fine-tuning. The OpenVLA checkpoints and PyTorch",
+      "method": "pdf_page_crop",
+      "page": 1,
+      "clip": [
+        25.0,
+        75.4,
+        587.0,
+        467.5
+      ],
+      "review": "needs_manual_review",
+      "dimensions": [
+        1012,
+        707
+      ]
+    }
+  },
+  "2405.12213": {
+    "1": {
+      "local": "assets/paper-figures/2405.12213-fig1.png",
+      "source": "https://arxiv.org/html/2405.12213v2/architecture.png",
+      "paper_source": "https://arxiv.org/html/2405.12213",
+      "caption": "Fig. 1: Model architecture. Left : Octo tokenizes task descriptions (green) and input observations (blue) using a pretrained language model and a lightweight CNN, respectively. Top : The transformer backbone processes the sequence of task and observation tokens and produces readout tokens (purple) that get passed to output heads to produce actions. Bottom : The block-wise attention structure of the transformer allows us to add or remove inputs and outputs during finetuning: for example, we can add new observations (blue, dashed) or action spaces (purple, dashed) without modifying any pretrained parameters.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2029,
+        982
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2405.12213-fig2.png",
+      "source": "https://arxiv.org/html/2405.12213v2/sampling_weights.png",
+      "paper_source": "https://arxiv.org/html/2405.12213",
+      "caption": "Fig. 2: Training dataset composition. We curate a subset of 25 datasets from the Open X-Embodiment dataset that have image observations, end-effector actions, and show diverse behaviors. The pie chart visualizes the fractions that each dataset contributes to every training batch on average. The dataset weights are determined by the number of samples in each dataset with small modifications to balance dataset size and diversity (see Section III-B for details).",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        915,
+        837
+      ]
+    }
+  },
+  "2403.12945": {
+    "1": {
+      "local": "assets/paper-figures/2403.12945-fig1.png",
+      "source": "https://arxiv.org/html/2403.12945v2/droid_verb_objects_highres.png",
+      "paper_source": "https://arxiv.org/html/2403.12945",
+      "caption": "Fig. 1 : Distribution of verbs and objects in DROID. Top : Distribution of verbs after de-duplication with GPT-4. DROID has a long tail of diverse tasks that span a wide range of behaviors. We also visualize the verb distributions for existing large manipulation datasets and find that only Bridge V2 [ 59 ] has a comparable long tail of skills (for a detailed view of verb distributions for all datasets, see Appendix, Fig. 16 ). Bottom : Distribution of objects the robot interacts with in DROID, sorted by category (best viewed zoomed in; for a detailed view, see Fig. 17 ).",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2019,
+        1089
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2403.12945-fig2.png",
+      "source": "https://arxiv.org/html/2403.12945v2/scene_distribution.png",
+      "paper_source": "https://arxiv.org/html/2403.12945",
+      "caption": "Fig. 2 : Number of scenes per scene type. DROID has an order of magnitude more scenes than other large robot manipulation datasets, spanning a much wider range of scene types. We manually verified or confirmed with the authors that scene count and type for prior datasets is accurately reported.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1136,
+        795
+      ]
+    }
+  }
 }
