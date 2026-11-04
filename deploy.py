@@ -79,9 +79,10 @@ def collect_files() -> list[tuple[str,bytes]]:
         if f.name in EXCLUDE_FILES or f.name.endswith(('.pyc','.swp','.tmp','.log')):continue
         if f.name.startswith('.env'):continue
         if f.is_symlink():continue
-        if f.stat().st_size>3_000_000:raise ValueError(f'Unexpected large file: {rel}')
+        if f.stat().st_size>12_000_000:raise ValueError(f'Unexpected large file: {rel}')
         content=f.read_bytes()
-        if b'\0' in content:raise ValueError(f'Unexpected binary file: {rel}')
+        if b'\0' in content and f.suffix.lower() not in {'.png','.jpg','.jpeg','.webp','.gif','.ico','.woff2','.pdf'}:
+            raise ValueError(f'Unexpected binary file: {rel}')
         output.append((rel.as_posix(),content))
     return sorted(output)
 
@@ -116,7 +117,7 @@ def main():
     files=collect_files()
     if not files:raise SystemExit('No site files found. Please extract the entire ZIP first.')
     if args.dry_run:
-        print(f'[DRY RUN] {repository}: {len(files)} safe text files, {sum(len(c) for _,c in files)//1024} KiB; no secrets read or uploaded.')
+        print(f'[DRY RUN] {repository}: {len(files)} safe project files, {sum(len(c) for _,c in files)//1024} KiB; no secrets read or uploaded.')
         print('[DRY RUN] Found required site files:', all(x in dict(files) for x in ('index.html','config/topics.json','data/papers.json','.github/workflows/daily-research.yml')))
         return
     path=Path(os.path.expandvars(args.env)).expanduser()
@@ -138,16 +139,20 @@ def main():
         print(f'[INFO] Creating PUBLIC GitHub Pages repository: {repository}')
         repo=api_request(token,'POST','/user/repos',{'name':f'{owner}.github.io','description':'VLA · WAM · Robotics research radar, updated daily','private':False,'auto_init':True,'has_issues':True,'has_wiki':False})
     if repo.get('private',False):
-        raise GithubError('Repository is private; expected a public Pages repo. Change visibility to public manually before proceeding.')
+        print('[INFO] Existing repository is private; retaining its current visibility. Pages must already be enabled or supported by the account plan.')
     branch=repo.get('default_branch') or 'main'
     base=api_request(token,'GET',f'/repos/{repository}/git/ref/heads/{urllib.parse.quote(branch,safe="")}')['object']['sha']
     commit=api_request(token,'GET',f'/repos/{repository}/git/commits/{base}')
     base_tree=commit['tree']['sha']
-    print(f'[INFO] Uploading {len(files)} text files to {branch} as a single commit...')
+    print(f'[INFO] Uploading {len(files)} project files to {branch} as a single commit...')
     def blob(item):
         rel,content=item
-        value=content.decode('utf-8-sig')
-        obj=api_request(token,'POST',f'/repos/{repository}/git/blobs',{'content':value,'encoding':'utf-8'})
+        # Binary original author figures must be sent as base64, not coerced into UTF-8.
+        if Path(rel).suffix.lower() in {'.png','.jpg','.jpeg','.webp','.gif','.ico','.woff2','.pdf'}:
+            payload={'content':base64.b64encode(content).decode('ascii'),'encoding':'base64'}
+        else:
+            payload={'content':content.decode('utf-8-sig'),'encoding':'utf-8'}
+        obj=api_request(token,'POST',f'/repos/{repository}/git/blobs',payload)
         return {'path':rel,'mode':'100644','type':'blob','sha':obj['sha']}
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         entries=list(executor.map(blob,files))

@@ -56,7 +56,7 @@ class SiteTests(unittest.TestCase):
             self.assertIn('편집자가 새로 그린 구조도·AI 생성 이미지는 사용하지 않습니다',html)
             self.assertEqual(html.count('class="original-paper-figure"'),2,pid)
             self.assertNotIn('class="research-figure editorial-figure"',html,pid)
-            self.assertNotIn(f'figures/{pid}-',html,pid)
+            self.assertNotIn(f'../assets/figures/{pid}-',html,pid)
             self.assertIn('원문을 읽으면서 확인할 4가지',html,pid)
 
     def test_source_figure_detection_and_pdf_crop(self):

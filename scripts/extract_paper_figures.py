@@ -17,7 +17,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 ROOT=Path(__file__).resolve().parents[1]
 OUTPUT=ROOT/'assets'/'paper-figures'
@@ -71,7 +71,17 @@ def parse_html_figures(session, paper_id):
                 if not img:continue
                 src=img.get('src','')
                 if src.startswith('data:') or src.startswith('javascript:'):continue
-                entries[n]={'url':urljoin(page,src),'caption':caption[:850],'article':page,'anchor':fig.get('id','')}
+                # arXiv HTML uses paper-relative assets. urljoin('/html/IDv1',
+                # 'x2.png') is WRONG and drops the ID. Anchor under /html/IDv1/.
+                if src.startswith(('http://','https://')):
+                    image_url=src
+                elif src.startswith('/'):
+                    image_url=urljoin('https://arxiv.org',src)
+                elif re.match(r'^\d{4}\.\d{4,5}v\d+/',src):
+                    image_url='https://arxiv.org/html/'+src
+                else:
+                    image_url=page.rstrip('/')+'/'+src.lstrip('./')
+                entries[n]={'url':image_url,'caption':caption[:850],'article':page,'anchor':fig.get('id','')}
             if entries:return entries
         except Exception as exc:
             print(f'[HTML] {paper_id}: {str(exc)[:140]}',flush=True)
