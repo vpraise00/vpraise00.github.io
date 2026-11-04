@@ -2,3 +2,7 @@
 PyMuPDF>=1.24,<2
 # Optional for securely registering an OpenAI API key as a GitHub Actions secret
 PyNaCl>=1.5,<2
+# Source-matched author figure extraction
+requests>=2.32,<3
+beautifulsoup4>=4.12,<5
+Pillow>=10,<12

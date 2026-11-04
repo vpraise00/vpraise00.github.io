@@ -89,52 +89,70 @@ def render_deep_dive(p: dict) -> tuple[str, str]:
     return toc, ''.join(parts)
 
 @lru_cache(maxsize=1)
-def visual_studies():
-    path=ROOT/'data/visual_studies.json'
+def figure_catalog():
+    path=ROOT/'data/figure_catalog.json'
     return json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
 
+@lru_cache(maxsize=1)
+def figure_status():
+    path=ROOT/'data/figure_extract_status.json'
+    return json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
+
+def clip_original_caption(value, max_words=22):
+    """Show only a *short* original caption excerpt (not full copyrighted text)."""
+    words=str(value).split()
+    return ' '.join(words[:max_words])+('…' if len(words)>max_words else '')
+
 def render_visual_study(p: dict) -> str:
-    study=visual_studies().get(str(p['id']))
-    if not isinstance(study,dict): return ''
-    parts=['<section class="article-section visual-study" id="visual-lab">',
-      '<span class="section-number">ILLUSTRATED PAPER GUIDE / EXPANDED EDITION</span>',
-      '<h2>그림으로 논문 하나씩 뜯어보기</h2>',
-      '<p class="visual-lead">'+rich(study.get('intro',''))+'</p>',
-      '<p class="visual-provenance">원본 그림은 저자 제공 자료로 표시합니다. 어두운 배경의 SVG는 독해를 위해 새로 그린 <strong>편집 재구성도</strong>이며 논문의 원본 Figure가 아닙니다. 수치·실험 조건은 아래에 원문 위치를 표시했습니다.</p>']
-    original=study.get('official')
-    if isinstance(original,dict) and original.get('src','').startswith('https://') and original.get('source','').startswith('https://'):
-        src=h(original['src'],quote=True)
-        url=h(original['source'],quote=True)
-        parts.extend(['<figure class="research-figure original-figure">',
-        '<div class="figure-top"><span class="figure-label">ORIGINAL FIGURE · AUTHOR HOSTED</span><a href="'+url+'" target="_blank" rel="noopener noreferrer">공식 프로젝트 출처 ↗</a></div>',
-        '<h3>'+h(original.get('title','공식 그림'))+'</h3>',
-        '<div class="visual-image-scroller original-image"><a href="'+src+'" target="_blank" rel="noopener noreferrer" aria-label="원본 그림 확대 보기"><img src="'+src+'" loading="lazy" decoding="async" referrerpolicy="no-referrer" alt="'+h(original.get('alt','연구 논문 원본 그림'),quote=True)+'"/></a></div>',
-        '<figcaption><b>원저자 원본 출처</b> '+h(original.get('credit',''))+'</figcaption>',
-        '<div class="figure-reading-prompt"><strong>읽는 순서</strong><p>'+rich(original.get('how',''))+'</p></div></figure>'])
-    for i,fig in enumerate(study.get('figures',[]),1):
-        key=fig.get('slug','')
-        if not re.fullmatch(r'[a-z0-9-]{1,30}',key): continue
-        target='visual-figure-'+str(i)
-        image='../assets/figures/'+p['id']+'-'+key+'.svg'
-        points=[]
-        for j,entry in enumerate(fig.get('explain',[])[:5],1):
-            if isinstance(entry,list) and len(entry)==2:
-                points.append('<li class="figure-detail"><span class="detail-index">'+f'{j:02d}'+'</span><div><h4>'+h(entry[0])+'</h4><p>'+rich(entry[1])+'</p></div></li>')
-        source=study.get('sources',['https://arxiv.org/abs/'+p['id']])[0]
-        parts.extend(['<figure class="research-figure editorial-figure" id="'+target+'">',
-          '<div class="figure-top"><span class="figure-label">EDITORIAL REDRAW · 도식 / 실험 해설</span><span>VISUAL '+f'{i:02d}'+'</span></div>',
-          '<h3>'+h(fig.get('title',''))+'</h3>',
-          '<p class="figure-subtitle">'+h(fig.get('subtitle',''))+'</p>',
-          '<div class="visual-image-scroller"><a href="'+h(image)+'" target="_blank" title="도식 크게 보기 (새 탭)" class="figure-zoom"><img src="'+h(image)+'" loading="lazy" decoding="async" alt="'+h(fig.get('title','연구 구조도'),quote=True)+'"/></a></div>',
-          '<figcaption>원문 위치: '+h(fig.get('locator',''))+' · <a href="'+h(source,quote=True)+'" target="_blank" rel="noopener noreferrer">논문 확인 ↗</a> · 직접 작성한 재구성도</figcaption>',
-          '<h4 class="figure-explainer-heading">그림을 단계별로 읽는 방법</h4>',
-          '<ol class="figure-explainer">'+''.join(points)+'</ol>',
-          '<div class="figure-takeaway"><strong>KEY TAKEAWAY</strong><p>'+rich(fig.get('takeaway',''))+'</p></div>',
+    pid=str(p['id']); guide=figure_catalog().get(pid)
+    if not guide: return ''
+    available=figure_status().get(pid,{})
+    source=f'https://arxiv.org/abs/{pid}'
+    blocks=[
+      '<section class="article-section original-figure-guide" id="visual-lab">',
+      '<span class="section-number">SOURCE-FIRST READING / ORIGINAL PAPER</span>',
+      '<h2>원논문 Figure로 한 장씩 이해하기</h2>',
+      '<p class="figure-guide-lead">'+rich(guide.get('intro',''))+'</p>',
+      '<div class="figure-source-rule">',
+      '<strong>그림 출처 원칙</strong><p>아래 이미지는 arXiv 원문 HTML에 실린 저자 그림 또는 PDF에서 직접 추출한 그림 영역입니다. <b>편집자가 새로 그린 구조도·AI 생성 이미지는 사용하지 않습니다.</b> 자동 PDF 추출은 위치가 부정확할 수 있어 검수 필요로 표시합니다. 그림이 없으면 다른 이미지로 대체하지 않습니다.</p>',
+      '</div>']
+    for index,fig in enumerate(guide.get('figures',[]),1):
+        n=int(fig['number']);record=available.get(str(n)) or {}
+        path=record.get('local','')
+        image_exists=bool(path and (ROOT/path).exists())
+        if image_exists:
+            img='../'+h(path,quote=True)
+            method=record.get('method','')
+            kind=('원논문 HTML Figure 이미지' if method=='arxiv_html_exact_figure' else '원논문 PDF 원본 영역 추출')
+            proof=('캡션 번호 일치 · arXiv 원본' if method=='arxiv_html_exact_figure' else '캡션 위치 자동 감지 · 크롭 검수 필요')
+            provenance='<a href="'+h(record.get('source',source),quote=True)+'" target="_blank" rel="noopener noreferrer">원본 이미지 또는 PDF 열기 ↗</a>'
+            image='<div class="original-figure-stage"><a href="'+img+'" target="_blank" rel="noopener noreferrer" title="원문 그림 원본 크게 보기"><img src="'+img+'" alt="'+h(p['title']+f' Figure {n} 논문 원본 이미지',quote=True)+'" loading="lazy" decoding="async"/></a></div>'
+            clip=clip_original_caption(record.get('caption',''))
+            capt='<p class="original-caption"><strong>원문 캡션 일부</strong> '+h(clip)+'</p>' if clip else ''
+            figure_label='<span class="figure-proof">'+h(kind)+' · '+h(proof)+'</span>'
+            page=record.get('page');page_str=' · PDF p.'+str(page) if page else ''
+        else:
+            image='<div class="original-figure-missing"><span class="missing-symbol">▧</span><p>원논문 그림 추출 결과를 아직 확인하지 못했습니다.<br/>확인되지 않은 이미지를 대신 표시하지 않습니다.</p><a href="https://arxiv.org/pdf/'+h(pid)+'" target="_blank" rel="noopener noreferrer">원문 PDF에서 Figure '+str(n)+' 찾기 ↗</a></div>'
+            capt=''
+            page_str=''
+            figure_label='<span class="figure-proof pending">원본 Figure 추출 대기 · 대체 이미지 없음</span>'
+            provenance='<a href="'+h(source,quote=True)+'" target="_blank" rel="noopener noreferrer">arXiv 원문 열기 ↗</a>'
+        bullets=''.join('<li><span class="reading-step-number">'+f'{j:02d}'+'</span><p>'+rich(item)+'</p></li>' for j,item in enumerate(fig.get('steps',[])[:5],1))
+        blocks.extend([
+          '<figure class="original-paper-figure" id="original-figure-'+str(n)+'">',
+          '<div class="original-figure-header"><span class="source-figure-no">FIGURE '+str(n)+'</span>'+figure_label+'</div>',
+          '<h3>'+h(fig.get('reading_title','논문 그림 해설'))+'</h3>',
+          image,
+          '<figcaption class="source-figure-caption">저자 원논문 · arXiv:'+h(pid)+' · Figure '+str(n)+page_str+' · '+provenance+'</figcaption>',
+          capt,
+          '<div class="original-figure-explanation"><span class="figure-explainer-kicker">그림을 읽기 전에 알아둘 맥락</span><p>'+rich(fig.get('context',''))+'</p>',
+          '<h4>순서대로 확인할 포인트</h4><ol>'+bullets+'</ol>',
+          '<p class="figure-note-boundary">위 한국어 해설은 원논문 내용을 이해하기 위한 편집 설명입니다. 그림 패널에 대한 직접 인용·번역이 아니며 실험 근거는 원문의 본문·캡션과 함께 확인하세요.</p></div>',
           '</figure>'])
-    parts.extend(['<div class="visual-research-take"><span>RESEARCHER NOTES / EDITORIAL IDEA</span><h3>실제로 구현하고 검증한다면</h3><p>'+rich(study.get('research_take',''))+'</p></div>',
-       '<div class="visual-citation"><strong>확인한 자료</strong>'+''.join('<a href="'+h(url,quote=True)+'" target="_blank" rel="noopener noreferrer">'+h(url)+'</a>' for url in study.get('sources',[]) if url.startswith('https://'))+'</div>',
-       '</section>'])
-    return ''.join(parts)
+    blocks.extend([
+      '<div class="figure-ending"><strong>더 깊게 읽기</strong><p>그림에서 입력·출력·학습 경로를 확인했다면 아래의 연구 문제, 방법론, 실험 조건을 이어서 읽어보세요. 특히 논문 전체 결과를 Figure 한 장으로 일반화하지 않도록 주의하세요.</p></div>',
+      '</section>'])
+    return ''.join(blocks)
 
 def post_page(p: dict, categories: dict) -> str:
     cat = categories.get(p.get('primary_category',''), {'label':'Research','color':'#7f9992'})
@@ -170,11 +188,11 @@ def post_page(p: dict, categories: dict) -> str:
     abstract = p.get('abstract','')
     pub_year = date[:4]
     tags=''.join(f'<span>#{h(t)}</span>' for t in p.get('tags',[]))
-    toc = toc.replace('<a href="#questions">', ('<a href="#visual-lab">원본 그림 + 그림 해설</a>' if visual_html else '') + deep_toc + '<a href="#questions">', 1)
+    toc = toc.replace('<a href="#questions">', ('<a href="#visual-lab">원논문 Figure 해설</a>' if visual_html else '') + deep_toc + '<a href="#questions">', 1)
     deep_mode = bool(deep_html)
     if deep_mode:
         # Existing summary sections remain useful, but research sections should be accessible right away.
-        source_scope = source_scope + ' · 상세 연구 노트 포함' + (' · 그림별 상세 설명' if visual_html else '')
+        source_scope = source_scope + ' · 상세 연구 노트 포함' + (' · 원논문 Figure 해설' if visual_html else '')
 
     return f'''<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
