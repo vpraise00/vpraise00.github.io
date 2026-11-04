@@ -177,18 +177,6 @@
     }
   },
   "2609.16074": {
-    "2": {
-      "local": "assets/paper-figures/2609.16074-fig2.png",
-      "source": "https://arxiv.org/html/2609.16074v1/wam_background.png",
-      "paper_source": "https://arxiv.org/html/2609.16074",
-      "caption": "Fig. 2: Conceptual overview of four foundational threads behind WAMs: (a) world models learn latent dynamics by predicting the next state from current state and action; (b) video generative models predict future visual observations conditioned on visual history and language instruction; (c) latent action pretraining infers latent actions from consecutive frames and uses them to model latent transitions; and (d) VLAs generate future action sequences directly from state and language instructions.\n(The third-row illustrations are adapted from the corresponding papers cited in each thread.)",
-      "method": "arxiv_html_exact_figure",
-      "review": "caption_matched",
-      "dimensions": [
-        1601,
-        544
-      ]
-    },
     "1": {
       "local": "assets/paper-figures/2609.16074-fig1.png",
       "source": "https://arxiv.org/pdf/2609.16074",
@@ -206,6 +194,18 @@
       "dimensions": [
         1012,
         633
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2609.16074-fig2.png",
+      "source": "https://arxiv.org/html/2609.16074v1/wam_background.png",
+      "paper_source": "https://arxiv.org/html/2609.16074",
+      "caption": "Fig. 2: Conceptual overview of four foundational threads behind WAMs: (a) world models learn latent dynamics by predicting the next state from current state and action; (b) video generative models predict future visual observations conditioned on visual history and language instruction; (c) latent action pretraining infers latent actions from consecutive frames and uses them to model latent transitions; and (d) VLAs generate future action sequences directly from state and language instructions.\n(The third-row illustrations are adapted from the corresponding papers cited in each thread.)",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1601,
+        544
       ]
     }
   },
@@ -314,18 +314,6 @@
     }
   },
   "2502.05855": {
-    "2": {
-      "local": "assets/paper-figures/2502.05855-fig2.png",
-      "source": "https://arxiv.org/html/2502.05855v3/framework2.png",
-      "paper_source": "https://arxiv.org/html/2502.05855",
-      "caption": "Figure 2: DexVLA architecture and embodied curriculum learning. Our model employs a three-stage training process. Stage 1 (left) trains the Diffusion Expert independently, without the VLM. Stages 2 and 3 (middle) integrate the Diffusion Expert with a VLM, discarding the visual and language components within the expert. The Diffusion Expert (right) uses multiple heads for cross-embodiment learning.",
-      "method": "arxiv_html_exact_figure",
-      "review": "caption_matched",
-      "dimensions": [
-        2048,
-        644
-      ]
-    },
     "1": {
       "local": "assets/paper-figures/2502.05855-fig1.png",
       "source": "https://arxiv.org/pdf/2502.05855",
@@ -343,6 +331,18 @@
       "dimensions": [
         1012,
         706
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2502.05855-fig2.png",
+      "source": "https://arxiv.org/html/2502.05855v3/framework2.png",
+      "paper_source": "https://arxiv.org/html/2502.05855",
+      "caption": "Figure 2: DexVLA architecture and embodied curriculum learning. Our model employs a three-stage training process. Stage 1 (left) trains the Diffusion Expert independently, without the VLM. Stages 2 and 3 (middle) integrate the Diffusion Expert with a VLM, discarding the visual and language components within the expert. The Diffusion Expert (right) uses multiple heads for cross-embodiment learning.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2048,
+        644
       ]
     }
   },
@@ -373,18 +373,6 @@
     }
   },
   "2406.09246": {
-    "2": {
-      "local": "assets/paper-figures/2406.09246-fig2.png",
-      "source": "https://arxiv.org/html/2406.09246v3/openvla_model.png",
-      "paper_source": "https://arxiv.org/html/2406.09246",
-      "caption": "Figure 2: OpenVLA model architecture. Given an image observation and a language instruction, the model predicts 7-dimensional robot control actions. The architecture consists of three key components: (1) a vision encoder that concatenates Dino V2 [ 25 ] and SigLIP [ 79 ] features, (2) a projector that maps visual features to the language embedding space, and (3) the LLM backbone , a Llama 2 7B-parameter large language model [ 10 ] .",
-      "method": "arxiv_html_exact_figure",
-      "review": "caption_matched",
-      "dimensions": [
-        2033,
-        755
-      ]
-    },
     "1": {
       "local": "assets/paper-figures/2406.09246-fig1.png",
       "source": "https://arxiv.org/pdf/2406.09246",
@@ -402,6 +390,18 @@
       "dimensions": [
         1012,
         707
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2406.09246-fig2.png",
+      "source": "https://arxiv.org/html/2406.09246v3/openvla_model.png",
+      "paper_source": "https://arxiv.org/html/2406.09246",
+      "caption": "Figure 2: OpenVLA model architecture. Given an image observation and a language instruction, the model predicts 7-dimensional robot control actions. The architecture consists of three key components: (1) a vision encoder that concatenates Dino V2 [ 25 ] and SigLIP [ 79 ] features, (2) a projector that maps visual features to the language embedding space, and (3) the LLM backbone , a Llama 2 7B-parameter large language model [ 10 ] .",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2033,
+        755
       ]
     }
   },
