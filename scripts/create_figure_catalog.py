@@ -69,5 +69,166 @@ for paper in papers:
         for n,d in zip(numbers,notes)
       ],
     }
+# Source-caption-aligned refinements checked against extracted arXiv HTML/PDF metadata.
+# The extra instructions explain *what this particular original figure depicts*.
+figure_refinements = {
+ ('2610.40026', 2): {
+   'reading_title': '평가 대상 VLA 구현의 VLM·VGGT·Action Expert 연결',
+   'context': 'Figure 2는 모델 선택 점수표가 아니라, 평가에 사용된 구현의 모듈 연결을 보여준다. 다중 시점 이미지와 지시문은 VLM에 들어가며, 별도 VGGT 기하학 특징은 투영과 cross-attention을 거쳐 융합되고, action expert가 상태 및 잡음 행동에 조건화해 행동 시퀀스를 예측한다.',
+   'steps': [
+     '그림의 입력을 먼저 찾는다. 카메라 여러 시점과 언어 지시를 VLM으로 보내는 경로, 기하학 정보를 추출하는 VGGT 경로가 따로 있다.',
+     'VGGT 출력을 VLM hidden dimension으로 투영한 뒤 cross-attention에서 합치는 위치를 따라간다.',
+     '행동 expert가 결합 표현·로봇 상태·잡음 행동을 받아 최종 제어 시퀀스를 만드는 흐름을 확인한다.',
+     '이 그림은 **아키텍처 도식**이지 RoboSeed가 모델들을 순위 매긴 그래프가 아니다. 다섯 평가 차원의 비교는 Figure 1 및 본문 평가 절에서 확인한다.'
+   ]},
+ ('2610.07922', 2): {
+   'reading_title': '공유 Mixture-of-Transformers의 영상·행동 스트림',
+   'context': 'Figure 2는 OpenWAM의 공유 MoT 아키텍처를 보여준다. 비디오 branch와 행동 branch가 정규화·투영·FFN 등 일부 파라미터를 구분해 가지면서, 한 attention에서 두 모달리티를 함께 처리한다.',
+   'steps': [
+     '영상 토큰과 행동 토큰이 서로 다른 가지에서 처리되는 위치를 찾는다.',
+     '정규화·투영·feed-forward는 모달리티별로 유지하면서 attention만 공유하는 결합 지점을 확인한다.',
+     '그림에 보이는 **모델 내부 정보 흐름**과, Figure 1이 설명하는 video-first/action-first 등 생성 순서를 구분하자.',
+     'Counterfactual Dynamics 비교나 성공률은 이 구조도 자체에 적힌 결과가 아니므로 본문 실험표를 확인한다.'
+   ]},
+ ('2609.23578', 2): {
+   'reading_title': '실패 이후 재계획하는 에이전트–정책 피드백 루프',
+   'context': 'Figure 2는 예측 비디오 품질 그래프가 아니라 작업 실패에서 복구하는 agent–policy loop를 보여준다. 상위 에이전트의 판단과 하위 정책의 실행 사이에 피드백이 연결돼 있다는 점이 핵심이다.',
+   'steps': [
+     '실행이 실패하거나 상황이 달라지는 지점에서 에이전트가 어떤 관측을 다시 받는지 본다.',
+     '재계획·새 명령 생성이 다음 정책 실행으로 어떻게 연결되는지 화살표 방향을 따라간다.',
+     '그림은 **오류에서 복구하는 제어 구조**의 설명이다. 비디오 생성 화질과 작업 성공률의 상관관계를 정량적으로 보여주지 않는다.',
+     '실제 복구 성공 비율이나 재시도 제한은 본문 평가 프로토콜에서 별도로 확인해야 한다.'
+   ]},
+ ('2502.05855', 1): {
+   'reading_title': '서로 다른 로봇·물체·과제로 본 DexVLA 조작 사례',
+   'context': '저자 Figure 1은 DexVLA가 수행한 다양한 정교한 조작 사례를 모아 보여주는 **정성적 결과 그림**이다. Diffusion Expert 내부 회로도는 Figure 2에 있다.',
+   'steps': [
+     '각 이미지의 로봇 형태, 물체 종류, 조작 장면이 어떻게 다른지 비교한다.',
+     '사례가 보여주는 범위를 확인한다. 여러 embodiment에서 동작한 장면의 존재와 각 시나리오의 반복 성공률은 서로 다르다.',
+     '파지·이동·배치 등 접촉이 중요한 과제가 포함되는지 살펴보되 시각 사례만으로 일반화 수준을 단정하지 않는다.',
+     '실제 학습 구조와 diffusion expert의 역할은 다음 Figure 2에서 확인한다.'
+   ]},
+ ('2502.05855', 2): {
+   'reading_title': 'Diffusion Expert의 3단계 학습과 다중 embodiment 헤드',
+   'context': '저자 Figure 2는 세탁물 작업 사례가 아니라 DexVLA의 구조 및 curriculum learning을 그린 것이다. 1단계에서는 VLM 없이 Diffusion Expert만 학습하고, 2·3단계에서는 VLM과 expert를 연결하며 여러 embodiment를 위해 출력 헤드를 분리한다.',
+   'steps': [
+     '왼쪽 Stage 1은 VLM 없이 diffusion expert를 따로 학습하는 과정이다.',
+     '가운데 Stage 2·3에서 VLM을 결합하면서 expert 내부 시각·언어 부분을 제거한다는 설명을 찾아본다.',
+     '오른쪽 구조도에서 서로 다른 로봇 action space를 처리하는 여러 head를 확인한다.',
+     '이 그림은 학습 설계의 근거이지 세탁물 접기·정리의 정량 성공률 그래프가 아니다.'
+   ]},
+ ('2405.12213', 2): {
+   'reading_title': 'Octo 사전학습에 사용된 데이터셋 혼합 비율',
+   'context': 'Figure 2는 다른 실물 로봇에서의 평가 사진이 아니라, Open X-Embodiment에서 선별한 25개 데이터셋이 평균 학습 배치에 기여하는 비중을 보여주는 원형 차트다.',
+   'steps': [
+     '원형 차트의 각 조각이 모델의 성능이 아니라 학습 데이터 출처별 비중임을 먼저 확인한다.',
+     '선별 조건은 이미지 관측, 말단장치(end-effector) 행동 레이블, 다양한 행동을 포함한 데이터셋이다.',
+     '데이터셋의 샘플 수와 다양성 사이 균형을 맞춰 가중치가 조정됐으므로 단순 원본 크기 비율과 다를 수 있다.',
+     '서로 다른 로봇에서의 성공률과 전이 성능은 이 Figure가 아니라 별도 실험표를 참조한다.'
+   ]},
+ ('2403.12945', 1): {
+   'reading_title': 'DROID의 동사·물체 분포와 긴 꼬리 행동 다양성',
+   'context': 'Figure 1은 수집 시스템 아키텍처가 아니다. 위쪽은 GPT-4를 이용해 중복을 정리한 **동사 분포**, 아래쪽은 로봇이 상호작용한 **물체 분포**를 보여준다. 폭넓은 태스크 종류를 증명하는 데이터 분석 그림이다.',
+   'steps': [
+     '위 그래프는 빈번한 조작 동사뿐 아니라 덜 등장하는 동사가 얼마나 이어지는지 긴 꼬리(long tail)를 읽는 그림이다.',
+     '아래 영역은 로봇이 접촉한 물체를 범주별로 보여준다. 동사의 다양성과 물체의 다양성은 다른 차원이다.',
+     'DROID와 다른 데이터셋을 비교한 부분은 개별 태스크 성공률이 아닌 **데이터 분포의 다양성** 비교다.',
+     '데이터 수집 하드웨어와 카메라 구성은 이 Figure 1이 아닌 원문 수집 방법 절에서 살펴봐야 한다.'
+   ]},
+ ('2609.16074', 2): {
+   'reading_title': 'WAM으로 연결되는 네 가지 기반 모델 계열',
+   'context': 'Figure 2는 (a) 상태와 행동으로 다음 상태를 예측하는 world model, (b) 관측·언어로 미래 이미지를 생성하는 비디오 모델, (c) 프레임 차이에서 잠재 행동을 학습하는 모델, (d) 언어와 상태로 미래 행동을 직접 만드는 VLA를 나란히 비교한다.',
+   'steps': [
+     '(a)에서는 state와 action에서 next state로 이어지는 동역학 예측 경로를 찾는다.',
+     '(b)에서는 과거 영상과 언어 조건에서 미래 시각 관측을 생성하는 흐름을 찾는다.',
+     '(c)는 두 프레임 사이에서 실제 모터 명령이 아니라 latent action을 얻는 방식이라는 점이 다르다.',
+     '(d)는 상태·언어에서 제어 action sequence로 직접 이어지는 VLA이며, WAM은 이 계열들이 합쳐지는 연구 흐름이다.'
+   ]},
+}
+
+# Two extra source-specific observations per Figure. These are Korean reading
+# notes, NOT assertions that a particular invisible pixel or panel exists.
+source_specific_steps = {
+ ('2610.42021',1): [
+  '그림에서 사람 영상과 로봇 경험이 각각 어디로 들어와 공통 semantic latent에서 만나는지 따라가 보자.',
+  '공유되는 표현은 embodiment가 달라져도 유지하려는 조작 의미이고, 제어 명령 자체가 두 기기에 동일하다는 뜻은 아니다.' ],
+ ('2610.42021',2): [
+  'Framework 그림에서 상위 의미 단계와 하위 행동 생성을 연결하는 경로를 순서대로 읽는다.',
+  '공동학습의 기여를 주장하려면 인간·로봇 데이터가 같은 조건으로 비교된 ablation 결과가 필요하다.' ],
+ ('2610.40373',1): [
+  'Figure 1의 (a)는 하나의 미래 시점만 예측해 VLA에 직접 넘기는 선행 방식이고, (b)는 여러 horizon을 예측하고 현재 행동에 맞는 정보를 고르는 HiFOR다.',
+  '따라서 이 그림에서 비교하는 핵심은 영상 품질이 아니라 **미래 예측의 시간 해상도와 선택적 활용**이다.' ],
+ ('2610.40373',2): [
+  '(a) 전체 구조 → (b) 짧은 미래·중간 이정표·최종 목표 예측 → 행동을 이용한 관련 미래 retrieval 순서로 읽는다.',
+  '실제 현재 관측과 **모델이 만든 미래 표현**을 혼동하면 제어 과정의 정보 흐름을 잘못 이해할 수 있다.' ],
+ ('2610.40026',1): [
+  '(a) 비교 대상 4개 VLA/WAM 계열과 원래 설정·벤치마크, (b) 인터페이스/학습/제어/증거 감사, (c) 다차원 평가 프로필 순서로 읽는다.',
+  'Figure 1의 다섯 차원은 서로 다른 비용·성능 지표를 같은 한 점수로 뭉개지 않고 따로 평가하기 위한 것이다.' ],
+ ('2610.07922',1): [
+  '왼쪽은 Wan2.2 영상 백본을 사람·로봇 영상으로 causal pretraining한 뒤 행동 시연 데이터로 video–action 학습하는 과정이다.',
+  '오른쪽 위 MoT 연결, 가운데 생성 순서 조합, 아래 inverse/forward dynamics 분기를 비교하면 데이터·구조·생성 순서의 역할이 분리된다.' ],
+ ('2609.23578',1): [
+  '에이전트가 대상 위치를 지정하고 visual prompt와 atomic operation을 제공하면 reasoning expert와 world-action expert가 각각 어떤 시점에 작동하는지 본다.',
+  '0.5B 구성은 0.2B Transformer와 고정된 0.3B visual encoder 합산이다. 모델 총 크기와 실제 추론 비용은 같은 단위가 아니다.' ],
+ ('2609.19600',1): [
+  '저자 캡션의 왼쪽은 에이전트가 검증한 물리 시뮬레이션 자료, 가운데는 접촉 중심 상태 예측 및 렌더링을 보여준다.',
+  '접촉 위치·물체 상태 같은 동역학 정보와 출력 영상의 시각적 그럴듯함은 서로 다른 검증 목표다.' ],
+ ('2609.19600',2): [
+  '단계 1은 공간·위상·제어 가능 접촉 정보를 vertex token으로 만드는 tokenizer다.',
+  '그다음 hierarchical encoder가 정보를 통합하고 뒤 단계가 상태 변화를 예측하는 연결을 따라가자.' ],
+ ('2609.16074',1): [
+  '타임라인에 배치된 연구를 latent world-model RL, VLA, video-action model, unified WAM으로 나눠 보자.',
+  '모델이 최근에 등장했다는 사실은 더 나은 성공률의 근거가 아니며, 각 방법은 사용하는 감독과 평가 환경도 다르다.' ],
+ ('2608.01397',1): [
+  '그림의 비교 기준은 미래 목표를 픽셀로 복원하는지, 외부 teacher latent를 맞추는지, 정책 자신의 동역학 표현을 학습하는지다.',
+  '저자 제안은 물체 상호작용과 행동 조건이 포함된 정책 파생 latent를 활용해 target–policy mismatch를 줄이는 방향이다.' ],
+ ('2608.01397',2): [
+  '메인 VLM 흐름과 학습용 보조 가지(SGWP, 동결된 VGGT, EMA target encoder)를 구분해서 표시하며 읽자.',
+  '중간 행동에 조건화하는 미래 token 예측과 현재 행동 생성이 각각 어느 loss에 연결되는지 원문 수식으로 검산한다.' ],
+ ('2605.00080',1): [
+  '이 Figure는 서베이의 목차 지도다. Section 3은 정책과의 아키텍처적 결합, Section 4는 시뮬레이터 활용, Section 5는 로봇 비디오 생성 중심 접근을 정리한다.',
+  '같은 논문이 제어 정책·학습 시뮬레이터·비디오 생성을 함께 사용한다면 분류 간 경계가 겹칠 수 있다.' ],
+ ('2605.00080',2): [
+  '위쪽 branch의 세계모델-정책 연구는 비디오 생성+역동역학(IDM)의 분리형 방식에서 결합형 방식으로 이동하는 흐름을 보여준다.',
+  '아래쪽 연구 흐름과 연도 표시는 연구 계보를 정리한 것이며 서로 다른 로봇의 성능 순위를 뜻하지 않는다.' ],
+ ('2504.16054',2): [
+  'Figure 2의 명령은 “부엌 정리”와 같은 상위 작업이고, 로봇은 서랍에 넣기·문 닫기·닦기·그릇 옮기기 등을 수행한다.',
+  '한 환경에서 보여주는 연속 동작 사례를 **새집에 대한 전체 통계적 일반화**로 오인하지 말자.' ],
+ ('2504.16054',3): [
+  '왼쪽 단계에서는 서로 다른 로봇 데이터와 웹 데이터를 함께 학습하면서 의미·행동 토큰을 다룬다.',
+  '두 번째 단계에서는 모바일 조작에 맞춘 후속학습으로 이동한다. 그림의 stage 구분과 원문 Training 절을 함께 확인하자.' ],
+ ('2503.14734',1): [
+  '피라미드 아래쪽은 데이터가 많지만 로봇 embodiment와의 직접 연결은 약하고, 위쪽은 수량이 적지만 특정 로봇과 제어에 가까워진다.',
+  '사람 영상이 많다는 사실만으로 로봇 joint action label도 풍부하다는 결론을 낼 수 없다.' ],
+ ('2503.14734',2): [
+  'System 2는 카메라 관측과 언어 지시를 VLM 토큰으로 처리해 의미 표현을 만든다.',
+  'System 1은 로봇 고유 상태와 System 2의 출력을 조건으로 DiT 기반 연속 행동을 생성하는 흐름이다.' ],
+ ('2410.24164',2): [
+  '프레임이 진행되는 순서로 세탁물에 접근·집기·접기 같은 실제 로봇 조작 동작을 읽는다.',
+  '주어진 장면은 방법이 작동하는 예시이지 비교군보다 몇 퍼센트 좋은지 알려주는 정량 그래프는 아니다.' ],
+ ('2410.24164',3): [
+  '인터넷 사전학습 VLM 백본과 더 작은 action expert의 두 경로를 구분한다.',
+  '원문 Figure 3에서 로봇 state·diffusion/flow 시간 입력이 어디에 더해지는지 찾아보자.' ],
+ ('2406.09246',1): [
+  '7B OpenVLA 모델은 Open X-Embodiment의 약 97만 개 로봇 에피소드에서 학습했다는 연구 맥락을 그림과 함께 읽는다.',
+  '이 학습량은 여러 로봇 플랫폼의 경험을 뜻하며, 단일 로봇 성능 지표는 별도 평가에서 확인해야 한다.' ],
+ ('2406.09246',2): [
+  'DINOv2와 SigLIP 특징을 결합하는 vision encoder 출력이 projector를 거쳐 Llama 2 입력 토큰 공간으로 들어간다.',
+  '언어 모델이 출력한 행동 토큰을 7차원 로봇 제어 명령으로 복원한다. 이것은 별도의 세계모델 영상 생성 경로가 아니다.' ],
+ ('2405.12213',1): [
+  '왼쪽에서 초록색 task token과 파란색 관측 token이 만들어지고, 위쪽 transformer를 거쳐 보라색 action readout으로 출력되는 경로를 읽는다.',
+  '아래 block-wise attention 도식은 추가 입력·새 action space를 finetuning 중 연결할 수 있는 구조를 보여준다.' ],
+ ('2403.12945',2): [
+  'Figure 2는 단순한 환경 사진이 아니라 유형별 고유 scene 수를 비교하는 그래프다.',
+  'DROID가 다양한 환경에서 데이터를 모았다는 주장은 총 시연 개수와 고유 장면 종류를 함께 확인해야 한다.' ],
+}
+for pid,entry in result.items():
+    for fig in entry['figures']:
+        key=(pid,fig['number'])
+        if key in figure_refinements:
+            fig.update(figure_refinements[key])
+        fig['steps']=list(fig['steps'])+source_specific_steps.get(key,[])
+        assert len(fig['steps'])>=4, key
+
 (R/'data/figure_catalog.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 print('Wrote',len(result),'papers with',sum(len(x['figures']) for x in result.values()),'attributed figure reading notes')

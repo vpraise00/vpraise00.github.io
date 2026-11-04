@@ -51,6 +51,9 @@ class SiteTests(unittest.TestCase):
         self.assertEqual(set(entries),pages)
         self.assertEqual(sum(len(item['figures']) for item in entries.values()),32)
         for pid,item in entries.items():
+            for fig in item['figures']:
+                self.assertGreaterEqual(len(fig['steps']), 4, f'{pid} Figure {fig["number"]} needs a detailed walkthrough')
+                self.assertGreater(len(fig['context']), 30, f'{pid} Figure {fig["number"]} needs context')
             html=(ROOT/'papers'/f'{pid}.html').read_text(encoding='utf8')
             self.assertIn('원논문 Figure로 한 장씩 이해하기',html)
             self.assertIn('편집자가 새로 그린 구조도·AI 생성 이미지는 사용하지 않습니다',html)
