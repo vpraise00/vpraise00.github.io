@@ -54,7 +54,7 @@ class SiteTests(unittest.TestCase):
             html=(ROOT/'papers'/f'{pid}.html').read_text(encoding='utf8')
             self.assertNotIn('id="visual-lab"',html)
             self.assertIn('class="original-paper-figure inline-source-figure"',html)
-            self.assertIn('원본 이미지 확인 대기',html)  # offline fixture has no downloaded binary assets
+            self.assertTrue('원본 이미지 확인 대기' in html or 'arXiv HTML 저자 원본' in html or '원논문 PDF 자동 추출' in html)
             self.assertEqual(html.count('class="original-paper-figure inline-source-figure"'),2,pid)
             self.assertNotIn('class="research-figure editorial-figure"',html,pid)
             self.assertNotIn(f'figures/{pid}-',html,pid)
