@@ -8,7 +8,7 @@ on:
       - 'scripts/extract_paper_figures.py'
       - '.github/workflows/source-figures.yml'
   schedule:
-    - cron: '35 0 * * *' # 09:35 KST
+    - cron: '35 1 * * *' # 10:35 KST, after the 10:00 paper refresh
   workflow_dispatch:
 
 permissions:
@@ -33,7 +33,7 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Extract only figure-number-matched original paper figures
         run: python scripts/extract_paper_figures.py
-      - name: Rebuild all 16 paper posts using collected source figure metadata
+      - name: Rebuild all paper posts with collected source figure metadata
         run: python scripts/build_site.py
       - name: Test original-figure provenance and blog pages
         run: python -m unittest discover -s tests -v
