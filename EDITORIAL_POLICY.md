@@ -15,3 +15,11 @@ The site is a **source-verified research reading notebook**, not an auto-publish
 ## Why the public list got smaller
 
 On Nov 5, 2026, automatically generated posts were determined to be too shallow. We have kept their information in a private-by-policy editorial backlog (repository data) but removed them from the public index, RSS, sitemap, and HTML output. Only source-crosschecked articles are visible. Existing users' browser localStorage notes/bookmarks are not erased.
+
+## Daily three-paper publishing target (revised 2026-11-05)
+
+- **Editorial goal:** three substantial, independent new reviews per day. Count publications, not collected metadata. The original-paper methodology, experiment settings, and author-supplied figures must be matched before publishing.
+- **At 10:00 KST**, GitHub Actions keeps a candidate queue and does not automatically turn abstracts into articles. A separate scheduled ChatGPT editorial automation is configured for daily 10:00 Asia/Seoul and is instructed to author, source-check, commit and verify **three** new reviews via the connected GitHub account.
+- **Do not publish filler to meet a quota.** If credentials, models, source full text, or figure references are unavailable, report the exact deficit (target 3 / actual N) and blocking reason. Do not call an unverified article finished.
+- Manual GitHub Actions can rebuild approved articles when their content is updated: `.github/workflows/editorial-publish.yml`. Existing publication sources are `data/editorial_content.json` and `data/editorial_approvals.json`.
+- The three full-paper editions approved on 2026-11-05 are **OpenVLA (2406.09246)**, **Octo (2405.12213)** and **π0 (2410.24164)**, in addition to π0.5. Model-generated prose was cross-checked against the source and is not experimental replication.
