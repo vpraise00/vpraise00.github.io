@@ -11,7 +11,7 @@ on:
       - 'scripts/build_site.py'
       - '.github/workflows/source-figures.yml'
   schedule:
-    - cron: '35 1 * * *' # 10:35 KST, after the 10:00 paper refresh
+    - cron: '35 1 * * *' # 10:35 KST, after new paper ingestion at 10:00
   workflow_dispatch:
 
 permissions:
