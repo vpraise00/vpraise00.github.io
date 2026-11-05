@@ -1,6 +1,463 @@
 {
-  "last_checked": "2026-11-04T00:00:00Z",
+  "last_checked": "2026-11-05T01:51:07Z",
   "papers": [
+    {
+      "id": "2611.05372",
+      "slug": "2611.05372",
+      "title": "PolicyIK: High-Precision Inverse Kinematics for Robot Arms with Reinforcement Learning",
+      "authors": [
+        "Yuhan Liu",
+        "Xinqi Liu",
+        "Zixuan Dong",
+        "Keith W. Ross",
+        "Shenji Wan"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "abstract": "Inverse kinematics (IK) converts end-effector pose commands into joint motion, and many vision-language-action (VLA) policies rely on it to act on a given arm and to transfer across embodiments. Precise IK remains laborious: redundancy and singularities complicate the inverse mapping, execution depends on hand-tuned controllers, and training data on physical robots are costly to collect. We present PolicyIK, a goal-conditioned reinforcement learning policy for high-precision IK. It updates joint-position references from pose feedback and observes its accumulated reference relative to the measured joints, so it can retain the offset that the position controller needs at rest. Two-scale pose errors with an error-dependent action gain resolve millimeter residuals while preserving large motions. Progress and dwell rewards teach it to both reach the tolerance and stay within it. In simulation, a single attempt by the trained PPO policy keeps the mean errors over the final second within 1 mm and 0.2° on 93.5% of held-out tasks, and a deployment protocol raises success to 98.9%. When trained directly on a physical arm with an off-policy RL learner, PolicyIK achieves higher reaching and holding success than all four classical IK controllers under the same time budgets. In simulated pick-and-place, PolicyIK executes the end-effector commands of the $π_{0.5}$ VLA policy with 95.7% success. These results show that reinforcement learning can provide high-precision inverse kinematics for robot arms. Code is available at https://github.com/Tinaliu0123/PolicyIK.",
+      "arxiv_categories": [
+        "cs.RO",
+        "cs.LG"
+      ],
+      "source_url": "https://arxiv.org/abs/2611.05372",
+      "pdf_url": "https://arxiv.org/pdf/2611.05372",
+      "primary_category": "vla",
+      "categories": [
+        "vla"
+      ],
+      "tags": [
+        "VLA"
+      ],
+      "featured": false,
+      "curated": false,
+      "origin": "arxiv-auto",
+      "reading_minutes": 7,
+      "project_url": "",
+      "code_url": "",
+      "summary_ko": "새로 공개된 로봇 연구입니다. 초록을 바탕으로 핵심 기여와 실험 근거를 검토합니다.",
+      "review": {
+        "one_line": "새 연구: PolicyIK: High-Precision Inverse Kinematics for Robot Arms with Reinforcement Learning. 초록을 통해 문제·방법·결론을 빠르게 확인합니다. 상세한 검증은 원문을 확인하세요.",
+        "problem": "논문 초록의 문제 정의(원문 발췌): Inverse kinematics (IK) converts end-effector pose commands into joint motion, and many vision-language-action (VLA) policies rely on it to act on a given arm and to transfer across embodiments. Precise IK remains laborious: redundancy and singularities complicate the inverse mapping, execution depends on hand-tuned controllers, and training data on physical robots are costly to collect.",
+        "idea": "논문은 다음 접근법을 제시합니다(초록 기반, 영어 원문): We present PolicyIK, a goal-conditioned reinforcement learning policy for high-precision IK. It updates joint-position references from pose feedback and observes its accumulated reference relative to the measured joints, so it can retain the offset that the position controller needs at rest. Two-scale pose errors with an error-dependent action gain resolve millimeter residuals while preserving large motions. Progress and dwell rewards teach it to both reach the tolerance and stay within it. In simulation, a single attempt by the trained PPO policy keeps the mean errors over the final second within 1 mm and 0.2° on 93.5% of held-out tasks, and a deployment protocol raises success to 98.9%. When trained directly on a physical arm with an off-policy RL learner, PolicyIK achieves higher reaching and holding success than all four classical IK controllers under the same time budgets. In simulated pick-and-place, PolicyIK executes the end-effector commands of the $π_{0.5}$ VLA policy with 95.7% success.",
+        "method": "자동 수집된 초록만으로는 모델 구조, 수식, 데이터 규모 또는 학습 레시피의 세부 조건을 확정할 수 없습니다. 논문 PDF의 Method / Experiments 섹션을 확인하세요.",
+        "findings": "저자가 초록에서 보고한 결과(영어 원문): These results show that reinforcement learning can provide high-precision inverse kinematics for robot arms. Code is available at https://github.com/Tinaliu0123/PolicyIK.",
+        "limitations": "이 글은 초록 기반 자동 미리보기입니다. 실험의 비교군, 통계적 유의성, 실환경 일반화, 실패 사례, 재현 코드 제공 여부는 아직 검토하지 않았습니다. 본문 확인 없이 수치를 다른 모델과 직접 비교하지 마세요.",
+        "questions": [
+          "원문의 Method에서 핵심 기여를 뒷받침하는 ablation은?",
+          "실험 조건이 비교 모델과 충분히 동일한가?",
+          "실제 로봇 제어에서 지연시간과 안전성은 검증되었나?"
+        ],
+        "generated_by": "abstract",
+        "source_scope": "abstract"
+      }
+    },
+    {
+      "id": "2611.05302",
+      "slug": "2611.05302",
+      "title": "PACT: Pose-Robust Actuation Co-Design for Tendon-Driven Robotic Hands",
+      "authors": [
+        "Prashant Kumar",
+        "Rachael Granberry",
+        "Taylor Niehues",
+        "Andrew A. Stanley",
+        "Gabe Pirie"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "abstract": "Humanoid robotic hands must provide sufficient force, speed, and backdrivability within a human-scale envelope. Tendon-driven transmissions address this challenge by relocating actuators to the palm and forearm, but routing paths, moment arms, and capstan dimensions jointly determine both force capability and joint speed, so selecting them sequentially satisfies one requirement at the expense of the other. This paper presents a pose-robust actuation co-design for tendon-driven robot hands (PACT) framework that optimizes tendon routing, moment arms, and capstan dimensions under pose-dependent force requirements and drivetrain-bandwidth constraints. A feasible-force formulation enforces actuator bounds and equilibrium at all joints, while a max-min objective maximizes task-force coverage at the weakest pose. Applied to a four-degree-of-freedom finger, the framework produces an asymmetric N + 1 tendon topology using quasi-direct-drive actuators. Across eight poses, the design achieves task-force coverage of 0.88-1.00 and a predicted 5 Hz minimum isolated-joint flexion/extension bandwidth within a 70th-percentile human-size envelope. Prototype measurements deviate from predictions by up to 24.5%, primarily due to unmodeled transmission losses. These results indicate that co-designing routing with the drivetrain can meet pose-dependent force requirements without relaxing the bandwidth constraint, paving the way for human-sized robotic hands with human-level performance.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2611.05302",
+      "pdf_url": "https://arxiv.org/pdf/2611.05302",
+      "primary_category": "robotics",
+      "categories": [
+        "robotics"
+      ],
+      "tags": [
+        "ROBOTICS"
+      ],
+      "featured": false,
+      "curated": false,
+      "origin": "arxiv-auto",
+      "reading_minutes": 7,
+      "project_url": "",
+      "code_url": "",
+      "summary_ko": "새로 공개된 로봇 연구입니다. 초록을 바탕으로 핵심 기여와 실험 근거를 검토합니다.",
+      "review": {
+        "one_line": "새 연구: PACT: Pose-Robust Actuation Co-Design for Tendon-Driven Robotic Hands. 초록을 통해 문제·방법·결론을 빠르게 확인합니다. 상세한 검증은 원문을 확인하세요.",
+        "problem": "논문 초록의 문제 정의(원문 발췌): Humanoid robotic hands must provide sufficient force, speed, and backdrivability within a human-scale envelope. Tendon-driven transmissions address this challenge by relocating actuators to the palm and forearm, but routing paths, moment arms, and capstan dimensions jointly determine both force capability and joint speed, so selecting them sequentially satisfies one requirement at the expense of the other.",
+        "idea": "논문은 다음 접근법을 제시합니다(초록 기반, 영어 원문): This paper presents a pose-robust actuation co-design for tendon-driven robot hands (PACT) framework that optimizes tendon routing, moment arms, and capstan dimensions under pose-dependent force requirements and drivetrain-bandwidth constraints. A feasible-force formulation enforces actuator bounds and equilibrium at all joints, while a max-min objective maximizes task-force coverage at the weakest pose. Applied to a four-degree-of-freedom finger, the framework produces an asymmetric N + 1 tendon topology using quasi-direct-drive actuators. Across eight poses, the design achieves task-force coverage of 0.88-1.00 and a predicted 5 Hz minimum isolated-joint flexion/extension bandwidth within a 70th-percentile human-size envelope.",
+        "method": "자동 수집된 초록만으로는 모델 구조, 수식, 데이터 규모 또는 학습 레시피의 세부 조건을 확정할 수 없습니다. 논문 PDF의 Method / Experiments 섹션을 확인하세요.",
+        "findings": "저자가 초록에서 보고한 결과(영어 원문): Prototype measurements deviate from predictions by up to 24.5%, primarily due to unmodeled transmission losses. These results indicate that co-designing routing with the drivetrain can meet pose-dependent force requirements without relaxing the bandwidth constraint, paving the way for human-sized robotic hands with human-level performance.",
+        "limitations": "이 글은 초록 기반 자동 미리보기입니다. 실험의 비교군, 통계적 유의성, 실환경 일반화, 실패 사례, 재현 코드 제공 여부는 아직 검토하지 않았습니다. 본문 확인 없이 수치를 다른 모델과 직접 비교하지 마세요.",
+        "questions": [
+          "원문의 Method에서 핵심 기여를 뒷받침하는 ablation은?",
+          "실험 조건이 비교 모델과 충분히 동일한가?",
+          "실제 로봇 제어에서 지연시간과 안전성은 검증되었나?"
+        ],
+        "generated_by": "abstract",
+        "source_scope": "abstract"
+      }
+    },
+    {
+      "id": "2611.05275",
+      "slug": "2611.05275",
+      "title": "Route Anything: A Study of Model and Policy Routing for General-Purpose AI Systems",
+      "authors": [
+        "Pengfei Zhou",
+        "Yixing Ma",
+        "Hexin Wang",
+        "Weidong Tang",
+        "Zhenglin Wan",
+        "Wangbo Zhao",
+        "Yang You"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "abstract": "Artificial general intelligence (AGI) requires a method that can understand, generate, reason, and act across diverse domains and modalities. Rather than relying on a single model to master every capability, a promising path toward AGI now is to orchestrate a heterogeneous ecosystem of specialized models, tools, and policies (candidates) into a unified AI system. At the heart of this vision lies a fundamental question: how can an AI system dynamically select and coordinate the most capable candidate for each task while balancing performance and computational cost? In this work, we present Route Anything, a unified framework for studying model and policy routing across general-purpose AI systems. We develop a unified theoretical foundation that characterizes optimal routing under quality--cost trade-offs and establishes how the information available to a router determines its attainable performance. To systematically investigate routing across diverse capabilities, we first construct an omni-modal trajectory matrix spanning 25 benchmarks across language understanding, image, video, and speech generation, coding and workplace agents, and robotic manipulation, comprising 374,401 scored runs from 452 candidate configurations. Building on this framework, we train and test different routers to investigate the potential of omni-modal model routing, the capabilities of learned routers, and the conditions under which routing improves efficiency. Our results reveal substantial opportunities for capability orchestration: per-input oracle routing outperforms the best fixed candidate by 5.4 points, and learned routers outperform it by 0.3 points across 16 benchmarks, by 2.1 points on video generation, and by 1.1 points on robot manipulation while using 24% less policy time. More importantly, routing raises efficiency by 8.82x on average compared with the reference model.",
+      "arxiv_categories": [
+        "cs.CV"
+      ],
+      "source_url": "https://arxiv.org/abs/2611.05275",
+      "pdf_url": "https://arxiv.org/pdf/2611.05275",
+      "primary_category": "robotics",
+      "categories": [
+        "robotics"
+      ],
+      "tags": [
+        "ROBOTICS"
+      ],
+      "featured": false,
+      "curated": false,
+      "origin": "arxiv-auto",
+      "reading_minutes": 7,
+      "project_url": "",
+      "code_url": "",
+      "summary_ko": "새로 공개된 로봇 연구입니다. 초록을 바탕으로 핵심 기여와 실험 근거를 검토합니다.",
+      "review": {
+        "one_line": "새 연구: Route Anything: A Study of Model and Policy Routing for General-Purpose AI Systems. 초록을 통해 문제·방법·결론을 빠르게 확인합니다. 상세한 검증은 원문을 확인하세요.",
+        "problem": "논문 초록의 문제 정의(원문 발췌): Artificial general intelligence (AGI) requires a method that can understand, generate, reason, and act across diverse domains and modalities. Rather than relying on a single model to master every capability, a promising path toward AGI now is to orchestrate a heterogeneous ecosystem of specialized models, tools, and policies (candidates) into a unified AI system.",
+        "idea": "논문은 다음 접근법을 제시합니다(초록 기반, 영어 원문): At the heart of this vision lies a fundamental question: how can an AI system dynamically select and coordinate the most capable candidate for each task while balancing performance and computational cost? In this work, we present Route Anything, a unified framework for studying model and policy routing across general-purpose AI systems. We develop a unified theoretical foundation that characterizes optimal routing under quality--cost trade-offs and establishes how the information available to a router determines its attainable performance. To systematically investigate routing across diverse capabilities, we first construct an omni-modal trajectory matrix spanning 25 benchmarks across language understanding, image, video, and speech generation, coding and workplace agents, and robotic manipulation, comprising 374,401 scored runs from 452 candidate configurations. Building on this framework, we train and test different routers to investigate the potential of omni-modal model routing, the capabilities of learned routers, and the conditions under which routing improves efficiency.",
+        "method": "자동 수집된 초록만으로는 모델 구조, 수식, 데이터 규모 또는 학습 레시피의 세부 조건을 확정할 수 없습니다. 논문 PDF의 Method / Experiments 섹션을 확인하세요.",
+        "findings": "저자가 초록에서 보고한 결과(영어 원문): Our results reveal substantial opportunities for capability orchestration: per-input oracle routing outperforms the best fixed candidate by 5.4 points, and learned routers outperform it by 0.3 points across 16 benchmarks, by 2.1 points on video generation, and by 1.1 points on robot manipulation while using 24% less policy time. More importantly, routing raises efficiency by 8.82x on average compared with the reference model.",
+        "limitations": "이 글은 초록 기반 자동 미리보기입니다. 실험의 비교군, 통계적 유의성, 실환경 일반화, 실패 사례, 재현 코드 제공 여부는 아직 검토하지 않았습니다. 본문 확인 없이 수치를 다른 모델과 직접 비교하지 마세요.",
+        "questions": [
+          "원문의 Method에서 핵심 기여를 뒷받침하는 ablation은?",
+          "실험 조건이 비교 모델과 충분히 동일한가?",
+          "실제 로봇 제어에서 지연시간과 안전성은 검증되었나?"
+        ],
+        "generated_by": "abstract",
+        "source_scope": "abstract"
+      }
+    },
+    {
+      "id": "2611.05249",
+      "slug": "2611.05249",
+      "title": "Should the Action Expert Train the VLM? Action-Token Supervision and Gradient Routing in Mixture-of-Transformer VLAs",
+      "authors": [
+        "Asher James Hancock",
+        "Boyi Li",
+        "Yuxiao Chen",
+        "Shuhan Tan",
+        "Wenhao Ding",
+        "Thomas Tian",
+        "Yan Wang",
+        "Boris Ivanovic"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "abstract": "Vision-language-action (VLA) models increasingly pair a pre-trained vision-language model (VLM) with a flow-matching expert that conditions its action predictions on the VLM's key-value representations. Those representations must carry information useful for control, yet the VLM was never trained for the action expert's flow-matching objective. Two signals can address this: gradients backpropagated from the expert's loss (coupling), or VLM supervision to predict discrete tokens encoding the same target actions. Prominent training recipes forgo the first, blocking expert-to-VLM gradients (insulation) to protect the VLM's existing capabilities, while also supervising it on vision-language data and action tokens. Because vision-language co-training also aims to preserve those capabilities, the additional protection provided by insulation is unclear. At the same time, insulation removes a direct signal about which features continuous action prediction requires. On the other hand, action-token supervision offers an alternative way to learn action-relevant representations, which may explain why insulation succeeds in practice. We disentangle these factors in autonomous driving and manipulation by independently varying action-token supervision and whether the expert's loss updates the VLM. In open-loop driving, insulation is competitive with coupling when action tokens are supervised; without them, coupling reduces trajectory-prediction error by roughly 25%. When both components are trained jointly from the outset, coupling increases closed-loop driving route progress by approximately 17% with action-token supervision and 40% without it, and similarly improves robot manipulation performance under both settings. These findings show that the value of gradient insulation depends on the VLM's action supervision and the evaluation setting, challenging insulation as a default VLA training recipe.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2611.05249",
+      "pdf_url": "https://arxiv.org/pdf/2611.05249",
+      "primary_category": "vla",
+      "categories": [
+        "vla",
+        "robotics"
+      ],
+      "tags": [
+        "VLA",
+        "ROBOTICS"
+      ],
+      "featured": false,
+      "curated": false,
+      "origin": "arxiv-auto",
+      "reading_minutes": 7,
+      "project_url": "",
+      "code_url": "",
+      "summary_ko": "새로 공개된 로봇 연구입니다. 초록을 바탕으로 핵심 기여와 실험 근거를 검토합니다.",
+      "review": {
+        "one_line": "새 연구: Should the Action Expert Train the VLM? Action-Token Supervision and Gradient Routing in Mixture-of-Transformer VLAs. 초록을 통해 문제·방법·결론을 빠르게 확인합니다. 상세한 검증은 원문을 확인하세요.",
+        "problem": "논문 초록의 문제 정의(원문 발췌): Vision-language-action (VLA) models increasingly pair a pre-trained vision-language model (VLM) with a flow-matching expert that conditions its action predictions on the VLM's key-value representations. Those representations must carry information useful for control, yet the VLM was never trained for the action expert's flow-matching objective.",
+        "idea": "논문은 다음 접근법을 제시합니다(초록 기반, 영어 원문): Two signals can address this: gradients backpropagated from the expert's loss (coupling), or VLM supervision to predict discrete tokens encoding the same target actions. Prominent training recipes forgo the first, blocking expert-to-VLM gradients (insulation) to protect the VLM's existing capabilities, while also supervising it on vision-language data and action tokens. Because vision-language co-training also aims to preserve those capabilities, the additional protection provided by insulation is unclear. At the same time, insulation removes a direct signal about which features continuous action prediction requires. On the other hand, action-token supervision offers an alternative way to learn action-relevant representations, which may explain why insulation succeeds in practice. We disentangle these factors in autonomous driving and manipulation by independently varying action-token supervision and whether the expert's loss updates the VLM. In open-loop driving, insulation is competitive with coupling when action tokens are supervised; without them, coupling reduces trajectory-prediction error by roughly 25%.",
+        "method": "자동 수집된 초록만으로는 모델 구조, 수식, 데이터 규모 또는 학습 레시피의 세부 조건을 확정할 수 없습니다. 논문 PDF의 Method / Experiments 섹션을 확인하세요.",
+        "findings": "저자가 초록에서 보고한 결과(영어 원문): When both components are trained jointly from the outset, coupling increases closed-loop driving route progress by approximately 17% with action-token supervision and 40% without it, and similarly improves robot manipulation performance under both settings. These findings show that the value of gradient insulation depends on the VLM's action supervision and the evaluation setting, challenging insulation as a default VLA training recipe.",
+        "limitations": "이 글은 초록 기반 자동 미리보기입니다. 실험의 비교군, 통계적 유의성, 실환경 일반화, 실패 사례, 재현 코드 제공 여부는 아직 검토하지 않았습니다. 본문 확인 없이 수치를 다른 모델과 직접 비교하지 마세요.",
+        "questions": [
+          "원문의 Method에서 핵심 기여를 뒷받침하는 ablation은?",
+          "실험 조건이 비교 모델과 충분히 동일한가?",
+          "실제 로봇 제어에서 지연시간과 안전성은 검증되었나?"
+        ],
+        "generated_by": "abstract",
+        "source_scope": "abstract"
+      }
+    },
+    {
+      "id": "2611.05163",
+      "slug": "2611.05163",
+      "title": "RoboTryOn: Synthesizing Dexterous Robot Demonstrations from Human Videos via Virtual Try-On",
+      "authors": [
+        "Seungyong Lee",
+        "Suhyeok Jang",
+        "Minyoung Kim",
+        "Jinwoo Shin"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "abstract": "Robot foundation models have shown remarkable performance in robot control, yet adapting them to a new task still relies heavily on teleoperated demonstrations. Egocentric human videos offer a scalable substitute, but overlaying rendered robots on human videos or retargeting human poses into robot actions leaves significant visual or action gaps for high-DoF robot embodiments. To address this limitation, we propose RoboTryOn, which treats human-to-robot translation as virtual try-on: try-on keeps the person and swaps the garment, RoboTryOn keeps the demonstrated motion and swaps the human for the robot. Specifically, RoboTryOn converts a human video into a video of the target robot specified by a reference image, while preserving the original task, objects, and background. To maintain visual consistency, we translate selected keyframes autoregressively and use them to guide video synthesis with motion conditioned on the human hand skeleton. Additionally, we use an inverse dynamics model (IDM) that incorporates depth features to infer action labels from synthesized videos for policy learning. Our experiments across multiple humanoid embodiments show that policies trained with our synthetic data improve the average success rate on novel tasks, including challenging bimanual manipulation, from 2% to 60%, without any real robot demonstration of those tasks. Moreover, training with our synthetic data matches the performance of policies trained solely on teleoperated demonstrations at approximately a third of the collection cost, demonstrating the cost efficiency of our approach.",
+      "arxiv_categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "source_url": "https://arxiv.org/abs/2611.05163",
+      "pdf_url": "https://arxiv.org/pdf/2611.05163",
+      "primary_category": "wam",
+      "categories": [
+        "wam",
+        "robotics",
+        "vla"
+      ],
+      "tags": [
+        "WAM",
+        "ROBOTICS",
+        "VLA"
+      ],
+      "featured": false,
+      "curated": false,
+      "origin": "arxiv-auto",
+      "reading_minutes": 7,
+      "project_url": "",
+      "code_url": "",
+      "summary_ko": "새로 공개된 로봇 연구입니다. 초록을 바탕으로 핵심 기여와 실험 근거를 검토합니다.",
+      "review": {
+        "one_line": "새 연구: RoboTryOn: Synthesizing Dexterous Robot Demonstrations from Human Videos via Virtual Try-On. 초록을 통해 문제·방법·결론을 빠르게 확인합니다. 상세한 검증은 원문을 확인하세요.",
+        "problem": "논문 초록의 문제 정의(원문 발췌): Robot foundation models have shown remarkable performance in robot control, yet adapting them to a new task still relies heavily on teleoperated demonstrations. Egocentric human videos offer a scalable substitute, but overlaying rendered robots on human videos or retargeting human poses into robot actions leaves significant visual or action gaps for high-DoF robot embodiments.",
+        "idea": "논문은 다음 접근법을 제시합니다(초록 기반, 영어 원문): To address this limitation, we propose RoboTryOn, which treats human-to-robot translation as virtual try-on: try-on keeps the person and swaps the garment, RoboTryOn keeps the demonstrated motion and swaps the human for the robot. Specifically, RoboTryOn converts a human video into a video of the target robot specified by a reference image, while preserving the original task, objects, and background. To maintain visual consistency, we translate selected keyframes autoregressively and use them to guide video synthesis with motion conditioned on the human hand skeleton. Additionally, we use an inverse dynamics model (IDM) that incorporates depth features to infer action labels from synthesized videos for policy learning.",
+        "method": "자동 수집된 초록만으로는 모델 구조, 수식, 데이터 규모 또는 학습 레시피의 세부 조건을 확정할 수 없습니다. 논문 PDF의 Method / Experiments 섹션을 확인하세요.",
+        "findings": "저자가 초록에서 보고한 결과(영어 원문): Our experiments across multiple humanoid embodiments show that policies trained with our synthetic data improve the average success rate on novel tasks, including challenging bimanual manipulation, from 2% to 60%, without any real robot demonstration of those tasks. Moreover, training with our synthetic data matches the performance of policies trained solely on teleoperated demonstrations at approximately a third of the collection cost, demonstrating the cost efficiency of our approach.",
+        "limitations": "이 글은 초록 기반 자동 미리보기입니다. 실험의 비교군, 통계적 유의성, 실환경 일반화, 실패 사례, 재현 코드 제공 여부는 아직 검토하지 않았습니다. 본문 확인 없이 수치를 다른 모델과 직접 비교하지 마세요.",
+        "questions": [
+          "원문의 Method에서 핵심 기여를 뒷받침하는 ablation은?",
+          "실험 조건이 비교 모델과 충분히 동일한가?",
+          "실제 로봇 제어에서 지연시간과 안전성은 검증되었나?"
+        ],
+        "generated_by": "abstract",
+        "source_scope": "abstract"
+      }
+    },
+    {
+      "id": "2611.05155",
+      "slug": "2611.05155",
+      "title": "Asynchronous Robot Policies",
+      "authors": [
+        "Sombit Dey",
+        "Luc Van Gool",
+        "Danda Pani Paudel"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "abstract": "Scaling vision-language foundation models has significantly advanced generalist robot manipulation, but the increased model scale introduces computational latency that degrades real-time physical reactivity. Existing Vision-Language-Action (VLA) architectures execute high-level semantic reasoning and action ex- ecution sequentially within the primary control loop, creating a fundamental tension between semantic-reasoning capability and robot agility. To address this, we propose Asynchronous Robot Policy (ARP), an architectural framework that decouples semantic reasoning from low-level action generation using asynchronous processes operating at independent frequencies. In ARP, a high-capacity Vision-Language Model (VLM) asynchronously updates a semantic memory at low fre- quency, while a lightweight Vision-Action Expert, conditioned on this semantic memory, generates robot actions at a much higher control frequency. Such a formulation, enables having a fast perception-action loop without compromising on the semantic capability. To overcome asynchronous memory staleness, ARP trains the vision-action expert on the semantic staleness and execution delay, with temporally mismatched observation across processes. On Franka manipulation tasks, ARP achieves an 18% higher success rate and 20% less time need for execution in quasi-static setups, while 3-5 times baseline performance in dynamic simulation environments. Furthermore, ARP enables operating the VLM at 10 times lower than its nominal frequency with no significant performance loss making it much more efficient than the baseline. These results highlight the architectural advantages of modeling robot policies as asynchronous processes, enabling real-world reactive deployment without sacrificing the scale of foundation models.",
+      "arxiv_categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "source_url": "https://arxiv.org/abs/2611.05155",
+      "pdf_url": "https://arxiv.org/pdf/2611.05155",
+      "primary_category": "vla",
+      "categories": [
+        "vla",
+        "robotics"
+      ],
+      "tags": [
+        "VLA",
+        "ROBOTICS"
+      ],
+      "featured": false,
+      "curated": false,
+      "origin": "arxiv-auto",
+      "reading_minutes": 7,
+      "project_url": "",
+      "code_url": "",
+      "summary_ko": "새로 공개된 로봇 연구입니다. 초록을 바탕으로 핵심 기여와 실험 근거를 검토합니다.",
+      "review": {
+        "one_line": "새 연구: Asynchronous Robot Policies. 초록을 통해 문제·방법·결론을 빠르게 확인합니다. 상세한 검증은 원문을 확인하세요.",
+        "problem": "논문 초록의 문제 정의(원문 발췌): Scaling vision-language foundation models has significantly advanced generalist robot manipulation, but the increased model scale introduces computational latency that degrades real-time physical reactivity. Existing Vision-Language-Action (VLA) architectures execute high-level semantic reasoning and action ex- ecution sequentially within the primary control loop, creating a fundamental tension between semantic-reasoning capability and robot agility.",
+        "idea": "논문은 다음 접근법을 제시합니다(초록 기반, 영어 원문): To address this, we propose Asynchronous Robot Policy (ARP), an architectural framework that decouples semantic reasoning from low-level action generation using asynchronous processes operating at independent frequencies. In ARP, a high-capacity Vision-Language Model (VLM) asynchronously updates a semantic memory at low fre- quency, while a lightweight Vision-Action Expert, conditioned on this semantic memory, generates robot actions at a much higher control frequency. Such a formulation, enables having a fast perception-action loop without compromising on the semantic capability. To overcome asynchronous memory staleness, ARP trains the vision-action expert on the semantic staleness and execution delay, with temporally mismatched observation across processes. On Franka manipulation tasks, ARP achieves an 18% higher success rate and 20% less time need for execution in quasi-static setups, while 3-5 times baseline performance in dynamic simulation environments.",
+        "method": "자동 수집된 초록만으로는 모델 구조, 수식, 데이터 규모 또는 학습 레시피의 세부 조건을 확정할 수 없습니다. 논문 PDF의 Method / Experiments 섹션을 확인하세요.",
+        "findings": "저자가 초록에서 보고한 결과(영어 원문): Furthermore, ARP enables operating the VLM at 10 times lower than its nominal frequency with no significant performance loss making it much more efficient than the baseline. These results highlight the architectural advantages of modeling robot policies as asynchronous processes, enabling real-world reactive deployment without sacrificing the scale of foundation models.",
+        "limitations": "이 글은 초록 기반 자동 미리보기입니다. 실험의 비교군, 통계적 유의성, 실환경 일반화, 실패 사례, 재현 코드 제공 여부는 아직 검토하지 않았습니다. 본문 확인 없이 수치를 다른 모델과 직접 비교하지 마세요.",
+        "questions": [
+          "원문의 Method에서 핵심 기여를 뒷받침하는 ablation은?",
+          "실험 조건이 비교 모델과 충분히 동일한가?",
+          "실제 로봇 제어에서 지연시간과 안전성은 검증되었나?"
+        ],
+        "generated_by": "abstract",
+        "source_scope": "abstract"
+      }
+    },
+    {
+      "id": "2611.05093",
+      "slug": "2611.05093",
+      "title": "LoopQ: Fair, Closed-Loop Evaluation of Quantized Vision-Language-Action Models",
+      "authors": [
+        "Syed Umer Bukhari",
+        "Magnus Almgren",
+        "Ahmed Ali-Eldin"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "abstract": "Post-training quantization (PTQ) for vision-language-action (VLA) models promises smaller and faster VLA deployments. However, when analyzing existing VLA quantization works, we realised that it is hard to reason about the performance of the suggested quantization method compared to existing, similar, or in many cases, simpler PTQ methods. We present LoopQ, a closed-loop benchmark that compares multiple quantization policies on the same checkpoint, layers and engine, varying only the method and the kernels. We evaluate RTN, AWQ, GPTQ, ActQuant and QuantVLA on four VLAs with more than 180,000 episodes of LIBERO and LIBERO-plus, compare against QVLA's reported results on the same layers, and benchmark whether the four public VLA-quantization releases can be reproduced. We benchmark the methods on an NVIDIA H100, an L4, and a Jetson AGX Thor. Our results show that while quantization reliably saves memory, 2-3x for real low-bit models, VLA-specific PTQ methods underperform compared to simpler generic baselines. At 4 bits, RTN, AWQ and GPTQ match or exceed ActQuant and QuantVLA, plain RTN matches the calibrated methods, and plain AWQ matches the success QVLA reports for itself. Standard LIBERO hides the losses that do exist: configurations with no significant LIBERO loss lose 1.5-4.3 points under paired LIBERO-plus perturbations. Speed is a weaker story. At batch 1 on the H100, no quantized pi0.5 or OpenVLA-OFT configuration is faster than its 16-bit model (1.06-1.58x slower on library kernels); only the L4 with int8 kernels gains (4-14%), the Thor is slower on every 4-bit configuration, and the engine alone changes latency by 2.1x. Profiling explains why: pi0.5's quantized backbone is compute-bound, while its memory-bound action expert, 63% of GPU time and 13% of the parameters, stays in 16 bits.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2611.05093",
+      "pdf_url": "https://arxiv.org/pdf/2611.05093",
+      "primary_category": "vla",
+      "categories": [
+        "vla",
+        "robotics"
+      ],
+      "tags": [
+        "VLA",
+        "ROBOTICS"
+      ],
+      "featured": false,
+      "curated": false,
+      "origin": "arxiv-auto",
+      "reading_minutes": 7,
+      "project_url": "",
+      "code_url": "",
+      "summary_ko": "새로 공개된 로봇 연구입니다. 초록을 바탕으로 핵심 기여와 실험 근거를 검토합니다.",
+      "review": {
+        "one_line": "새 연구: LoopQ: Fair, Closed-Loop Evaluation of Quantized Vision-Language-Action Models. 초록을 통해 문제·방법·결론을 빠르게 확인합니다. 상세한 검증은 원문을 확인하세요.",
+        "problem": "논문 초록의 문제 정의(원문 발췌): Post-training quantization (PTQ) for vision-language-action (VLA) models promises smaller and faster VLA deployments. However, when analyzing existing VLA quantization works, we realised that it is hard to reason about the performance of the suggested quantization method compared to existing, similar, or in many cases, simpler PTQ methods.",
+        "idea": "논문은 다음 접근법을 제시합니다(초록 기반, 영어 원문): We present LoopQ, a closed-loop benchmark that compares multiple quantization policies on the same checkpoint, layers and engine, varying only the method and the kernels. We evaluate RTN, AWQ, GPTQ, ActQuant and QuantVLA on four VLAs with more than 180,000 episodes of LIBERO and LIBERO-plus, compare against QVLA's reported results on the same layers, and benchmark whether the four public VLA-quantization releases can be reproduced. We benchmark the methods on an NVIDIA H100, an L4, and a Jetson AGX Thor. Our results show that while quantization reliably saves memory, 2-3x for real low-bit models, VLA-specific PTQ methods underperform compared to simpler generic baselines. At 4 bits, RTN, AWQ and GPTQ match or exceed ActQuant and QuantVLA, plain RTN matches the calibrated methods, and plain AWQ matches the success QVLA reports for itself. Standard LIBERO hides the losses that do exist: configurations with no significant LIBERO loss lose 1.5-4.3 points under paired LIBERO-plus perturbations. Speed is a weaker story.",
+        "method": "자동 수집된 초록만으로는 모델 구조, 수식, 데이터 규모 또는 학습 레시피의 세부 조건을 확정할 수 없습니다. 논문 PDF의 Method / Experiments 섹션을 확인하세요.",
+        "findings": "저자가 초록에서 보고한 결과(영어 원문): At batch 1 on the H100, no quantized pi0.5 or OpenVLA-OFT configuration is faster than its 16-bit model (1.06-1.58x slower on library kernels); only the L4 with int8 kernels gains (4-14%), the Thor is slower on every 4-bit configuration, and the engine alone changes latency by 2.1x. Profiling explains why: pi0.5's quantized backbone is compute-bound, while its memory-bound action expert, 63% of GPU time and 13% of the parameters, stays in 16 bits.",
+        "limitations": "이 글은 초록 기반 자동 미리보기입니다. 실험의 비교군, 통계적 유의성, 실환경 일반화, 실패 사례, 재현 코드 제공 여부는 아직 검토하지 않았습니다. 본문 확인 없이 수치를 다른 모델과 직접 비교하지 마세요.",
+        "questions": [
+          "원문의 Method에서 핵심 기여를 뒷받침하는 ablation은?",
+          "실험 조건이 비교 모델과 충분히 동일한가?",
+          "실제 로봇 제어에서 지연시간과 안전성은 검증되었나?"
+        ],
+        "generated_by": "abstract",
+        "source_scope": "abstract"
+      }
+    },
+    {
+      "id": "2611.05080",
+      "slug": "2611.05080",
+      "title": "CRONOS: Benchmarking Non-Episodic Reinforcement Learning for Robotic Manipulation",
+      "authors": [
+        "Po-Yi Wu",
+        "Djengo Cyun-Jyun Fang",
+        "Dian Cheng",
+        "Tsung-Wei Ke"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "abstract": "Reinforcement learning (RL) is promising for adapting robot policies to unstructured real-world environments. However, standard RL pipelines rely on episodic training with frequent scene resets, which is impractical for real-world deployment due to the need for substantial human intervention. While prior work has studied non-episodic RL in relatively small policies trained from scratch, its behavior when fine-tuning modern large-scale pre-trained vision-language-action (VLA) models remains underexplored. In this work, we introduce CRONOS, a simulation benchmark for RL fine-tuning of VLAs under non-episodic scene resets. CRONOS leverages high-fidelity physics simulators and adopts shared-scene multi-task settings. Using CRONOS, we show that naively fine-tuning pre-trained policies fails in non-episodic settings due to shifts in object configurations and end-effector poses; however, these challenges can be mitigated through targeted reset allocation and by addressing biases in pre-trained models. Moreover, we find that non-episodic training enhances long-horizon manipulation and improves generalization to previously unseen object configurations and task sequences. Project page: https://embodiedai-ntu.github.io/cronos/",
+      "arxiv_categories": [
+        "cs.RO",
+        "cs.LG"
+      ],
+      "source_url": "https://arxiv.org/abs/2611.05080",
+      "pdf_url": "https://arxiv.org/pdf/2611.05080",
+      "primary_category": "vla",
+      "categories": [
+        "vla",
+        "robotics"
+      ],
+      "tags": [
+        "VLA",
+        "ROBOTICS"
+      ],
+      "featured": false,
+      "curated": false,
+      "origin": "arxiv-auto",
+      "reading_minutes": 7,
+      "project_url": "",
+      "code_url": "",
+      "summary_ko": "새로 공개된 로봇 연구입니다. 초록을 바탕으로 핵심 기여와 실험 근거를 검토합니다.",
+      "review": {
+        "one_line": "새 연구: CRONOS: Benchmarking Non-Episodic Reinforcement Learning for Robotic Manipulation. 초록을 통해 문제·방법·결론을 빠르게 확인합니다. 상세한 검증은 원문을 확인하세요.",
+        "problem": "논문 초록의 문제 정의(원문 발췌): Reinforcement learning (RL) is promising for adapting robot policies to unstructured real-world environments. However, standard RL pipelines rely on episodic training with frequent scene resets, which is impractical for real-world deployment due to the need for substantial human intervention.",
+        "idea": "논문은 다음 접근법을 제시합니다(초록 기반, 영어 원문): While prior work has studied non-episodic RL in relatively small policies trained from scratch, its behavior when fine-tuning modern large-scale pre-trained vision-language-action (VLA) models remains underexplored. In this work, we introduce CRONOS, a simulation benchmark for RL fine-tuning of VLAs under non-episodic scene resets. CRONOS leverages high-fidelity physics simulators and adopts shared-scene multi-task settings. Using CRONOS, we show that naively fine-tuning pre-trained policies fails in non-episodic settings due to shifts in object configurations and end-effector poses; however, these challenges can be mitigated through targeted reset allocation and by addressing biases in pre-trained models.",
+        "method": "자동 수집된 초록만으로는 모델 구조, 수식, 데이터 규모 또는 학습 레시피의 세부 조건을 확정할 수 없습니다. 논문 PDF의 Method / Experiments 섹션을 확인하세요.",
+        "findings": "저자가 초록에서 보고한 결과(영어 원문): Moreover, we find that non-episodic training enhances long-horizon manipulation and improves generalization to previously unseen object configurations and task sequences. Project page: https://embodiedai-ntu.github.io/cronos/",
+        "limitations": "이 글은 초록 기반 자동 미리보기입니다. 실험의 비교군, 통계적 유의성, 실환경 일반화, 실패 사례, 재현 코드 제공 여부는 아직 검토하지 않았습니다. 본문 확인 없이 수치를 다른 모델과 직접 비교하지 마세요.",
+        "questions": [
+          "원문의 Method에서 핵심 기여를 뒷받침하는 ablation은?",
+          "실험 조건이 비교 모델과 충분히 동일한가?",
+          "실제 로봇 제어에서 지연시간과 안전성은 검증되었나?"
+        ],
+        "generated_by": "abstract",
+        "source_scope": "abstract"
+      }
+    },
+    {
+      "id": "2611.05062",
+      "slug": "2611.05062",
+      "title": "FloMo: 3D Scene Flow as a World Action Model Intermediate for Learning from Human Video",
+      "authors": [
+        "Jeremy Collins",
+        "Namra Patel",
+        "Ayush Agarwal",
+        "Shitij Govil",
+        "Animesh Garg"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "abstract": "Pretrained video generation models distill internet-scale motion priors into robot policies, but full video is a redundant signal for action prediction. We argue that dense 3D motion is the medium through which video pretraining best transfers to robot actions, and that predicting motion rather than video affords better sample-efficiency for action prediction. FloMo is a 5B video-generation model fine-tuned to predict 3D scene-flow and action tokens. Rendering scene flow as RGB and encoding it into the same latent space as video enables a pretrained video generation backbone to efficiently adapt to predict 3D scene flow. Co-trained on action-free human video and action-labeled robot teleoperation data, our model benefits from human-video pretraining and generalizes to unseen objects, motion primitives, and tasks. Replacing motion prediction with a video prediction objective degrades out-of-distribution generalization, while adding a video prediction target alongside motion lowers policy success rather than improving it. When motion, video, and action are predicted jointly, action tokens attend far more to motion than to video, suggesting that predicting video wastes model capacity. Together, these results indicate that motion effectively mediates the transfer from video pretraining to action. More information can be found at flomo-wam.github.io.",
+      "arxiv_categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "source_url": "https://arxiv.org/abs/2611.05062",
+      "pdf_url": "https://arxiv.org/pdf/2611.05062",
+      "primary_category": "wam",
+      "categories": [
+        "wam"
+      ],
+      "tags": [
+        "WAM"
+      ],
+      "featured": false,
+      "curated": false,
+      "origin": "arxiv-auto",
+      "reading_minutes": 7,
+      "project_url": "",
+      "code_url": "",
+      "summary_ko": "새로 공개된 로봇 연구입니다. 초록을 바탕으로 핵심 기여와 실험 근거를 검토합니다.",
+      "review": {
+        "one_line": "새 연구: FloMo: 3D Scene Flow as a World Action Model Intermediate for Learning from Human Video. 초록을 통해 문제·방법·결론을 빠르게 확인합니다. 상세한 검증은 원문을 확인하세요.",
+        "problem": "논문 초록의 문제 정의(원문 발췌): Pretrained video generation models distill internet-scale motion priors into robot policies, but full video is a redundant signal for action prediction. We argue that dense 3D motion is the medium through which video pretraining best transfers to robot actions, and that predicting motion rather than video affords better sample-efficiency for action prediction.",
+        "idea": "논문은 다음 접근법을 제시합니다(초록 기반, 영어 원문): FloMo is a 5B video-generation model fine-tuned to predict 3D scene-flow and action tokens. Rendering scene flow as RGB and encoding it into the same latent space as video enables a pretrained video generation backbone to efficiently adapt to predict 3D scene flow. Co-trained on action-free human video and action-labeled robot teleoperation data, our model benefits from human-video pretraining and generalizes to unseen objects, motion primitives, and tasks. Replacing motion prediction with a video prediction objective degrades out-of-distribution generalization, while adding a video prediction target alongside motion lowers policy success rather than improving it. When motion, video, and action are predicted jointly, action tokens attend far more to motion than to video, suggesting that predicting video wastes model capacity.",
+        "method": "자동 수집된 초록만으로는 모델 구조, 수식, 데이터 규모 또는 학습 레시피의 세부 조건을 확정할 수 없습니다. 논문 PDF의 Method / Experiments 섹션을 확인하세요.",
+        "findings": "저자가 초록에서 보고한 결과(영어 원문): Together, these results indicate that motion effectively mediates the transfer from video pretraining to action. More information can be found at flomo-wam.github.io.",
+        "limitations": "이 글은 초록 기반 자동 미리보기입니다. 실험의 비교군, 통계적 유의성, 실환경 일반화, 실패 사례, 재현 코드 제공 여부는 아직 검토하지 않았습니다. 본문 확인 없이 수치를 다른 모델과 직접 비교하지 마세요.",
+        "questions": [
+          "원문의 Method에서 핵심 기여를 뒷받침하는 ablation은?",
+          "실험 조건이 비교 모델과 충분히 동일한가?",
+          "실제 로봇 제어에서 지연시간과 안전성은 검증되었나?"
+        ],
+        "generated_by": "abstract",
+        "source_scope": "abstract"
+      }
+    },
     {
       "id": "2610.42021",
       "slug": "2610.42021",
