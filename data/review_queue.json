@@ -1,7 +1,541 @@
 {
-  "last_checked": null,
+  "last_checked": "2026-11-05T02:00:06Z",
   "publication_mode": "manual_approval_only",
   "discovered_this_run": 0,
   "errors": [],
-  "candidates": []
+  "note_ko": "2026-11-05 기준 기존 자동/미검증 포스팅을 공개에서 내리고 검토 대기로 전환했습니다. 후보만 기록하며 공개 게시하지 않습니다.",
+  "candidates": [
+    {
+      "id": "2611.05372",
+      "title": "PolicyIK: High-Precision Inverse Kinematics for Robot Arms with Reinforcement Learning",
+      "authors": [
+        "Yuhan Liu",
+        "Xinqi Liu",
+        "Zixuan Dong",
+        "Keith W. Ross",
+        "Shenji Wan"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.05372",
+      "primary_category": "vla",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.05302",
+      "title": "PACT: Pose-Robust Actuation Co-Design for Tendon-Driven Robotic Hands",
+      "authors": [
+        "Prashant Kumar",
+        "Rachael Granberry",
+        "Taylor Niehues",
+        "Andrew A. Stanley",
+        "Gabe Pirie"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.05302",
+      "primary_category": "robotics",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.05275",
+      "title": "Route Anything: A Study of Model and Policy Routing for General-Purpose AI Systems",
+      "authors": [
+        "Pengfei Zhou",
+        "Yixing Ma",
+        "Hexin Wang",
+        "Weidong Tang",
+        "Zhenglin Wan",
+        "Wangbo Zhao",
+        "Yang You"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.05275",
+      "primary_category": "robotics",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.05249",
+      "title": "Should the Action Expert Train the VLM? Action-Token Supervision and Gradient Routing in Mixture-of-Transformer VLAs",
+      "authors": [
+        "Asher James Hancock",
+        "Boyi Li",
+        "Yuxiao Chen",
+        "Shuhan Tan",
+        "Wenhao Ding",
+        "Thomas Tian",
+        "Yan Wang",
+        "Boris Ivanovic"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.05249",
+      "primary_category": "vla",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.05163",
+      "title": "RoboTryOn: Synthesizing Dexterous Robot Demonstrations from Human Videos via Virtual Try-On",
+      "authors": [
+        "Seungyong Lee",
+        "Suhyeok Jang",
+        "Minyoung Kim",
+        "Jinwoo Shin"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.05163",
+      "primary_category": "wam",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.05155",
+      "title": "Asynchronous Robot Policies",
+      "authors": [
+        "Sombit Dey",
+        "Luc Van Gool",
+        "Danda Pani Paudel"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.05155",
+      "primary_category": "vla",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.05093",
+      "title": "LoopQ: Fair, Closed-Loop Evaluation of Quantized Vision-Language-Action Models",
+      "authors": [
+        "Syed Umer Bukhari",
+        "Magnus Almgren",
+        "Ahmed Ali-Eldin"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.05093",
+      "primary_category": "vla",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.05080",
+      "title": "CRONOS: Benchmarking Non-Episodic Reinforcement Learning for Robotic Manipulation",
+      "authors": [
+        "Po-Yi Wu",
+        "Djengo Cyun-Jyun Fang",
+        "Dian Cheng",
+        "Tsung-Wei Ke"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.05080",
+      "primary_category": "vla",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.05062",
+      "title": "FloMo: 3D Scene Flow as a World Action Model Intermediate for Learning from Human Video",
+      "authors": [
+        "Jeremy Collins",
+        "Namra Patel",
+        "Ayush Agarwal",
+        "Shitij Govil",
+        "Animesh Garg"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.05062",
+      "primary_category": "wam",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.05023",
+      "title": "HiLo-WAM: Decoupling Long-Horizon Task Evolution and Local Dynamics in World Action Models",
+      "authors": [
+        "Xingyu Wang",
+        "Yanjiang Guo",
+        "Zhijing Ding",
+        "Jiaxin Fang",
+        "Zeyu Lai",
+        "Jiayu Dong",
+        "Weikang Wan",
+        "Jianyu Chen"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.05023",
+      "primary_category": "wam",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.04972",
+      "title": "Caging Vision-Language Navigation for Legged Robots via Barrier-Certified Safety Architecture",
+      "authors": [
+        "Abhijeet M. Kulkarni",
+        "Saimouli Katragadda",
+        "Yuze Du",
+        "Zijun Sha",
+        "Guoquan Huang"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.04972",
+      "primary_category": "vla",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.04873",
+      "title": "Trusting Imagined Futures: Auditing Imagined Rewards for VLA Post-Training",
+      "authors": [
+        "Zicheng Kong",
+        "Zhenbo Xu",
+        "Haoyan Zhang",
+        "Jinghan Yang",
+        "Zhenzhen Li",
+        "Yiwei Ru",
+        "Liuyu Xiang",
+        "WanTing Xu"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.04873",
+      "primary_category": "wam",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.04870",
+      "title": "PrimeSim: A Generalist World Model Simulator from Large-Scale Cross-Embodiment Demonstrations",
+      "authors": [
+        "Travis Davies",
+        "Wentao Ma",
+        "Lihao Guo",
+        "Tengfei Ma",
+        "Xiaowen Chang",
+        "Jiafeng Xu",
+        "Shilong Wang",
+        "Yiqi Deng"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.04870",
+      "primary_category": "wam",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.04839",
+      "title": "Coordinating Humanoid Loco-Manipulation through Action-Conditioned Latent Foresight",
+      "authors": [
+        "Ju Dong",
+        "Xinyu Xiao",
+        "Yiming Zhou",
+        "Tianshuo Yang",
+        "Xuerong Liu",
+        "Lei Zhang",
+        "Jian Chen",
+        "Haocheng Zhao"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.04839",
+      "primary_category": "wam",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.04711",
+      "title": "Cycle WAM: Coupling Action and Video through Cycle Consistency",
+      "authors": [
+        "Qinglin Yang",
+        "Jiepeng Wang",
+        "Yuxing Huang",
+        "Haibin Huang",
+        "Kai Xu",
+        "Chi Zhang",
+        "Ruizhen Hu",
+        "Xuelong Li"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.04711",
+      "primary_category": "wam",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.04527",
+      "title": "Future Representation Distillation for Imagination-Free World Action Models",
+      "authors": [
+        "Jaehyeong Jo",
+        "Sangwon Jang",
+        "Sihyun Yu",
+        "Seonghyeon Ye",
+        "Yekyung Nah",
+        "Hojung Jung",
+        "Kimin Lee",
+        "Sung Ju Hwang"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.04527",
+      "primary_category": "wam",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.04522",
+      "title": "Action Intent as a Bridge: Transferring Manipulation Knowledge from Human-Centric Videos to Robots",
+      "authors": [
+        "Zhiqian Xia",
+        "Lianyang Ma",
+        "Haifeng Xia",
+        "Siyu Xia",
+        "Wei Wang",
+        "Xiaochun Cao"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.04522",
+      "primary_category": "vla",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2611.04493",
+      "title": "Physical Diffusion Policy via MPM-Guided 3D Gaussian Simulation",
+      "authors": [
+        "Can Wang",
+        "Qiyuan Qiao",
+        "Lei Liu",
+        "Ge Yuan",
+        "Xinhui Liu",
+        "Dong Xu"
+      ],
+      "published": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.04493",
+      "primary_category": "robotics",
+      "status": "awaiting_full_text_review",
+      "source": "previous_auto_post"
+    },
+    {
+      "id": "2610.42021",
+      "title": "Nexus-VLA: Bridging Human and Robot Experiences via a Shared Hierarchical Semantic Latent Space",
+      "authors": [
+        "Biaoliang Guan",
+        "Tingyu Yuan",
+        "Wen Ye",
+        "et al."
+      ],
+      "published": "2026-10-30",
+      "source_url": "https://arxiv.org/abs/2610.42021",
+      "primary_category": "vla",
+      "status": "awaiting_full_text_review",
+      "source": "prior_automated_editorial_review"
+    },
+    {
+      "id": "2610.40373",
+      "title": "HiFOR: Hierarchical Foresight with Action-Guided World Grounding for Vision-Language-Action Model",
+      "authors": [
+        "Rongxing Ding",
+        "Hongyu Qu",
+        "Kehong Wu",
+        "et al."
+      ],
+      "published": "2026-10-29",
+      "source_url": "https://arxiv.org/abs/2610.40373",
+      "primary_category": "vla",
+      "status": "awaiting_full_text_review",
+      "source": "prior_automated_editorial_review"
+    },
+    {
+      "id": "2610.40026",
+      "title": "RoboSeed: Multidimensional Evaluation of Vision-Language-Action and World-Action Models",
+      "authors": [
+        "Xin Ma",
+        "Furong Chen",
+        "Xinlong Man",
+        "et al."
+      ],
+      "published": "2026-10-29",
+      "source_url": "https://arxiv.org/abs/2610.40026",
+      "primary_category": "robotics",
+      "status": "awaiting_full_text_review",
+      "source": "prior_automated_editorial_review"
+    },
+    {
+      "id": "2610.07922",
+      "title": "OpenWAM: An Open Framework for Composable World-Action Models",
+      "authors": [
+        "Heng Yu",
+        "David D. Yuan",
+        "Juze Zhang",
+        "et al."
+      ],
+      "published": "2026-10-06",
+      "source_url": "https://arxiv.org/abs/2610.07922",
+      "primary_category": "wam",
+      "status": "awaiting_full_text_review",
+      "source": "prior_automated_editorial_review"
+    },
+    {
+      "id": "2609.23578",
+      "title": "AR-WAM: A Visual-Conditioned Agent-Ready World Action Model for Robotic Manipulation",
+      "authors": [
+        "Yicheng Jiang",
+        "Zesen Gan",
+        "Xiaobo Wang",
+        "et al."
+      ],
+      "published": "2026-09-20",
+      "source_url": "https://arxiv.org/abs/2609.23578",
+      "primary_category": "wam",
+      "status": "awaiting_full_text_review",
+      "source": "prior_automated_editorial_review"
+    },
+    {
+      "id": "2609.19600",
+      "title": "WorldContact: A Contact-Centric World Model for Scalable Robot Learning",
+      "authors": [
+        "Caoliwen Wang",
+        "Mengdi Wang",
+        "Heng Zhang",
+        "et al."
+      ],
+      "published": "2026-09-17",
+      "source_url": "https://arxiv.org/abs/2609.19600",
+      "primary_category": "robotics",
+      "status": "awaiting_full_text_review",
+      "source": "prior_automated_editorial_review"
+    },
+    {
+      "id": "2609.16074",
+      "title": "World-Action Models for Robot Learning and Control: A Survey",
+      "authors": [
+        "Zuxing Lu",
+        "Hongjia Zhai",
+        "Guanzhi Wang",
+        "et al."
+      ],
+      "published": "2026-09-13",
+      "source_url": "https://arxiv.org/abs/2609.16074",
+      "primary_category": "wam",
+      "status": "awaiting_full_text_review",
+      "source": "prior_automated_editorial_review"
+    },
+    {
+      "id": "2608.01397",
+      "title": "SG-WAM: Self-Guided World Modeling in Geometry-Aware Policy Space",
+      "authors": [
+        "Ruiteng Zhao",
+        "Zhengshen Zhang",
+        "Yue Su",
+        "et al."
+      ],
+      "published": "2026-08-02",
+      "source_url": "https://arxiv.org/abs/2608.01397",
+      "primary_category": "wam",
+      "status": "awaiting_full_text_review",
+      "source": "prior_automated_editorial_review"
+    },
+    {
+      "id": "2605.00080",
+      "title": "World Model for Robot Learning: A Comprehensive Survey",
+      "authors": [
+        "Bohan Hou",
+        "Gen Li",
+        "Jindou Jia",
+        "et al."
+      ],
+      "published": "2026-04-30",
+      "source_url": "https://arxiv.org/abs/2605.00080",
+      "primary_category": "robotics",
+      "status": "awaiting_full_text_review",
+      "source": "prior_automated_editorial_review"
+    },
+    {
+      "id": "2503.14734",
+      "title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots",
+      "authors": [
+        "Johan Bjorck",
+        "Fernando Castañeda",
+        "NVIDIA team",
+        "et al."
+      ],
+      "published": "2025-03-18",
+      "source_url": "https://arxiv.org/abs/2503.14734",
+      "primary_category": "robotics",
+      "status": "awaiting_full_text_review",
+      "source": "prior_automated_editorial_review"
+    },
+    {
+      "id": "2502.05855",
+      "title": "DexVLA: Vision-Language Model with Plug-In Diffusion Expert for General Robot Control",
+      "authors": [
+        "Junjie Wen",
+        "Yichen Zhu",
+        "Jinming Li",
+        "et al."
+      ],
+      "published": "2025-02-09",
+      "source_url": "https://arxiv.org/abs/2502.05855",
+      "primary_category": "vla",
+      "status": "awaiting_full_text_review",
+      "source": "prior_automated_editorial_review"
+    },
+    {
+      "id": "2410.24164",
+      "title": "π0: A Vision-Language-Action Flow Model for General Robot Control",
+      "authors": [
+        "Kevin Black",
+        "Noah Brown",
+        "Danny Driess",
+        "et al."
+      ],
+      "published": "2024-10-31",
+      "source_url": "https://arxiv.org/abs/2410.24164",
+      "primary_category": "vla",
+      "status": "awaiting_full_text_review",
+      "source": "prior_automated_editorial_review"
+    },
+    {
+      "id": "2406.09246",
+      "title": "OpenVLA: An Open-Source Vision-Language-Action Model",
+      "authors": [
+        "Moo Jin Kim",
+        "Karl Pertsch",
+        "Siddharth Karamcheti",
+        "et al."
+      ],
+      "published": "2024-06-13",
+      "source_url": "https://arxiv.org/abs/2406.09246",
+      "primary_category": "vla",
+      "status": "awaiting_full_text_review",
+      "source": "prior_automated_editorial_review"
+    },
+    {
+      "id": "2405.12213",
+      "title": "Octo: An Open-Source Generalist Robot Policy",
+      "authors": [
+        "Dibya Ghosh",
+        "Homer Walke",
+        "Karl Pertsch",
+        "et al."
+      ],
+      "published": "2024-05-20",
+      "source_url": "https://arxiv.org/abs/2405.12213",
+      "primary_category": "robotics",
+      "status": "awaiting_full_text_review",
+      "source": "prior_automated_editorial_review"
+    },
+    {
+      "id": "2403.12945",
+      "title": "DROID: A Large-Scale In-The-Wild Robot Manipulation Dataset",
+      "authors": [
+        "Alexander Khazatsky",
+        "Karl Pertsch",
+        "Suraj Nair",
+        "et al."
+      ],
+      "published": "2024-03-19",
+      "source_url": "https://arxiv.org/abs/2403.12945",
+      "primary_category": "robotics",
+      "status": "awaiting_full_text_review",
+      "source": "prior_automated_editorial_review"
+    }
+  ]
 }
