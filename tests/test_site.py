@@ -51,16 +51,42 @@ class SiteTests(unittest.TestCase):
         self.assertEqual(set(entries),pages)
         self.assertEqual(sum(len(item['figures']) for item in entries.values()),32)
         for pid,item in entries.items():
-            for fig in item['figures']:
-                self.assertGreaterEqual(len(fig['steps']), 4, f'{pid} Figure {fig["number"]} needs a detailed walkthrough')
-                self.assertGreater(len(fig['context']), 30, f'{pid} Figure {fig["number"]} needs context')
             html=(ROOT/'papers'/f'{pid}.html').read_text(encoding='utf8')
-            self.assertIn('원논문 Figure로 한 장씩 이해하기',html)
-            self.assertIn('편집자가 새로 그린 구조도·AI 생성 이미지는 사용하지 않습니다',html)
-            self.assertEqual(html.count('class="original-paper-figure"'),2,pid)
+            self.assertNotIn('id="visual-lab"',html)
+            self.assertIn('class="original-paper-figure inline-source-figure"',html)
+            self.assertIn('원본 이미지 확인 대기',html)  # offline fixture has no downloaded binary assets
+            self.assertEqual(html.count('class="original-paper-figure inline-source-figure"'),2,pid)
             self.assertNotIn('class="research-figure editorial-figure"',html,pid)
-            self.assertNotIn(f'../assets/figures/{pid}-',html,pid)
+            self.assertNotIn(f'figures/{pid}-',html,pid)
             self.assertIn('원문을 읽으면서 확인할 4가지',html,pid)
+
+
+    def test_source_figures_follow_their_method_or_result_explanations(self):
+        papers=json.loads((ROOT/'data/papers.json').read_text(encoding='utf8'))['papers']
+        cats={c:{'label':c.upper(),'color':'#2a8a82'} for c in ('vla','wam','robotics')}
+        for p in papers:
+            html=build_site.post_page(p,cats)
+            fig_positions=[]
+            # Ensure no source figure is placed before the problem statement.
+            first=html.find('class="original-paper-figure inline-source-figure"')
+            self.assertGreater(first,html.index('id="problem"'),p['id'])
+            for n, placement in build_site.FIGURE_PLACEMENTS.get(p['id'],{}).items():
+                pos=html.index('id="original-figure-'+str(n)+'"')
+                self.assertGreater(pos,html.index('id="'+ ('idea' if placement=='comparison' else placement) +'"'),(p['id'],n))
+                if placement=='method':
+                    self.assertLess(pos,html.index('id="findings"'),(p['id'],n))
+                if placement=='findings':
+                    self.assertLess(pos,html.index('id="limitations"'),(p['id'],n))
+                fig_positions.append(pos)
+            self.assertEqual(len(fig_positions),2,p['id'])
+            self.assertIn('id="pipeline"',html,p['id'])
+
+    def test_ten_am_cron_and_edit_trigger(self):
+        workflow=(ROOT/'.github/workflows/daily-research.yml').read_text(encoding='utf8')
+        self.assertIn("cron: '0 1 * * *'",workflow)
+        self.assertIn("'scripts/build_site.py'",workflow)
+        self.assertIn('workflow_dispatch:',workflow)
+        self.assertIn('git pull --rebase origin main',workflow)
 
     def test_source_figure_detection_and_pdf_crop(self):
         import fitz

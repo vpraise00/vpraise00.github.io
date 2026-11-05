@@ -59,7 +59,7 @@ python scripts/build_site.py
 
 ## 2. 매일 새로운 논문 자동 갱신
 
-`.github/workflows/daily-research.yml`이 **매일 UTC 00:15 / 한국시간 09:15경** 실행되어 arXiv에서 세 카테고리를 검색하고, 중복 제거·논문별 HTML·RSS·sitemap을 생성한 뒤 자동으로 커밋합니다. GitHub Actions의 스케줄은 지연될 수 있습니다.
+`.github/workflows/daily-research.yml`이 **매일 UTC 01:00 / 한국시간 오전 10:00경** 실행되어 arXiv에서 세 카테고리를 검색하고, 중복 제거·논문별 HTML·RSS·sitemap을 생성한 뒤 자동으로 커밋합니다. GitHub Actions의 스케줄은 지연될 수 있습니다.
 
 - 새 논문은 기존 큐레이션 글과 구분되어 `자동 수집 · 초록 기반 요약`으로 표시됩니다.
 - 논문 PDF를 읽어 **한국어 심층 요약**을 자동 작성하려면 `OPENAI_API_KEY`를 GitHub 저장소 **Settings → Secrets and variables → Actions → New repository secret**에 등록합니다. PDF 텍스트 추출은 가능한 경우에만 수행되며, AI 글에는 정확성 재확인 안내를 표시합니다.
@@ -111,3 +111,11 @@ deploy.py                 로컬 토큰을 쓰는 최초 배포 프로그램
 - 이 저장소는 **정적 사이트**이며 서버에서 방문자 질문을 중계하거나 개인 노트를 저장하지 않습니다. 별도의 서버나 로그인 연동을 하지 않는 한 개인 노트의 기기간 자동 동기화는 지원하지 않습니다.
 
 © Research Radar. Paper titles and source links credited to their authors.
+
+
+## 편집 순서와 원논문 그림 배치
+
+- 모든 큐레이션 포스트는 `문제 → 핵심 아이디어(동기 그림) → 기존 연구와 비교 → 방법론/처리 단계 → **원논문 구조 그림** → 학습 신호 → 실험/수치(평가 그림) → 한계 → 후속 연구` 순서로 렌더링합니다. 원논문 Figure는 글 맨 앞에 모아두지 않습니다.
+- `scripts/build_site.py`의 `FIGURE_PLACEMENTS`에서 Figure별 설명 위치를 변경할 수 있습니다. 원문 번호/출처는 `data/figure_extract_status.json`을 따릅니다. 저자 그림이 확보되지 않았으면 합성 이미지를 대신 넣지 않습니다.
+- 연구 논문 갱신은 오전 **10:00 KST**, 원문 이미지 점검은 **10:35 KST**에 시도합니다. GitHub Actions 예약 실행 시각은 부하에 따라 지연되거나 누락될 수 있습니다. 워크플로 파일/스크립트 변경도 업데이트를 실행하므로 설치일 당일 첫 갱신을 시도합니다.
+- 새로 자동 수집한 논문은 처음에 초록 기반 미리보기일 수 있습니다. `OPENAI_API_KEY`와 PDF 원문 확보 여부에 따라 상세 내용의 수준이 달라집니다. 검증되지 않은 내용은 상세 분석으로 표시하지 않습니다.

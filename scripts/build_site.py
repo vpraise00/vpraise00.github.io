@@ -103,19 +103,41 @@ def clip_original_caption(value, max_words=22):
     words=str(value).split()
     return ' '.join(words[:max_words])+('…' if len(words)>max_words else '')
 
-def render_visual_study(p: dict) -> str:
+# Figure placements are editorial decisions about WHEN the reader needs a source
+# figure; they are not inferred from the figure number. Figures remain unmodified
+# original author material, with the provenance recorded in figure_extract_status.
+FIGURE_PLACEMENTS = {
+    '2610.42021': {1:'idea',2:'method'},      # Nexus-VLA
+    '2610.40373': {1:'problem',2:'method'},   # HiFOR
+    '2610.40026': {1:'method',2:'findings'},  # RoboSeed
+    '2610.07922': {1:'idea',2:'method'},      # OpenWAM
+    '2609.23578': {1:'idea',2:'findings'},    # AR-WAM
+    '2609.19600': {1:'idea',2:'method'},     # WorldContact
+    '2609.16074': {1:'idea',2:'comparison'}, # survey
+    '2608.01397': {1:'idea',2:'method'},     # SG-WAM
+    '2605.00080': {1:'idea',2:'comparison'}, # survey
+    '2504.16054': {2:'findings',3:'method'}, # pi0.5: deployment example; training recipe
+    '2503.14734': {1:'idea',2:'method'},     # GR00T
+    '2502.05855': {1:'method',2:'findings'}, # DexVLA
+    '2410.24164': {2:'findings',3:'method'}, # pi0: application; architecture
+    '2406.09246': {1:'idea',2:'method'},     # OpenVLA
+    '2405.12213': {1:'idea',2:'findings'},   # Octo
+    '2403.12945': {1:'problem',2:'findings'} # DROID
+}
+
+def render_visual_figures(p: dict) -> dict[str, str]:
+    """Render *original* author figures at their pedagogical section, never as a gallery.
+
+    The paper-specific figure placement map routes architectures into the method,
+    real-world demonstrations and evaluation plots into findings, and motivation
+    contrasts into problem/idea. No figure is moved into the page introduction.
+    """
     pid=str(p['id']); guide=figure_catalog().get(pid)
-    if not guide: return ''
+    if not guide: return {}
     available=figure_status().get(pid,{})
     source=f'https://arxiv.org/abs/{pid}'
-    blocks=[
-      '<section class="article-section original-figure-guide" id="visual-lab">',
-      '<span class="section-number">SOURCE-FIRST READING / ORIGINAL PAPER</span>',
-      '<h2>원논문 Figure로 한 장씩 이해하기</h2>',
-      '<p class="figure-guide-lead">'+rich(guide.get('intro',''))+'</p>',
-      '<div class="figure-source-rule">',
-      '<strong>그림 출처 원칙</strong><p>아래 이미지는 arXiv 원문 HTML에 실린 저자 그림 또는 PDF에서 직접 추출한 그림 영역입니다. <b>편집자가 새로 그린 구조도·AI 생성 이미지는 사용하지 않습니다.</b> 자동 PDF 추출은 위치가 부정확할 수 있어 검수 필요로 표시합니다. 그림이 없으면 다른 이미지로 대체하지 않습니다.</p>',
-      '</div>']
+    placements=FIGURE_PLACEMENTS.get(pid,{})
+    grouped={}
     for index,fig in enumerate(guide.get('figures',[]),1):
         n=int(fig['number']);record=available.get(str(n)) or {}
         path=record.get('local','')
@@ -123,36 +145,44 @@ def render_visual_study(p: dict) -> str:
         if image_exists:
             img='../'+h(path,quote=True)
             method=record.get('method','')
-            kind=('원논문 HTML Figure 이미지' if method=='arxiv_html_exact_figure' else '원논문 PDF 원본 영역 추출')
-            proof=('캡션 번호 일치 · arXiv 원본' if method=='arxiv_html_exact_figure' else '캡션 위치 자동 감지 · 크롭 검수 필요')
-            provenance='<a href="'+h(record.get('source',source),quote=True)+'" target="_blank" rel="noopener noreferrer">원본 이미지 또는 PDF 열기 ↗</a>'
-            image='<div class="original-figure-stage"><a href="'+img+'" target="_blank" rel="noopener noreferrer" title="원문 그림 원본 크게 보기"><img src="'+img+'" alt="'+h(p['title']+f' Figure {n} 논문 원본 이미지',quote=True)+'" loading="lazy" decoding="async"/></a></div>'
+            kind=('arXiv HTML 저자 원본' if method=='arxiv_html_exact_figure' else '원논문 PDF 자동 추출 (크롭 검수 필요)')
+            source_link=h(record.get('source',source),quote=True)
+            image='<div class="original-figure-stage"><a href="'+img+'" target="_blank" rel="noopener noreferrer" title="원문 그림 크게 보기"><img src="'+img+'" alt="'+h(p['title']+f' Figure {n} 원본',quote=True)+'" loading="lazy" decoding="async"/></a></div>'
             clip=clip_original_caption(record.get('caption',''))
             capt='<p class="original-caption"><strong>원문 캡션 일부</strong> '+h(clip)+'</p>' if clip else ''
-            figure_label='<span class="figure-proof">'+h(kind)+' · '+h(proof)+'</span>'
             page=record.get('page');page_str=' · PDF p.'+str(page) if page else ''
         else:
-            image='<div class="original-figure-missing"><span class="missing-symbol">▧</span><p>원논문 그림 추출 결과를 아직 확인하지 못했습니다.<br/>확인되지 않은 이미지를 대신 표시하지 않습니다.</p><a href="https://arxiv.org/pdf/'+h(pid)+'" target="_blank" rel="noopener noreferrer">원문 PDF에서 Figure '+str(n)+' 찾기 ↗</a></div>'
-            capt=''
-            page_str=''
-            figure_label='<span class="figure-proof pending">원본 Figure 추출 대기 · 대체 이미지 없음</span>'
-            provenance='<a href="'+h(source,quote=True)+'" target="_blank" rel="noopener noreferrer">arXiv 원문 열기 ↗</a>'
+            kind='원본 이미지 확인 대기 · 다른 이미지로 대체하지 않음'
+            source_link=h(source,quote=True)
+            image='<div class="original-figure-missing"><p>이 Figure의 원본 이미지가 아직 확보되지 않았습니다.</p><a href="https://arxiv.org/pdf/'+h(pid)+'" target="_blank" rel="noopener noreferrer">PDF에서 Figure '+str(n)+' 직접 보기 ↗</a></div>'
+            capt='';page_str=''
         bullets=''.join('<li><span class="reading-step-number">'+f'{j:02d}'+'</span><p>'+rich(item)+'</p></li>' for j,item in enumerate(fig.get('steps',[])[:5],1))
-        blocks.extend([
-          '<figure class="original-paper-figure" id="original-figure-'+str(n)+'">',
-          '<div class="original-figure-header"><span class="source-figure-no">FIGURE '+str(n)+'</span>'+figure_label+'</div>',
-          '<h3>'+h(fig.get('reading_title','논문 그림 해설'))+'</h3>',
+        placement=fig.get('placement') or placements.get(n,'method')
+        if placement not in {'problem','idea','method','findings','comparison','limitations'}: placement='method'
+        context=rich(fig.get('context',''))
+        block=''.join([
+          '<figure class="original-paper-figure inline-source-figure" id="original-figure-'+str(n)+'">',
+          '<div class="original-figure-header"><span class="source-figure-no">원논문 FIGURE '+str(n)+'</span><span class="figure-proof">'+h(kind)+'</span></div>',
+          '<h3>'+h(fig.get('reading_title','원논문 그림으로 이해하기'))+'</h3>',
+          '<p class="figure-context-bridge">'+context+'</p>',
           image,
-          '<figcaption class="source-figure-caption">저자 원논문 · arXiv:'+h(pid)+' · Figure '+str(n)+page_str+' · '+provenance+'</figcaption>',
+          '<figcaption class="source-figure-caption">저자 원문 · arXiv:'+h(pid)+' · Figure '+str(n)+page_str+' · <a href="'+source_link+'" target="_blank" rel="noopener noreferrer">출처 확인 ↗</a></figcaption>',
           capt,
-          '<div class="original-figure-explanation"><span class="figure-explainer-kicker">그림을 읽기 전에 알아둘 맥락</span><p>'+rich(fig.get('context',''))+'</p>',
-          '<h4>순서대로 확인할 포인트</h4><ol>'+bullets+'</ol>',
-          '<p class="figure-note-boundary">위 한국어 해설은 원논문 내용을 이해하기 위한 편집 설명입니다. 그림 패널에 대한 직접 인용·번역이 아니며 실험 근거는 원문의 본문·캡션과 함께 확인하세요.</p></div>',
+          '<div class="original-figure-explanation"><span class="figure-explainer-kicker">이 그림에서 꼭 확인할 것</span><ol>'+bullets+'</ol>',
+          '<p class="figure-note-boundary">한국어 해설은 이해를 돕기 위한 편집 해석이며 저자 논문에서 검증된 수치나 그림의 모든 패널을 대체하지 않습니다.</p></div>',
           '</figure>'])
-    blocks.extend([
-      '<div class="figure-ending"><strong>더 깊게 읽기</strong><p>그림에서 입력·출력·학습 경로를 확인했다면 아래의 연구 문제, 방법론, 실험 조건을 이어서 읽어보세요. 특히 논문 전체 결과를 Figure 한 장으로 일반화하지 않도록 주의하세요.</p></div>',
-      '</section>'])
-    return ''.join(blocks)
+        grouped.setdefault(placement,[]).append(block)
+    return {key:''.join(value) for key,value in grouped.items()}
+
+
+def unpack_deep_sections(html: str) -> dict[str, str]:
+    """Move existing deep-dive sections into their related narrative context."""
+    fragments={}
+    for m in re.finditer(r'<section class="(?:article-section deep-section|deep-intro)"(?: id="[^"]+")?>.*?</section>',html,re.S):
+        segment=m.group(0)
+        idmatch=re.search(r'<section[^>]* id="([^"]+)"',segment[:180])
+        fragments[idmatch.group(1) if idmatch else 'intro']=segment
+    return fragments
 
 def post_page(p: dict, categories: dict) -> str:
     cat = categories.get(p.get('primary_category',''), {'label':'Research','color':'#7f9992'})
@@ -176,23 +206,64 @@ def post_page(p: dict, categories: dict) -> str:
     toc+='<a href="#questions">다음 연구 질문</a><a href="#abstract">원문 · 출처</a>'
     # The deep-dive items are inserted into the TOC after baseline sections.
 
+    deep_toc, deep_html = render_deep_dive(p)
+    deep_parts=unpack_deep_sections(deep_html)
+    figure_parts=render_visual_figures(p)
     sections=[]
+    if deep_parts.get('intro'):
+        sections.append(deep_parts['intro'])
     for index,(key,title,subtitle) in enumerate(LABELS,1):
-        content=review.get(key) or '자료에서 이 항목을 별도로 확인할 수 없습니다. 원문을 참고해 주세요.'
+        content=review.get(key) or '이 항목은 아직 초록 수준으로만 확인되었습니다. 상세 근거는 원문을 참고하세요.'
         inner = f'<div class="evidence-box"><span>✳</span><p>{rich(content)}</p></div>' if key=='findings' else f'<p>{rich(content)}</p>'
         sections.append(f'<section class="article-section" id="{key}"><span class="section-number">0{index} / {h(subtitle).upper()}</span><h2>{h(title)}</h2>{inner}</section>')
-    deep_toc, deep_html = render_deep_dive(p)
-    visual_html=render_visual_study(p)
+        # Introduce a source figure *after* the explanation that motivates it.
+        if key == 'idea':
+            sections.append(figure_parts.get('idea',''))
+            sections.append(deep_parts.get('comparison',''))
+        if key == 'method':
+            # Step-by-step method FIRST; author architecture figure immediately after.
+            sections.append(deep_parts.get('pipeline',''))
+            sections.append(figure_parts.get('method',''))
+            sections.append(deep_parts.get('mechanisms',''))
+        elif key != 'idea':
+            sections.append(figure_parts.get(key,''))
+        if key == 'findings':
+            sections.append(deep_parts.get('evidence',''))
+        if key == 'limitations':
+            sections.append(deep_parts.get('replication',''))
+    # Source figure attached to comparison after the *comparison* explanation,
+    # not in a picture-heavy introduction.
+    if figure_parts.get('comparison'):
+        comparator=deep_parts.get('comparison','')
+        if comparator and comparator in sections:
+            at=sections.index(comparator)+1
+            sections.insert(at,figure_parts['comparison'])
+        else:
+            at=next((i+1 for i,x in enumerate(sections) if 'id="idea"' in x),2)
+            sections.insert(at,figure_parts['comparison'])
+    sections.extend([deep_parts.get('reading-guide',''),deep_parts.get('related','')])
     questions = ''.join(f'<li><span class="question-icon">?</span><span>{h(q)}</span><button type="button" class="ask-question" data-question="{h(q,quote=True)}">GPT에게 묻기 ↗</button></li>' for q in review.get('questions',[])[:6])
     if not questions: questions='<li>이 논문의 평가 프로토콜과 실제 배치 성능은 얼마나 일치할까?</li>'
     abstract = p.get('abstract','')
     pub_year = date[:4]
     tags=''.join(f'<span>#{h(t)}</span>' for t in p.get('tags',[]))
-    toc = toc.replace('<a href="#questions">', ('<a href="#visual-lab">원논문 Figure 해설</a>' if visual_html else '') + deep_toc + '<a href="#questions">', 1)
+    toc_items=[('overview','핵심 한눈에'),('problem','문제 정의'),('idea','핵심 아이디어')]
+    if deep_parts.get('comparison'): toc_items.append(('comparison','기존 연구와 차이'))
+    toc_items.append(('method','방법론'))
+    if deep_parts.get('pipeline'): toc_items.append(('pipeline','단계별 처리 흐름'))
+    if deep_parts.get('mechanisms'): toc_items.append(('mechanisms','학습 신호·세부 구현'))
+    toc_items.append(('findings','실험 결과'))
+    if deep_parts.get('evidence'): toc_items.append(('evidence','성능·조건 비교표'))
+    toc_items.append(('limitations','한계'))
+    if deep_parts.get('replication'): toc_items.append(('replication','재현·후속 연구'))
+    if deep_parts.get('reading-guide'): toc_items.append(('reading-guide','원문 정독 체크리스트'))
+    if deep_parts.get('related'): toc_items.append(('related','연결해서 읽기'))
+    toc_items.extend([('questions','남는 질문'),('abstract','원문·출처')])
+    toc=''.join(f'<a href="#{key}">{h(label)}</a>' for key,label in toc_items)
     deep_mode = bool(deep_html)
     if deep_mode:
         # Existing summary sections remain useful, but research sections should be accessible right away.
-        source_scope = source_scope + ' · 상세 연구 노트 포함' + (' · 원논문 Figure 해설' if visual_html else '')
+        source_scope = source_scope + ' · 상세 연구 노트 포함' + (' · 원논문 Figure 문맥별 해설' if figure_parts else '')
 
     return f'''<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -216,9 +287,7 @@ def post_page(p: dict, categories: dict) -> str:
 <div class="article-columns"><article class="article-body" id="article-body"><div class="article-toc-inline"><strong>IN THIS DEEP DIVE</strong>{toc}</div>
 <p class="source-scope">▧ {h(source_scope)}</p>
 <section class="article-section" id="overview"><span class="section-number">00 / ONE-MINUTE RECAP</span><h2>핵심을 먼저 읽기</h2><p>{rich(review.get('one_line') or summary)}</p></section>
-{visual_html}
 {''.join(sections)}
-{deep_html}
 <section class="article-section" id="questions"><span class="section-number">06 / RESEARCH QUESTIONS</span><h2>읽고 나서 남는 질문</h2><ul class="question-list">{questions}</ul></section>
 <section class="article-section" id="abstract"><span class="section-number">07 / ABSTRACT &amp; PROVENANCE</span><h2>원문 / 출처 확인</h2><p class="source-caveat">{'편집자가 작성한 초록 기반 한국어 요약이며 공식 영문 초록의 원문/번역이 아닙니다.' if p.get('curated') else 'arXiv에 등록된 초록을 자동 수집했습니다.'}</p><div class="article-abstract"><p>{h(abstract)}</p></div><p style="font-size:11px;color:var(--muted);margin-top:13px">해설은 논문 저자들의 진술과 편집자의 비판적 질문을 구분합니다. 특정 지표·인과관계·재현성을 판단할 때는 반드시 <a style="color:var(--brand);text-decoration:underline" href="{source_url}" target="_blank" rel="noopener noreferrer">원문</a>의 실험 설정을 확인해 주세요.</p></section>
 <section class="article-section"><span class="section-number">08 / TOPIC TAGS</span><h2>연구 키워드</h2><div class="article-tags">{tags}</div></section>

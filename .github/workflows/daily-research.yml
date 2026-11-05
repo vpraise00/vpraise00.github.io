@@ -2,8 +2,17 @@ name: Daily research radar
 
 on:
   schedule:
-    # Runs around 09:15 Asia/Seoul. GitHub may delay scheduled workflows.
-    - cron: '15 0 * * *'
+    # 10:00 Asia/Seoul (01:00 UTC); GitHub may delay scheduled runs.
+    - cron: '0 1 * * *'
+  # Rebuild immediately when research code or schedule changes.
+  # Generated posts/data are intentionally excluded to prevent push loops.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/daily-research.yml'
+      - 'scripts/build_site.py'
+      - 'scripts/update_papers.py'
+      - 'config/topics.json'
   workflow_dispatch:
 
 permissions:
@@ -44,5 +53,6 @@ jobs:
             echo 'No changes to publish.'
           else
             git commit -m 'chore(research): daily paper feed and posts'
+            git pull --rebase origin main
             git push origin HEAD:main
           fi
