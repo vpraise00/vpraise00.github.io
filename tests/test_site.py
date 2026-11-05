@@ -57,7 +57,7 @@ class SiteTests(unittest.TestCase):
             self.assertTrue('원본 이미지 확인 대기' in html or 'arXiv HTML 저자 원본' in html or '원논문 PDF 자동 추출' in html)
             self.assertEqual(html.count('class="original-paper-figure inline-source-figure"'),2,pid)
             self.assertNotIn('class="research-figure editorial-figure"',html,pid)
-            self.assertNotIn(f'figures/{pid}-',html,pid)
+            self.assertNotIn(f'../assets/figures/{pid}-',html,pid)
             self.assertIn('원문을 읽으면서 확인할 4가지',html,pid)
 
 
