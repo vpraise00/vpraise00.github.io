@@ -13,6 +13,7 @@ on:
       - 'scripts/build_site.py'
       - 'scripts/update_papers.py'
       - 'config/topics.json'
+      - 'tests/test_site.py'
   workflow_dispatch:
 
 permissions:
