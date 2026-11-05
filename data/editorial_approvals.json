@@ -2,8 +2,11 @@
   "schema_version": 1,
   "policy": "publications_require_source_crosscheck",
   "approved_ids": [
-    "2504.16054"
+    "2504.16054",
+    "2406.09246",
+    "2405.12213",
+    "2410.24164"
   ],
-  "note_ko": "신규 수집 데이터는 자동 발행하지 않습니다. 논문 원문과 Figure·실험 조건을 대조한 글만 공개합니다.",
+  "note_ko": "원문·Figure·실험 조건을 확인한 상세 연구 해설만 공개합니다. 하루 3편 제작 목표, 검증 없는 초록 글 자동발행 금지.",
   "updated_at": "2026-11-05"
 }

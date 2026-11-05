@@ -139,7 +139,7 @@ def render_visual_figures(p: dict) -> dict[str, str]:
     placements=FIGURE_PLACEMENTS.get(pid,{})
     grouped={}
     for index,fig in enumerate(guide.get('figures',[]),1):
-        n=int(fig['number']);record=available.get(str(n)) or {}
+        n=int(fig['number']);display_n=int(fig.get('display_number',n));record=available.get(str(n)) or {}
         path=record.get('local','')
         image_exists=bool(path and (ROOT/path).exists())
         if image_exists:
@@ -147,14 +147,14 @@ def render_visual_figures(p: dict) -> dict[str, str]:
             method=record.get('method','')
             kind=('arXiv HTML 저자 원본' if method=='arxiv_html_exact_figure' else '원논문 PDF 자동 추출 (크롭 검수 필요)')
             source_link=h(record.get('source',source),quote=True)
-            image='<div class="original-figure-stage"><a href="'+img+'" target="_blank" rel="noopener noreferrer" title="원문 그림 크게 보기"><img src="'+img+'" alt="'+h(p['title']+f' Figure {n} 원본',quote=True)+'" loading="lazy" decoding="async"/></a></div>'
-            clip=clip_original_caption(record.get('caption',''))
-            capt='<p class="original-caption"><strong>원문 캡션 일부</strong> '+h(clip)+'</p>' if clip else ''
+            image='<div class="original-figure-stage"><a href="'+img+'" target="_blank" rel="noopener noreferrer" title="원문 그림 크게 보기"><img src="'+img+'" alt="'+h(p['title']+f' Figure {display_n} 원본',quote=True)+'" loading="lazy" decoding="async"/></a></div>'
+            clip=clip_original_caption(fig.get('verified_caption') or record.get('caption',''))
+            capt='<p class="original-caption"><strong>'+('편집 캡션 요약' if fig.get('verified_caption') else '원문 캡션 일부')+'</strong> '+h(clip)+'</p>' if clip else ''
             page=record.get('page');page_str=' · PDF p.'+str(page) if page else ''
         else:
             kind='원본 이미지 확인 대기 · 다른 이미지로 대체하지 않음'
             source_link=h(source,quote=True)
-            image='<div class="original-figure-missing"><p>이 Figure의 원본 이미지가 아직 확보되지 않았습니다.</p><a href="https://arxiv.org/pdf/'+h(pid)+'" target="_blank" rel="noopener noreferrer">PDF에서 Figure '+str(n)+' 직접 보기 ↗</a></div>'
+            image='<div class="original-figure-missing"><p>이 Figure의 원본 이미지가 아직 확보되지 않았습니다.</p><a href="https://arxiv.org/pdf/'+h(pid)+'" target="_blank" rel="noopener noreferrer">PDF에서 Figure '+str(display_n)+' 직접 보기 ↗</a></div>'
             capt='';page_str=''
         bullets=''.join('<li><span class="reading-step-number">'+f'{j:02d}'+'</span><p>'+rich(item)+'</p></li>' for j,item in enumerate(fig.get('steps',[])[:5],1))
         placement=fig.get('placement') or placements.get(n,'method')
@@ -162,11 +162,11 @@ def render_visual_figures(p: dict) -> dict[str, str]:
         context=rich(fig.get('context',''))
         block=''.join([
           '<figure class="original-paper-figure inline-source-figure" id="original-figure-'+str(n)+'">',
-          '<div class="original-figure-header"><span class="source-figure-no">원논문 FIGURE '+str(n)+'</span><span class="figure-proof">'+h(kind)+'</span></div>',
+          '<div class="original-figure-header"><span class="source-figure-no">원논문 FIGURE '+str(display_n)+'</span><span class="figure-proof">'+h(kind)+'</span></div>',
           '<h3>'+h(fig.get('reading_title','원논문 그림으로 이해하기'))+'</h3>',
           '<p class="figure-context-bridge">'+context+'</p>',
           image,
-          '<figcaption class="source-figure-caption">저자 원문 · arXiv:'+h(pid)+' · Figure '+str(n)+page_str+' · <a href="'+source_link+'" target="_blank" rel="noopener noreferrer">출처 확인 ↗</a></figcaption>',
+          '<figcaption class="source-figure-caption">저자 원문 · arXiv:'+h(pid)+' · Figure '+str(display_n)+page_str+' · <a href="'+source_link+'" target="_blank" rel="noopener noreferrer">출처 확인 ↗</a></figcaption>',
           capt,
           '<div class="original-figure-explanation"><span class="figure-explainer-kicker">이 그림에서 꼭 확인할 것</span><ol>'+bullets+'</ol>',
           '<p class="figure-note-boundary">한국어 해설은 이해를 돕기 위한 편집 해석이며 저자 논문에서 검증된 수치나 그림의 모든 패널을 대체하지 않습니다.</p></div>',

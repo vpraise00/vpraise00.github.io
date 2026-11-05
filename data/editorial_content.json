@@ -141,5 +141,371 @@
       },
       "related": []
     }
+  },
+  "2406.09246": {
+    "summary_ko": "OpenVLA의 DINOv2·SigLIP·MLP·Llama 2 구조를 원문 Figure 2와 함께 따라가고, 256-bin 행동 토큰화와 29개 로봇 과제 결과가 무엇을 뜻하는지 해설한다.",
+    "reading_minutes": 24,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked_ai_assisted",
+    "reviewed_at": "2026-11-05",
+    "editorial_published_at": "2026-11-05",
+    "source_scope_ko": "원논문 §Method·§Experiments 및 PDF Figure 대조 · AI 보조 편집 / 독립 실험 재현 아님",
+    "abstract": "원문 초록의 직역이 아니라 Method, 실험표 및 Figure를 바탕으로 작성한 한국어 기술 해설이다. 정량 결과는 저자의 보고이며, 재현 검증은 별도로 필요하다.",
+    "review": {
+      "one_line": "OpenVLA는 시각·언어 사전학습 표현을 실제 로봇의 7차원 제어로 연결하는 공개 7B VLA다. 중요한 차별점은 단순한 성능 점수가 아니라, 여러 로봇의 시연 데이터로 학습된 공개 가중치와 파인튜닝 가능한 행동 인터페이스라는 점이다. (§1–3)",
+      "problem": "로봇이 언어 지시와 영상에서 행동을 만들려면, 시각적 의미와 로봇 좌표계의 연속적인 움직임을 함께 다뤄야 한다. 과거 큰 VLA의 가중치가 공개되지 않아 같은 환경에서 실험을 재현하거나 다른 로봇에 적응하는 작업이 어려웠다. OpenVLA는 ‘웹 이미지로 이해하는 능력’과 ‘로봇 시연에서 행동을 예측하는 능력’을 하나의 모델 안에 묶어 이 문제를 풀려고 한다. 단, 공개 여부와 로봇에서의 성공률은 별개의 평가 항목이다. (§1–2)",
+      "idea": "왼쪽 카메라 이미지를 DINOv2와 SigLIP 두 시각 인코더가 서로 다른 관점으로 해석하고, 결합한 특징을 MLP Projector가 언어 토큰 공간으로 투영한다. Llama 2 7B는 이미지와 자연어 목표를 조건으로 ‘다음 단어’ 대신 ‘다음 로봇 행동 토큰’을 예측한다. 로봇이 실제로 실행하는 연속 명령은 마지막에 이산 토큰을 다시 역변환한 것이다. 아키텍처가 **PDF Figure 2**에 그려져 있다. (§3.1–3.2)",
+      "method": "입력은 관측 이미지 I와 언어 지시 ℓ이다. 이미지 특징을 두 비전 인코더로 계산해 합치고 projector를 거쳐 Llama 2와 정렬한다. 로봇 시연의 7개 행동 차원(위치, 자세, 그리퍼)을 학습 데이터의 각 차원 1~99 백분위 범위로 잘라 256개 구간에 양자화하고, 언어 모델의 드문 토큰 256개를 이 행동 값의 표지로 재활용한다. 네트워크는 행동 토큰을 순차 예측하도록 cross-entropy로 학습한다. 추론은 7개 토큰을 수치로 되돌려 로봇 제어 명령을 구성하는 과정이다. Flow Matching이나 Diffusion을 사용하는 모델과 가장 큰 설계 차이가 여기 있다. (§3.2–3.3)",
+      "findings": "약 970k 실물 로봇 시연을 포함한 Open X-Embodiment 혼합으로 학습했다. 직접 평가에서는 WidowX 17개 과제(방법당 총 170회)와 Google 로봇 12개 과제(방법당 60회)를 합친 29개 과제를 사용한다. 저자는 이 프로토콜에서 RT-2-X보다 평균 성공률이 **16.5%p** 높았다고 보고한다. 그러나 이 차이는 두 로봇에서 동일하게 발생하지 않으며 작업 종류별 차이가 있다. LoRA 적응 실험은 일부 조건에서 전체 파인튜닝과 비슷한 성능을 더 적은 학습 파라미터로 얻지만, 해당 효율 실험의 백본 설정을 원본 7B 종합 평가와 그대로 동일시할 수 없다. (§5, Appendix B–D)",
+      "limitations": "이산 256-bin 출력은 연속 행동의 세밀함을 잃을 수 있다. 로봇마다 카메라 위치, 좌표계 및 제어 주기가 달라 단순 가중치 복사만으로 동일한 성능을 보장하지 않는다. 29개 과제의 성공률도 실제 공장·가정·접촉 작업 전부를 대표하지 않는다. 특히 LoRA·양자화의 메모리 효율과 로봇 실환경 성공률은 별도 지표로 봐야 한다. 저자 실험을 독립 재현했다고 주장하지 않는다. (§5–6)",
+      "questions": [
+        "Figure 2의 dual vision encoder 중 하나를 제거하면 어떤 task family에서 가장 큰 성능 변화가 생기는가?",
+        "256-bin 행동 표현에서 작은 접촉 위치 보정이 희생되는가?",
+        "같은 로봇·동일 데이터를 고정한 상태에서 OpenVLA의 토큰 생성과 flow/diffusion 행동 생성 지연을 어떻게 비교할까?",
+        "LoRA 실험에서 유지한 백본/시각 인코더 조건을 실제 적용 로봇과 맞추려면?"
+      ],
+      "source_scope": "full_paper_and_figures",
+      "generated_by": "editorial"
+    },
+    "deep_dive": {
+      "lead": "**읽는 목표:** OpenVLA가 LLM 위에 카메라를 붙인 단순 챗봇이 아니라, 행동 좌표를 토큰으로 학습한 제어 정책임을 이해하자. (1) 영상·언어 입력, (2) 시각 특징 정렬, (3) 이산 행동 토큰 생성, (4) 실험 조건이라는 네 구간을 따라가면 PDF Figure 2를 해석할 수 있다. 수치는 논문의 평가 조건과 짝지어 읽는다.",
+      "pipeline": [
+        {
+          "title": "1. 이미지와 언어를 받아 상황을 정의",
+          "detail": "RGB 관측 I와 ‘컵을 오른쪽으로 옮겨’ 같은 언어 지시 ℓ가 주어진다. 이 입력은 대상 물체와 목표를 정할 뿐, 현재 로봇의 충돌 없는 궤적을 미리 계산하지 않는다.",
+          "io": "Iₜ + instruction ℓ"
+        },
+        {
+          "title": "2. DINOv2와 SigLIP 비전 인코더 병렬 실행",
+          "detail": "동일 영상 패치가 두 시각 인코더를 통과한다. DINOv2는 영상의 일반적인 시각 특징을, SigLIP은 언어와 가까운 시각 의미를 학습한 백본이다. 모델은 특징을 이어 붙여 한쪽만 사용할 때 놓치는 신호를 보완하려 한다.",
+          "io": "[DINOv2(I), SigLIP(I)]"
+        },
+        {
+          "title": "3. MLP projector로 LLM 입력 임베딩에 정렬",
+          "detail": "서로 다른 차원의 이미지 특징을 Llama 2가 언어 토큰과 함께 읽을 수 있는 표현으로 변환한다. Projector 자체가 7차원 로봇 제어를 직접 예측하는 것은 아니다.",
+          "io": "visual features → language-aligned embeddings"
+        },
+        {
+          "title": "4. Llama 2가 7개 행동 차원용 토큰 예측",
+          "detail": "각 연속 행동 차원을 256-bin으로 나누고 언어 모델이 순차적으로 7개 토큰을 생성한다. Loss는 다음 행동 토큰의 분류 cross-entropy이다. 1~99백분위 범위 밖의 값과 정밀 제어에서 양자화 오차가 발생할 수 있다.",
+          "io": "P(a₁,…,a₇ | I,ℓ)"
+        },
+        {
+          "title": "5. 역토큰화하고 로봇에서 평가",
+          "detail": "토큰을 각 차원의 값으로 복구한 뒤 로봇 제어기에 전달한다. 영상·언어 해석과 실제 servo controller, robot-specific action normalization을 혼동하지 말자. 저자는 새 하드웨어에서 LoRA와 양자화 적응도 실험했다.",
+          "io": "discrete bins → 7D action"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "Figure 2를 왼쪽에서 오른쪽으로 읽기",
+          "body": "영상 입력에서 DINOv2·SigLIP 두 줄을 찾고, 이 특징이 어떻게 합쳐져 MLP로 들어가는지 추적한다. 다음은 Llama 2가 action token을 출력하는 부분이다. 이 그림이 보여주는 것은 정보 흐름이지 새로운 로봇의 성공률 그래프가 아니다.",
+          "watch": "그림의 파이프라인과 §3.2의 action discretization을 함께 비교한다."
+        },
+        {
+          "title": "행동 토큰의 256-bin 양자화",
+          "body": "현실의 Δx, Δy, Δz, 방향, 그리퍼 값은 연속 숫자지만, 모델은 사전에 정한 분할 구간으로 바꿔 학습한다. 공통 next-token 학습기법을 재사용하는 장점이 있는 반면, 미세한 접촉이나 집기 위치 보정에 오차가 생길 수 있다.",
+          "watch": "행동 차원별 percentile, bin 구성과 예측 토큰 수를 확인한다."
+        },
+        {
+          "title": "파인튜닝과 LoRA의 평가 범위",
+          "body": "작은 로봇 데이터로 정책을 옮길 때 모델 전체를 갱신하지 않고 저랭크 행렬만 학습한다. 사용되는 비전 인코더, 로봇 입력, GPU 자원 및 평가 태스크가 메인 종합 평가와 달라질 수 있으므로, 성공률 수치만 따로 떼어 비교하면 안 된다.",
+          "watch": "§5.2–5.4의 베이스라인과 학습 가능 파라미터 조건을 분리한다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "기본 학습 자료",
+          "value": "약 970,000 real-robot demonstrations",
+          "context": "Open X-Embodiment 정제 혼합, §3.3"
+        },
+        {
+          "metric": "실제 로봇 평가 규모",
+          "value": "29 tasks · 230 rollouts / policy",
+          "context": "WidowX 17×10와 Google Robot 12×5, §5.1"
+        },
+        {
+          "metric": "RT-2-X 대비 차이",
+          "value": "+16.5 percentage points",
+          "context": "위 29-task 실험에서 보고한 성공률 차이, 로봇별 상세 결과 확인"
+        },
+        {
+          "metric": "LoRA 효율",
+          "value": "학습 파라미터 약 1.4%",
+          "context": "일부 Franka 파인튜닝 조건, 메인 7B 결과로 일반화 금지"
+        }
+      ],
+      "evidence_note": "성공률은 저자가 보고한 특정 프로토콜의 결과다. LoRA·양자화 효율 실험과 WidowX/Google 비교의 조건은 다르다.",
+      "comparison": "Octo는 입력/출력을 교체하기 쉬운 token/readout 정책과 diffusion head에 초점을 맞춘다. OpenVLA는 Llama 2의 다음 토큰 예측을 7D 이산 행동으로 바꾼다. π0는 VLM과 action expert를 분리하고 연속 행동 chunk를 flow matching으로 생성한다. 데이터·평가 로봇이 다르므로 모델 간 숫자 한 줄로 우열을 정하면 안 된다.",
+      "reading_guide": [
+        "PDF Figure 2의 DINOv2·SigLIP → MLP → Llama 2 → 7D action 경로를 표시한다.",
+        "§3.2에서 각 행동 차원의 256-bin 정규화와 1–99 percentile을 적는다.",
+        "§5.1 WidowX 170회와 Google 로봇 60회의 평가 조건을 구별한다.",
+        "§5.3 LoRA 실험의 백본 구성과 fine-tuning 대상 레이어를 적는다."
+      ],
+      "replication": {
+        "hypothesis": "이산 action token 표현은 정밀한 접촉 제어에서 연속 행동 생성보다 성능 손실이 클 수 있다.",
+        "setup": "동일 로봇·동일 RGB/언어 지시·같은 시연 데이터로 tokenized OpenVLA 계열과 연속 행동 생성 계열을 미세조정한다.",
+        "baselines": "256-bin / 128-bin / continuous output, 동일 encoder와 training budget 유지",
+        "metrics": "task success, 접촉 error, latency, 자원 사용량, perturbation 이후 회복률",
+        "risks": "불균등한 데이터 크기나 action normalization 차이가 표현 방식의 효과를 가릴 수 있다."
+      },
+      "related": [
+        "2405.12213",
+        "2410.24164",
+        "2504.16054"
+      ]
+    }
+  },
+  "2405.12213": {
+    "summary_ko": "Octo를 원본 PDF Figure 2(토큰·읽기 헤드)와 Figure 3(학습 데이터 비중)로 이해한다. 80만 궤적, 25개 데이터셋, diffusion action head, 6개 적응 과제와 ablation을 분리해 설명한다.",
+    "reading_minutes": 25,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked_ai_assisted",
+    "reviewed_at": "2026-11-05",
+    "editorial_published_at": "2026-11-05",
+    "source_scope_ko": "원논문 §Method·§Experiments 및 PDF Figure 대조 · AI 보조 편집 / 독립 실험 재현 아님",
+    "abstract": "원문 초록의 직역이 아니라 Method, 실험표 및 Figure를 바탕으로 작성한 한국어 기술 해설이다. 정량 결과는 저자의 보고이며, 재현 검증은 별도로 필요하다.",
+    "review": {
+      "one_line": "Octo의 핵심은 로봇마다 다른 입력 센서·언어 목표·행동 차원을 바꾸더라도 큰 정책 표현을 최대한 재사용하는 것이다. Goal image와 language instruction을 같은 Transformer에 넣고, readout head로 연속 행동을 생성한다. (원문 §III)",
+      "problem": "서로 다른 로봇을 다루려면 단지 모델 파라미터 수만 늘려서는 부족하다. 어떤 로봇은 전방 카메라만 있고 다른 로봇은 손목 카메라·관절 센서가 있으며, 출력도 TCP delta, joint command처럼 다르다. 로봇별 정책을 모두 처음부터 재학습하면 필요한 시연과 계산비용이 커진다. Octo는 유연한 토큰 구조와 action readout을 통해 많은 데이터에서 얻은 경험을 다른 로봇으로 옮길 수 있는지 묻는다. (§I, III-A)",
+      "idea": "Task tokenizer는 언어 지시나 목표 이미지를 표현하고 Observation tokenizer는 관측을 토큰으로 바꾼다. Transformer가 이 토큰들을 block-wise attention으로 처리해 readout 토큰에 행동 예측에 필요한 정보를 모은다. 이후 작은 diffusion action head가 연속 동작을 생성한다. 로봇을 옮길 때 새 센서 토큰과 action head를 추가할 수 있다. 이 구조는 **PDF Figure 2**의 녹색(Task), 파란색(Observation), 보라색(Readout)을 따라가면 보인다. (§III-A)",
+      "method": "Open X-Embodiment에서 이미지·말단 동작 등이 일관되게 존재하는 25개 데이터셋, 약 80만 trajectory를 골라 사전학습한다. 데이터셋마다 크기와 다양성이 달라 각 미니배치에 기여하는 샘플링 가중치를 조절했다. PDF Figure 3의 파이차트는 그 가중치이지 전체 파일 크기 비율이 아니다. Transformer의 readout 표현을 조건으로 한 작은 action head 안에서 20회 DDPM denoising을 사용한다. 이는 Transformer 전체를 20번 실행한다는 뜻이 아니다. (§III-B–D)",
+      "findings": "저자들은 9개 로봇 플랫폼을 대상으로 제로샷 및 새로운 로봇 도메인에 적응하는 능력을 평가했다. Table I의 6개 미세조정 도메인 평균 성공률은 **Octo 72%, 처음부터 학습 20%, VC-1 15%**로 보고한다. 도메인별 시연 약 100개, 성공률은 20회 시도에 기반한다. 다른 실험인 WidowX 4과제 Table II에서는 Octo-Small 83%, RT-X 데이터 혼합 60%, Bridge만 학습 43%이고, diffusion을 MSE head(35%) 또는 이산 head(18%)로 바꿨을 때도 성능 차이가 나타났다. 두 표의 수치를 하나의 동일한 평가인 것처럼 합치면 안 된다. (§IV, Table I–II)",
+      "limitations": "데이터가 매우 이질적이기 때문에 입력 카메라 이름, action coordinate frame, gripper 의미를 맞추는 전처리 선택이 중요하다. 성공률은 원문에서 명시한 과제와 시연 예산에 한정되고, 새로운 로봇이면 항상 72%를 보장한다는 뜻이 아니다. 목표 이미지와 언어 지시의 질, 긴 작업에서의 실패 복구, fine-tuning 계산량도 별개로 측정해야 한다. (Appendix E–F)",
+      "questions": [
+        "PDF Figure 2에서 토큰형 입력만 바꾸고 backbone을 유지할 때 어떤 정보가 공유되는가?",
+        "PDF Figure 3의 데이터 가중치를 바꾸면 후속 학습 성능은 어떻게 달라지는가?",
+        "DDPM action head의 20회 denoising이 실제 로봇 제어 지연의 어느 부분을 차지하나?",
+        "Table I과 II의 72%와 83%가 왜 같은 성공률 지표가 아닌가?"
+      ],
+      "source_scope": "full_paper_and_figures",
+      "generated_by": "editorial"
+    },
+    "deep_dive": {
+      "lead": "**읽는 목표:** Octo는 ‘80만 궤적으로 학습한 로봇 GPT’라는 한 줄 요약보다 **재사용 가능한 입출력 인터페이스**가 핵심이다. 그림을 먼저 훑지 말고, Task·Observation·Readout 토큰이 각각 무엇인지 이해하고 PDF Figure 2에서 색을 따라 읽는다. 다음으로 PDF Figure 3의 데이터 가중치와 두 가지 실험표의 평가 단위를 분리한다.",
+      "pipeline": [
+        {
+          "title": "1. 다른 로봇 데이터를 같은 규격으로 큐레이션",
+          "detail": "카메라 관측, 로봇 말단 제어가 존재하는 Open X-Embodiment의 25개 데이터셋에서 약 80만 trajectory를 모은다. 단순 concat이 아니라 불일치하는 로봇 인터페이스·그리퍼 정의를 정리한다.",
+          "io": "25 datasets · ~800K trajectories"
+        },
+        {
+          "title": "2. 목표를 Task Token으로 바꾸기",
+          "detail": "입력 목표가 언어면 사전학습 언어 인코더를, 이미지면 경량 CNN을 거쳐 task token을 만든다. ‘컵을 집기’와 ‘목표 상태 사진 따라가기’를 다른 표현으로 지원한다.",
+          "io": "instruction or goal image → task tokens"
+        },
+        {
+          "title": "3. 관측을 Observation Token으로 바꾸기",
+          "detail": "이미지와 optional proprioception을 token화한다. 서로 다른 시점·카메라 개수를 token 구성으로 다룰 수 있도록 설계했다. 새 로봇 센서가 들어오면 해당 경로를 확장할 수 있다.",
+          "io": "RGB / sensors / history → observation tokens"
+        },
+        {
+          "title": "4. Transformer의 Readout에서 행동 정보 추출",
+          "detail": "Block-wise attention은 토큰끼리 참고하는 범위를 구조화한다. Readout token이 출력 헤드에 필요한 표현을 모으고, 새 action space는 새 헤드로 매핑할 수 있다.",
+          "io": "task+observation → transformer → readout"
+        },
+        {
+          "title": "5. 작은 Diffusion Head로 연속 행동 생성",
+          "detail": "Transformer 표현을 조건으로 출력 head가 시간축의 연속 action chunk를 복원한다. 학습 과정에서는 동작에 노이즈를 넣고, 추론 시 작은 head 안에서 DDPM 20-step denoising을 진행한다. 전체 backbone을 20회 호출하는 구조와 다르다.",
+          "io": "readout → diffusion action chunk"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "PDF Figure 2의 색을 읽는 법",
+          "body": "왼쪽 녹색 토큰은 Task, 파란색은 Observation이다. 중앙 Transformer가 이 표현들을 처리한 뒤 보라색 Readout 토큰이 출력으로 흘러간다. 아래 점선 경로는 새로운 observation 또는 action interface를 추가하는 상황을 예시한다. 이 아키텍처는 task 종류가 달라질 때 모델을 유연하게 수정하기 위한 설계다.",
+          "watch": "작업 목표 토큰, 관측 토큰, 행동 readout을 구분한다."
+        },
+        {
+          "title": "PDF Figure 3의 파이차트 의미",
+          "body": "각 조각은 원본 파일 시스템에서 차지하는 용량이 아니라, 학습 미니배치에서 해당 데이터셋을 얼마큼 샘플링하는지의 비중이다. 크기가 큰 데이터셋이 반드시 더 높은 sampling weight를 받는 것이 아니다. 데이터 다양성 확보가 왜 효과가 있는지는 Table II와 함께 검토한다.",
+          "watch": "Data count vs batch sampling probability를 혼동하지 않는다."
+        },
+        {
+          "title": "Diffusion head와 Backbone 계산 분리",
+          "body": "거대한 Transformer는 토큰 정보를 한 번 계산하고, 상대적으로 작은 출력 head가 조건부 생성 과정을 반복한다. 이는 20번의 denoising step을 20개의 제어 프레임이나 20회의 큰 Transformer 호출로 오해하지 않도록 해준다.",
+          "watch": "§III-C에서 diffusion loss와 inference denoising step을 확인한다."
+        },
+        {
+          "title": "Table I/II가 서로 다른 실험인 이유",
+          "body": "Table I은 새 로봇 도메인에 작은 시연 데이터로 미세조정한 결과의 평균이다. Table II는 WidowX 4과제에서 학습 데이터 혼합·head 종류 등을 바꾸는 ablation이다. 서로 표본 공간·설정이 다르므로 72%와 83%를 한 모델의 단순 향상 수치처럼 연결하면 잘못이다.",
+          "watch": "로봇, 태스크 수, evaluation trials, fine-tune 조건을 표 옆에 적어 본다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "사전학습",
+          "value": "약 800K trajectories / 25 datasets",
+          "context": "Open X-Embodiment에서 정제, §III-B"
+        },
+        {
+          "metric": "새 도메인 Fine-tuning",
+          "value": "Octo 72% vs Scratch 20% vs VC-1 15%",
+          "context": "6개 로봇 도메인 평균, 도메인별 약 100 demos/20 trials, Table I"
+        },
+        {
+          "metric": "데이터 혼합 Ablation",
+          "value": "Octo-Small 83% / RT-X 60% / Bridge 43%",
+          "context": "WidowX 4과제, 총 40 trials, Table II"
+        },
+        {
+          "metric": "Action Head Ablation",
+          "value": "Diffusion 83% / MSE 35% / Discrete 18%",
+          "context": "WidowX 4과제, Table II"
+        },
+        {
+          "metric": "모델 크기",
+          "value": "27M Small / 93M Base",
+          "context": "사전학습 크기가 다르므로 fine-tuning 계산량도 별도 비교"
+        }
+      ],
+      "evidence_note": "72%는 6개 downstream 도메인 미세조정 평가 평균, 83%는 WidowX 4과제 ablation이다. 결과의 평가 단위와 로봇 구성이 다르다.",
+      "comparison": "OpenVLA는 7B LLM을 사용해 이산 action token을 생성한다. Octo는 27M/93M의 모듈형 토큰과 diffusion head를 통해 다양한 로봇 센서·행동 공간으로 적응하는 것을 중심으로 설계한다. π0는 pre-trained VLM과 별도 action expert로 연속 행동을 flow matching한다. 셋의 성공률을 서로 다른 로봇·데이터로 직접 비교할 수는 없다.",
+      "reading_guide": [
+        "PDF Figure 2에서 녹색 Task·파란 Observation·보라 Readout token이 어디에서 생성되고 소비되는지 표시한다.",
+        "PDF Figure 3이 전체 데이터 용량이 아니라 배치 샘플링 가중치임을 확인한다.",
+        "§III-C의 20-step DDPM은 작은 action head의 생성 반복임을 구분한다.",
+        "Table I의 6개 도메인 Fine-tuning과 Table II의 WidowX ablation을 별도 기록한다."
+      ],
+      "replication": {
+        "hypothesis": "새 로봇 센서를 추가하더라도 토큰 인터페이스 수정만으로 기존 backbone 표현을 재사용할 수 있을 것이다.",
+        "setup": "같은 target 로봇에서 관측 카메라·힘 센서를 점진적으로 늘리며 약 100개 데모로 정책을 적응시킨다.",
+        "baselines": "원형 토큰 구성 / 새 토큰+고정 backbone / 새 토큰+전체 fine-tune / scratch, 동일 출력 head",
+        "metrics": "성공률, GPU·시간, sensor dropout, OOD 목표물, latency",
+        "risks": "좌표계·타임스탬프 정렬 오류가 아키텍처 효과를 가릴 수 있어 데이터 품질을 통제한다."
+      },
+      "related": [
+        "2406.09246",
+        "2410.24164",
+        "2504.16054"
+      ]
+    }
+  },
+  "2410.24164": {
+    "summary_ko": "π0의 PaliGemma 기반 VLM과 300M action expert를 원문 Figure 3으로 추적한다. Flow Matching 수식과 H=50 행동 chunk, 실제 빨래 접기 Figure 2와 추론 지연을 구분해 읽는다.",
+    "reading_minutes": 27,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked_ai_assisted",
+    "reviewed_at": "2026-11-05",
+    "editorial_published_at": "2026-11-05",
+    "source_scope_ko": "원논문 §Method·§Experiments 및 PDF Figure 대조 · AI 보조 편집 / 독립 실험 재현 아님",
+    "abstract": "원문 초록의 직역이 아니라 Method, 실험표 및 Figure를 바탕으로 작성한 한국어 기술 해설이다. 정량 결과는 저자의 보고이며, 재현 검증은 별도로 필요하다.",
+    "review": {
+      "one_line": "π0는 이미지·언어를 이해하는 VLM에 연속 행동을 생성하는 작은 action expert를 결합한 범용 VLA다. 7개 로봇 구성에서 학습한 뒤 새로운 숙련 조작 과제에 적응하며, 행동을 이산 텍스트 토큰보다 flow matching으로 생성한다. (§IV–VI)",
+      "problem": "비디오와 문장을 잘 이해하는 VLM도 로봇의 고주파 연속 제어를 바로 제공하지는 않는다. 작은 관절 위치 오차나 접촉·그리퍼 상태의 차이는 로봇 작업 실패로 이어질 수 있다. 한 로봇의 고정된 시연만 학습해서는 양팔·모바일 조작 등 다양한 작업으로 전이하기도 어렵다. π0는 시각·언어에서 얻은 의미 지식과 로봇 행동 분포의 연속성을 함께 활용하려는 시도다. (§I–III)",
+      "idea": "PaliGemma에서 초기화한 큰 VLM은 카메라·명령을 해석한다. 별도 약 300M 행동 전문가는 로봇 상태와 노이즈가 섞인 미래 action chunk를 받아 연속 행동을 복원하는 벡터장을 학습한다. 두 부분은 완전히 독립된 API로 번갈아 호출하는 것이 아니라 Transformer 층 내에서 상호작용한다. PDF Figure 3은 데이터 혼합, 두 expert, 로봇 embodiment의 관계를 보여준다. (§IV)",
+      "method": "여러 카메라의 이미지, 자연어 명령 ℓ, proprioception qₜ를 조건으로 앞으로 H=50 스텝의 action chunk A를 생성한다. 학습에서는 Gaussian noise ε를 참 행동 A에 섞어 A^τ = τA + (1−τ)ε를 만들고, 네트워크가 목표 속도 A−ε를 맞히도록 flow matching loss를 최소화한다. 추론 시에는 표준정규 잡음에서 시작해 약 10회 Euler update로 행동 chunk를 만든다. 여기서 τ는 실제 로봇의 시간 t가 아니라 생성 내부의 가상 시간이다. 캐시된 시각·언어 특징을 재사용해 행동 생성 지연을 줄인다. (§IV, Appendix A–D)",
+      "findings": "저자들은 사전학습에 7개 로봇 구성·68개 복합 과제, 약 903M robot timesteps를 포함한 자체 데이터를 활용하고 일부 공개 데이터도 혼합했다. 단순 프롬프트에 반응하는 작업과 고품질 후속학습으로 익히는 긴 조작 작업을 구분해 평가한다. PDF Figure 2는 이동형 조작 로봇의 건조기 빨래 꺼내기→바구니 이동→테이블 접기라는 정성 롤아웃이지 평균 성공률 그래프가 아니다. NVIDIA RTX 4090에서 on-board 모델 호출은 73ms, 네트워크가 포함된 off-board는 86ms로 보고한다. 실제 제어 Hz와 모델 호출 지연은 서로 다른 수치다. (§V–VI, Appendix D)",
+      "limitations": "H=50은 한 번에 미래 행동 50개를 만든다는 의미일 뿐, 50개의 제어 입력이 끝날 때까지 무조건 open-loop로 작동해야 한다는 뜻은 아니다. 긴 동작 실행 간격은 관측 업데이트·실패 복구에 영향을 줄 수 있다. 온라인 모델 호출의 73/86ms는 end-to-end 작업 성공률이 아니며 하드웨어와 실행 위치가 다르면 달라진다. 실험의 학습 데이터 양이 베이스라인마다 일치하는지, 후속학습한 특정 복합 작업 결과를 진짜 zero-shot 일반화와 구별해야 한다. (§VI, Appendix)",
+      "questions": [
+        "Figure 3에서 VLM과 Action Expert는 어떤 토큰을 각각 처리하는가?",
+        "Flow τ와 실제 로봇 시계열 t를 혼동하면 어떤 학습 오류가 나는가?",
+        "H=50, Euler 10 steps, 50Hz 제어는 왜 서로 다른 세 숫자인가?",
+        "Figure 2 빨래 사례와 실제 성공률 실험을 어떻게 분리해 평가할 것인가?"
+      ],
+      "source_scope": "full_paper_and_figures",
+      "generated_by": "editorial"
+    },
+    "deep_dive": {
+      "lead": "**읽는 목표:** π0를 ‘큰 VLM에 로봇 출력층을 추가한 것’이라고만 이해하지 말자. PDF Figure 3에서 데이터 혼합→VLM→Action Expert→연속 action chunk로 이어지는 경로를 따라가고, flow matching 수식이 왜 필요한지를 이해하자. PDF Figure 2는 실제 빨래 접기 시퀀스의 정성 사례다.",
+      "pipeline": [
+        {
+          "title": "1. 여러 카메라·명령·로봇 상태를 입력",
+          "detail": "로봇의 영상 관측 여러 개와 자연어 목표, 현재 관절·그리퍼 상태를 조건으로 받는다. 시각·언어 부분과 proprioception/action 부분이 서로 다른 토큰 경로를 사용한다.",
+          "io": "oₜ = images + language ℓ + qₜ"
+        },
+        {
+          "title": "2. PaliGemma 초기화 VLM에서 의미 특징 추출",
+          "detail": "약 3B의 VLM은 입력 장면과 언어 목표의 의미 정보를 만든다. 별도 약 300M action expert는 관절 상태와 노이즈가 섞인 행동을 처리한다. 이들은 같은 Transformer 층의 attention을 통해 정보가 상호작용한다.",
+          "io": "VLM semantic tokens ↔ Action expert state tokens"
+        },
+        {
+          "title": "3. 실제 행동과 노이즈 사이를 학습",
+          "detail": "정답 action chunk A와 Gaussian ε를 뽑고 가상시간 τ에서 A^τ = τA+(1−τ)ε를 만든다. 이때 목표 벡터장은 A−ε이다. 모델은 이 벡터장을 최소제곱으로 맞히도록 학습한다.",
+          "io": "Loss = ||vθ(A^τ,oₜ)−(A−ε)||²"
+        },
+        {
+          "title": "4. 추론 시 10번의 Euler 보정으로 H=50 생성",
+          "detail": "잡음에서 출발해 학습한 벡터장 방향으로 10회 수정하여 미래 50스텝의 연속 행동을 얻는다. KV cache는 denoising하는 동안 반복되는 관측 계산을 줄인다.",
+          "io": "A^{τ+δ}=A^τ+δvθ(...), H=50"
+        },
+        {
+          "title": "5. 광범위한 사전학습 이후 작업별 후속학습",
+          "detail": "7개 로봇 구성과 68개 과제의 넓은 시연 데이터로 먼저 학습하고, 빨래 접기·테이블 정리처럼 긴 조작은 더 일관된 작업별 데이터로 fine-tuning한다. 제로샷 지시 수행과 후속학습 성능을 구분한다.",
+          "io": "broad pretraining → task-specific post-training"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "Figure 3의 두 전문가는 무엇을 나누는가",
+          "body": "VLM은 이미지와 문장 토큰을 처리하고 action expert는 로봇 상태·현재 노이즈 행동을 다룬다. 두 부분은 완전히 따로 운영되는 정책 두 개가 아니라 하나의 모델에서 전문화된 가중치 집합을 쓴다. 오른쪽의 다른 로봇은 같은 정책을 서로 다른 embodiment에 적용함을 뜻한다.",
+          "watch": "그림 왼쪽 데이터 혼합·가운데 두 expert·오른쪽 embodiment를 세 구간으로 확인한다."
+        },
+        {
+          "title": "Flow Matching의 가상 시간 τ",
+          "body": "τ는 실제 제어 루프의 시간과 다르다. 데이터 행동 A와 ε 사이에서 네트워크가 현재 noisy action을 어느 방향으로 움직여야 하는지 학습하는 변수를 뜻한다. action 생성 반복 횟수, 행동 chunk 길이, robot controller Hz와 혼동하지 않아야 한다.",
+          "watch": "A^τ 수식의 두 끝점 τ=0과 τ=1에서 행동 상태가 무엇인지 대입한다."
+        },
+        {
+          "title": "Figure 2는 정량 그래프가 아닌 롤아웃 사례",
+          "body": "건조기→바구니→이동→옷 접기로 이어지는 구성은 복합 과제에서 어떤 순서로 조작을 수행하는지 보여준다. 원본 Figure 2에는 전체 평균 성공률의 추정이나 통계 신뢰구간이 제시되는 것이 아니다. 그런 질문은 §VI의 평가표를 읽어야 한다.",
+          "watch": "정성 사례, 실험 태스크의 성공률, 모델 추론 시간은 세 종류의 근거다."
+        },
+        {
+          "title": "새 행동 chunk 추론과 로봇 구동 제어",
+          "body": "H=50은 한 번에 내는 미래 명령의 수다. 실제 로봇이 50Hz로 제어 명령을 실행해도 모델 자체가 50Hz로 항상 새로 실행된다는 의미는 아니다. 관측 갱신·action execution horizon을 따로 설정해야 한다.",
+          "watch": "정책 latency와 low-level servo Hz를 별도로 기록한다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "모델 크기",
+          "value": "VLM 약 3B + action expert 약 300M",
+          "context": "PaliGemma 기반과 새 행동 전문가, §IV"
+        },
+        {
+          "metric": "Action chunk와 생성",
+          "value": "H=50 / 10 Euler steps",
+          "context": "flow matching 추론, 실제 제어 스텝과 내부 생성 스텝 분리"
+        },
+        {
+          "metric": "사전학습 자체 데이터",
+          "value": "7 robot configurations · 68 tasks · ~903M timesteps",
+          "context": "저자 다종 조작 자료, §V-A"
+        },
+        {
+          "metric": "RTX4090 추론 지연",
+          "value": "on-board 73ms / off-board 86ms",
+          "context": "Appendix D, 네트워크 13ms가 포함된 off-board와 구별"
+        }
+      ],
+      "evidence_note": "Figure 2는 정성 사례다. 지연시간 73/86ms, 제어 주파수, 실제 task success rate를 하나의 수치로 해석하지 않는다.",
+      "comparison": "OpenVLA의 행동 출력은 256-bin 이산 토큰 7개에 대한 autoregressive prediction이다. Octo의 행동 head는 작은 diffusion generator다. π0는 사전학습 VLM과 action expert를 나누어 연속 행동 chunk를 flow matching으로 만든다. 어떤 방식이 우수한지는 동일한 로봇·데이터·제어 환경에서 비교해야 한다.",
+      "reading_guide": [
+        "PDF Figure 3의 왼쪽 데이터→VLM+action expert→로봇 출력 단계를 표시한다.",
+        "§IV에서 τ=0,1의 노이즈/정답 행동 경계를 대입한다.",
+        "H=50, 10 Euler steps, 50Hz 제어 의미를 구분해 정리한다.",
+        "PDF Figure 2 빨래 시퀀스를 정성 롤아웃으로 읽고 §VI 정량 결과와 혼동하지 않는다."
+      ],
+      "replication": {
+        "hypothesis": "H=50을 항상 전부 실행하는 것보다 관측 갱신 간격을 상황에 맞게 줄이면 접촉 실패에서 더 빨리 회복할 수 있다.",
+        "setup": "동일한 π0 체크포인트를 사용해 빨래·테이블 조작에서 관측 재입력 간격을 5,10,25,50 controller steps로 조절한다.",
+        "baselines": "고정 Horizon 50, 짧은 receding-horizon, 위험 감지 시 중간 갱신; 학습 모델은 고정",
+        "metrics": "작업 완료율, 로봇 충돌·gripper slip, GPU latency, 회복 동작 성공률",
+        "risks": "짧은 재추론 간격의 GPU 지연이 관측 갱신 이득을 상쇄할 수 있다."
+      },
+      "related": [
+        "2406.09246",
+        "2405.12213",
+        "2504.16054"
+      ]
+    }
   }
 }

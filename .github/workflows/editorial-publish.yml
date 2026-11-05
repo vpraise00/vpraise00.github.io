@@ -1,0 +1,58 @@
+name: Publish approved research articles
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/editorial_content.json'
+      - 'data/editorial_approvals.json'
+      - 'data/figure_catalog.json'
+      - 'scripts/build_site.py'
+      - '.github/workflows/editorial-publish.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-radar-publish
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.repository == 'vpraise00/vpraise00.github.io'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Rebuild only source-reviewed articles and RSS
+        run: python scripts/build_site.py
+      - name: Validate published article counts and figure attribution
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('.')
+          a=json.loads((root/'data/editorial_approvals.json').read_text())
+          approved=set(a['approved_ids'])
+          actual={p.stem for p in (root/'papers').glob('*.html')}
+          assert approved==actual,(approved,actual)
+          for pid in ['2406.09246','2405.12213','2410.24164']:
+              text=(root/'papers'/f'{pid}.html').read_text()
+              assert 'original-paper-figure' in text,pid
+              assert 'id="method"' in text,pid
+          print('Verified',len(actual),'approved studies')
+          PY
+      - name: Commit generated articles
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add papers/ feed.xml sitemap.xml robots.txt
+          if ! git diff --cached --quiet; then
+            git commit -m 'docs: publish source-reviewed VLA and robotics studies'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

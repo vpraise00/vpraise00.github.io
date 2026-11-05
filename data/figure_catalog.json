@@ -321,80 +321,92 @@
     ]
   },
   "2410.24164": {
-    "heading": "π0가 연속 액션을 만드는 구조",
-    "intro": "이 글은 π0: A Vision-Language-Action Flow Model for General Robot Control의 원본 Figure를 보며 읽는 가이드입니다. 각 그림은 저자 논문에서만 추출합니다. **캡션은 원문을 기준으로**, 아래 설명은 한국어 독해를 위해 별도로 작성했습니다.",
+    "heading": "π0: Figure 3 방법론과 Figure 2 장기 작업 정독",
+    "intro": "연속 행동 생성은 Figure 3, 빨래 접기 실험 사례는 Figure 2에서 구분합니다.",
     "figures": [
       {
-        "number": 2,
-        "reading_title": "장시간·정교한 조작 장면",
-        "context": "Figure 2에서 세탁물 접기 등 고정밀 조작은 긴 액션 시퀀스와 접촉 제어가 동시에 필요함을 보여준다.",
+        "number": 3,
+        "placement": "method",
+        "reading_title": "PDF Figure 3 — PaliGemma VLM과 Flow-Matching Action Expert",
+        "verified_caption": "다종 로봇 사전학습과 VLM/action expert의 연속 행동 생성 프레임워크.",
+        "context": "모델 구조와 flow matching 수식을 읽은 뒤 원본 Figure 3에서 데이터 입력→두 expert→로봇 출력으로 이동해 보자.",
         "steps": [
-          "행동 청크 생성과 반복 폐루프 실행을 구분해서 본다.",
-          "영상 예시는 실험 성공률 집계가 아니다."
-        ],
-        "locator": "원문 Figure 2 / arXiv:2410.24164"
+          "왼쪽의 서로 다른 데이터 원천이 다종 로봇 정책을 학습하는 기반이다.",
+          "PaliGemma 기반 큰 VLM이 장면과 언어의 의미 특징을 계산한다.",
+          "작은 Action Expert가 robot state와 noisy action chunk를 처리한다.",
+          "잡음에서 연속 행동으로의 이동을 약 10 Euler update로 계산한다.",
+          "오른쪽은 다양한 robot embodiment로 제어 명령이 나가는 구성이다."
+        ]
       },
       {
-        "number": 3,
-        "reading_title": "PaliGemma VLM + Flow Matching Action Expert",
-        "context": "저자 Figure 3은 인터넷 사전학습 VLM의 표현과 별도의 액션 expert가 연속 행동을 생성하는 구조를 보여준다.",
+        "number": 2,
+        "placement": "findings",
+        "reading_title": "PDF Figure 2 — 건조기에서 옷 접기까지의 실제 작업 사례",
+        "verified_caption": "모바일 매니퓰레이터가 빨래를 꺼내 바구니에 담아 이동·접는 긴 조작 롤아웃.",
+        "context": "실험 섹션에서 이 그림을 본다. 성공 사례의 작업 순서를 보여주는 정성 이미지이며 평균 성공률 그래프가 아니다.",
         "steps": [
-          "언어·영상 입력은 어디를 통과하며, 로봇 상태와 확산 시간 단계는 어느 부분을 조건화하는지 추적한다.",
-          "행동 expert가 여러 로봇 액션 공간에 대응하는 방식을 본문과 함께 확인한다."
-        ],
-        "locator": "원문 Figure 3 / arXiv:2410.24164"
+          "건조기에서 빨래를 꺼내는 단계부터 시작한다.",
+          "바구니에 옷을 담고 접는 작업 위치로 이동한다.",
+          "옷을 테이블에서 하나씩 꺼내 접는 순서를 확인한다.",
+          "긴 과제의 작업 순서를 실현한 적응 학습 사례다.",
+          "정성 롤아웃의 성공 모습으로 모든 환경의 평균 성공률을 계산할 수는 없다."
+        ]
       }
     ]
   },
   "2406.09246": {
-    "heading": "OpenVLA의 실제 모델 구조·성능",
-    "intro": "이 글은 OpenVLA: An Open-Source Vision-Language-Action Model의 원본 Figure를 보며 읽는 가이드입니다. 각 그림은 저자 논문에서만 추출합니다. **캡션은 원문을 기준으로**, 아래 설명은 한국어 독해를 위해 별도로 작성했습니다.",
+    "heading": "OpenVLA: PDF Figure 2 중심 원문 독해",
+    "intro": "원논문 Figure 2의 행동 생성 구조를 구현 순서대로 풉니다.",
     "figures": [
       {
-        "number": 1,
-        "reading_title": "970k 다종 로봇 에피소드에서 배우는 VLA",
-        "context": "Figure 1은 Open X-Embodiment 기반 대규모 로봇 시연으로 일반 정책을 학습하는 흐름을 요약한다.",
-        "steps": [
-          "원래 RGB 이미지와 언어 지시가 실제 제어 출력으로 이어지는 구조를 따라간다.",
-          "사전훈련 데이터 다양성과 대상 로봇 전용 미세조정은 서로 다른 논점이다."
-        ],
-        "locator": "원문 Figure 1 / arXiv:2406.09246"
-      },
-      {
         "number": 2,
-        "reading_title": "DINOv2 + SigLIP → MLP → Llama 2 → 행동 토큰",
-        "context": "원문 Figure 2의 구성도에서 두 비전 인코더 출력을 결합하고 projector로 언어 모델의 임베딩 공간에 맞춘다. Llama 2가 내놓은 행동 토큰은 실제 7차원 제어값으로 역변환한다.",
+        "placement": "method",
+        "reading_title": "PDF Figure 2 — DINOv2·SigLIP에서 7D 로봇 행동까지",
+        "verified_caption": "두 시각 백본 특징, projector, Llama 2, 7차원 action-token detokenizer의 연결.",
+        "context": "방법론을 읽고 원본 Figure 2에서 카메라 입력→두 vision encoder→MLP→LLM→행동 역변환 화살표를 따라가자.",
         "steps": [
-          "7B는 언어 백본 규모이며, 출력 행동의 차원은 로봇 제어 인터페이스를 가리킨다.",
-          "저자별 비교는 동일한 로봇·시연·평가 프로토콜인지 확인한다."
-        ],
-        "locator": "원문 Figure 2 / arXiv:2406.09246"
+          "카메라 이미지가 DINOv2와 SigLIP 두 인코더로 들어간다.",
+          "이어 붙인 visual feature를 MLP projector가 LLM 입력 공간으로 정렬한다.",
+          "Llama 2 7B가 7개 연속 행동 차원을 각각 256-bin token으로 예측한다.",
+          "역토큰화가 이산 출력을 7D 로봇 제어 명령으로 복원한다.",
+          "이 그림은 아키텍처다. 29과제 실험 성공률은 §5의 표에서 확인해야 한다."
+        ]
       }
     ]
   },
   "2405.12213": {
-    "heading": "Octo를 여러 로봇에서 재사용하는 방법",
-    "intro": "이 글은 Octo: An Open-Source Generalist Robot Policy의 원본 Figure를 보며 읽는 가이드입니다. 각 그림은 저자 논문에서만 추출합니다. **캡션은 원문을 기준으로**, 아래 설명은 한국어 독해를 위해 별도로 작성했습니다.",
+    "heading": "Octo: PDF Figure 2 구조, Figure 3 학습 배치",
+    "intro": "PDF 인쇄 번호를 기준으로 토큰 구조와 실제 미니배치 데이터 가중치를 차례로 풉니다.",
     "figures": [
       {
         "number": 1,
-        "reading_title": "범용 정책이 입력을 받는 방식",
-        "context": "Octo는 관측과 목표를 토큰화해 Transformer 처리 후 action readout으로 조작한다.",
+        "display_number": 2,
+        "placement": "method",
+        "reading_title": "PDF Figure 2 — Task·Observation·Readout token",
+        "verified_caption": "Task/observation tokenizers, Transformer readout, flexible action head 구성.",
+        "context": "§III-A의 구조 설명 뒤 원본 PDF Figure 2를 본다. arXiv HTML 자동 번호와 다를 수 있어 PDF 인쇄 번호를 표기한다.",
         "steps": [
-          "문장 목표/이미지 목표·카메라 채널이 어디서 입력되는지 파악한다.",
-          "변경된 action space에 그대로 사용할 수 있다는 뜻이 아니라 입력과 head의 적응이 필요하다."
-        ],
-        "locator": "원문 Figure 1 / arXiv:2405.12213"
+          "녹색은 언어 명령 또는 목표 이미지에서 만든 Task token이다.",
+          "파란색은 카메라·로봇 상태의 Observation token이다.",
+          "중앙 Transformer가 관계를 처리하고 보라색 Readout token으로 행동 조건을 전달한다.",
+          "작은 diffusion action head에서 연속 행동을 생성한다. Backbone을 20번 돌리는 뜻이 아니다.",
+          "아래 점선은 새로운 센서와 동작 출력 헤드를 추가할 수 있다는 모듈성을 뜻한다."
+        ]
       },
       {
         "number": 2,
-        "reading_title": "여러 실물 로봇 평가 장면",
-        "context": "Figure 2에서는 기관별로 서로 다른 로봇과 과제를 시험한다.",
+        "display_number": 3,
+        "placement": "method",
+        "reading_title": "PDF Figure 3 — 25개 데이터셋의 학습 샘플링 가중치",
+        "verified_caption": "25 curated Open X-Embodiment datasets의 학습 미니배치 평균 기여 비율.",
+        "context": "§III-B에서 사전학습 데이터 큐레이션을 읽고 Figure 3 파이차트를 보자. 저장된 전체 자료량이 아니라 미니배치 샘플링 비율이다.",
         "steps": [
-          "zero-shot과 소수 데이터 미세조정 결과를 별개로 읽는다.",
-          "로봇 플랫폼이나 관측 채널이 달라지면 숫자를 직접 비교하기 어렵다."
-        ],
-        "locator": "원문 Figure 2 / arXiv:2405.12213"
+          "Image observation과 로봇 말단 행동을 제공하는 데이터셋을 선별했다.",
+          "각 dataset의 크기뿐 아니라 행동 다양성을 고려해 batch sampling weight를 조정한다.",
+          "파이차트의 면적은 실제 정책 학습 배치의 기여 비율이다.",
+          "큰 데이터셋이 반드시 높은 비율을 의미하지는 않는다.",
+          "Table II의 데이터 혼합 ablation과 연결해 해석하고 인과관계를 과장하지 않는다."
+        ]
       }
     ]
   },
