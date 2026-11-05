@@ -1,17 +1,6 @@
-name: Source figure refresh
+name: Source figure review (manual only)
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'data/figure_catalog.json'
-      - 'scripts/extract_paper_figures.py'
-      - 'scripts/register_auto_figures.py'
-      - 'data/papers.json'
-      - 'scripts/build_site.py'
-      - '.github/workflows/source-figures.yml'
-  schedule:
-    - cron: '35 1 * * *' # 10:35 KST, after new paper ingestion at 10:00
   workflow_dispatch:
 
 permissions:
@@ -31,26 +20,19 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: pip
-      - name: Install source parser
-        run: python -m pip install -r requirements.txt
-      - name: Register author figures from new papers using actual arXiv HTML captions
-        run: python scripts/register_auto_figures.py
-      - name: Extract only figure-number-matched original paper figures
+      - run: python -m pip install -r requirements.txt
+      - name: Original source figure audit for approved papers only
         run: python scripts/extract_paper_figures.py
-      - name: Rebuild figure-aware article pages
+      - name: Rebuild approved posts only
         run: python scripts/build_site.py
-      - name: Test original-figure provenance and blog pages
-        run: python -m unittest discover -s tests -v
-      - name: Commit source figures and figure-aware posts
+      - run: python -m unittest discover -s tests -v
+      - name: Commit audited figures
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/figure_catalog.json data/figure_extract_status.json assets/paper-figures/ papers/ sitemap.xml feed.xml
-          if git diff --cached --quiet; then
-            echo 'No source figure changes.'
-          else
-            git commit -m 'feat(figures): add source-matched originals and captions'
+          git add data/figure_extract_status.json assets/paper-figures/ papers/ sitemap.xml feed.xml
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore: update approved source figures'
             git pull --rebase origin main
             git push origin HEAD:main
           fi

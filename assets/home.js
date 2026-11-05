@@ -51,7 +51,7 @@
   return `<a class="spotlight-card sc-${idx}" href="${R.paperLink(p.id)}" style="${decorate(p)}"><div class="spotlight-top"><span>${idx===0?'01 / FEATURED ANALYSIS':'02 / RESEARCH HIGHLIGHT'}</span><span class="spotlight-arrow">↗</span></div><div class="spotlight-orbit" aria-hidden="true"><i></i><i></i><i></i></div><div class="spotlight-content">${chip(p.primary_category,'spotlight-chip')}<h3>${e(p.title)}</h3><p>${e(desc)}</p><div class="spotlight-meta">${e(R.showDate(p.published))} <span>·</span> Deep dive <span>→</span></div></div></a>`;
  }
  function spotlight(){
-  const picks=[papers.find(p=>p.id==='2610.07922'),papers.find(p=>p.id==='2610.42021')].filter(Boolean);
+  const picks=[papers.find(p=>p.id==='2504.16054')].filter(Boolean);
   const options=picks.length===2?picks:papers.filter(p=>p.featured).sort((a,b)=>b.published.localeCompare(a.published)).slice(0,2);
   $('#spotlight-grid').innerHTML=options.map(spotlightCard).join('');
  }
@@ -117,9 +117,15 @@
   document.addEventListener('radar:changed',()=>{counters();sideChannels();});
  }
  async function init(){
-  try{const result=await R.load();data=result.data;config=result.config;papers=(data.papers||[]).slice();
+  try{const result=await R.load();data=result.data;config=result.config;
+   const approvalResponse=await fetch('data/editorial_approvals.json', {cache:'no-store'});
+   const contentResponse=await fetch('data/editorial_content.json', {cache:'no-store'});
+   if(!approvalResponse.ok || !contentResponse.ok) throw new Error('공개 해설 검증 목록을 확인할 수 없습니다.');
+   const approvals=await approvalResponse.json(); const edits=await contentResponse.json();
+   const approvedIds=new Set(approvals.approved_ids||[]);
+   papers=(data.papers||[]).filter(p=>approvedIds.has(p.id) && edits[p.id]?.editorial_verified===true).map(p=>({...p,...edits[p.id]}));
    $('#today-date').innerHTML=`<span>LAST INDEXED</span><strong>${e(R.showDate((data.last_checked||'').slice(0,10)))}</strong>`;
-   $('#sync-status').textContent=`Updated ${R.showDate((data.last_checked||'').slice(0,10))}`;
+   $('#sync-status').textContent='공개: 원문 대조를 통과한 해설만';
    const categoryFromLink=new URLSearchParams(window.location.search).get('category');
    if(categoryFromLink && R.getCategories(config).some(c=>c.id===categoryFromLink))channel=categoryFromLink;
    bindings();spotlight();render();

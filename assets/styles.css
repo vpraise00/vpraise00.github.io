@@ -171,3 +171,7 @@
 .inline-source-figure .original-figure-explanation li{padding:9px 0}
 .inline-source-figure .source-figure-caption{padding-bottom:10px}
 @media(max-width:650px){.inline-source-figure{margin:18px 0 25px}.inline-source-figure .figure-context-bridge{padding:0 14px 13px;font-size:12px}.inline-source-figure .original-figure-stage img{max-height:335px;padding:4px}.inline-source-figure .original-figure-explanation{padding:15px}}
+
+/* Editorial trust & provenance policy */
+.editorial-policy{margin:22px 0 26px;padding:18px 23px;border:1px solid var(--line,#dce2df);border-left:3px solid #4c9485;border-radius:12px;background:var(--surface,#fff)}
+.editorial-policy strong{display:block;font-size:15px;line-height:1.5;margin-bottom:7px}.editorial-policy p{font-size:13px;line-height:1.85;color:var(--muted,#5b6770);margin:0 0 10px}.editorial-policy a{color:var(--brand,#308d7c);font-size:12px;font-weight:700;text-decoration:underline}.original-figure-stage img{width:100%;height:auto;object-fit:contain}

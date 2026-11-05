@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "policy": "publications_require_source_crosscheck",
+  "approved_ids": [
+    "2504.16054"
+  ],
+  "note_ko": "신규 수집 데이터는 자동 발행하지 않습니다. 논문 원문과 Figure·실험 조건을 대조한 글만 공개합니다.",
+  "updated_at": "2026-11-05"
+}

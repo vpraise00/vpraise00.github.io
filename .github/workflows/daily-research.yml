@@ -1,59 +1,39 @@
-name: Daily research radar
+name: Daily research discovery (review queue only)
 
 on:
   schedule:
-    # 10:00 Asia/Seoul (01:00 UTC); GitHub may delay scheduled runs.
+    # 10:00 Asia/Seoul (UTC 01:00). GitHub scheduling may be delayed.
     - cron: '0 1 * * *'
-  # Rebuild immediately when research code or schedule changes.
-  # Generated posts/data are intentionally excluded to prevent push loops.
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/daily-research.yml'
-      - 'scripts/build_site.py'
-      - 'scripts/update_papers.py'
-      - 'config/topics.json'
-      - 'tests/test_site.py'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: research-radar-daily
+  group: research-radar-editorial-queue
   cancel-in-progress: false
 
 jobs:
-  research-update:
+  discover:
     if: github.repository == 'vpraise00/vpraise00.github.io'
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: pip
-      - name: Install PDF parser for optional AI analyses
-        run: python -m pip install -r requirements.txt
-      - name: Validate sources and preview builder
+      - name: Run offline editorial safeguards
         run: python -m unittest discover -s tests -v
-      - name: Fetch latest papers and create evidence-aware reviews
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-4.1-mini' }}
-        run: python scripts/update_papers.py
-      - name: Build individual article pages, RSS and sitemap
-        run: python scripts/build_site.py
-      - name: Save daily research updates
+      - name: Check arXiv metadata and save candidate list (NEVER publish articles)
+        run: python scripts/queue_candidates.py
+      - name: Store candidate queue only
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data/papers.json papers/ feed.xml sitemap.xml robots.txt
-          if git diff --cached --quiet; then
-            echo 'No changes to publish.'
-          else
-            git commit -m 'chore(research): daily paper feed and posts'
+          git add data/review_queue.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore: refresh research candidates for editorial review'
             git pull --rebase origin main
             git push origin HEAD:main
           fi

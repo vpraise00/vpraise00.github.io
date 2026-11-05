@@ -192,7 +192,7 @@ def post_page(p: dict, categories: dict) -> str:
     authors = ', '.join(map(str,p.get('authors', [])))
     review = p.get('review') or {}
     featured = bool(p.get('featured'))
-    source_scope = '초록 + 공식 자료 기반 편집 해설' if p.get('curated') else ('AI 보조 분석 · 논문 PDF 기반 (검증 권장)' if review.get('source_scope')=='pdf+abstract' else '자동 수집 · 초록 기반 요약 (본문 검증 전)')
+    source_scope = '원문 §III–V, Figure 2·3과 대조한 편집 해설 · 독립 재현은 별도' if p.get('editorial_verified') else '초록 + 공식 자료 기반 편집 해설' if p.get('curated') else ('AI 보조 분석 · 논문 PDF 기반 (검증 권장)' if review.get('source_scope')=='pdf+abstract' else '자동 수집 · 초록 기반 요약 (본문 검증 전)')
     article_data = json.dumps(p, ensure_ascii=False).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026')
     # Do not render untrusted paper-provided URL as a script/link; arxiv link is built from validated id.
     source_url = f'https://arxiv.org/abs/{id}'
@@ -297,7 +297,7 @@ def post_page(p: dict, categories: dict) -> str:
 <div class="side-box"><h3>↗ ORIGINAL SOURCES</h3>{source_links}</div>
 <div class="side-box"><h3>✎ PRIVATE RESEARCH NOTES</h3><span class="subhead">메모는 내 브라우저에만 저장됩니다. 자동 저장됩니다.</span><textarea id="paper-note" class="note-area" placeholder="이 논문의 아이디어, 재현할 실험, 후속 질문을 기록하세요..."></textarea><div class="note-status" id="note-status">메모 준비됨</div><div style="margin-top:11px"><select class="sort-select" id="custom-paper-category" style="max-width:100%;width:100%"><option value="">+ 내 분류에 추가</option></select></div></div>
 <div class="side-box"><h3>✳ MY HIGHLIGHTS <span id="highlight-count" style="color:var(--muted);font-weight:500">0</span></h3><span class="subhead">본문에서 문장을 선택하면 표시하고 GPT에 질문할 수 있습니다.</span><div id="highlights-list" class="highlight-empty">선택해 저장한 문장이 이곳에 표시됩니다.</div></div>
-<div class="side-box side-digest"><h3>READING METADATA</h3><span>INDEX DATE</span><strong>{h(date)}</strong><span>PAPER ID</span><strong>arXiv:{h(id)}</strong><span>REVIEW STATUS</span><strong>{'Editorial · evidence-linked' if p.get('curated') else ('AI-assisted · verify source' if review.get('generated_by')=='openai' else 'Abstract · metadata only')}</strong></div>
+<div class="side-box side-digest"><h3>READING METADATA</h3><span>INDEX DATE</span><strong>{h(date)}</strong><span>PAPER ID</span><strong>arXiv:{h(id)}</strong><span>REVIEW STATUS</span><strong>{'Source-crosschecked editorial · replication not independently verified' if p.get('editorial_verified') else ('Editorial · verify' if p.get('curated') else 'Abstract · metadata only')}</strong></div>
 </aside></div></div></div>
 <div id="selection-toolbar" class="selection-toolbar hidden"><button id="selection-save">✎ 하이라이트 저장</button><button id="selection-ask">✳ GPT에 질문</button></div><div class="toast hidden" id="toast" role="status"></div>
 </body></html>'''
@@ -305,7 +305,11 @@ def post_page(p: dict, categories: dict) -> str:
 def build():
     content = json.loads((ROOT/'data/papers.json').read_text(encoding='utf-8'))
     config = json.loads((ROOT/'config/topics.json').read_text(encoding='utf-8'))
-    papers=sorted(content.get('papers',[]),key=lambda p:(p.get('published',''),p.get('id','')),reverse=True)
+    gate=json.loads((ROOT/'data/editorial_approvals.json').read_text(encoding='utf-8'))
+    edits=json.loads((ROOT/'data/editorial_content.json').read_text(encoding='utf-8'))
+    approved=set(gate.get('approved_ids',[]))
+    # FAIL CLOSED: unapproved metadata stays archived, never becomes a published article.
+    papers=sorted(({**p, **edits[p['id']]} for p in content.get('papers',[]) if p.get('id') in approved and p.get('id') in edits and edits[p['id']].get('editorial_verified') is True),key=lambda p:(p.get('published',''),p.get('id','')),reverse=True)
     ids=set()
     for p in papers:
         clean_slug(p['id'])
@@ -318,8 +322,8 @@ def build():
     for p in papers:
         (ROOT/post_path(p)).write_text(post_page(p,categories),encoding='utf-8')
     # Order the saved data for browsing and diff stability.
-    (ROOT/'data/papers.json').write_text(json.dumps({'last_checked':content.get('last_checked',''), 'papers':papers},ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    stamp=content.get('last_checked','')[:10] or datetime.now(timezone.utc).date().isoformat()
+    # Archive data/papers.json is intentionally never overwritten by the public site builder.
+    stamp=max(content.get('last_checked','')[:10],gate.get('updated_at','')) or datetime.now(timezone.utc).date().isoformat()
     sitemap=['<?xml version="1.0" encoding="UTF-8"?>','<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',f'<url><loc>{BASE_URL}</loc><lastmod>{h(stamp)}</lastmod></url>']
     for p in papers:sitemap.append(f'<url><loc>{BASE_URL}{post_path(p)}</loc><lastmod>{h(p.get("updated",p.get("published",""))[:10])}</lastmod></url>')
     sitemap.append('</urlset>')

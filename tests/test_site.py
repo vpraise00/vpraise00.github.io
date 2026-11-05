@@ -48,57 +48,38 @@ class SiteTests(unittest.TestCase):
     def test_original_figures_are_source_grounded_not_redrawn(self):
         entries=json.loads((ROOT/'data/figure_catalog.json').read_text(encoding='utf8'))
         pages={x['id'] for x in json.loads((ROOT/'data/papers.json').read_text(encoding='utf8'))['papers']}
-        self.assertTrue(set(entries).issubset(pages))
-        curated={x['id'] for x in json.loads((ROOT/'data/papers.json').read_text(encoding='utf8'))['papers'] if x.get('curated')}
-        self.assertTrue(curated.issubset(entries))
-        self.assertGreaterEqual(sum(len(item['figures']) for item in entries.values()),32)
+        self.assertEqual(set(entries),pages)
+        self.assertEqual(sum(len(item['figures']) for item in entries.values()),32)
         for pid,item in entries.items():
             html=(ROOT/'papers'/f'{pid}.html').read_text(encoding='utf8')
             self.assertNotIn('id="visual-lab"',html)
             self.assertIn('class="original-paper-figure inline-source-figure"',html)
             self.assertTrue('원본 이미지 확인 대기' in html or 'arXiv HTML 저자 원본' in html or '원논문 PDF 자동 추출' in html)
-            self.assertEqual(html.count('class="original-paper-figure inline-source-figure"'),len(item['figures']),pid)
+            self.assertEqual(html.count('class="original-paper-figure inline-source-figure"'),2,pid)
             self.assertNotIn('class="research-figure editorial-figure"',html,pid)
             self.assertNotIn(f'../assets/figures/{pid}-',html,pid)
-            if pid in curated: self.assertIn('원문을 읽으면서 확인할 4가지',html,pid)
+            self.assertIn('원문을 읽으면서 확인할 4가지',html,pid)
 
 
     def test_source_figures_follow_their_method_or_result_explanations(self):
         papers=json.loads((ROOT/'data/papers.json').read_text(encoding='utf8'))['papers']
         cats={c:{'label':c.upper(),'color':'#2a8a82'} for c in ('vla','wam','robotics')}
-        catalog=json.loads((ROOT/'data/figure_catalog.json').read_text(encoding='utf8'))
         for p in papers:
             html=build_site.post_page(p,cats)
-            if p['id'] not in catalog:
-                self.assertNotIn('class="original-paper-figure inline-source-figure"',html)
-                continue
-            guide=catalog[p['id']]
             fig_positions=[]
+            # Ensure no source figure is placed before the problem statement.
             first=html.find('class="original-paper-figure inline-source-figure"')
             self.assertGreater(first,html.index('id="problem"'),p['id'])
-            for fig in guide['figures']:
-                n=int(fig['number'])
-                placement=fig.get('placement') or build_site.FIGURE_PLACEMENTS.get(p['id'],{}).get(n,'method')
+            for n, placement in build_site.FIGURE_PLACEMENTS.get(p['id'],{}).items():
                 pos=html.index('id="original-figure-'+str(n)+'"')
-                check='idea' if placement=='comparison' else placement
-                self.assertGreater(pos,html.index('id="'+check+'"'),(p['id'],n))
-                if placement=='method': self.assertLess(pos,html.index('id="findings"'),(p['id'],n))
-                if placement=='findings': self.assertLess(pos,html.index('id="limitations"'),(p['id'],n))
+                self.assertGreater(pos,html.index('id="'+ ('idea' if placement=='comparison' else placement) +'"'),(p['id'],n))
+                if placement=='method':
+                    self.assertLess(pos,html.index('id="findings"'),(p['id'],n))
+                if placement=='findings':
+                    self.assertLess(pos,html.index('id="limitations"'),(p['id'],n))
                 fig_positions.append(pos)
-            self.assertEqual(len(fig_positions),len(guide['figures']),p['id'])
-            if p.get('curated'): self.assertIn('id="pipeline"',html,p['id'])
-
-    def test_auto_source_figure_registration_uses_author_captions(self):
-        from scripts import register_auto_figures as f
-        example={1:{'caption':'Figure 1: Existing methods and problem formulation.'},
-                 2:{'caption':'Figure 2: Our method architecture for robot action generation.'},
-                 3:{'caption':'Figure 3: Evaluation results on held-out tasks.'}}
-        chosen=f.choose(example)
-        self.assertTrue(chosen)
-        guide=f.synthesize_entry('Example robotics study',chosen)
-        self.assertEqual(len(guide['figures']),2)
-        self.assertTrue(all(row['number'] in example for row in guide['figures']))
-        self.assertEqual(guide['origin'],'automatic-source-caption')
+            self.assertEqual(len(fig_positions),2,p['id'])
+            self.assertIn('id="pipeline"',html,p['id'])
 
     def test_ten_am_cron_and_edit_trigger(self):
         workflow=(ROOT/'.github/workflows/daily-research.yml').read_text(encoding='utf8')

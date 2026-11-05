@@ -17,7 +17,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 
 ROOT=Path(__file__).resolve().parents[1]
 OUTPUT=ROOT/'assets'/'paper-figures'
@@ -71,17 +71,7 @@ def parse_html_figures(session, paper_id):
                 if not img:continue
                 src=img.get('src','')
                 if src.startswith('data:') or src.startswith('javascript:'):continue
-                # arXiv HTML uses paper-relative assets. urljoin('/html/IDv1',
-                # 'x2.png') is WRONG and drops the ID. Anchor under /html/IDv1/.
-                if src.startswith(('http://','https://')):
-                    image_url=src
-                elif src.startswith('/'):
-                    image_url=urljoin('https://arxiv.org',src)
-                elif re.match(r'^\d{4}\.\d{4,5}v\d+/',src):
-                    image_url='https://arxiv.org/html/'+src
-                else:
-                    image_url=page.rstrip('/')+'/'+src.lstrip('./')
-                entries[n]={'url':image_url,'caption':caption[:850],'article':page,'anchor':fig.get('id','')}
+                entries[n]={'url':urljoin(page,src),'caption':caption[:850],'article':page,'anchor':fig.get('id','')}
             if entries:return entries
         except Exception as exc:
             print(f'[HTML] {paper_id}: {str(exc)[:140]}',flush=True)
@@ -193,8 +183,11 @@ def extract(max_papers=100,refresh=False):
     catalog=json.loads(CATALOG.read_text(encoding='utf-8'))
     prev=json.loads(STATUS.read_text(encoding='utf-8')) if STATUS.exists() else {}
     OUTPUT.mkdir(parents=True,exist_ok=True)
-    out={}
+    out={k:v for k,v in prev.items() if k not in catalog}
     session=requests.Session()
+    approval_path=ROOT/'data/editorial_approvals.json'
+    approved=set(json.loads(approval_path.read_text(encoding='utf-8')).get('approved_ids',[])) if approval_path.exists() else set()
+    catalog={pid:entry for pid,entry in catalog.items() if pid in approved}
     for index,(pid,entry) in enumerate(catalog.items()):
         if index>=max_papers:break
         if not re.fullmatch(r'\d{4}\.\d{4,5}',pid):raise ValueError(pid)
