@@ -478,5 +478,489 @@
         "locator": "원문 Figure 2 / arXiv:2403.12945"
       }
     ]
+  },
+  "2611.05372": {
+    "heading": "PolicyIK: High-Precision Inverse Kinematics for Robot Arms with Reinforcement Learning — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "PolicyIK: from broad reaching to precise regulation. (a) Full-pose reaching across the simulated workspace. (b) Reaching and…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그래프/사례 그림이라면 실험 조건, 비교 기준, 표시된 지표를 먼저 확인합니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 1 / arXiv 원문 HTML"
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "PolicyIK control formulation. At each step, the policy maps the\nobservation to a joint-reference increment, which is scaled by…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 2 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
+  },
+  "2611.05302": {
+    "heading": "PACT: Pose-Robust Actuation Co-Design for Tendon-Driven Robotic Hands — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "method",
+        "reading_title": "Pose-robust actuation co-design for tendon-driven robot hands (PACT) framework. The framework combines a force-pose library,…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 1 / arXiv 원문 HTML"
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Cross-pose performance of the Pose 1-specific design compared\nwith the shared design.",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그래프/사례 그림이라면 실험 조건, 비교 기준, 표시된 지표를 먼저 확인합니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 4 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
+  },
+  "2611.05249": {
+    "heading": "Should the Action Expert Train the VLM? Action-Token Supervision and Gradient Routing in Mixture-of-Transformer VLAs — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "findings",
+        "reading_title": "Action-token supervision shapes the effect of expert-to-VLM\ngradient flow. Left: the VLM is supervised to predict discrete…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그래프/사례 그림이라면 실험 조건, 비교 기준, 표시된 지표를 먼저 확인합니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 1 / arXiv 원문 HTML"
+      },
+      {
+        "number": 4,
+        "placement": "method",
+        "reading_title": "Closed-loop manipulation examples. Rollouts of the four concurrently trained policies in PanClean (left), MoveLatteCup (center),…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 4 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
+  },
+  "2611.05163": {
+    "heading": "RoboTryOn: Synthesizing Dexterous Robot Demonstrations from Human Videos via Virtual Try-On — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "method",
+        "reading_title": "RoboTryOn pipeline. (a) The image model sequentially translates keyframes\nof a human video into robot keyframes, the video\nmodel…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 1 / arXiv 원문 HTML"
+      },
+      {
+        "number": 2,
+        "placement": "findings",
+        "reading_title": "Examples of real-world benchmark tasks. For each of the four PnP tasks (top), both a human video\nand a teleoperated demonstration…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그래프/사례 그림이라면 실험 조건, 비교 기준, 표시된 지표를 먼저 확인합니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 2 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
+  },
+  "2611.05155": {
+    "heading": "Asynchronous Robot Policies — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 3,
+        "placement": "findings",
+        "reading_title": "Franka Evaluation Results on Real-world experiments and RoboLab simulation.",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그래프/사례 그림이라면 실험 조건, 비교 기준, 표시된 지표를 먼저 확인합니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 3 / arXiv 원문 HTML"
+      },
+      {
+        "number": 4,
+        "placement": "method",
+        "reading_title": "Qualitative example of Dynamic-Bump task. After bumping the ball, ARP is able to react in time to grasp it whereas the π 0 \\pi_{0}…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 4 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
+  },
+  "2611.05093": {
+    "heading": "LoopQ: Fair, Closed-Loop Evaluation of Quantized Vision-Language-Action Models — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 4,
+        "placement": "method",
+        "reading_title": "Where quantization loses under perturbation. Paired change in LIBERO-plus success per perturbation category (points vs. the…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 4 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
+  },
+  "2611.05080": {
+    "heading": "CRONOS: Benchmarking Non-Episodic Reinforcement Learning for Robotic Manipulation — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "findings",
+        "reading_title": "Overview of non-episodic training in CRONOS. We introduce CRONOS, a benchmark for RL fine-tuning of VLAs under infrequent scene…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그래프/사례 그림이라면 실험 조건, 비교 기준, 표시된 지표를 먼저 확인합니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 1 / arXiv 원문 HTML"
+      },
+      {
+        "number": 4,
+        "placement": "method",
+        "reading_title": "End-effector reset mitigates pretraining bias. EER automatically resets the end-effector to its initial position at each task…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 4 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
+  },
+  "2611.05062": {
+    "heading": "FloMo: 3D Scene Flow as a World Action Model Intermediate for Learning from Human Video — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Given an image and text prompt, FloMo jointly predicts dense 3D motion (scene flow) and robot actions using a pretrained video…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그래프/사례 그림이라면 실험 조건, 비교 기준, 표시된 지표를 먼저 확인합니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 1 / arXiv 원문 HTML"
+      },
+      {
+        "number": 4,
+        "placement": "method",
+        "reading_title": "Action attention concentrates on motion tokens. Share of action-query attention to each input modality, averaged over attention…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 4 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
+  },
+  "2611.05023": {
+    "heading": "HiLo-WAM: Decoupling Long-Horizon Task Evolution and Local Dynamics in World Action Models — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Architecture of HiLo-WAM. HiLo-WAM builds on a dual-DiT World Action Model consisting of a shared\nVideo DiT and an Action DiT.\nThe…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 2 / arXiv 원문 HTML"
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Qualitative comparison between Fast-WAM and HiLo-WAM in simulation and real-world tasks. Fast-WAM repeatedly changes its target…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그래프/사례 그림이라면 실험 조건, 비교 기준, 표시된 지표를 먼저 확인합니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 4 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
+  },
+  "2611.04972": {
+    "heading": "Caging Vision-Language Navigation for Legged Robots via Barrier-Certified Safety Architecture — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "method",
+        "reading_title": "The proposed Legged-VLN architecture separates semantic grounding\n(top) from safety-assured physical grounding (bottom).",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 1 / arXiv 원문 HTML"
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Multi-point safety models for (a) Ghost Robotics Vision 60 and (b) Unitree G1. Each point has a radius representing the local…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 2 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
+  },
+  "2611.04873": {
+    "heading": "Trusting Imagined Futures: Auditing Imagined Rewards for VLA Post-Training — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "findings",
+        "reading_title": "A candidate may receive a higher predicted utility than\nSource yet exhibit poorer execution quality.\nTIF audits evaluation…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그래프/사례 그림이라면 실험 조건, 비교 기준, 표시된 지표를 먼저 확인합니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 1 / arXiv 원문 HTML"
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Overview of TIF.\nMatched executions supervise reward learning and reliability\nauditing.\nDuring curation, predicted utility and…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 2 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
+  },
+  "2611.04870": {
+    "heading": "PrimeSim: A Generalist World Model Simulator from Large-Scale Cross-Embodiment Demonstrations — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "findings",
+        "reading_title": "PrimeSim. (a) The midtraining corpus: roughly\n30.1K hours of curated robot data spanning humanoid, dual-arm, single-arm…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그래프/사례 그림이라면 실험 조건, 비교 기준, 표시된 지표를 먼저 확인합니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 1 / arXiv 원문 HTML"
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Overview of the data pipeline. Raw demonstrations from\nteleoperation, UMI, and simulation are converted through four stages:\nvideo…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 2 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
+  },
+  "2611.04839": {
+    "heading": "Coordinating Humanoid Loco-Manipulation through Action-Conditioned Latent Foresight — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Architecture. 𝐟 \\mathbf{f} denotes V-JEPA features. Each prefix B t ( i ) B_{t}^{(i)} receives visual progress V i V_{i} toward the…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 2 / arXiv 원문 HTML"
+      },
+      {
+        "number": 3,
+        "placement": "method",
+        "reading_title": "Representative task scenes: the other six real-robot tasks and the ten SIMPLE simulation tasks. Place Basket on Table is shown in…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 3 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
+  },
+  "2611.04711": {
+    "heading": "Cycle WAM: Coupling Action and Video through Cycle Consistency — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 3,
+        "placement": "method",
+        "reading_title": "Forward-dynamics examples on LIBERO: GT, UWM, and Cycle WAM\n(left to right), with two views per panel. Cycle WAM retains…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 3 / arXiv 원문 HTML"
+      },
+      {
+        "number": 4,
+        "placement": "method",
+        "reading_title": "Real-robot placement of (a) a remote control and (b) a lemon\ninto a basket. Ordered keyframes show approach, grasping, transport,…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 4 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
+  },
+  "2611.04522": {
+    "heading": "Action Intent as a Bridge: Transferring Manipulation Knowledge from Human-Centric Videos to Robots — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "method",
+        "reading_title": "Evolution of human-to-robot learning paradigms. (a) MoCap-based methods depend on specialized capture devices, so data remains…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 1 / arXiv 원문 HTML"
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Success rates on the real-world benchmark across 12 tasks (T1–T12): UniVLA vs. Ours.",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그래프/사례 그림이라면 실험 조건, 비교 기준, 표시된 지표를 먼저 확인합니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 4 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
+  },
+  "2611.04493": {
+    "heading": "Physical Diffusion Policy via MPM-Guided 3D Gaussian Simulation — 저자 원본 그림",
+    "intro": "초록 기반으로 수집된 연구입니다. 첨부 Figure는 arXiv HTML에서 번호·캡션이 검증된 저자 원본만 사용합니다. 저자 설명을 확인하지 않고 상세 결과를 추정하지 않습니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "method",
+        "reading_title": "Overview of the proposed training framework. Given multi-view images, we first estimate the physical properties of the manipulated…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그림이 모델 구조라면 화살표가 가리키는 데이터 흐름과 훈련·추론 시 사용 여부를 차례로 읽습니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 1 / arXiv 원문 HTML"
+      },
+      {
+        "number": 2,
+        "placement": "findings",
+        "reading_title": "Sensitivity analysis with respect to physical parameter estimation errors. Shaded regions indicate the uncertainty across repeated…",
+        "context": "이 Figure는 저자가 논문에 넣은 실제 그림입니다. 아래 영어 원문 캡션과 본문 해당 부분을 함께 확인하세요. 현재 한국어 자동 미리보기 단계이므로 구조·수치에 관한 단정적인 해석은 보류합니다.",
+        "steps": [
+          "입력 정보, 중간 표현, 예측/제어 출력이 실제로 구분되어 표시되는지 확인합니다.",
+          "그래프/사례 그림이라면 실험 조건, 비교 기준, 표시된 지표를 먼저 확인합니다.",
+          "표·그래프 수치를 다른 논문과 비교하기 전에 데이터셋·평가 방식·로봇 구성이 같은지 확인합니다."
+        ],
+        "locator": "원문 Figure 2 / arXiv 원문 HTML"
+      }
+    ],
+    "origin": "automatic-source-caption"
   }
 }

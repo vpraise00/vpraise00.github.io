@@ -456,5 +456,416 @@
         795
       ]
     }
+  },
+  "2611.05372": {
+    "1": {
+      "local": "assets/paper-figures/2611.05372-fig1.png",
+      "source": "https://arxiv.org/html/2611.05372v1/fig1.png",
+      "paper_source": "https://arxiv.org/html/2611.05372",
+      "caption": "Figure 1: PolicyIK: from broad reaching to precise regulation. (a) Full-pose reaching across the simulated workspace. (b) Reaching and holding within 1 mm and 0.2 ∘ 0.2^{\\circ} . (c) On hardware, PolicyIK holds the pose within 1 mm and 0.2 ∘ 0.2^{\\circ} throughout the final 5 s on more tasks than classical controllers.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1301,
+        647
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2611.05372-fig2.png",
+      "source": "https://arxiv.org/html/2611.05372v1/fig2.png",
+      "paper_source": "https://arxiv.org/html/2611.05372",
+      "caption": "Figure 2: PolicyIK control formulation. At each step, the policy maps the\nobservation to a joint-reference increment, which is scaled by the\nerror-dependent gain, accumulated in the joint reference, and tracked by a joint\nPD controller. Colored blocks are the designs of\nSections 4.1 to 4.3 .",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1258,
+        681
+      ]
+    }
+  },
+  "2611.05302": {
+    "1": {
+      "local": "assets/paper-figures/2611.05302-fig1.png",
+      "source": "https://arxiv.org/html/2611.05302v1/PACT_Framework_compressed.png",
+      "paper_source": "https://arxiv.org/html/2611.05302",
+      "caption": "Fig. 1: Pose-robust actuation co-design for tendon-driven robot hands (PACT) framework. The framework combines a force-pose library, task-specific bandwidth constraints, and actuator properties to jointly optimize tendon-driven robot hands. It shapes feasible force sets across representative poses, maximizes the workspace coverage under worst-joint bandwidth limits, and selects design parameters that balance force capability, motion speed, and pose robustness. The resulting parameters define the tendon-routing and actuation configuration of the optimized hand.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2043,
+        1496
+      ]
+    },
+    "4": {
+      "local": "assets/paper-figures/2611.05302-fig4.png",
+      "source": "https://arxiv.org/html/2611.05302v1/Cross_pose_score.png",
+      "paper_source": "https://arxiv.org/html/2611.05302",
+      "caption": "Fig. 4: Cross-pose performance of the Pose 1-specific design compared\nwith the shared design.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1744,
+        1205
+      ]
+    }
+  },
+  "2611.05249": {
+    "1": {
+      "local": "assets/paper-figures/2611.05249-fig1.png",
+      "source": "https://arxiv.org/html/2611.05249v1/overview.png",
+      "paper_source": "https://arxiv.org/html/2611.05249",
+      "caption": "Figure 1: Action-token supervision shapes the effect of expert-to-VLM\ngradient flow. Left: the VLM is supervised to predict discrete action\ntokens while a flow-matching expert decodes\ncontinuous actions from the VLM’s K/V cache. We independently vary whether\naction tokens are supervised and whether the expert’s gradient\n( ∇ ℒ flow \\nabla\\mathcal{L}_{\\mathrm{flow}} ) updates the VLM. Right: open-loop\ndriving evaluation error during training. With action-token supervision, insulated and\ncoupled training differ little; without it, coupling is substantially better. We test this interaction in closed-loop autonomous driving and robot manipulation.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2045,
+        942
+      ]
+    },
+    "4": {
+      "local": "assets/paper-figures/2611.05249-fig4.png",
+      "source": "https://arxiv.org/html/2611.05249v1/Figures/closed_loop_manipulation.png",
+      "paper_source": "https://arxiv.org/html/2611.05249",
+      "caption": "Figure 4: Closed-loop manipulation examples. Rollouts of the four concurrently trained policies in PanClean (left), MoveLatteCup (center), and BlockStackKitchen (right). MoveLatteCup is an additional qualitative example and is excluded from the three-task averages. Check marks indicate task success and crosses indicate failure. Among these examples, only the coupled policies succeed.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2122,
+        1272
+      ]
+    }
+  },
+  "2611.05163": {
+    "1": {
+      "local": "assets/paper-figures/2611.05163-fig1.png",
+      "source": "https://arxiv.org/html/2611.05163v1/assets/method.jpg",
+      "paper_source": "https://arxiv.org/html/2611.05163",
+      "caption": "Figure 1: RoboTryOn pipeline. (a) The image model sequentially translates keyframes\nof a human video into robot keyframes, the video\nmodel synthesizes the motion between them under the guidance of the\nhand skeleton flow, and the inverse dynamics model labels the actions. (b) The image model inpaints the masked human frame, using the\nprevious robot keyframe as a reference. (c) The video model synthesizes\nthe robot video, conditioned on the robot keyframes at their temporal\npositions and the skeleton flow.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1657,
+        1399
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2611.05163-fig2.png",
+      "source": "https://arxiv.org/pdf/2611.05163",
+      "paper_source": "https://arxiv.org/abs/2611.05163",
+      "caption": "Figure 2: Examples of real-world benchmark tasks. For each of the four PnP tasks (top), both a human video and a teleoperated demonstration are available. For each of the remaining seven tasks (bottom), only a human video is available.",
+      "method": "pdf_page_crop",
+      "page": 5,
+      "clip": [
+        25.0,
+        24.0,
+        587.0,
+        232.0
+      ],
+      "review": "needs_manual_review",
+      "dimensions": [
+        1012,
+        375
+      ]
+    }
+  },
+  "2611.05155": {
+    "3": {
+      "local": "assets/paper-figures/2611.05155-fig3.png",
+      "source": "https://arxiv.org/html/2611.05155v1/real_robot_results.png",
+      "paper_source": "https://arxiv.org/html/2611.05155",
+      "caption": "Figure 3: Franka Evaluation Results on Real-world experiments and RoboLab simulation.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        864,
+        582
+      ]
+    },
+    "4": {
+      "local": "assets/paper-figures/2611.05155-fig4.png",
+      "source": "https://arxiv.org/html/2611.05155v1/dyn_bump_rollouts.png",
+      "paper_source": "https://arxiv.org/html/2611.05155",
+      "caption": "Figure 4: Qualitative example of Dynamic-Bump task. After bumping the ball, ARP is able to react in time to grasp it whereas the π 0 \\pi_{0} model fails.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1509,
+        602
+      ]
+    }
+  },
+  "2611.05093": {
+    "4": {
+      "local": "assets/paper-figures/2611.05093-fig4.png",
+      "source": "https://arxiv.org/html/2611.05093v1/fig_category_heatmap.png",
+      "paper_source": "https://arxiv.org/html/2611.05093",
+      "caption": "Figure 4 : Where quantization loses under perturbation. Paired change in LIBERO-plus success per perturbation category (points vs. the same-engine unquantized model); All: overall change. Losses concentrate in the VLA-specific methods (bold), in plain RTN at 3 bits on the same int8-activation path as ActQuant, and in 4-bit UniVLA. ∗ McNemar p < 0.05 p<0.05 , uncorrected; † not significant after Holm correction.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        419,
+        430
+      ]
+    }
+  },
+  "2611.05080": {
+    "1": {
+      "local": "assets/paper-figures/2611.05080-fig1.png",
+      "source": "https://arxiv.org/html/2611.05080v1/Teaser_new6.png",
+      "paper_source": "https://arxiv.org/html/2611.05080",
+      "caption": "Figure 1: Overview of non-episodic training in CRONOS. We introduce CRONOS, a benchmark for RL fine-tuning of VLAs under infrequent scene resets. Tasks share a scene (top left). Episodic training resets the scene before every task, whereas non-episodic training continues each task from where the previous one ended. CRONOS covers diverse scenes and objects (middle left). Without frequent resets, object positions become increasingly dispersed, and rollout success decays after each scene reset (bottom). Yet policies fine-tuned non-episodically generalize better to unseen object positions and perform better on unseen task sequences (right).",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2040,
+        1148
+      ]
+    },
+    "4": {
+      "local": "assets/paper-figures/2611.05080-fig4.png",
+      "source": "https://arxiv.org/html/2611.05080v1/figs/Q2/ID_Steps.png",
+      "paper_source": "https://arxiv.org/html/2611.05080",
+      "caption": "Figure 4: End-effector reset mitigates pretraining bias. EER automatically resets the end-effector to its initial position at each task switch, improving the learning efficiency of SpatialVLA under non-episodic scene-reset settings.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1323,
+        705
+      ]
+    }
+  },
+  "2611.05062": {
+    "1": {
+      "local": "assets/paper-figures/2611.05062-fig1.png",
+      "source": "https://arxiv.org/html/2611.05062v2/figures/figure_arch.png",
+      "paper_source": "https://arxiv.org/html/2611.05062",
+      "caption": "Figure 1: Given an image and text prompt, FloMo jointly predicts dense 3D motion (scene flow) and robot actions using a pretrained video generation model using flow-matching. To tokenize scene flow, we transform cumulative 3D velocities into RGB videos that are encoded by the pretrained video backbone’s video encoder.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1603,
+        720
+      ]
+    },
+    "4": {
+      "local": "assets/paper-figures/2611.05062-fig4.png",
+      "source": "https://arxiv.org/html/2611.05062v2/figures/figure_attention_share.png",
+      "paper_source": "https://arxiv.org/html/2611.05062",
+      "caption": "Figure 4: Action attention concentrates on motion tokens. Share of action-query attention to each input modality, averaged over attention heads and robot validation rollouts, as a function of DiT layer. Attention to motion rises through the trunk and dominates at the late-middle layers, while attention to video stays lowest throughout; averaged over layers, action queries attend to motion roughly 3 × 3\\times more than to video.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1297,
+        739
+      ]
+    }
+  },
+  "2611.05023": {
+    "2": {
+      "local": "assets/paper-figures/2611.05023-fig2.png",
+      "source": "https://arxiv.org/html/2611.05023v1/framework.png",
+      "paper_source": "https://arxiv.org/html/2611.05023",
+      "caption": "Figure 2: Architecture of HiLo-WAM. HiLo-WAM builds on a dual-DiT World Action Model consisting of a shared\nVideo DiT and an Action DiT.\nThe visual world is modeled at two complementary temporal scales:\na sparse long-horizon visual stream captures historical context and coarse\nfuture evolution, while a dense local visual dynamics stream captures\nfine-grained local interactions.\nBoth visual streams are jointly modeled with robot actions.\nDuring inference, the visual streams progressively terminate and are cached,\nwhile the action stream continues denoising to completion.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1522,
+        868
+      ]
+    },
+    "4": {
+      "local": "assets/paper-figures/2611.05023-fig4.png",
+      "source": "https://arxiv.org/html/2611.05023v1/performance.png",
+      "paper_source": "https://arxiv.org/html/2611.05023",
+      "caption": "Figure 4: Qualitative comparison between Fast-WAM and HiLo-WAM in simulation and real-world tasks. Fast-WAM repeatedly changes its target bottle in Put Bottles into Dustbin and its target block in Build House , while HiLo-WAM maintains coherent\nmanipulation targets throughout execution. In Mug Hanging , Fast-WAM\nfails because the mug handle is not properly aligned with the rack, whereas\nHiLo-WAM successfully completes the final hanging operation.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1689,
+        1145
+      ]
+    }
+  },
+  "2611.04972": {
+    "1": {
+      "local": "assets/paper-figures/2611.04972-fig1.png",
+      "source": "https://arxiv.org/html/2611.04972v1/figures/vln_main_diag_v1.png",
+      "paper_source": "https://arxiv.org/html/2611.04972",
+      "caption": "Fig. 1 : The proposed Legged-VLN architecture separates semantic grounding\n(top) from safety-assured physical grounding (bottom).",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        4500,
+        1842
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2611.04972-fig2.png",
+      "source": "https://arxiv.org/html/2611.04972v1/multi_point_rep.png",
+      "paper_source": "https://arxiv.org/html/2611.04972",
+      "caption": "Fig. 2 : Multi-point safety models for (a) Ghost Robotics Vision 60 and (b) Unitree G1. Each point has a radius representing the local footprint.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        404,
+        145
+      ]
+    }
+  },
+  "2611.04873": {
+    "1": {
+      "local": "assets/paper-figures/2611.04873-fig1.png",
+      "source": "https://arxiv.org/html/2611.04873v1/TIF_motivation.png",
+      "paper_source": "https://arxiv.org/html/2611.04873",
+      "caption": "Figure 1 : A candidate may receive a higher predicted utility than\nSource yet exhibit poorer execution quality.\nTIF audits evaluation reliability before accepting a replacement.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2046,
+        1283
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2611.04873-fig2.png",
+      "source": "https://arxiv.org/html/2611.04873v1/TIF_overview.png",
+      "paper_source": "https://arxiv.org/html/2611.04873",
+      "caption": "Figure 2 : Overview of TIF.\nMatched executions supervise reward learning and reliability\nauditing.\nDuring curation, predicted utility and audit risk determine\nwhether to replace Source.\nThe selected real trajectories supervise VLA post-training\nacross all valid steps.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2038,
+        903
+      ]
+    }
+  },
+  "2611.04870": {
+    "1": {
+      "local": "assets/paper-figures/2611.04870-fig1.png",
+      "source": "https://arxiv.org/html/2611.04870v1/images/primesim_teaser.png",
+      "paper_source": "https://arxiv.org/html/2611.04870",
+      "caption": "Figure 1 : PrimeSim. (a) The midtraining corpus: roughly\n30.1K hours of curated robot data spanning humanoid, dual-arm, single-arm and\nhandheld UMI [ 14 , 3 ] platforms, mixing real and simulated footage. (b) The\nmodel is conditioned on a language prompt, a unified action representation over\nhead, torso, waist, end-effector, gripper and chassis, and three camera views,\nand predicts future frames; post-training makes generation autoregressive with\na selected KV-cache memory at four denoising steps. (c) Capabilities:\nfidelity against prior systems, action following measured against simulation\nground truth, few-shot adaptation to an unseen embodiment, and use as a\nsimulator: success rate in PrimeSim predicts success rate in the LIBERO [ 51 ] physics\nsimulator with r = 0.99 r=0.99 , so policies can be trained in the model and\nthe result carri",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1500,
+        809
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2611.04870-fig2.png",
+      "source": "https://arxiv.org/html/2611.04870v1/images/pipeline.png",
+      "paper_source": "https://arxiv.org/html/2611.04870",
+      "caption": "Figure 2 : Overview of the data pipeline. Raw demonstrations from\nteleoperation, UMI, and simulation are converted through four stages:\nvideo quality filtering, action quality filtering, action preprocessing,\nand data alignment. Each stage lists the operations applied to the incoming\ndata. The pipeline produces a unified corpus of 30,110 hours across 20\ndataset families and 22 robot platforms\n(Table 12 ).",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1042,
+        162
+      ]
+    }
+  },
+  "2611.04839": {
+    "2": {
+      "local": "assets/paper-figures/2611.04839-fig2.png",
+      "source": "https://arxiv.org/html/2611.04839v1/fig02_network.png",
+      "paper_source": "https://arxiv.org/html/2611.04839",
+      "caption": "Fig. 2: Architecture. 𝐟 \\mathbf{f} denotes V-JEPA features. Each prefix B t ( i ) B_{t}^{(i)} receives visual progress V i V_{i} toward the active subgoal g t g_{t} (front of the stack) and temporal-consistency energy E i E_{i} . In training, the demonstrated prefix B t B_{t} replaces sampled prefixes, and its first command a t , 0 a_{t,0} is reconstructed as a ^ t , 0 \\hat{a}_{t,0} from Δ ​ z \\Delta z and from Δ ​ z ^ \\Delta\\hat{z} . Score bars are schematic; snowflakes: frozen weights.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        860,
+        375
+      ]
+    },
+    "3": {
+      "local": "assets/paper-figures/2611.04839-fig3.png",
+      "source": "https://arxiv.org/html/2611.04839v1/fig_task_gallery.png",
+      "paper_source": "https://arxiv.org/html/2611.04839",
+      "caption": "Fig. 3: Representative task scenes: the other six real-robot tasks and the ten SIMPLE simulation tasks. Place Basket on Table is shown in Fig. 1 .",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        860,
+        201
+      ]
+    }
+  },
+  "2611.04711": {
+    "3": {
+      "local": "assets/paper-figures/2611.04711-fig3.png",
+      "source": "https://arxiv.org/html/2611.04711v1/forward_dynamics.png",
+      "paper_source": "https://arxiv.org/html/2611.04711",
+      "caption": "Fig. 3: Forward-dynamics examples on LIBERO: GT, UWM, and Cycle WAM\n(left to right), with two views per panel. Cycle WAM retains sharper\nboundaries, but object placement and view composition still differ from GT.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1006,
+        709
+      ]
+    },
+    "4": {
+      "local": "assets/paper-figures/2611.04711-fig4.png",
+      "source": "https://arxiv.org/html/2611.04711v1/real-robot.png",
+      "paper_source": "https://arxiv.org/html/2611.04711",
+      "caption": "Fig. 4: Real-robot placement of (a) a remote control and (b) a lemon\ninto a basket. Ordered keyframes show approach, grasping, transport, and\nrelease. Dashed arrows indicate schematic motion directions; colored\nstrips denote visually inferred gripper states.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        2033,
+        1123
+      ]
+    }
+  },
+  "2611.04522": {
+    "1": {
+      "local": "assets/paper-figures/2611.04522-fig1.png",
+      "source": "https://arxiv.org/html/2611.04522v1/first.png",
+      "paper_source": "https://arxiv.org/html/2611.04522",
+      "caption": "Figure 1: Evolution of human-to-robot learning paradigms. (a) MoCap-based methods depend on specialized capture devices, so data remains costly to collect, and the large embodiment gap limits generalization. (b) Latent action learning is trained directly from abundant raw human videos, but the learned representations are contaminated by scene noise. (c) Our method also learns from easy-to-acquire raw videos, yet extracts a clean Action Intent shared across humans and robots, enabling noise-free knowledge transfer to the robot.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1152,
+        804
+      ]
+    },
+    "4": {
+      "local": "assets/paper-figures/2611.04522-fig4.png",
+      "source": "https://arxiv.org/html/2611.04522v1/realworldexp.png",
+      "paper_source": "https://arxiv.org/html/2611.04522",
+      "caption": "Figure 4: Success rates on the real-world benchmark across 12 tasks (T1–T12): UniVLA vs. Ours.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        941,
+        567
+      ]
+    }
+  },
+  "2611.04493": {
+    "1": {
+      "local": "assets/paper-figures/2611.04493-fig1.png",
+      "source": "https://arxiv.org/html/2611.04493v1/fig_framework.png",
+      "paper_source": "https://arxiv.org/html/2611.04493",
+      "caption": "Fig. 1: Overview of the proposed training framework. Given multi-view images, we first estimate the physical properties of the manipulated object by combining feed-forward 3D Gaussian Splatting (FF-3DGS) with MPM via a differentiable physical simulation.\nThe simulator is coupled with a differentiable rasterizer and optimized under video guidance, where gradients are back-propagated through the simulation. Physics-based constraints, including Dirichlet boundary conditions for manipulation events and geometric consistency via temporal Chamfer distance, further regularize the estimated physical parameters by aligning simulated particle dynamics with demonstration videos.\nThe learned physical parameters are then injected into a physical-aware diffusion policy as physics conditions, together with language instructions and visual observations, ",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        1418,
+        580
+      ]
+    },
+    "2": {
+      "local": "assets/paper-figures/2611.04493-fig2.png",
+      "source": "https://arxiv.org/html/2611.04493v1/figs/params_drop.png",
+      "paper_source": "https://arxiv.org/html/2611.04493",
+      "caption": "Fig. 2: Sensitivity analysis with respect to physical parameter estimation errors. Shaded regions indicate the uncertainty across repeated trials. Overall, the task success rate decreases with increasing estimation errors.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "dimensions": [
+        820,
+        620
+      ]
+    }
   }
 }
