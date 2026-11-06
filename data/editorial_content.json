@@ -507,5 +507,532 @@
         "2504.16054"
       ]
     }
+  },
+  "2611.05249": {
+    "authors": [
+      "Asher James Hancock",
+      "Boyi Li",
+      "Yuxiao Chen",
+      "Shuhan Tan",
+      "Wenhao Ding",
+      "Thomas Tian",
+      "Yan Wang",
+      "Boris Ivanovic",
+      "Marco Pavone"
+    ],
+    "summary_ko": "Action Expert의 flow loss를 VLM까지 역전파해야 할까? Action-token CE 유무 × gradient coupling 2×2 실험으로, 동일한 VLA 구조라도 open-loop ADE·closed-loop 주행·로봇 조작에서 결론이 달라지는 이유를 분석한다.",
+    "reading_minutes": 32,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked_ai_assisted",
+    "reviewed_at": "2026-11-06",
+    "editorial_published_at": "2026-11-06",
+    "source_scope_ko": "arXiv:2611.05249v1 공식 HTML §3–5·Appendix A–E, Figure 1·4 및 Tables 2–4·5·8–10 대조. 저자 실험의 비독립적 해설",
+    "abstract": "원논문의 초록 번역을 넘어, 동일 아키텍처에서 VLM에 들어가는 행동 학습 신호 두 개를 분리한 대조 실험을 해설한다. 수치는 논문 저자 측의 관측이며 로봇 실물 검증을 뜻하지 않는다.",
+    "review": {
+      "one_line": "**행동 토큰 지도 없이 expert의 gradient까지 끊으면 VLM은 연속 행동 예측에 필요한 표현을 배울 직접 신호가 약해진다.** 반대로 FAST/이산 행동 CE가 있으면 open-loop에선 insulation도 경쟁력 있으나, closed-loop에서는 coupling의 장점이 다시 나타난다(§3–4).",
+      "problem": "카메라와 언어를 읽는 VLM은 개체·상황 이해에 강하지만, 미래 6.4초를 정밀 제어하는 학습목표로 사전학습된 것은 아니다. Mixture-of-Transformers VLA에서는 VLM이 생성하는 layerwise K/V를 Flow Matching Action Expert가 소비한다. 실무에서는 성능 향상을 위해 expert loss가 VLM을 바꾸게 해야 할지, 언어·시각 능력의 손상을 피하려 stop-gradient로 차단해야 할지 결정해야 한다. 기존 레시피는 stop-gradient와 discrete action-token CE를 함께 쓰는 경우가 많아 각 원인의 기여를 혼동했다(§1–2).",
+      "idea": "두 축만 독립적으로 바꾼다. 첫 축은 미래 행동을 이산 토큰으로 예측하는 CE를 켜거나 끄는 것, 두 번째는 expert의 연속 행동 Flow Matching loss가 K/V cache를 거쳐 VLM까지 역전파되는 coupling인지, 같은 cache의 역방향만 막는 insulation인지다. 네 조건은 forward 입력과 expert 구조를 동일하게 유지한다. 비유하면 VLM에 ‘운전 경로 답안’을 따로 채점할지(action CE), 실제 조향을 수행하는 expert의 오차를 VLM에게 피드백할지(coupling)를 분리해 보는 실험이다. 둘은 일부 대체 가능하지만 완전히 같지 않다(§3, Figure 1).",
+      "method": "주행 구현의 VLM은 Qwen3-VL-2B-Instruct, expert는 non-causal flow-matching transformer다. 6.4초·10 Hz 미래를 64개의 가속도/곡률 쌍으로 출력하고 unicycle dynamics로 궤적을 복원한다. VLM은 주행 설명·경계 토큰을 예측하며, action CE 활성 조건에서는 같은 미래 제어의 128개 이산 value-token에도 CE를 받는다. **추론에서는 미래 value-token을 생성하지 않고** 시작 토큰까지만 디코딩한 뒤 expert가 cache를 읽고 10회 Euler 적분으로 연속 행동을 만든다. Loss는 CE와 flow 각 가중치 1; insulation에서는 K/V를 detach한다. 동시 학습 300k와 VLM-first·Expert-first 100k+200k 총 세 순서를 비교한다(§3, Appendix A.1–A.2).",
+      "findings": "Table 3의 AlpaSim 동일 827개 scene·scene당 확률적 rollout 5회 기준, concurrent 학습에서 route progress는 action tokens ON일 때 insulation 0.600 → coupling 0.703, OFF일 때 0.425 → 0.601이다. open-loop Physical AI Autonomous Vehicles Public Golden 1,434개·OOD 273개에서는 tokens ON인 경우 routing 차이가 작지만 OFF이면 coupling이 mean ADE를 약 26%/24% 낮췄다(§4.1, Figure 3). PolaRiS 세 조작 태스크의 equal-weight normalized task progress(Table 4)에서도 π0.5 재구현의 FAST OFF는 insulation 10.3%/coupling 32.9%, MolmoAct2는 14.5%/36.5%다. 이 값은 과제 성공률이 아니라 달성한 rubric 비율이다. Figure 4는 대표적 실행을 보여줄 뿐 세 과제의 평균을 대신하지 않는다.",
+      "limitations": "**단일 training seed**, 운전과 조작 모두 closed-loop 평가는 시뮬레이터, 실물 로봇 결과 없음. 운전에서 95% bootstrap CI는 특정 checkpoint의 clip sampling 불확실성이지 다른 학습 seed의 분산이 아니다. 행동 토큰을 끄면 VLM-first warm-up 입력 데이터 분포도 일부 바뀌므로 학습순서 간 비교에 예산 차이를 주의해야 한다. Driving rationale용 Lingo-Judge 점수가 전반적인 시각·언어 사전학습 능력 보존을 증명하지도 않는다. π0.5 공개 모델의 40.0% progress는 다른 훈련 데이터 및 평가 프로토콜이므로 이 논문의 19.5%와 통제된 apples-to-apples 비교가 아니다(§5, Appendix A/C).",
+      "questions": [
+        "Figure 1에서 action CE의 직접 지도와 expert gradient는 VLM의 어떤 계층의 K/V 표현을 바꾸는가?",
+        "Table 3의 route progress 증가와 Appendix의 at-fault collision 변화가 충돌할 때 어떤 정책을 선택해야 하는가?",
+        "Figure 4에 등장하는 MoveLatteCup이 왜 세 과제 평균에는 포함되지 않는가?",
+        "작업 진행(progress)이 아닌 strict task completion과 실제 로봇의 안전 지표에서도 효과가 유지되는가?"
+      ],
+      "source_scope": "full_html_method_experiments_appendices_and_original_figures",
+      "generated_by": "research_editorial"
+    },
+    "deep_dive": {
+      "lead": "**연구 질문:** VLA에서 VLM의 행동 이해를 강화하는 길은 ‘이산 행동 토큰을 직접 예측시키는 CE’와 ‘연속 행동 expert의 오차를 역전파시키는 coupling’ 두 가지다. 본 해설은 논문 §3의 2×2 설계, §4의 주행·조작 실험, Appendix A/C의 입력과 지표 정의를 함께 읽는다. **route progress·normalized task progress는 strict success rate와 다르다.**",
+      "pipeline": [
+        {
+          "title": "1. 시각/언어·주행 이력으로 VLM 표현 형성",
+          "detail": "주행에서는 4개 RGB 카메라와 과거 ego 궤적 토큰, 도로 상황에 관한 언어 정보가 Qwen3-VL-2B-Instruct로 들어간다. reasoning이 있을 때 관련 객체와 예정 대응을 설명한 뒤 future_start 경계 토큰을 낸다. 시각 backbone과 언어 추론은 모든 2×2 조건에서 동일하다.",
+          "io": "입력: RGB·past ego history·instruction → layerwise K/V"
+        },
+        {
+          "title": "2. action-token CE 스위치",
+          "detail": "미래 64개의 (acceleration, curvature) 쌍을 이산화해 128개 value-token CE를 ON/OFF한다. OFF도 teacher-forced input은 남겨 놓되 그 위치의 CE target을 mask하고, CE 분모는 mask 전 개수로 고정해 다른 CE 항의 상대 크기를 부풀리지 않는다. expert cache는 future_start 뒤 미래 값을 읽지 못하게 자른다.",
+          "io": "Action CE ∈ {ON,OFF}; 일반 VQA·reasoning CE는 항상 유지"
+        },
+        {
+          "title": "3. 별도의 Flow Matching Expert",
+          "detail": "VLM의 layer별 K/V를 조건으로 Action Expert가 가우시안 노이즈에서 연속 제어를 복원한다. 목표는 a−ε velocity, 보간 경로는 aₜ = t·a+(1−t)·ε다. 학습에서는 action-bearing 배치에서 expert loss를 계산하고, 주행 추론은 10회 Euler step을 사용한다.",
+          "io": "L_flow(a, K/V) → 64 continuous controls → unicycle waypoints"
+        },
+        {
+          "title": "4. K/V 역전파 경로만 바꾼다",
+          "detail": "Coupled 조건은 expert loss의 gradient가 K/V를 통해 VLM과 expert 양쪽에 전파된다. Insulated는 같은 forward K/V에 stop-gradient를 걸어 expert만 해당 loss로 갱신된다. 따라서 action CE ON/OFF와 routing ON/OFF를 조합한 네 cell이 생긴다.",
+          "io": "2×2 = {CE ON/OFF} × {coupled/insulated}"
+        },
+        {
+          "title": "5. 학습 순서 3종을 통제한다",
+          "detail": "Concurrent는 처음부터 VLM과 expert를 같이 300k step 학습한다. Expert-first는 VLM을 동결한 채 expert만 100k, 이어서 공동 200k; VLM-first는 expert 없이 VLM 100k, 이어서 공동 200k다. 공동학습에서 궤적 배치 확률 48.5%, 그 밖의 vision-language 배치 약 51.5%.",
+          "io": "Total steps 300k; 학습 history 자체가 별도 실험 축"
+        },
+        {
+          "title": "6. 오프라인 정확도와 실제 상호작용 지표를 분리한다",
+          "detail": "Open-loop는 6개 궤적 중 첫 후보의 ADE와 oracle minADE를 구분하고, closed-loop은 AlpaSim에서 route progress를 잰다. 로봇 조작은 PolaRiS BlockStackKitchen·FoodBussing·PanClean에서 50회씩 실행하고 진척 rubric을 평가한다.",
+          "io": "주행 오차 ADE ≠ 주행 progress ≠ 조작 success"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "경계 토큰 이후의 미래 정답 누수 방지",
+          "body": "Appendix A.1은 expert-facing K/V를 future_start에서 절단한다. 미래 128개 value-token의 teacher-forced input은 학습 CE 계산에 남아 있어도 expert가 그 hidden states를 바로 소비할 수 없다. 이 조치가 없다면 gradient routing 효과가 정답 누수와 섞일 수 있다.",
+          "watch": "Appendix A.1 Eq.(3), cache cutoff, CE denominator를 확인"
+        },
+        {
+          "title": "2×2의 물리적 의미",
+          "body": "action CE를 켜면 VLM이 실제로 미래 제어를 맞히도록 직접 학습된다. coupling을 켜면 연속 제어 재구성에 필요한 정보가 K/V에 반영될 수 있다. action CE가 OFF인 insulated 모델은 직접적인 미래 행동 지도 두 갈래가 모두 없어서 open-loop의 손실이 클 수 있다. 이것은 관측된 경향에 대한 해석이지 인과 메커니즘의 증명은 아니다.",
+          "watch": "Figure 1 왼쪽 연결, Figure 3 ADE 학습곡선 병독"
+        },
+        {
+          "title": "Open-loop와 closed-loop의 최적화 목표 불일치",
+          "body": "Ground truth와 64-step waypoint 거리인 ADE가 낮아도 상호작용에서 주행 진척·충돌 비율이 최적이진 않을 수 있다. Table 3은 coupled + CE ON이 가장 높은 concurrent progress 0.703을 보이지만, Appendix는 일부 staged 조건에서 at-fault collision 불이익을 지적한다.",
+          "watch": "progress와 collision/comfort를 별도 표로 읽고 안전을 소거하지 말 것"
+        },
+        {
+          "title": "로봇 조작 평가에서의 조건 보존",
+          "body": "π0.5 재구현은 PaliGemma-3B+expert, 400k step, robot 데이터 DROID 90%/PolaRiS 10%, VQA 절반을 사용한다. MolmoAct2는 별도 백본과 300k 공동학습+1k adaptation이다. 동일 가족 안에서 4조건을 비교해야 하며 π0.5와 MolmoAct2 사이 절대 점수 비교는 통제 실험이 아니다.",
+          "watch": "Table 4의 세 과제 50회씩, Appendix C의 450-step·8-step chunk"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "Concurrent AlpaSim · CE ON",
+          "value": "Insulated 0.600 → Coupled 0.703",
+          "context": "Table 3. 같은 827 scene×5 rollout; route progress, 높을수록 좋음"
+        },
+        {
+          "metric": "Concurrent AlpaSim · CE OFF",
+          "value": "Insulated 0.425 → Coupled 0.601",
+          "context": "Table 3. +0.176 절대 상승(약 41% 상대); 성공률 아님"
+        },
+        {
+          "metric": "Open-loop driving · CE OFF",
+          "value": "ADE 약 26% ↓ Public Golden / 24% ↓ OOD",
+          "context": "§4.1. coupling vs insulation, 1,434/273 사례; 첫 후보 ADE"
+        },
+        {
+          "metric": "Reasoning 품질 · CE ON",
+          "value": "Lingo-Judge pass 64.7% vs 64.9%",
+          "context": "Table 2. Public Golden first-sample, insulated/coupled; 전체 VLM 보존 지표 아님"
+        },
+        {
+          "metric": "π0.5 재구현 · FAST ON",
+          "value": "19.5% → 30.7%",
+          "context": "Table 4. PolaRiS 3과제 mean normalized task progress, insulation→coupling"
+        },
+        {
+          "metric": "π0.5 재구현 · FAST OFF",
+          "value": "10.3% → 32.9%",
+          "context": "Table 4. 같은 가족의 2×2 실험; 독립 pretrained π0.5의 40.0%와 비교 금지"
+        },
+        {
+          "metric": "MolmoAct2 · FAST OFF",
+          "value": "14.5% → 36.5%",
+          "context": "Table 4. 300k+1k adaptation; 세 과제 50회씩"
+        },
+        {
+          "metric": "훈련·추론 설정",
+          "value": "300k steps / 10 Euler / 64 controls",
+          "context": "Appendix A.1–A.2. 6.4초·10 Hz acceleration/curvature"
+        }
+      ],
+      "evidence_note": "Table 3의 숫자는 0~1 척도의 route progress, Table 4의 %는 달성한 조건 수를 정규화한 task progress다. 둘 모두 원칙적으로 strict task success rate가 아니다. bootstrap 95% CI는 training seed 다변성을 포함하지 않는다.",
+      "comparison": "π0.5나 MolmoAct2의 계열 설계가 action-token supervision과 expert gradient routing을 함께 선택할 때 왜 성능 해석이 복잡해지는지 분리해 준 논문이다. 이 연구는 새로운 더 큰 VLA backbone을 제안하는 모델 논문이라기보다 학습 신호의 통제 실험이다. OpenVLA(2406.09246)의 이산 다음 토큰 정책과 π0(2410.24164)의 연속 행동 expert를 단순 비교하는 것도 금물이다: 모델·로봇·지표가 모두 다르기 때문이다.",
+      "reading_guide": [
+        "공식 HTML Figure 1에서 CE 스위치와 expert-to-VLM gradient 경로를 각각 표시한다.",
+        "§3 식(1)–(2) 및 Appendix A.1 Eq.(3)에서 mask 전 고정 CE 분모와 cache cutoff를 확인한다.",
+        "Table 3에서 Concurrent/VLM-first/Expert-first 행을 분리해 route progress와 열린 주행 ADE를 비교한다.",
+        "Table 4에서 4개 factorial 조건과 마지막 참고 checkpoint를 구분하고 progress 정의(Appendix C)를 적는다.",
+        "Figure 4의 MoveLatteCup은 정성 사례일 뿐 평균의 세 과제 중 하나가 아님을 명시한다.",
+        "Appendix 안전 결과의 at-fault collision까지 읽어 progress만으로 좋은 주행 정책이라 단정하지 않는다."
+      ],
+      "replication": {
+        "hypothesis": "Action-token CE가 없을 때 coupled routing은 같은 VLM 표현에 더 직접적인 행동 정보를 주지만, 기능 보존과 안전의 trade-off는 별도로 존재한다.",
+        "setup": "동일 Qwen3-VL checkpoint·동일 VQA/trajectory mixture·고정 주행 카메라와 300k step을 준비하고 CE ON/OFF×detach ON/OFF 네 조건을 최소 3 seed 반복한다. 필요하면 동일 요소를 실물 양팔 로봇 한 플랫폼에 이전한다.",
+        "baselines": "4개 2×2 cell + frozen VLM + VLM-first warm-up 비교, token target만 바꾸고 expert/배치·계산량은 고정",
+        "metrics": "first-sample ADE, oracle minADE, route progress, at-fault collision, language/VQA retention, manipulation strict success 및 normalized progress, seed별 CI",
+        "risks": "물리 로봇 배치는 충돌 방지/비상정지 필요. Warm-up에서 tokens-OFF 데이터 비중 차이, seed 1회, 평가 rubric이 실질 성공을 과대평가할 가능성을 통제해야 한다."
+      },
+      "related": [
+        "2504.16054",
+        "2410.24164",
+        "2406.09246"
+      ]
+    }
+  },
+  "2611.05023": {
+    "authors": [
+      "Xingyu Wang",
+      "Yanjiang Guo",
+      "Zhijing Ding",
+      "Jiaxin Fang",
+      "Zeyu Lai",
+      "Jiayu Dong",
+      "Weikang Wan",
+      "Jianyu Chen",
+      "Yuxiang Gao",
+      "Mengdi Xu"
+    ],
+    "summary_ko": "한 WAM이 모든 미래 프레임을 빽빽하게 생성하는 대신 장기 작업 진척과 근거리 접촉 동역학을 다른 시간 해상도로 예측하는 HiLo-WAM. dual-DiT, 비대칭 attention, 점진적 denoising을 실험표와 로봇 평가를 통해 검토한다.",
+    "reading_minutes": 33,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked_ai_assisted",
+    "reviewed_at": "2026-11-06",
+    "editorial_published_at": "2026-11-06",
+    "source_scope_ko": "arXiv:2611.05023v1 공식 HTML §3–5·Appendix A–C, Figure 2·4, Tables 1–4와 실물 GR-3 평가조건 대조",
+    "abstract": "World Action Model을 두 시간 축의 시각 생성으로 나누어 조작 성능·처리 지연을 함께 개선하려는 연구. 제시한 성공률은 각기 다른 시뮬레이션/실물 테스트를 혼합한 수치가 아닌 원문별 조건을 따로 기록한다.",
+    "review": {
+      "one_line": "**‘무슨 단계까지 왔는가’를 기억할 희소 장기 프레임과 ‘지금 손끝에서 무슨 일이 일어나는가’를 예측할 조밀한 단기 프레임을 분리**하되, action generation은 두 정보에 접근한다. 최종 로봇 행동을 생성할 때 고불확실성의 먼 미래 프레임을 직접 참고하지 않도록 attention을 제한하는 것이 핵심이다(§3).",
+      "problem": "길고 복합적인 조작에서 로봇이 병을 계속 같은 상자에 넣어야 하는 상황을 떠올리면, 바로 앞 1초의 그리퍼 접촉만 봐서는 앞서 어떤 병을 선택했는지 잃을 수 있다. 반면 모든 장기 과정을 고프레임레이트로 생성하면 계산이 커지고 멀리 있는 미래 예측 오차가 행동을 오염시킨다. 기존 단일 시간 척도 WAM은 접촉 정밀도와 작업 전체의 순서를 동시에 만족시키기 어렵다. HiLo-WAM은 별도의 언어 플래너를 두는 대신 시각적 미래 예측 자체를 두 시간 해상도로 분리한다(§1–2).",
+      "idea": "long-horizon stream은 과거 키프레임 8개와 희소 미래 프레임 8개를 stride k=4로 처리해 진척·목표 지속성을 포착한다. local stream은 32 프레임 규모의 근거리 시각 변화를 조밀하게 다룬다. Action DiT는 두 visual stream의 요약을 받아 연속 행동 chunk를 생성한다. 비유하자면 장기 stream은 ‘요리 전체 레시피의 단계 카드’, local stream은 ‘지금 칼끝과 재료의 순간 영상’이다. 서로 연결되지만 두 가지 해상도에 같은 계산을 할당하지 않는다(§3.2–3.3, Figure 2).",
+      "method": "Wan2.2-5B 계열 비디오 VAE/Video DiT와 별도 Action DiT, T5 언어 인코더를 사용한다. 고해상도 시간축 로컬 비디오와 다운샘플된 장기 비디오를 동일 VAE로 별도 인코딩해 H/L 시각 토큰, 현재 상태 q, action 토큰 네 그룹을 구성한다. 비대칭 attention은 long-horizon 전 구간 내부 교환을 허용하지만, 로컬/행동 분기는 장기 과거와 가까운 미래에만 접근하고 먼 미래는 직접 읽지 않는다. 세 stream의 Flow Matching loss를 함께 최적화하며 λH=λL=λA=1을 사용한다. 추론은 action 10 step을 유지하면서 H/L은 각각 5 step에서 멈춰 cache, joint denoising와 유사 velocity의 dynamic skipping으로 비용을 낮춘다(§3, Appendix A).",
+      "findings": "Table 1(a): RoboTwin 2.0의 clean 93.87%·randomized 93.52%·평균 93.70% 성공률(50 과제, 과제당 각 설정 50 trial). Fast-WAM 91.85%와 비교하면 +1.85%p. 그러나 장기 RoboDojo 8개 과제에서는 progress score 17.43와 **strict success 6.50%**를 기록했다(Table 1(b)); 93.70%를 ‘모든 장기 과제 성공률’로 오해하면 안 된다. Table 2의 로컬만 사용한 모델 90.58%, 장기 미래+로컬 93.22%, 전체 93.70%는 두 척도의 보완성을 보여준다. Table 3의 1회 action-chunk latency는 1114.46ms → 380.02ms(2.93×)이고, 실물 GR-3 세 과제의 평균 성공률은 ID 33%·OOD 30%(과제당 10 trial)이다(§4).",
+      "limitations": "기반 비디오 모델이 잘못 이해하는 복잡한 계획·명시적 소과제 분해는 이 구조만으로 해결하지 못한다(§5). RoboTwin의 높은 숫자는 광범위한 현실 성공률을 뜻하지 않으며 RoboDojo에서 strict success는 6.5%로 여전히 낮다. 실물 실험도 한 종류의 Fourier GR-3와 세 작업, 조건당 10회의 작은 표본이다. 도메인 랜덤화는 명시된 시각/물리 교란일 뿐 임의 현장 전체를 포함하지 않는다. 단일 GPU에서 측정한 추론 지연과 실제 제어 시스템 end-to-end latency 역시 구분해야 한다.",
+      "questions": [
+        "Figure 2에서 어떤 high-future 토큰이 action으로 전달되지 않는지 attention mask로 표시할 수 있는가?",
+        "Table 2의 90.58→93.22→93.70 차이가 모델 크기·훈련 데이터량이 아닌 시각 척도 변경에서 왔음을 어떻게 확인하는가?",
+        "RoboTwin 93.70%와 RoboDojo success 6.50% 사이의 평가 목표·과제 길이 차이는 무엇인가?",
+        "GR-3에서 눈에 가려진 블록을 다루는 중 장기 memory가 오히려 틀린 목표를 유지하면 어떤 reset이 필요한가?"
+      ],
+      "source_scope": "full_html_method_experiments_appendices_and_original_figures",
+      "generated_by": "research_editorial"
+    },
+    "deep_dive": {
+      "lead": "**왜 두 시간 척도인가?** HiLo-WAM은 'future video를 얼마나 길게 뽑나'보다 '긴 미래의 불확실성이 정밀 제어를 망치지 않으면서 어떤 문맥을 제공할 수 있나'를 묻는다. §3의 asymmetric attention, §4의 ablation/temporal stride, Appendix A의 정확한 8·8·4 설정을 기준으로 읽는다. 시뮬레이션 성적과 실제 GR-3의 결과는 반드시 분리한다.",
+      "pipeline": [
+        {
+          "title": "1. 로봇 현재 관측 및 언어 목표",
+          "detail": "각 t에서 RGB 이미지 oₜ, 14차원 로봇 상태 sₜ, 언어 지시 ℓ가 들어오며 14D action chunk를 예측한다. 개념적으로 필요한 관측은 작업 진행 과거와 손끝 상호작용 현재지만 두 정보를 동일 빈도로 샘플링할 필요는 없다.",
+          "io": "(oₜ,sₜ,ℓ) → 두 시간 척도의 visual context"
+        },
+        {
+          "title": "2. 고수준 장기 시각 stream을 희소 샘플링",
+          "detail": "과거 m=8, 미래 n=8 키프레임을 stride k=4로 뽑는다. 장기 stream은 물체가 어느 단계까지 놓였는지, 목표가 앞으로 어떻게 변해야 하는지에 관한 coarse visual progression을 모델링한다. 생성 미래가 정확한 픽셀 정답이라는 가정이 아니다.",
+          "io": "H stream: {oₜ₊ᵢₖ}, i=−8…8; k=4"
+        },
+        {
+          "title": "3. 국소 시각 stream은 근거리 변화에 집중",
+          "detail": "현재와 가까운 32프레임을 밀도 높게 생성하도록 local stream을 만든다. 컵 손잡이 정렬, 블록 모서리 접촉처럼 작은 자세 변화가 중요하다. 두 비디오 시퀀스는 공통 pretrained VAE로 각각 인코딩한다.",
+          "io": "L stream: dense VAE latents, T=32"
+        },
+        {
+          "title": "4. 공유 Video DiT와 별도 Action DiT",
+          "detail": "Wan2.2-TI2V-5B로 초기화한 30-layer Video DiT가 두 시각 stream을, 30-layer Action DiT가 state/action token을 처리한다. 영상·행동은 modality별 파라미터를 유지하고 층별 joint attention으로 교환한다. T5가 양쪽에 언어 조건을 제공한다.",
+          "io": "[Z_H, Z_L, q, Z_A] → structured MoT"
+        },
+        {
+          "title": "5. 비대칭 attention + 세 개의 flow loss",
+          "detail": "H 내부는 상호 참조하지만 L과 A가 직접 읽는 장기 정보는 historical context 및 가까운 미래(H_near)뿐이다; H_far는 고불확실성으로부터 action을 보호하기 위해 직접 차단한다. H/L/A의 미래 및 action latent에 독립적으로 flow time을 샘플링하고 동일 가중치 1의 loss를 합한다.",
+          "io": "L= L_H + L_L + L_A; far-future direct access 차단"
+        },
+        {
+          "title": "6. Progressive inference로 video 계산 멈추기",
+          "detail": "10회 denoising하는 action stream을 끝까지 실행하면서 H/L은 각각 5회만 계산 후 feature를 cache한다. 처음에는 동시 denoising, 후반에는 cached visual를 action이 재사용한다. 비슷한 velocity가 반복되는 단계는 cosine similarity 임계값에 따라 DiT eval을 건너뛴다.",
+          "io": "n_H=5, n_L=5, n_A=10; partial→joint→skipping"
+        },
+        {
+          "title": "7. 두 종류의 시뮬레이션과 하나의 실물 설정에서 점검",
+          "detail": "RoboTwin 50 tasks는 각 clean/randomized 50 trials, RoboDojo 8 long tasks는 각 50 trials, 실물 GR-3는 Build/Disassemble House·Disassemble Heart 세 과제 각각 10 trials이다. progress와 strict success, 실물의 OOD 교란 범위를 분리해 기록한다.",
+          "io": "simulation vs real, completion vs progress"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "H_ctx·H_near·H_far를 구분하는 이유",
+          "body": "§3.3 Figure 3의 mask에서 장기 stream에는 history/context와 near/far future가 있다. local/action이 H_far를 직접 읽을 수 있게 하면 부정확한 멀리 떨어진 예측이 당장의 손 위치 제어를 흔들 수 있다. 저자는 context와 near만 직접 참조하도록 제한했다.",
+          "watch": "Figure 2 전체 아키텍처 + 원문 Figure 3 attention을 같이 읽을 것"
+        },
+        {
+          "title": "Flow matching과 독립 time sampling",
+          "body": "시각 두 줄과 action의 latent에 서로 다른 noise level을 부여하고, 각 stream의 velocity를 예측한다. 이 구조 덕분에 추론 중 H/L이 action보다 먼저 멈춰도 action의 이후 denoising이 진행될 수 있다. 각 lambda는 Appendix A 기준 모두 1.0이다.",
+          "watch": "§3.4 Eq.(5–6), Appendix Table 4"
+        },
+        {
+          "title": "성능 향상의 해석은 ablation 순서가 핵심",
+          "body": "로컬-only 90.58→장기 미래 추가 93.22→장기 과거의 직접 attention 허용 93.70이다. local을 없애도 93.52로 소폭 낮아진다. 인과 주장은 이 특정 비교 조건에 제한하고, ‘장기 영상만 있으면 충분’이라고 해석하지 않는다.",
+          "watch": "Table 2, dynamic skip 효과는 별도 Table 3"
+        },
+        {
+          "title": "장기 정보를 무조건 더 길게 보지 않는다",
+          "body": "시각 token 수를 고정하고 stride k=1→4→8로 바꾸면 RoboTwin 성공률이 92.3→93.7→92.8%다. 지나치게 드문 샘플은 접촉과 단계 전환을 놓친다. 장기 범위와 시간 해상도 사이에 최적점이 있다는 결과다.",
+          "watch": "§4.4 Figure 7, 고정된 visual token budget"
+        },
+        {
+          "title": "실물 Figure 4는 사례 시퀀스",
+          "body": "Figure 4는 Fast-WAM이 병·블록 선택을 자주 바꾸거나 Mug Hanging에서 핸들을 잘못 정렬하는 모습을 대조한다. 하나의 이미지 시퀀스로 전체 성공률을 증명하지 않으며, 전체 로봇 집계는 §4.6 Figure 9의 ID/OOD 결과에서 확인해야 한다.",
+          "watch": "Figure 4의 정성 예시와 Figure 9의 통계 구분"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "RoboTwin 2.0, 50 tasks",
+          "value": "93.87% clean / 93.52% randomized",
+          "context": "Table 1(a): 각 과제/설정 50 trials, 평균 93.70%"
+        },
+        {
+          "metric": "RoboTwin Fast-WAM",
+          "value": "91.85% avg",
+          "context": "Table 1(a): 91.90 clean /91.80 randomized; HiLo +1.85%p"
+        },
+        {
+          "metric": "RoboDojo 8 long-horizon tasks",
+          "value": "Progress 17.43 / Success 6.50%",
+          "context": "Table 1(b): 각 과제 50 trials; Fast-WAM 9.14/5.17%"
+        },
+        {
+          "metric": "Ablation: local-only",
+          "value": "90.58%",
+          "context": "Table 2: long-horizon 둘 다 제거, RoboTwin"
+        },
+        {
+          "metric": "Ablation: long future + local",
+          "value": "93.22%",
+          "context": "Table 2: 장기 과거 direct attention 꺼짐"
+        },
+        {
+          "metric": "Ablation: full",
+          "value": "93.70%",
+          "context": "Table 2: 장기 과거·미래 + local 모두 사용"
+        },
+        {
+          "metric": "Temporal stride k=1 /4 /8",
+          "value": "92.3% / 93.7% / 92.8%",
+          "context": "§4.4, 같은 visual-token budget"
+        },
+        {
+          "metric": "Action chunk 지연",
+          "value": "1114.46→380.02 ms (2.93×)",
+          "context": "Table 3: RTX PRO 5000 단일 GPU, prompt embedding 캐싱"
+        },
+        {
+          "metric": "실물 GR-3",
+          "value": "ID 33% / OOD 30% strict success",
+          "context": "§4.6 Figure 9: 세 과제×10 trials, progress 6.9/6.0"
+        }
+      ],
+      "evidence_note": "RoboTwin의 93.70%는 50개 시뮬레이션 과제 평균이고, RoboDojo의 6.50%는 다른 8개 장기 과제의 엄격한 성공률이다. 실물의 33%/30% 또한 30개 시도 수준의 작은 표본이다. RTX PRO 5000 지연은 언어 임베딩 캐싱 이후의 추론 호출로 end-to-end 로봇 제어 시간이 아니다.",
+      "comparison": "Fast-WAM은 단기/local video 세계 모델과 행동 생성으로 강한 기준선을 제공하고, AHA-WAM은 장기 시각 문맥을 다루는 대조군이다. HiLo-WAM의 핵심은 장기 정보를 단순 추가하는 것보다 그 정보가 어떤 시점의 action에 접근할 수 있는지 제어한 비대칭 attention과 stream별 denoising 예산이다. π0.5와 같은 VLA가 명시적 소과제 언어를 생성하는 방식과 달리, 여기는 시각 세계 모델의 시간 해상도를 나눈다.",
+      "reading_guide": [
+        "Figure 2에서 H/L 입력과 Video DiT·Action DiT 경로를 따라가고 Figure 3의 H_far 차단 규칙을 찾아본다.",
+        "Appendix Table 4에서 (m,n,k,T,H)=(8,8,4,32,32)와 (n_H,n_L,n_A)=(5,5,10)을 표시한다.",
+        "Table 1(a)의 RoboTwin 성공률과 Table 1(b)의 RoboDojo progress/strict success를 별도 메모한다.",
+        "Table 2는 long-history, long-future, local 세 항을 각각 제거한 ablation임을 표시한다.",
+        "Table 3의 GPU·캐싱·denoising 조건을 확인한 후 2.93×의 의미를 해석한다.",
+        "Figure 4의 사례 실패와 §4.6 Figure 9 실물 집계를 구분한다."
+      ],
+      "replication": {
+        "hypothesis": "과거 장기 목표 지속성과 근거리 접촉 정보를 분리하되 H_far의 직접 attention을 차단하면 장기 시퀀스에서 목표 전환 오류와 정밀 조작 오류를 동시에 줄인다.",
+        "setup": "RoboTwin 2.0의 동일 50 tasks/동일 50+500 demos 프로토콜로 H_ctx/H_near/H_far mask, local-only, k=1/4/8을 통제하고 GPU별 latency를 기록한다. 가능하면 실물 GR-3 외의 platform에서 10회보다 더 많은 episode를 실행한다.",
+        "baselines": "Fast-WAM, long-only, local-only, full mask, H_far unmasked, n_H/n_L 5/10 steps",
+        "metrics": "task strict success per task, milestone progress, target-switch rate, contact alignment error, rollout length, action-chunk wall time, 실패후 복구",
+        "risks": "사용된 pretrained video backbone·데이터 mixture 차이, 물리 실험의 장비 안전과 소표본, long context에서 episode leakage를 통제해야 한다."
+      },
+      "related": [
+        "2504.16054",
+        "2611.05249",
+        "2410.24164"
+      ]
+    }
+  },
+  "2611.04870": {
+    "authors": [
+      "Travis Davies",
+      "Wentao Ma",
+      "Lihao Guo",
+      "Tengfei Ma",
+      "Xiaowen Chang",
+      "Jiafeng Xu",
+      "Shilong Wang",
+      "Yiqi Deng",
+      "Shaowen He",
+      "Xiaoqi Li",
+      "Qian Zhu",
+      "Ran Cheng",
+      "Hao Dong"
+    ],
+    "summary_ko": "그럴듯한 로봇 동영상 대신 ‘명령한 행동을 실제로 따르는 시뮬레이터’가 되려면 무엇이 필요한가? PrimeSim의 30,110시간·22플랫폼 midtraining, multiview action conditioning, 4-step autoregressive posttraining 및 정책 평가·GRPO 검증을 분석한다.",
+    "reading_minutes": 39,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked_ai_assisted",
+    "reviewed_at": "2026-11-06",
+    "editorial_published_at": "2026-11-06",
+    "source_scope_ko": "arXiv:2611.04870v1 공식 HTML §2–4·§6·Appendix corpus/Training/Latency, Figure 1·2, Tables 1–4·6·8–11·12–18 대조",
+    "abstract": "Action-conditioned multiview video generator를 훈련 데이터 엔진, 두 개의 행동조건 경로, 카메라 간 정보교환, causal distillation과 자기 생성 history 학습을 통해 world-model simulator로 바꾸는 연구. 저자 실험의 세부 조건과 한계를 구별한다.",
+    "review": {
+      "one_line": "**미래 영상이 보기 좋다는 것과 로봇 명령에 따라 움직인다는 것은 다르다.** PrimeSim은 3개 카메라 화면·31D 통합 행동표현·시간 정렬된 action conditioning을 통해 제어 가능성을 높이고, 4단계 후속학습과 hierarchical KV memory로 긴 rollout의 자기 오차 누적을 억제하려 한다.",
+      "problem": "월드 모델을 학습 시뮬레이터로 사용하려면 명령한 팔이 움직였을 때 물체가 그 실제 움직임 때문에 변해야 한다. 단순 비디오 생성기는 카메라별 불일치, 명령과 다른 로봇 팔 동작, 자기 생성한 프레임을 다시 입력하는 동안 축적되는 오류 때문에 멀쩡한 동영상을 내더라도 정책 훈련에는 잘못된 보상을 줄 수 있다. 특히 뒤늦게 보이지 않는 물체 위치가 바뀌는 문제가 치명적이다. PrimeSim은 영상 선행학습을 유지하면서 로봇의 행동 인터페이스, 다중 카메라 일치, 수십 초 rollout 연속성을 함께 다룬다(§1–3).",
+      "idea": "사전학습된 Wan2.2-TI2V-5B를 로봇 22종·30,110시간 데이터로 midtrain해 action-conditioned 3-view 비디오 생성기를 만든 뒤, causal attention→4-step consistency distillation→self-rollout asymmetric DMD→episode-level memory로 단계적으로 전환한다. 행동은 플랫폼마다 서로 다른 관절 정의를 31D 슬롯에 맞추고, action과 미래 frame이 대응하도록 attention mask와 residual adapter를 함께 사용한다. 비유하면 ‘관찰 영상으로 그림을 잘 그리는 모델’을 ‘로봇 조이스틱 입력에 맞춰 상태를 갱신하는 게임 엔진’으로 변화시키는 작업이다(§2–3, Figure 1).",
+      "method": "데이터 엔진은 영상 품질·행동 이상치·시간/카메라/언어 정렬·좌표계 통일을 수행한다. 각 샘플은 head/left wrist/right wrist 등 최대 3개 시각으로 매핑하고 영상은 10Hz, 행동은 최초 상태를 기준으로 상대화한다. 31D action slot과 2-layer MLP token, framewise shifted-diagonal attention, direct action-frame adapter를 이용한다. 30개 DiT block 중 2개는 view 내부 attention, 3번째는 view 간 global attention을 수행하고 camera token으로 구별한다. Midtrain은 조건부 latent flow matching. Posttrain은 chunk-causal 50-step 생성에서 4-step student로 증류하고, self-rollout과 global-sink/slow/local cache를 이용한 episode-level adaptation으로 확장한다(§2–3, Appendix A).",
+      "findings": "WorldSimProbe Table 1에서 PrimeSim은 다섯 행동·상호작용 suite 중 네 개 최고: T1 70.2(최고 LingBot-VA 77.0), T2 67.9, T3 72.3, T4 85.7, T5 37.1, 평균 66.6. EWMBench Table 2 전체 6.09는 GE-Sim LTX 5.82보다 높지만 텍스트 조건 모델과는 동일한 조건이 아니다. 단일 A100, 288×384×3-view, four-step steady state의 10.12 **temporal FPS** 및 30.35 **view-frame FPS**는 원문 품질 평가 설정(192×256, 50 step)과 다르다. LIBERO-Spatial 8정책×300 초기상태의 성공률 순위 상관은 Spearman 1.00, Pearson 0.99이며, PrimeSim 내부 GRPO 200 step 후 물리 시뮬레이터 성공률은 61.7%→73.2%다(§4.1–4.4).",
+      "limitations": "정량 및 **모든 정책 closed-loop 검증은 시뮬레이션**에 기반하며 실제 하드웨어에서 PrimeSim으로 정책을 훈련한 결과는 아니다. 100–200 step 적응은 zero-shot이 아니라 플랫폼별 데이터를 사용한다. 10.12 TempFPS는 모델 단독 생성 속도이지 정책과 로봇을 연결한 end-to-end control FPS가 아니다. 비교 모델 간 이미지 해상도·비디오 길이·denoising budget은 통일되지 않았다. 품질 점수에서 의미적·논리적 차원은 높지만 지역 action calibration(T1)은 선두가 아니다. 일부 자료는 비공개 in-house이며 독립적인 데이터 동일 재현에 제약이 있다(§4.1.3, §6).",
+      "questions": [
+        "Figure 1(c)의 LIBERO 상관계수가 실제 로봇의 sim-to-real 성능까지 보장하는가?",
+        "Figure 2의 데이터 파이프라인에서 회전 quaternion 순서와 10Hz 동기화 오류는 어떤 방식으로 검출되는가?",
+        "Table 3의 10.12 TempFPS와 30.35 ViewFPS를 비교 모델의 영상 해상도 및 step과 함께 어떻게 해석해야 하는가?",
+        "Table 8의 global/slow/local memory가 같은 21-slot rolling cache 대비 어떤 조건에서 덜 drift하는가?",
+        "WorldSimProbe T1의 낮은 local calibration이 실제 RL reward hacking으로 이어질 가능성을 어떻게 평가할 것인가?"
+      ],
+      "source_scope": "full_html_method_experiments_appendices_and_original_figures",
+      "generated_by": "research_editorial"
+    },
+    "deep_dive": {
+      "lead": "**이 논문의 성공 조건:** 생성 영상의 PSNR보다, 명령이 실제 동작을 바꾸는지·카메라가 서로 같은 세계를 보는지·자체 생성된 프레임을 반복 입력해도 붕괴하지 않는지 확인한다. §2의 자료 통합, §3의 action/multiview 및 posttraining, §4의 WorldSimProbe/EWMBench/LIBERO와 Appendix A/B를 대조했다. 저자의 simulator 실험과 실제 하드웨어 안전성은 구분한다.",
+      "pipeline": [
+        {
+          "title": "1. 이종 로봇 30,110시간 데이터 정리",
+          "detail": "20개 dataset family, 1,773개 LeRobot 저장소, 약 152만 에피소드, 22개 플랫폼·총 약 23.8억 프레임을 합친다. 품질 낮은 영상/행동 로그를 필터링하고 10Hz로 재표본화한다. 실제:시뮬레이션 비중은 시간 기준 약 84:16; 3-view 슬롯은 없는 카메라를 primary 이미지로 복제해 맞춘다.",
+          "io": "Robot demonstrations → aligned (video,action,instruction) triples"
+        },
+        {
+          "title": "2. Embodiment를 31D 행동 슬롯으로 일치",
+          "detail": "end-effector pose·그리퍼·head/torso/waist·chassis velocity 등을 공통 슬롯에 매핑하고 사용하지 않는 슬롯은 0으로 둔다. window 시작 상태 기준 상대 pose (T₀⁻¹Tₜ)로 기준점을 고정하며 quaternion 성분 순서는 (x,y,z,w)로 통일한다. 다른 로봇의 절대 좌표 원점 차이가 정규화된다.",
+          "io": "relative action chunk + 31D unification"
+        },
+        {
+          "title": "3. Midtrain: 정확한 action-frame 대응",
+          "detail": "Wan2.2-TI2V-5B의 사전학습 영상 모델에서 시작한다. 각 미래 frame은 **그 frame으로 이동을 일으킨 선행 action**만 참조하도록 shifted-diagonal attention을 제한하고, 별도 action-frame adapter가 해당 action feature를 frame token에 직접 더한다. 두 경로는 temporal alignment와 signal strength를 각각 담당한다.",
+          "io": "A_t → framewise mask + residual adapter → predicted RGB"
+        },
+        {
+          "title": "4. 카메라 세 줄의 일치 유지",
+          "detail": "30개 DiT block은 두 개씩 카메라 내 attention, 세 번째 block은 3개 view에 global attention을 수행한다. 각 view를 구분하는 learned camera token이 함께 들어간다. 영상의 팔 위치·물체 상태가 세 시점에서 동시에 일어나도록 학습한다. Midtrain 목적함수는 joint multiview latent flow matching이다.",
+          "io": "Head / wrist-L / wrist-R → shared world evolution"
+        },
+        {
+          "title": "5. Posttrain 1·2: Causal chunk와 4-step distilled student",
+          "detail": "Bidirectional fixed-window generator를 이전 chunk만 읽는 chunk-causal 모델로 바꾸고 teacher forcing으로 학습한다(Stage 1). 50번 denoising하던 causal teacher의 국소 ODE update를 4-step student가 근사하게 consistency distill한다(Stage 2). 약한 모델에게 미래 정답 frame을 주지 않기 위한 준비다.",
+          "io": "50-step causal teacher → 4-step causal student"
+        },
+        {
+          "title": "6. Posttrain 3: 자기 history의 오류를 학습",
+          "detail": "고정된 ground-truth context가 아니라 student가 직접 생성한 frame을 다음 입력으로 주는 self-rollout을 반복한다. 동결된 bidirectional teacher와 student의 fake-score network를 비교하는 asymmetric DMD 학습으로 drift를 줄인다. student는 LoRA adapter를 갱신하고 critic은 generation마다 별도 학습한다.",
+          "io": "self-conditioned rollout + frozen real-score + learned fake-score"
+        },
+        {
+          "title": "7. Posttrain 4: episode-level와 hierarchical KV memory",
+          "detail": "짧은 clip 대신 episode 전체에서 누적 error를 보며, KV cache에는 global sink(초기 장면), sparse slow memory(오래된 핵심 상태), dense local memory(최근 움직임)를 둔다. Appendix의 대표 slot 설정은 3+9+9=21개. 정책이 장기간 명령할 때 새 프레임은 더 이상 실제 정답 future frames를 이용하지 않는다.",
+          "io": "Hierarchical cache 3/9/9 → open-ended autoregressive generation"
+        },
+        {
+          "title": "8. Simulator로서 정책 평가와 최적화",
+          "detail": "WorldSimProbe는 동작 충실도/상호작용을 다섯 축으로 평가한다. LIBERO-Spatial에서는 실제 물리 시뮬레이터를 참조로 삼아 8개 OpenVLA-OFT 정책의 순위를 비교하고, 자체 생성 프레임에 성공 classifier를 적용해 GRPO reward를 준다. 실물 하드웨어의 RL 성공으로 바로 읽어서는 안 된다.",
+          "io": "Predicted video → success classifier → GRPO → LIBERO reference evaluation"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "이미지 품질이 높은 것만으로 행동 충실도는 확인되지 않는다",
+          "body": "WorldSimProbe T1–T5는 작은 action perturbation, 다른 궤적, action source, 접촉 없는 반사실 상황, interaction dynamics를 따로 측정한다. 예컨대 팔이 안 움직였는데 물체가 밀리는 영상은 화질이 높아도 시뮬레이터 계약을 어긴다.",
+          "watch": "§4.1.1 Table 1: T1=70.2, T2=67.9, T3=72.3, T4=85.7, T5=37.1"
+        },
+        {
+          "title": "31D 상대 행동표현과 시간 정렬은 서로 다른 문제",
+          "body": "상대 행동은 로봇마다 다른 절대 원점을 제거한다. shifted-diagonal attention은 어떤 action이 어떤 RGB frame 변화를 지배하는지 지정한다. adapter는 attention이 action signal을 무시하지 못하도록 직접 주입한다. Table 9/10 각각 representation과 두 경로를 별도로 ablate한다.",
+          "watch": "Table 9: absolute PSNR 22.23, relative chunk 24.56; Table 10: 두 경로 결합 24.56"
+        },
+        {
+          "title": "3개 view는 입력을 단순 이어 붙이지 않는다",
+          "body": "카메라 아이디와 interleaved intra-/cross-view attention을 통해 각 view 고유 움직임을 유지하면서 동일한 물체의 일관성을 맞춘다. 단일 in-house 플랫폼 조건 Table 11에서 단순 frame concatenation PSNR 16.30, view token 추가 23.78, intra-view attention 추가 24.56이다.",
+          "watch": "Figure 1(b), 원문 Figure 4/11 및 Table 11"
+        },
+        {
+          "title": "Four-step FPS는 더 빠른 샘플러의 수치",
+          "body": "Stage 1 causal 50-step은 1.12 TempFPS, Stage 2 four-step은 10.04, Stage 3은 10.12다(Table 6). 다른 월드모델의 50-step 또는 다른 해상도 추론과 이를 같은 하드웨어 비용으로 간주하면 안 된다. 자체 KV가 성장하는 긴 rollout에서는 7.63 TempFPS라는 단서도 있다.",
+          "watch": "Table 3은 A100·bfloat16·batch1·288×384, 품질 평가는 192×256"
+        },
+        {
+          "title": "Rolling cache 대비 3/9/9 계층 기억",
+          "body": "21 temporal latent slot 예산을 동일하게 두고, rolling(3+18) 평균 PSNR 18.709, hierarchical(3+9+9) 19.519로 비교한다. 마지막 window 성능과 처음 대비 degradation도 후자가 우수하다. 이는 긴 episode의 객체 상태 보존을 위한 증거이나 모든 환경에서의 물리학적 일치를 보증하진 않는다.",
+          "watch": "Table 8: ΔPSNR 8.427→6.008, 10 held-out episodes"
+        },
+        {
+          "title": "정책 평가의 상관관계와 RL의 범위",
+          "body": "LIBERO-Spatial 10 tasks×30 states에서 8개 OpenVLA-OFT 정책의 순위를 예측했을 때 Spearman rho=1.00, Pearson r=0.99. 분류기 성공 판정은 LIBERO simulator의 privileged predicate와 다르다. GRPO 200 step 개선도 실제 hardware가 아니라 physics simulator에서 확인됐다.",
+          "watch": "Figure 9, §4.4: simulator 61.7→73.2%, classifier reward"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "Midtraining corpus",
+          "value": "30,110 h / 22 platforms / 1.52M episodes",
+          "context": "Appendix Table 12, Figure 3: 20 dataset families, 84:16 real:sim"
+        },
+        {
+          "metric": "WorldSimProbe (LIBERO)",
+          "value": "Mean 66.6; best 4 / 5 suites",
+          "context": "Table 1: T1 70.2는 LingBot-VA 77.0보다 낮음"
+        },
+        {
+          "metric": "EWMBench Overall",
+          "value": "6.09 vs GE-Sim(LTX) 5.82",
+          "context": "Table 2: action-conditioned 비교; 21 episodes, 50-step quality"
+        },
+        {
+          "metric": "Midtraining held-out platforms",
+          "value": "100–200 gradient steps",
+          "context": "Table 4: xArm7 200, ViperX300 100, UMI200; pretrained backbone은 2000 내 미달"
+        },
+        {
+          "metric": "Stage1→Stage3 throughput",
+          "value": "1.12 → 10.12 temporal FPS",
+          "context": "Table 6: causal teacher 50 steps vs Stage3 student 4 steps"
+        },
+        {
+          "metric": "A100 single GPU latency protocol",
+          "value": "10.12 TempFPS /30.35 ViewFPS",
+          "context": "Table 3: 288×384×3views, bfloat16 batch1; end-to-end control 아님"
+        },
+        {
+          "metric": "Hierarchical memory PSNR",
+          "value": "19.519 vs rolling 18.709",
+          "context": "Table 8: 10 RoboTwin episodes, 동일 21-slot budget"
+        },
+        {
+          "metric": "8-policy simulator-ranking fidelity",
+          "value": "Spearman 1.00 / Pearson 0.99",
+          "context": "Figure 9(a): LIBERO-Spatial 300 matched states, sim only"
+        },
+        {
+          "metric": "GRPO RL 200 steps",
+          "value": "LIBERO simulator 61.7%→73.2%",
+          "context": "Figure 9(b): model-generated reward로 학습하고 physics sim으로 평가"
+        }
+      ],
+      "evidence_note": "품질 실험은 대개 192×256, 50-step과 모델별 프로토콜에 기반하나 Table 3의 속도는 288×384×3-view, 4-step의 다른 조건이다. Policy evaluation과 GRPO 효과는 모두 LIBERO physics simulation에서의 검증이며 실제 로봇 제어 성공률로 인용하면 안 된다.",
+      "comparison": "PrimeSim은 행동을 직접 출력하는 VLA나 action-diffusion 정책이 아니라, **주어진 행동을 입력으로 받아 다음 RGB 세계 상태를 예측하는 simulator**다. HiLo-WAM(2611.05023)은 예측 시각 상태와 action을 공동 생성해 제어 정책을 강화하지만, PrimeSim은 정책 평가·RL 학습에 사용할 world-model environment에 더 무게를 둔다. 속도·정확도 점수는 모델 종류보다 우선 평가 계약과 action-conditioning 여부로 비교해야 한다.",
+      "reading_guide": [
+        "Figure 1의 corpus/architecture/simulator 사용 세 패널을 구별하고 r=0.99가 물리 로봇 성적이 아닌 LIBERO 정책평가 상관임을 표시한다.",
+        "Figure 2의 영상 필터·행동 이상치·정렬·표현 통일에 해당하는 단계와 Appendix Table 12의 시수 계산을 확인한다.",
+        "§3.2 Figure 4 설명에서 shifted diagonal과 action-frame adapter, interleaved view attention 각각의 목적을 적는다.",
+        "§3.3 Stage 1→4에서 어떤 teacher를 동결하고 어느 단계에서 self-generated history를 사용하는지 도식화한다.",
+        "Table 1의 T1 local calibration 열을 다른 네 지표와 함께 읽는다.",
+        "Table 3의 TempFPS와 ViewFPS, 해상도·denoising steps·긴 episode 7.63 수치를 구분한다.",
+        "Table 8 memory 21-slot 비교와 Figure 9의 300 initial states·GRPO 200 steps를 추적한다."
+      ],
+      "replication": {
+        "hypothesis": "미래 프레임별 action alignment와 세 시점의 view identity, self-generated memory를 함께 제공할 때 동영상 재현을 넘어 counterfactual action-conditioned simulator의 신뢰성이 높아진다.",
+        "setup": "공개 가능한 LIBERO-Spatial 10 tasks×30 initial states에서 저장된 동일 8개 정책을 고정해 WorldSimProbe T1–T5와 policy ranking을 재측정한다. 원본 미공개 corpus 전체 복제 대신 공개 데이터·1개 로봇에서 31D 상대 action, dual-path, multiview mask 및 cache ablation을 실행한다.",
+        "baselines": "Wan2.2 prior-only, absolute vs delta vs first-frame relative actions, unmasked attention vs framewise+adapter, naive concat vs camera tokens, rolling 21 slots vs hierarchical 21 slots",
+        "metrics": "T1–T5, action-to-realized displacement error, view consistency, scene drift per 100 frames, strict physics-sim policy success, rank correlation with bootstrap CI, TempFPS/ViewFPS at matched geometry",
+        "risks": "비공개 데이터 재현 불가, classifier reward hacking, physics-sim과 실제 robot의 도메인 차이, 비교 FPS의 해상도·denoising 편차를 명확히 제한해야 한다."
+      },
+      "related": [
+        "2611.05023",
+        "2504.16054",
+        "2406.09246"
+      ]
+    }
   }
 }

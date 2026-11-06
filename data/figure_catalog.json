@@ -435,5 +435,96 @@
         "locator": "원문 Figure 2 / arXiv:2403.12945"
       }
     ]
+  },
+  "2611.05249": {
+    "heading": "Action Expert의 gradient가 VLM으로 흘러갈 때",
+    "intro": "공식 arXiv HTML v1의 Figure 1 및 4 원본을 논리적 위치에 배치했다. 네 factorial 조건과 시뮬레이션 정성 실행을 혼동하지 않고 해설한다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "method",
+        "reading_title": "Figure 1 — Action-token CE와 expert gradient의 두 신호",
+        "context": "저자 Figure 1의 왼편은 VLM K/V→expert 연결과 CE gradient 경로를 보여주고, 오른편은 두 스위치에 따른 open-loop 학습 오차를 보여준다. CE가 ON인 경우 routing 차이가 작다고 모든 closed-loop 차이도 작다는 뜻은 아니다.",
+        "steps": [
+          "왼쪽 VLM의 token supervision 화살표와 연속 expert loss 역전파 경로를 구분한다.",
+          "Insulation의 forward K/V는 동일하며 역전파만 막힌다는 사실을 확인한다.",
+          "오른쪽 곡선은 open-loop 오류이지 AlpaSim의 실제 progress 수치가 아니다.",
+          "CE ON/OFF의 색상 또는 구분을 Table 3 closed-loop 수치와 연결하되 지표는 혼동하지 않는다."
+        ]
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Figure 4 — 세 장면 시퀀스가 설명하는 것과 못 하는 것",
+        "context": "Figure 4의 PanClean·MoveLatteCup·BlockStackKitchen은 제시된 대표적인 simulation rollout이다. MoveLatteCup은 정성 사례에만 포함되며, Table 4의 평균은 BlockStackKitchen·FoodBussing·PanClean 세 과제다.",
+        "steps": [
+          "행별로 coupled와 insulated 실행이 실제로 다른 부분을 비교한다.",
+          "표시된 check mark를 전체 세 과제의 성공률로 바꾸어 읽지 않는다.",
+          "MoveLatteCup이 Table 4의 세 과제 평균에서 제외됨을 기록한다.",
+          "표의 %는 normalized rubric progress로 450-step episode의 strict success가 아니다."
+        ]
+      }
+    ]
+  },
+  "2611.05023": {
+    "heading": "HiLo-WAM — 희소 장기/조밀 근거리 세계 모델",
+    "intro": "저자 공식 HTML v1 Figure 2 아키텍처와 Figure 4 대표적 실패/성공 비교를 설명 지점에 배치한다. 실험표의 strict success와 progress는 별도 출처다.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 두 시간 척도의 Video DiT와 Action DiT",
+        "context": "원문 Figure 2는 sparse long-horizon historical/future visual, dense local dynamic visual와 액션 생성의 결합이다. 장기 정보가 작은 시간 오차로 당장 action에 전달되지 않도록 cross-stream attention이 제한된다.",
+        "steps": [
+          "상단 또는 좌측의 과거/미래 희소 프레임과 로컬 조밀 프레임을 구별한다.",
+          "공유 Video DiT와 모달리티별 Action DiT의 통로를 추적한다.",
+          "시각 5-step cache 이후 action이 남은 10-step denoising을 이어가는 경로를 찾는다.",
+          "원문 Figure 3에 상세한 H_far 차단 mask가 별도로 있다는 점을 확인한다."
+        ]
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Figure 4 — 목표 변경 오류와 접촉 정렬 오류의 정성 비교",
+        "context": "Fast-WAM은 일부 사례에서 목표 병이나 블록을 바꿔 잡거나 머그 손잡이 정렬에 실패하고, HiLo-WAM은 제시된 시퀀스에서 더 일관된 진행을 보인다. 이는 사례이고 전체 비율은 Table 1과 Figure 9의 별도 실험이다.",
+        "steps": [
+          "Put Bottles into Dustbin 사례에서 여러 번 바뀌는 목표 대상을 찾는다.",
+          "Build House에서 쌓을 블록을 고수준으로 계속 기억하는지 확인한다.",
+          "Mug Hanging의 정밀 정렬은 장기 기억뿐 아니라 로컬 동역학이 필요하다는 증거로 읽는다.",
+          "실물 성공률 33%/30%의 분모는 3과제×10 trials인 §4.6을 별도로 확인한다."
+        ]
+      }
+    ]
+  },
+  "2611.04870": {
+    "heading": "PrimeSim — world-model simulator를 구성하는 요소",
+    "intro": "원저자 HTML v1의 Figure 1 개괄과 Figure 2 데이터 엔진 원본을 사용한다. Figure 1의 상관계수·정성 사례를 실물 로봇의 RL 검증으로 과대해석하지 않는다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Figure 1 — 데이터 규모·행동 조건·simulator 검증을 구분",
+        "context": "저자 Figure 1은 30.1k-hour corpus, 3-camera/action-conditioned 생성기, sim fidelity와 policy 평가의 서로 다른 주장을 묶은 teaser다. r=0.99는 LIBERO 시뮬레이터와의 policy 성공률 Pearson 상관에 관한 것이다.",
+        "steps": [
+          "(a) robot 형상 및 실물/시뮬레이션 데이터 혼합을 파악한다.",
+          "(b) 언어·31D actions·3-camera 조건이 다음 프레임에 연결되는 방식과 posttraining memory를 본다.",
+          "(c) simulator에 대해 성능을 평가한 부분은 현실 하드웨어 RL 성적이 아님을 구별한다.",
+          "상관계수 r=0.99는 단 8정책의 LIBERO-Spatial 평가임을 Table/본문에서 확인한다."
+        ]
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 30,110시간이 ‘양질의 행동-비디오 쌍’이 되기까지",
+        "context": "원문 Figure 2는 teleoperation·UMI·simulation 자료에서 영상/행동 품질을 걸러내고, 시각·타임스탬프·좌표계를 맞추는 실제 데이터 처리 흐름이다. Figure 2 자체가 모델의 DiT 구조도는 아니며 그 구조는 원문 Figure 4에 있다.",
+        "steps": [
+          "영상 품질에서 JPEG artifacts·짧은 episode·motion outlier를 검출한다.",
+          "행동 값의 불연속/손상과 결측을 찾아 제외하는 조건을 확인한다.",
+          "10Hz 재표본화·최대 3개 camera slot과 텍스트 prompt 정렬을 추적한다.",
+          "end-effector FK, quaternion (x,y,z,w), 첫 프레임 기준 relative chunk 변환을 확인한다.",
+          "저자 Figure 4의 actual model architecture와는 역할이 다른 데이터 파이프라인 이미지임을 명시한다."
+        ]
+      }
+    ]
   }
 }
