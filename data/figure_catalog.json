@@ -526,5 +526,95 @@
         ]
       }
     ]
+  },
+  "2611.05155": {
+    "heading": "Asynchronous Robot Policies — 실물 Franka와 동적 교란을 구분해서 읽기",
+    "intro": "arXiv:2611.05155v1 Figure 3 및 Figure 4 저자 원본. Figure 3은 DROID 기반 평가, Figure 4는 Dynamic-Bump 정성 사례로 각각 별도 조건에 해당한다.",
+    "figures": [
+      {
+        "number": 3,
+        "placement": "findings",
+        "reading_title": "Figure 3 — DROID 기반 실제 Franka와 RoboLab의 별도 결과",
+        "context": "저자 Figure 3은 실물 Franka 과제와 RoboLab 시뮬레이션 결과를 묶는다. 막대나 장면을 볼 때 각 평가의 task budget과 점수 정의가 다르므로, Table 5의 RoboLab 31.9→37.5%를 실물 Franka 성공률로 바꾸어 읽으면 안 된다.",
+        "steps": [
+          "실물 로봇 예시와 RoboLab 패널을 구별한다.",
+          "DROID 학습 ARP와 π0.5-DROID의 pretrained 데이터 조건 차이를 확인한다.",
+          "실물 vegetables/markers 넣기의 진척도와 RoboLab 완료율 지표를 구별한다.",
+          "Table 5의 prefix RTC 개선과 Figure 3의 정성 설명을 별도 증거로 둔다."
+        ]
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Figure 4 — 움직이는 공을 재탐지하는 비동기 제어",
+        "context": "원문 Figure 4는 Dynamic-Bump 한 시행의 프레임을 보여준다. ARP가 튕겨 나간 공을 재추적한 장면이며 확률적 충격의 전체 성공률은 Table 2의 p=1, p=0.5 행으로 평가한다.",
+        "steps": [
+          "충격 전에 설정된 접근 경로와 이후 ball 위치를 비교한다.",
+          "동기 π0-1B가 실패한 프레임을 찾되 전체 성능 추론으로 확장하지 않는다.",
+          "p=1에서 44.7% 대 12.7%, p=0.5에서 46.7% 대 20.0%를 Table 2에서 확인한다.",
+          "Appendix C의 heading rotation ±100° 및 20Hz controller를 같이 확인한다."
+        ]
+      }
+    ]
+  },
+  "2611.05062": {
+    "heading": "FloMo — 예측 목표로서의 3D scene flow",
+    "intro": "arXiv:2611.05062v2 Figure 1·4의 원본. 모델 구조와 attention diagnostic을 다른 문단의 논점에 맞추어 배치한다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "method",
+        "reading_title": "Figure 1 — 3D 누적 변위를 RGB로 코딩해 비디오 VAE에 넣기",
+        "context": "첫 이미지+명령에서 point tracker의 누적 scene flow를 RGB처럼 렌더링해 frozen Wan VAE로 넣는다. 저자 그림의 RGB는 실제 장면 생성 결과가 아니라 3축 3D displacement를 실은 부호화 이미지다.",
+        "steps": [
+          "최초 RGB 조건과 future motion prediction target을 분리한다.",
+          "Q=4096 3D 점의 displacement가 RGB 3채널로 들어가는 변환을 추적한다.",
+          "Wan 2.2 5B DiT가 motion tokens와 action tokens를 공동 denoise하는 위치를 찾는다.",
+          "Human video는 action loss가 0이고 robot video만 action supervision을 받는다는 점을 연결한다."
+        ]
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Figure 4 — Action query가 비디오보다 motion에 주의를 두는 이유",
+        "context": "이 그림은 VMA(video+motion+action) 변형의 attention diagnostic이며 FloMo MA 모델의 성공률 그래프가 아니다. 1000개 validation samples의 layer/head 평균에서 action attention이 motion에 video의 약 3배 집중된다는 저자 설명을 검토한다.",
+        "steps": [
+          "초기 층과 중후반 층에서 modality attention share가 달라지는 흐름을 읽는다.",
+          "Motion share가 late-middle layer에서 약 55%에 도달하는 부분을 확인한다.",
+          "Video share가 깊은 층에서 약 10%인 부분을 확인한다.",
+          "이 attention 차이는 상관적 진단이지 motion의 유일한 인과 효과 증명이 아님을 구분한다."
+        ]
+      }
+    ]
+  },
+  "2611.05372": {
+    "heading": "PolicyIK — Joint reference와 초정밀 목표 유지",
+    "intro": "arXiv:2611.05372v1 저자 Figure 2 모델 구조와 Figure 1 시뮬레이션·실물 정밀도. 1mm/0.2°는 논문에 정의된 모델 기반 포즈 오차다.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 현재 q가 아니라 누적 reference z까지 쓰는 제어기",
+        "context": "저자 Figure 2의 정책은 7D joint-reference increment를 산출하고 gain β를 곱해 쌓는다. 기존 PD loop는 누적 z를 추종하며, 정책은 z−q feedback으로 서보 오프셋을 인식한다. 그림의 색상별 블록이 §4.1–4.3의 세 설계를 표시한다.",
+        "steps": [
+          "실측 q와 누적 명령 z를 구분한다.",
+          "δz를 생성한 후 β scaling과 reference accumulation 순서를 따라간다.",
+          "Coarse/fine error 입력과 progress·dwell reward의 역할을 각각 찾는다.",
+          "마지막 단계가 ‘정확한 관절 상태 직접 출력’이 아닌 PD 추종이라는 점을 확인한다."
+        ]
+      },
+      {
+        "number": 1,
+        "placement": "findings",
+        "reading_title": "Figure 1 — 도달과 목표 내부 유지가 다르다는 시각적 증거",
+        "context": "Figure 1(a)는 workspace full-pose 접근, (b)는 시뮬레이션 1mm·0.2° 정밀 도달·유지, (c)는 실제 OpenArm의 최종 5초 지속을 보여준다. 수치 검증은 Table 1(시뮬레이션)과 Table 3(실물)을 분리해야 한다.",
+        "steps": [
+          "(a)의 broad reaching을 최종 1mm success와 혼동하지 않는다.",
+          "(b)는 simulator 최종 1초 평균 strict success/containment와 연결한다.",
+          "(c)의 실물 데이터는 60 tasks·25s budget의 43/60 held와 연결한다.",
+          "실물 pose 오차는 joint encoder와 FK로 계산하며 외부 절대 측정이 아님을 명시한다."
+        ]
+      }
+    ]
   }
 }
