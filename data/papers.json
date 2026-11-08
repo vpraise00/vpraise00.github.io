@@ -78,12 +78,12 @@
         "ROBOTICS"
       ],
       "featured": false,
-      "curated": false,
+      "curated": true,
       "origin": "arxiv-auto",
-      "reading_minutes": 7,
+      "reading_minutes": 27,
       "project_url": "",
       "code_url": "",
-      "summary_ko": "새로 공개된 로봇 연구입니다. 초록을 바탕으로 핵심 기여와 실험 근거를 검토합니다.",
+      "summary_ko": "PACT는 로봇 손가락의 tendon routing·moment arm·capstan radius를 따로 설계할 때 생기는 힘/속도 trade-off를 해결하기 위해 8개 대표 자세에서 **최악 자세의 힘 요구 충족률**을 최대화하는 공동설계입니다. 4-DoF 손가락에서 기준 설계의 최소 force coverage 0.24를 0.88로 높이고, 5Hz의 분리 관절 bandwidth 모델 제약을 만족했습니다. 단, 실물 힘 검증은 단 하나의 자세·피크 torque의 절반으로 수행되었습니다. (arXiv:2611.05302v1 §III–VIII, Table I–IV, Figure 1·4)",
       "review": {
         "one_line": "새 연구: PACT: Pose-Robust Actuation Co-Design for Tendon-Driven Robotic Hands. 초록을 통해 문제·방법·결론을 빠르게 확인합니다. 상세한 검증은 원문을 확인하세요.",
         "problem": "논문 초록의 문제 정의(원문 발췌): Humanoid robotic hands must provide sufficient force, speed, and backdrivability within a human-scale envelope. Tendon-driven transmissions address this challenge by relocating actuators to the palm and forearm, but routing paths, moment arms, and capstan dimensions jointly determine both force capability and joint speed, so selecting them sequentially satisfies one requirement at the expense of the other.",
@@ -208,7 +208,7 @@
     {
       "id": "2611.05163",
       "slug": "2611.05163",
-      "title": "RoboTryOn: Synthesizing Dexterous Robot Demonstrations from Human Videos via Virtual Try-On",
+      "title": "Synthesizing Dexterous Robot Demonstrations from Human Videos via Virtual Try-On",
       "authors": [
         "Seungyong Lee",
         "Suhyeok Jang",
@@ -216,7 +216,7 @@
         "Jinwoo Shin"
       ],
       "published": "2026-11-03",
-      "updated": "2026-11-03",
+      "updated": "2026-11-05",
       "abstract": "Robot foundation models have shown remarkable performance in robot control, yet adapting them to a new task still relies heavily on teleoperated demonstrations. Egocentric human videos offer a scalable substitute, but overlaying rendered robots on human videos or retargeting human poses into robot actions leaves significant visual or action gaps for high-DoF robot embodiments. To address this limitation, we propose RoboTryOn, which treats human-to-robot translation as virtual try-on: try-on keeps the person and swaps the garment, RoboTryOn keeps the demonstrated motion and swaps the human for the robot. Specifically, RoboTryOn converts a human video into a video of the target robot specified by a reference image, while preserving the original task, objects, and background. To maintain visual consistency, we translate selected keyframes autoregressively and use them to guide video synthesis with motion conditioned on the human hand skeleton. Additionally, we use an inverse dynamics model (IDM) that incorporates depth features to infer action labels from synthesized videos for policy learning. Our experiments across multiple humanoid embodiments show that policies trained with our synthetic data improve the average success rate on novel tasks, including challenging bimanual manipulation, from 2% to 60%, without any real robot demonstration of those tasks. Moreover, training with our synthetic data matches the performance of policies trained solely on teleoperated demonstrations at approximately a third of the collection cost, demonstrating the cost efficiency of our approach.",
       "arxiv_categories": [
         "cs.RO",
@@ -224,7 +224,7 @@
       ],
       "source_url": "https://arxiv.org/abs/2611.05163",
       "pdf_url": "https://arxiv.org/pdf/2611.05163",
-      "primary_category": "wam",
+      "primary_category": "vla",
       "categories": [
         "wam",
         "robotics",
@@ -236,12 +236,12 @@
         "VLA"
       ],
       "featured": false,
-      "curated": false,
+      "curated": true,
       "origin": "arxiv-auto",
-      "reading_minutes": 7,
-      "project_url": "",
+      "reading_minutes": 27,
+      "project_url": "https://ryan-seungyong-lee.github.io/RoboTryOn",
       "code_url": "",
-      "summary_ko": "새로 공개된 로봇 연구입니다. 초록을 바탕으로 핵심 기여와 실험 근거를 검토합니다.",
+      "summary_ko": "RoboTryOn은 사람의 1인칭 조작 영상을 로봇의 시점·형상으로 바꾸고, 변환된 영상에서 역동역학으로 관절 행동 레이블을 복원해 새로운 손 조작을 학습한다. OpenArm과 RB-Y1의 11개 실물 탁상 과제에서 통신·물리 시뮬레이션이 아닌 실제 성공률을 측정했다. '로봇 시연이 전혀 없는 일곱 과제'와 네 개의 텔레오퍼레이션 과제를 엄격히 구분해야 한다. (arXiv:2611.05163v3 §3–4, Appendix A–F)",
       "review": {
         "one_line": "새 연구: RoboTryOn: Synthesizing Dexterous Robot Demonstrations from Human Videos via Virtual Try-On. 초록을 통해 문제·방법·결론을 빠르게 확인합니다. 상세한 검증은 원문을 확인하세요.",
         "problem": "논문 초록의 문제 정의(원문 발췌): Robot foundation models have shown remarkable performance in robot control, yet adapting them to a new task still relies heavily on teleoperated demonstrations. Egocentric human videos offer a scalable substitute, but overlaying rendered robots on human videos or retargeting human poses into robot actions leaves significant visual or action gaps for high-DoF robot embodiments.",
@@ -574,7 +574,9 @@
         "Zhenzhen Li",
         "Yiwei Ru",
         "Liuyu Xiang",
-        "WanTing Xu"
+        "WanTing Xu",
+        "Min Ren",
+        "Zhaofeng He"
       ],
       "published": "2026-11-03",
       "updated": "2026-11-03",
@@ -595,12 +597,12 @@
         "WAM"
       ],
       "featured": false,
-      "curated": false,
+      "curated": true,
       "origin": "arxiv-auto",
-      "reading_minutes": 7,
+      "reading_minutes": 27,
       "project_url": "",
       "code_url": "",
-      "summary_ko": "새로 공개된 로봇 연구입니다. 초록을 바탕으로 핵심 기여와 실험 근거를 검토합니다.",
+      "summary_ko": "Trusting Imagined Futures(TIF)는 world model의 미래 영상에서 점수가 높다고 나온 행동이 실제로는 충돌하거나 불안정할 위험을, 짝지은 현실 실행 결과로 학습한 auditor로 거릅니다. 이 방식은 새로운 imagined trajectory를 그대로 모방하는 것이 아니라 채택된 **실제 실행 궤적**으로 OpenVLA를 추가 학습합니다. LIBERO 네 suite에서 Source 73.25%, TIF 76.25% (3 seed), 실제 JAKA S5 영상 선별에서 clean completion 35/60→42/60입니다. (arXiv:2611.04873v1 §3–4, Appendix A–G)",
       "review": {
         "one_line": "새 연구: Trusting Imagined Futures: Auditing Imagined Rewards for VLA Post-Training. 초록을 통해 문제·방법·결론을 빠르게 확인합니다. 상세한 검증은 원문을 확인하세요.",
         "problem": "논문 초록의 문제 정의(원문 발췌): Video world models enable candidate actions to be evaluated through imagined outcomes, but high predicted rewards can favor trajectories with poor execution quality. We introduce Trusting Imagined Futures (TIF), an offline supervision selection method for vision-language-action (VLA) post-training that audits predicted rewards using execution feedback.",

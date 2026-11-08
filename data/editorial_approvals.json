@@ -11,8 +11,11 @@
     "2611.04870",
     "2611.05155",
     "2611.05062",
-    "2611.05372"
+    "2611.05372",
+    "2611.05163",
+    "2611.04873",
+    "2611.05302"
   ],
-  "note_ko": "공식 arXiv HTML의 Method, Experiments, Appendix와 캡션이 일치하는 저자 Figure를 확인한 10편 공개. 승인 데이터와 원본 이미지 출처 감사 기록에 근거, 자동 초록 발행 금지.",
-  "updated_at": "2026-11-07"
+  "note_ko": "공식 arXiv HTML의 Method, Experiments, Appendix/Limitations와 저자 원본 Figure·Table의 평가조건을 대조한 13편 공개. 새 글은 초록만으로 승인하지 않음.",
+  "updated_at": "2026-11-08"
 }

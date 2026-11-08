@@ -616,5 +616,97 @@
         ]
       }
     ]
+  },
+  "2611.05163": {
+    "heading": "RoboTryOn — 실제 저자 Figure로 '키프레임 변환'과 '평가 과제' 읽기",
+    "intro": "공식 arXiv v3 Figure 1·2와 본문의 §3–4를 대조했습니다. Figure 1은 합성 파이프라인이고 Figure 2는 서로 다른 demonstrator 데이터 존재 여부를 구별하는 11개 실물 task 설정입니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "method",
+        "reading_title": "Figure 1 — 인간 영상 → 로봇 영상 → 액션 레이블",
+        "context": "저자 원본 Figure 1(a)는 image model→video model→IDM을 보여주고 (b)는 가려진 사람 프레임과 이전 로봇 키프레임 조건, (c)는 skeleton flow를 사용한 비디오 보간을 분리합니다. 사람이 수행한 동작을 그대로 로봇 관절 명령에 넣지 않는다는 점이 중요합니다.",
+        "steps": [
+          "(a) 원본 인간 frame의 몸체를 target embodiment로 치환하는 지점을 확인합니다.",
+          "(b) autoregressive reference는 서로 다른 키프레임의 외형·장면을 안정시키기 위함입니다.",
+          "(c) skeleton flow는 손 움직임의 시간 정합성을 제공하며 손가락 precise joint angle 자체가 아닙니다.",
+          "마지막 IDM은 로봇 영상에서 pseudo actions를 읽습니다.",
+          "Appendix B.2의 145-frame cap과 wrist correction을 본문 설명과 대조합니다."
+        ]
+      },
+      {
+        "number": 2,
+        "placement": "findings",
+        "reading_title": "Figure 2 — 4개 teleop 지원 과제와 7개 human-only 과제",
+        "context": "Figure 2 위쪽 네 PnP는 로봇 teleoperation 시연과 인간 영상 모두 있고, 아래 일곱 과제는 인간 영상만 있습니다. Table 1의 in-domain/OOD 평균을 이 분류 없이 읽으면 '무시연' 범위를 과장하게 됩니다.",
+        "steps": [
+          "상단 Bottle/Doll/Box/Ball 4개는 각 robot에 teleop 50개가 존재합니다.",
+          "하단 Coffee Pot·Shelf·Pouring·Brushing·3개 양손 과제는 인간 비디오만 존재합니다.",
+          "과제당 28회 실물 rollout이며 두 robot의 평균을 혼합하지 않습니다.",
+          "Figure 2 이미지의 출처는 저자 PDF 자동 추출 크롭이며 수동 크롭 검수가 추가로 필요합니다."
+        ]
+      }
+    ]
+  },
+  "2611.04873": {
+    "heading": "TIF — 보상이 높은 미래 영상을 왜 심사해야 하나",
+    "intro": "arXiv:2611.04873v1 원본 Figure 1은 문제 사례, Figure 2는 training/curation pipeline입니다. 둘을 역할에 맞춰 배치했으며 reward-model 표 점수는 Table 2–6에서만 인용합니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "problem",
+        "reading_title": "Figure 1 — '잘 될 것 같은' 상상과 실제 충돌",
+        "context": "모델이 imagined utility를 높게 준 후보가 실제로는 실행 품질을 훼손할 수 있다는 연구 동기입니다. 예시 그림 한 장은 통계적 성공률 증거가 아니며 수치 근거는 Table 2/3/6을 별도 확인해야 합니다.",
+        "steps": [
+          "Source와 고득점 Candidate를 구별합니다.",
+          "Predicted reward와 실제 execution quality가 다른 이유를 읽습니다.",
+          "이상적 policy rollouts와 recorded candidate selection을 혼동하지 않습니다.",
+          "Figure 2의 auditor를 왜 별도로 학습해야 하는지 연결합니다."
+        ]
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 실물 실행 페어로 auditor를 훈련하고 BC 궤적을 선별",
+        "context": "Figure 2에는 real execution과 imagined video pair, reward-model의 utility/5D scores, auditor risk, Source 대비 margin 판단, 실제 시연 선택/BC가 나타납니다. 학습된 VLA 배포 때 world model을 매 제어 주기에 실행하는 구조가 아님을 보여줍니다.",
+        "steps": [
+          "실제 execution은 reward와 auditor의 학습 라벨 역할을 합니다.",
+          "world model의 imagined video는 selection input용 score의 근거입니다.",
+          "Δ>0.15와 ρ≤0.50가 모두 충족돼야 후보 교체가 일어납니다.",
+          "BC는 생성 영상이 아닌 선택된 실제 로봇 trajectory를 사용합니다.",
+          "Table 5의 fixed replacement 비교로 gate의 효과를 확인합니다."
+        ]
+      }
+    ]
+  },
+  "2611.05302": {
+    "heading": "PACT — 원본 Figure로 공동설계의 입력과 자세 간 robustness 대조",
+    "intro": "공식 arXiv:2611.05302v1 Figure 1·4와 Table I–IV를 대조했습니다. Figure 1은 목적/제약의 연결, Figure 4는 Pose-1 최적해와 Shared 설계의 교차 포즈 비교입니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "method",
+        "reading_title": "Figure 1 — force pose library와 actuator·bandwidth의 공동 최적화",
+        "context": "Figure 1은 각 pose의 필요한 fingertip-force region, actuator property, bandwidth limit을 동시에 받는 PACT framework를 보여줍니다. 5Hz를 성공률처럼 읽지 말고 모델 제약으로 읽어야 합니다.",
+        "steps": [
+          "첫 입력이 8개 pose-force requirement임을 찾습니다.",
+          "routing topology, signed moment arms, capstan radii가 공동 최적화된다는 점을 확인합니다.",
+          "목적은 required-force region과 feasible-force set의 overlap입니다.",
+          "최악 pose에서 점수가 높도록 한 공유 물리구조를 출력합니다."
+        ]
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Figure 4 — Pose-1 전용 설계는 다른 자세에 약해집니다",
+        "context": "저자 Figure 4는 Pose 1에 특화한 설계와 shared routing의 pose별 score 차이를 보여줍니다. Table III의 min coverage baseline 0.24, shared 0.88, 독립 pose-specific 1.00과 분리해 확인합니다. 실물 검증 Figure 7이 아닌 모델 예측 비교입니다.",
+        "steps": [
+          "Pose-1-specific 최적해는 다른 pose에서 Jacobian이 바뀌며 성능을 잃습니다.",
+          "shared 설계는 최악 자세를 보호하는 minimax objective입니다.",
+          "Pose 7 deep flexion이 shared 설계의 약점이고 최저 score는 0.88입니다.",
+          "실물 측정의 24.5% magnitude error는 별도 §VI-D 값입니다."
+        ]
+      }
+    ]
   }
 }
