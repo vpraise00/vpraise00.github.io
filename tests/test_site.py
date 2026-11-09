@@ -11,6 +11,16 @@ sys.path.insert(0,str(ROOT/'scripts'))
 from scripts import build_site, update_papers
 import deploy
 
+def approved_papers():
+    """Only crosschecked editorial entries can be treated as published."""
+    meta=json.loads((ROOT/'data/papers.json').read_text(encoding='utf-8'))['papers']
+    gate=json.loads((ROOT/'data/editorial_approvals.json').read_text(encoding='utf-8'))
+    edits=json.loads((ROOT/'data/editorial_content.json').read_text(encoding='utf-8'))
+    ids=set(gate['approved_ids'])
+    return [{**p,**edits[p['id']]} for p in meta
+            if p['id'] in ids and p['id'] in edits and edits[p['id']].get('editorial_verified') is True]
+
+
 class SiteTests(unittest.TestCase):
     def test_curated_corpus_and_categories(self):
         p=json.loads((ROOT/'data/papers.json').read_text(encoding='utf8'))['papers']
@@ -27,10 +37,8 @@ class SiteTests(unittest.TestCase):
         self.assertTrue(all(ca['queries'] for ca in c[:3]))
 
     def test_curated_deep_dive_is_substantial_and_source_scoped(self):
-        papers=json.loads((ROOT/'data/papers.json').read_text(encoding='utf-8'))['papers']
+        papers=approved_papers()
         for paper in papers:
-            if not paper.get('curated'):
-                continue
             deep=paper.get('deep_dive') or {}
             self.assertGreaterEqual(len(deep.get('pipeline',[])),3,paper['id'])
             self.assertGreaterEqual(len(deep.get('mechanisms',[])),2,paper['id'])
@@ -47,10 +55,11 @@ class SiteTests(unittest.TestCase):
 
     def test_original_figures_are_source_grounded_not_redrawn(self):
         entries=json.loads((ROOT/'data/figure_catalog.json').read_text(encoding='utf8'))
-        pages={x['id'] for x in json.loads((ROOT/'data/papers.json').read_text(encoding='utf8'))['papers']}
-        self.assertEqual(set(entries),pages)
-        self.assertEqual(sum(len(item['figures']) for item in entries.values()),32)
-        for pid,item in entries.items():
+        pages={x['id'] for x in approved_papers()}
+        self.assertTrue(pages.issubset(set(entries)))
+        self.assertEqual(sum(len(entries[pid]['figures']) for pid in pages),2*len(pages))
+        for pid in pages:
+            item=entries[pid]
             html=(ROOT/'papers'/f'{pid}.html').read_text(encoding='utf8')
             self.assertNotIn('id="visual-lab"',html)
             self.assertIn('class="original-paper-figure inline-source-figure"',html)
@@ -62,17 +71,21 @@ class SiteTests(unittest.TestCase):
 
 
     def test_source_figures_follow_their_method_or_result_explanations(self):
-        papers=json.loads((ROOT/'data/papers.json').read_text(encoding='utf8'))['papers']
+        papers=approved_papers()
+        catalog=json.loads((ROOT/'data/figure_catalog.json').read_text(encoding='utf8'))
         cats={c:{'label':c.upper(),'color':'#2a8a82'} for c in ('vla','wam','robotics')}
         for p in papers:
             html=build_site.post_page(p,cats)
             fig_positions=[]
-            # Ensure no source figure is placed before the problem statement.
+            # Approved figures must appear after their explanatory article section.
             first=html.find('class="original-paper-figure inline-source-figure"')
             self.assertGreater(first,html.index('id="problem"'),p['id'])
-            for n, placement in build_site.FIGURE_PLACEMENTS.get(p['id'],{}).items():
+            for figure in catalog[p['id']]['figures']:
+                n=int(figure['number'])
+                placement=figure.get('placement') or build_site.FIGURE_PLACEMENTS.get(p['id'],{}).get(n,'method')
                 pos=html.index('id="original-figure-'+str(n)+'"')
-                self.assertGreater(pos,html.index('id="'+ ('idea' if placement=='comparison' else placement) +'"'),(p['id'],n))
+                anchor='idea' if placement=='comparison' else placement
+                self.assertGreater(pos,html.index('id="'+anchor+'"'),(p['id'],n))
                 if placement=='method':
                     self.assertLess(pos,html.index('id="findings"'),(p['id'],n))
                 if placement=='findings':
@@ -84,16 +97,21 @@ class SiteTests(unittest.TestCase):
     def test_ten_am_cron_and_edit_trigger(self):
         workflow=(ROOT/'.github/workflows/daily-research.yml').read_text(encoding='utf8')
         self.assertIn("cron: '0 1 * * *'",workflow)
-        self.assertIn("'scripts/build_site.py'",workflow)
+        publish=(ROOT/'.github/workflows/editorial-publish.yml').read_text(encoding='utf8')
+        self.assertIn("'scripts/build_site.py'",publish)
         self.assertIn('workflow_dispatch:',workflow)
+        self.assertIn('workflow_dispatch:',publish)
         self.assertIn('git pull --rebase origin main',workflow)
 
     def test_source_figure_detection_and_pdf_crop(self):
-        import fitz
         from scripts import extract_paper_figures as ex
         self.assertEqual(ex.caption_number('Figure 2: Architecture overview'),2)
         self.assertEqual(ex.caption_number('Fig. 12. Experiments'),12)
         self.assertIsNone(ex.caption_number('Our method is described in Figure 2:'))
+        try:
+            import fitz
+        except ImportError:
+            self.skipTest('PDF crop integration requires PyMuPDF; the manual source-figure workflow installs it')
         doc=fitz.open(); pg=doc.new_page(width=595,height=842)
         pg.draw_rect(fitz.Rect(60,180,530,350),color=(0.1,0.4,0.6),fill=(0.2,0.8,0.3))
         pg.insert_text((70,375),'Figure 2: A genuine figure from this synthetic PDF document.',fontsize=10)
@@ -129,9 +147,11 @@ class SiteTests(unittest.TestCase):
 
     def test_build_outputs(self):
         build_site.build()
-        self.assertTrue((ROOT/'papers/2610.07922.html').exists())
-        self.assertIn('GPT', (ROOT/'papers/2610.07922.html').read_text(encoding='utf8'))
-        self.assertIn('2609.16074', (ROOT/'sitemap.xml').read_text())
+        ids={p['id'] for p in approved_papers()}
+        self.assertEqual({p.stem for p in (ROOT/'papers').glob('*.html')},ids)
+        self.assertTrue((ROOT/'papers/2504.16054.html').exists())
+        self.assertIn('GPT', (ROOT/'papers/2504.16054.html').read_text(encoding='utf8'))
+        self.assertIn('2611.04972', (ROOT/'sitemap.xml').read_text())
         self.assertIn('Research Radar', (ROOT/'feed.xml').read_text())
 
     def test_local_env_only_and_safe_file_collector(self):
