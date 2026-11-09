@@ -14,8 +14,11 @@
     "2611.05372",
     "2611.05163",
     "2611.04873",
-    "2611.05302"
+    "2611.05302",
+    "2611.04522",
+    "2611.04711",
+    "2611.04972"
   ],
-  "note_ko": "공식 arXiv HTML의 Method, Experiments, Appendix/Limitations와 저자 원본 Figure·Table의 평가조건을 대조한 13편 공개. 새 글은 초록만으로 승인하지 않음.",
-  "updated_at": "2026-11-08"
+  "note_ko": "2026-11-09 기준 arXiv 공식 v1 원문, Method·Experiments·해당 Appendix와 저자 Figure/표의 평가조건을 대조한 16편만 공개. 초록 기반 신규 후보는 자동 게시하지 않습니다.",
+  "updated_at": "2026-11-09"
 }

@@ -708,5 +708,95 @@
         ]
       }
     ]
+  },
+  "2611.04522": {
+    "heading": "AIT — 사람·로봇 공통 행동 의도를 Figure로 읽기",
+    "intro": "arXiv:2611.04522v1 PDF Figure 1(학습 패러다임)과 Figure 4(Astribot 실물 12과제)를 확인했습니다. Figure 2·3은 Method에서 원문 링크를 통해 참고하되, 저장소에 확보된 실제 저자 이미지인 1·4만 삽입합니다. 이미지 출처는 figure_extract_status.json에 기록됩니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Figure 1 — MoCap·latent-action·Action Intent의 차이",
+        "context": "원저자 Figure 1(a)는 모션 캡처 비용과 embodiment mismatch, (b)는 raw-video latent-action에 섞일 수 있는 scene noise, (c)는 명시/암묵 행동 의도를 따로 취하는 AIT의 설계 동기를 비교합니다. 이 그림은 성능표가 아니라 연구 가설을 도식화한 것입니다.",
+        "steps": [
+          "MoCap는 로봇으로의 direct kinematic transfer가 어려운 출발점입니다.",
+          "latent-action은 흔들림·조명 같은 작업 외적 차이를 학습할 수 있습니다.",
+          "AIT는 동작 방향과 grasp/release 등의 언어 의도를 닻으로 씁니다.",
+          "clean intent가 실제로 성공률에 기여하는지는 Table 4 ablation에서 검증합니다."
+        ]
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Figure 4 — 12개 Astribot 실물 과제의 성공률",
+        "context": "Figure 4는 Astribot S1 10-DoF 오른팔과 머리 RGB를 활용한 12과제(T1–T12)에서 AIT와 UniVLA 성공률을 비교합니다. 각 과제는 20회 평가이며 그림의 평균 82.08%와 70.42%는 연구의 한정된 12과제 평가입니다.",
+        "steps": [
+          "T1–T8 물체 집기와 T9–T12 공간지시를 나눠 보십시오.",
+          "T9–T12만 별도로 비교한 85.0% vs 65.0%는 Table 3입니다.",
+          "T1–T12 전체 평균 82.08%는 공개 환경의 무작위 모든 작업에 대한 SR이 아닙니다.",
+          "학습에서 사람 영상은 VLM 라벨과 수동 검수를 거쳤습니다."
+        ]
+      }
+    ]
+  },
+  "2611.04711": {
+    "heading": "Cycle WAM — 저자 결과 이미지로 순방향 예측과 실물 실행 검증",
+    "intro": "공식 arXiv:2611.04711v1 PDF Figure 3(미래 영상 비교), Figure 4(실물 keyframe), Table I–VI를 검증했습니다. 모델의 공동생성/양방향/순환 회로는 PDF Figure 2에 있으며, 이 두 이미지는 결과에 대응하는 원저자 원본입니다.",
+    "figures": [
+      {
+        "number": 3,
+        "placement": "method",
+        "reading_title": "Figure 3 — Forward dynamics의 실제 예측 품질 검증",
+        "context": "Figure 3은 같은 LIBERO 관측에 대한 GT, UWM, Cycle WAM의 미래 프레임을 좌→우 비교합니다. 영상이 더 선명하다는 것은 architecture 설명을 보완하는 실제 forward query 결과이지, 더 나은 제어 성공률을 직접 뜻하지 않습니다.",
+        "steps": [
+          "좌측 GT와 두 모델 예측 사이 물체 위치 오차를 함께 확인합니다.",
+          "Cycle WAM의 contour 선명함은 비교 영상상 관찰이며 Table IV의 PSNR/SSIM/FID가 별도 정량 근거입니다.",
+          "Table IV에서 MSE는 반올림 0.03으로 같지만 원수치는 Cycle이 낮다고 저자가 기록합니다.",
+          "inverse action MSE는 오히려 UWM이 우위라는 Table III도 함께 확인해야 합니다."
+        ]
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Figure 4 — 실제 로봇이 접근·집기·운반·놓기 수행",
+        "context": "원본 Figure 4의 리모컨/레몬 바구니 넣기 연속 프레임은 gripper open→close→transport→release를 보여줍니다. 화살표는 저자가 표시한 schematic 방향이고, 그리퍼 상태도 visually inferred이며 실제 제어 로그로 대체할 수 없습니다.",
+        "steps": [
+          "리모컨과 레몬, 서로 다른 두 장면의 접근·잡기·운반·릴리스 순서를 읽습니다.",
+          "실물 완료 3/5 대 DreamZero 0/5는 Figure 4가 아니라 Table VI의 장면별 집계입니다.",
+          "Figure 4 몇 장면만으로 평균 반복 성공률·grasp force를 결론 낼 수 없습니다.",
+          "시각 결과와 물리 실행은 접촉/geometry 실패를 별도로 기록해야 합니다."
+        ]
+      }
+    ]
+  },
+  "2611.04972": {
+    "heading": "Barrier-Certified Legged VLN — 의미/물리 계층과 안전 footprint",
+    "intro": "공식 arXiv:2611.04972v1 PDF Figure 1·2와 Table I–V, Appendix I의 조건부 안전증명 내용을 대조했습니다. 원논문의 실제 그림을 개념 설명 직후에 배치하고, 수치 인포그래픽을 임의로 생성하지 않았습니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Figure 1 — Semantic Grounding과 Physical Grounding의 이중 Cage",
+        "context": "원저자 Figure 1의 위쪽은 VLA/VLM이 제안한 의미적 방향/목표와 open-vocabulary 종점 인식, 아래쪽은 IMU·관절·LiDAR·지도, dEBF MPPI가 로봇에 보낼 실제 속도를 결정하는 부분입니다.",
+        "steps": [
+          "‘Move into the lighted room…’ 언어 목표가 곧바로 wheel/joint command가 되지 않음을 확인합니다.",
+          "Kinematic Goal Projector는 2D goal을 만들 뿐 안전 판정기를 대체하지 않습니다.",
+          "navigation module이 SDF와 dEBF 하드 필터를 통과한 velocity만 전송합니다.",
+          "Unitree G1과 Vision 60이 같은 planning-level interface를 공유해도 저수준 locomotion 제어는 별도입니다."
+        ]
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 로봇 몸체를 한 점이 아닌 여러 점의 clearance로 검증",
+        "context": "Figure 2(a)는 Vision 60, (b)는 G1의 multi-point body representation입니다. 각 점은 local footprint radius를 갖고 SDF의 clearance h_i=φ(p_i)−r_i로 검증합니다. 관절/몸체 전체에 대한 정밀 충돌 검출로 과장하면 안 됩니다.",
+        "steps": [
+          "Vision 60과 G1의 몸체 형태가 달라 point 배치도 다릅니다.",
+          "각 body-point의 clearance를 모두 검사해야만 논문의 safe-set 정의를 만족합니다.",
+          "Eq.10 h_i(next)≥γh_i(now)가 핵심이고 γ는 실험에서 0.95입니다.",
+          "가려진 얇은 케이블처럼 SDF에 없는 물체는 Figure 2 모델로 검출되지 않습니다."
+        ]
+      }
+    ]
   }
 }
