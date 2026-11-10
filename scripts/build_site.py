@@ -202,7 +202,7 @@ def post_page(p: dict, categories: dict) -> str:
     authors = ', '.join(map(str,p.get('authors', [])))
     review = p.get('review') or {}
     featured = bool(p.get('featured'))
-    source_scope = '원문 §III–V, Figure 2·3과 대조한 편집 해설 · 독립 재현은 별도' if p.get('editorial_verified') else '초록 + 공식 자료 기반 편집 해설' if p.get('curated') else ('AI 보조 분석 · 논문 PDF 기반 (검증 권장)' if review.get('source_scope')=='pdf+abstract' else '자동 수집 · 초록 기반 요약 (본문 검증 전)')
+    source_scope = str(p.get('source_scope_ko') or '원문 전체와 Figure·Table을 대조한 편집 해설 · 독립 재현은 별도') if p.get('editorial_verified') else '초록 + 공식 자료 기반 편집 해설' if p.get('curated') else ('AI 보조 분석 · 논문 PDF 기반 (검증 권장)' if review.get('source_scope')=='pdf+abstract' else '자동 수집 · 초록 기반 요약 (본문 검증 전)')
     article_data = json.dumps(p, ensure_ascii=False).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026')
     # Do not render untrusted paper-provided URL as a script/link; arxiv link is built from validated id.
     source_url = f'https://arxiv.org/abs/{id}'
