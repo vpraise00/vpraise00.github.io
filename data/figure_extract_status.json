@@ -60,7 +60,7 @@
       "method": "pdf_page_crop",
       "page": 5,
       "clip": [
-        25.0,
+        25,
         250.9,
         570.3,
         643.1
@@ -79,8 +79,8 @@
       "method": "pdf_page_crop",
       "page": 8,
       "clip": [
-        25.0,
-        24.0,
+        25,
+        24,
         570.3,
         155.6
       ],
@@ -112,9 +112,9 @@
       "method": "pdf_page_crop",
       "page": 5,
       "clip": [
-        30.0,
+        30,
         25.2,
-        300.0,
+        300,
         339.3
       ],
       "review": "needs_manual_review",
@@ -185,9 +185,9 @@
       "method": "pdf_page_crop",
       "page": 1,
       "clip": [
-        25.0,
-        24.0,
-        587.0,
+        25,
+        24,
+        587,
         375.2
       ],
       "review": "needs_manual_review",
@@ -322,10 +322,10 @@
       "method": "pdf_page_crop",
       "page": 1,
       "clip": [
-        25.0,
+        25,
         137.9,
-        587.0,
-        530.0
+        587,
+        530
       ],
       "review": "needs_manual_review",
       "dimensions": [
@@ -381,9 +381,9 @@
       "method": "pdf_page_crop",
       "page": 1,
       "clip": [
-        25.0,
+        25,
         75.4,
-        587.0,
+        587,
         467.5
       ],
       "review": "needs_manual_review",
@@ -556,10 +556,10 @@
       "method": "pdf_page_crop",
       "page": 5,
       "clip": [
-        25.0,
-        24.0,
-        587.0,
-        232.0
+        25,
+        24,
+        587,
+        232
       ],
       "review": "needs_manual_review",
       "dimensions": [
@@ -866,6 +866,24 @@
         820,
         620
       ]
+    }
+  },
+  "2611.04527": {
+    "2": {
+      "remote_url": "https://harryjo97.github.io/dreamfree/assets/figures/method_v2.png?v=20261103",
+      "source": "https://harryjo97.github.io/dreamfree/assets/figures/method_v2.png?v=20261103",
+      "paper_source": "https://arxiv.org/pdf/2611.04527",
+      "caption": "Figure 2 | Overview of DreamFree training architecture: (a) Future Representation Distillation; (b) Action DiT Training.",
+      "method": "author_project_exact_figure",
+      "review": "paper_caption_and_author_figure_crosschecked"
+    },
+    "4": {
+      "remote_url": "https://harryjo97.github.io/dreamfree/assets/figures/droid_real_two_row.png",
+      "source": "https://harryjo97.github.io/dreamfree/assets/figures/droid_real_two_row.png",
+      "paper_source": "https://arxiv.org/pdf/2611.04527",
+      "caption": "Figure 4 | Real-world evaluation on DROID: 10 tasks with five trials per task, task success and progress.",
+      "method": "author_project_exact_figure",
+      "review": "paper_caption_and_author_figure_crosschecked"
     }
   }
 }

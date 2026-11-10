@@ -798,5 +798,83 @@
         ]
       }
     ]
+  },
+  "2611.05093": {
+    "heading": "LoopQ — 분포변형과 동일 엔진 비교의 원본 근거",
+    "intro": "arXiv:2611.05093v1 PDF Figure 4 및 Table 3의 paired LIBERO-plus 평가와 유의성 조건을 대조했습니다. 저자 원본을 아래 실험 분석 뒤에 배치합니다.",
+    "figures": [
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Figure 4 — 양자화의 숨은 실패를 분포변형별로 구분",
+        "context": "실제 원저자 Figure 4는 같은 엔진의 원본 16-bit 정책과 paired LIBERO-plus 차이를 camera, lighting, sensor, layout 등 범주별로 보여줍니다. 전체 평균 하나보다 실패의 출처가 분명하게 보입니다.",
+        "steps": [
+          "색/조건별 점은 baseline 대비 성공률 퍼센트포인트 차이를 뜻합니다.",
+          "모든 p<0.05가 다중 비교 Holm 보정 이후에도 유의한 것은 아닙니다.",
+          "π0.5와 OFT의 ‘실제 저비트’ 실행을 GR00T·UniVLA의 simulation과 혼동하지 않습니다.",
+          "LIBERO 기본 값이 비슷해도 조명/센서/카메라 변화에서 손실이 발생하는지 확인합니다."
+        ]
+      }
+    ]
+  },
+  "2611.04527": {
+    "heading": "DreamFree — 원본 모델 구조와 실물 검증 도표",
+    "intro": "저자 공식 프로젝트 이미지와 arXiv:2611.04527v2 PDF Figure 2·4의 번호·캡션을 교차 확인했습니다. 이미지는 저자 웹사이트에서 직접 로드되며 저장소에 복제하지 않습니다.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — frozen video teacher의 미래 표현을 현재 프레임 인코더로 증류",
+        "context": "왼쪽 (a)에서는 미래가 보이는 frozen VDM 교사와 현재만 보는 student encoder의 representation alignment를 수행합니다. 오른쪽 (b)은 action readout와 DiT를 학습하는 단계로, 배포 시에는 교사·projector가 빠집니다.",
+        "steps": [
+          "교사는 현재+미래 latent를 입력받지만 student는 현재 영상만 받습니다.",
+          "teacher는 snowflake 기호처럼 frozen이며 projector는 학습에만 쓰입니다.",
+          "두 단계의 학습 신호를 원문의 Eq.1–4 및 Table 3와 연결합니다.",
+          "추론 시에도 Action DiT의 행동 생성 denoising은 수행합니다."
+        ]
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Figure 4 — DROID 실물 10과제 성공률과 부분 진척",
+        "context": "저자 Figure 4의 성공률은 task당 5회, 총 50회 정책별 평가입니다. 꿈의 영상 생성보다 실제 실행을 얼마나 완수했는지 보되 partial task progress와 strict success를 구분합니다.",
+        "steps": [
+          "평균 strict success DreamFree 64%, DreamZero 56%, π0.5 16%를 확인합니다.",
+          "task progress DreamFree 83%, DreamZero 71.8%, π0.5 33.5%는 다른 분모/채점기준입니다.",
+          "옷·장갑·컵·반지 등 일부 과제 편차가 평균에 감춰지지 않는지 확인합니다.",
+          "해당 도표를 24과제 RoboCasa Table 2 성능과 합산하지 않습니다."
+        ]
+      }
+    ]
+  },
+  "2611.04493": {
+    "heading": "Physical Diffusion Policy — 물성 추정 흐름과 민감도 원본",
+    "intro": "arXiv:2611.04493v1 저자 원본 Figure 1·2를 Method와 물성 오차 한계 설명 직후에 배치합니다. Figure 2는 정확한 수치를 재계산한 표가 아닌 원문 sensitivity plot입니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "method",
+        "reading_title": "Figure 1 — 멀티뷰 복원부터 물성 기반 행동까지 연결",
+        "context": "FF-3DGS와 MPM으로 물체를 복원·역최적화하고 물성 조건을 MoE Diffusion Policy에 전달하는 저자 Figure 1입니다. 물성 최적화는 학습/오프라인에서 이뤄지고 추론 때는 memory retrieval을 사용합니다.",
+        "steps": [
+          "3DGS가 영상 관측을 만들고 MPM은 입자 물리 변화를 계산합니다.",
+          "VLM 초기화와 영상/Chamfer/Dirichlet 제약을 통한 θ 추정을 분리합니다.",
+          "4개의 전문가가 주어진 θ에 따라 noise prediction을 혼합합니다.",
+          "online memory lookup이 MPM 전체를 매 호출마다 재실행하지 않음을 확인합니다."
+        ]
+      },
+      {
+        "number": 2,
+        "placement": "findings",
+        "reading_title": "Figure 2 — E, ν, τY, η의 추정 오류가 성공률을 떨어뜨린다",
+        "context": "한 번에 한 물성만 바꾼 시뮬레이션 민감도 실험입니다. 실험은 물성 ground truth에서 perturbation을 부여하고 나머지를 고정하므로 실물 일반화 성공률 추정과 다릅니다.",
+        "steps": [
+          "E와 τY, η 오차 증가에 특히 민감한 하강 추세를 확인합니다.",
+          "ν의 오류에는 상대적으로 성공률 감소가 작습니다.",
+          "각 축의 error 단위가 같다고 가정하면 안 됩니다: 본문은 로그 도메인과 상대오차를 구분합니다.",
+          "Table I의 물성 추정 정확도와 Fig.2의 downstream 성능 민감도는 서로 다른 실험입니다."
+        ]
+      }
+    ]
   }
 }

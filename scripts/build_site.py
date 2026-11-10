@@ -141,13 +141,20 @@ def render_visual_figures(p: dict) -> dict[str, str]:
     for index,fig in enumerate(guide.get('figures',[]),1):
         n=int(fig['number']);display_n=int(fig.get('display_number',n));record=available.get(str(n)) or {}
         path=record.get('local','')
-        image_exists=bool(path and (ROOT/path).exists())
+        # Source-reviewed author-project figures can be linked directly; never trust
+        # arbitrary remote URLs from metadata as executable/embedded markup.
+        remote=str(record.get('remote_url') or '')
+        author_remote=bool(pid == '2611.04527'
+          and record.get('method') == 'author_project_exact_figure'
+          and re.fullmatch(r'https://harryjo97\\.github\\.io/dreamfree/assets/figures/[A-Za-z0-9_-]+\\.png(?:\\?v=[0-9]+)?', remote))
+        image_exists=bool((path and (ROOT/path).exists()) or author_remote)
         if image_exists:
-            img='../'+h(path,quote=True)
+            img=(remote if author_remote else '../'+path)
+            img=h(img,quote=True)
             method=record.get('method','')
-            kind=('arXiv HTML 저자 원본' if method=='arxiv_html_exact_figure' else '원논문 PDF 자동 추출 (크롭 검수 필요)')
+            kind=('저자 공식 프로젝트 원본 (외부 링크)' if author_remote else ('arXiv HTML 저자 원본' if method=='arxiv_html_exact_figure' else '원논문 PDF 자동 추출 (크롭 검수 필요)'))
             source_link=h(record.get('source',source),quote=True)
-            image='<div class="original-figure-stage"><a href="'+img+'" target="_blank" rel="noopener noreferrer" title="원문 그림 크게 보기"><img src="'+img+'" alt="'+h(p['title']+f' Figure {display_n} 원본',quote=True)+'" loading="lazy" decoding="async"/></a></div>'
+            image='<div class="original-figure-stage"><a href="'+img+'" target="_blank" rel="noopener noreferrer" title="원문 그림 크게 보기"><img src="'+img+'" alt="'+h(p['title']+f' Figure {display_n} 원본',quote=True)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer"/></a></div>'
             clip=clip_original_caption(fig.get('verified_caption') or record.get('caption',''))
             capt='<p class="original-caption"><strong>'+('편집 캡션 요약' if fig.get('verified_caption') else '원문 캡션 일부')+'</strong> '+h(clip)+'</p>' if clip else ''
             page=record.get('page');page_str=' · PDF p.'+str(page) if page else ''

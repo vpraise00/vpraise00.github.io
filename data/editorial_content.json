@@ -2496,5 +2496,413 @@
         "2611.04839"
       ]
     }
+  },
+  "2611.05093": {
+    "summary_ko": "LoopQ는 ‘VLA 가중치를 4비트로 줄이면 로봇이 빨라지는가’를 GPU·커널·실행 엔진·평가 episode까지 통제해 재검증한 벤치마크입니다. 4개의 VLA와 RTN/AWQ/GPTQ/ActQuant/QuantVLA를 비교한 결과, H100 batch 1에서 저비트 π0.5·OpenVLA-OFT는 16비트보다 오히려 느렸고, LIBERO-plus는 LIBERO가 숨기는 강건성 손실을 드러냈습니다. (arXiv:2611.05093v1 §3–9, Fig.1·2·4, Table 3)",
+    "reading_minutes": 31,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-10",
+    "editorial_published_at": "2026-11-10",
+    "primary_category": "vla",
+    "source_scope_ko": "검증: arXiv:2611.05093v1 공식 PDF pp.1–23, §3–9, Figure 1·2·4, Table 1·3 및 부록 A–I. 실제/모의 커널과 엔진별 F16 기준을 대조했습니다.",
+    "abstract": "LoopQ는 ‘VLA 가중치를 4비트로 줄이면 로봇이 빨라지는가’를 GPU·커널·실행 엔진·평가 episode까지 통제해 재검증한 벤치마크입니다. 4개의 VLA와 RTN/AWQ/GPTQ/ActQuant/QuantVLA를 비교한 결과, H100 batch 1에서 저비트 π0.5·OpenVLA-OFT는 16비트보다 오히려 느렸고, LIBERO-plus는 LIBERO가 숨기는 강건성 손실을 드러냈습니다. (arXiv:2611.05093v1 §3–9, Fig.1·2·4, Table 3) 이 글은 원문의 본문·실험 표와 공개된 부록을 대조한 한국어 기술 해설이며, 제3자 재현 실험 결과가 아닙니다.",
+    "review": {
+      "one_line": "**모델 크기 감소, 실제 지연시간 감소, 작업 성공률 보존**은 서로 다른 주장입니다. LoopQ는 ‘어느 층을 양자화했는가’와 ‘실제로 저비트 커널로 계산했는가’를 분리하고, 동일한 엔진·동일 과제에서 RTN 같은 단순 기준선을 비교하도록 만든 평가 프로토콜입니다. (§3)",
+      "problem": "반도체 메모리에는 여유가 없고 VLA가 커서 양자화는 매력적입니다. 하지만 논문 A는 한 프레임의 가중치 메모리를, 논문 B는 다른 서버에서의 배치 지연시간을, 논문 C는 쉬운 LIBERO 성공률을 보고하면 어느 방법이 실제로 낫다고 판단하기 어렵습니다. 더구나 LIBERO 원본은 FP 모델 성공률이 93–98%에 육박해 작은 손실을 숨길 수 있습니다. 예를 들어 ‘W4A16’이라고 표기해도 계산 자체가 FP16으로 복원된 모의 양자화인지 실제 INT8/저비트 커널인지가 중요합니다. (§1–3)",
+      "idea": "같은 π0.5 체크포인트를 가진 두 실험실을 가정해 봅시다. 한 곳은 AWQ, 다른 곳은 단순 RTN을 쓰되 **같은 레이어 집합, calibration 입력, 실행 엔진, 평가 episode**를 고정합니다. 이때 latency 차이를 측정해야 ‘AWQ가 빠르다’고 말할 수 있습니다. 원본 성공률과 양자화 성공률은 동일한 카메라 흔들림·조명·객체 배치 과제로 짝지어 비교합니다. LoopQ는 이러한 통제 실험을 π0.5, GR00T N1.5, UniVLA, OpenVLA-OFT에 적용합니다. (§3; Table 1)",
+      "method": "1단계: 원본 공개 체크포인트와 해당 VLA 전용 양자화법이 지정한 대상 레이어를 동결합니다(π0.5·실제 OpenVLA-OFT는 ActQuant 스코프, GR00T N1.5는 QuantVLA의 116개 레이어, UniVLA와 모의 OFT는 QVLA의 435개 백본 레이어). 2단계: RTN, AWQ, GPTQ와 전용 방법의 동일 스코프 대조군을 만듭니다. RTN은 단순 반올림, AWQ/GPTQ는 calibration 기반입니다. 3단계: ‘진짜 저비트 연산’과 FP 기반 simulation을 명확히 구별하고 GGML/ActQuant/공식 서버 등 같은 engine의 F16을 기준으로 비교합니다. 4단계: LIBERO 및 7종 분포변형×5 난도의 LIBERO-plus로 짝지은 성공률 차이를 계산합니다. 5단계: GPU(동일 H100, 보조 L4/Jetson Thor)에서 메모리, 동일 엔진 batch-1 latency, Nsight kernel별 FLOP/byte를 분석합니다. (§3–4, §7–9; App. A–I)",
+      "findings": "핵심은 ‘4bit이 나쁘다’가 아니라 **압축 효과와 속도/강건성 효과가 독립적**이라는 것입니다. H100에서 실제 저비트 π0.5와 OFT는 가중치 메모리는 약 2–3배 절약하지만, 지정 구성의 batch-1 처리 지연은 원본 F16보다 1.06–1.58배 증가했습니다. 반면 L4의 일부 int8 커널만 4–14% 향상합니다. Table 3의 π0.5 GGML F16은 LIBERO 96.5%·LIBERO-plus 86.6%; ActQuant 3 bpw는 다른 AQ 엔진의 F16 97.0%·82.9%와 비교해야 하며 94.5%·77.6%입니다. 즉 엔진이 다른 두 F16 기준을 혼동하면 안 됩니다. GR00T N1.5는 LIBERO 93.0%의 F16과 QuantVLA 92.8%가 가깝지만 LIBERO-plus에서는 78.2% 대 74.0%로 4.2%p 감소합니다. (§5–8, Table 3)",
+      "limitations": "실제 로봇의 충돌 안전과 전력·발열 장기 운용을 직접 인증하는 실험은 아닙니다. LIBERO / LIBERO-plus 시뮬레이터의 분포 변화를 측정한 것이고, 동일 모델 내 engine·episode·커널 결과만 공정하게 비교할 수 있습니다. 논문이 직접 지적하듯 공개 PTQ 구현 중 실제 실행시간을 잴 수 있는 릴리스는 4개 중 하나뿐이며, 일부 양자화는 수학적 모의로 평가됩니다. π0.5 backbone은 전체 추론에서 compute-bound이고, 행동 전문가(action expert)는 GPU 작업 시간의 약 63%를 차지하지만 16비트로 남아 있어 속도 개선 상한이 작습니다. (§4, §9, Fig.2)",
+      "questions": [
+        "Table 3의 π0.5 GGML 엔진과 AQ 엔진 F16이 서로 다른 이유를 확인하고, cross-engine 상대비교를 금지하면 결론이 어떻게 바뀔까요?",
+        "LIBERO-plus에서 객체 배치·카메라 이동만 고정한 paired McNemar 검정을 Holm 보정 후에도 통과할까요?",
+        "행동 expert까지 양자화하면 위상별 latency·task failure가 어떻게 변할까요?",
+        "Jetson Thor에서 kernel launch/fusion/thermal envelope가 결과에 미치는 영향은 얼마나 클까요?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**읽는 목표:** 압축률 2배와 ‘로봇이 2배 빠르다’ 사이의 논리적 도약을 해체합니다. 원문 arXiv:2611.05093v1 §3–9 및 부록의 scope/engine/runtime 구분과 Table 3, Figure 4를 확인했습니다. 수치는 모두 저자 측 폐루프 실험 결과입니다.",
+      "pipeline": [
+        {
+          "title": "01. 동일 체크포인트와 비교 층을 고정",
+          "detail": "π0.5·GR00T N1.5·UniVLA·OpenVLA-OFT 네 VLA에서, 전용 양자화법이 정한 같은 layer subset을 generic PTQ와 공통으로 사용합니다. 비교 층수가 다르면 성능/메모리 차이를 양자화법 효과로 귀속할 수 없습니다.",
+          "io": "VLA checkpoint + quantization scope"
+        },
+        {
+          "title": "02. 저비트 가중치·커널 경로 구성",
+          "detail": "단순 RTN, 교정 기반 AWQ/GPTQ, ActQuant, QuantVLA를 같은 엔진에서 비교합니다. 실제 저비트 weights/kernel과 FP simulate는 별도 그룹으로 기록합니다.",
+          "io": "W8/W4/W3 + real vs simulated"
+        },
+        {
+          "title": "03. 동일 에피소드에서 폐루프 과제 실행",
+          "detail": "기본 LIBERO에서는 구성당 1,000–2,000회를 사용하고, LIBERO-plus는 같은 perturbed task를 F16·PTQ 정책에 짝지어 적용합니다. paired statistic으로 원모델 실패와 양자화 추가 실패를 분리합니다.",
+          "io": "LIBERO; LIBERO-plus: 7 axes × 5 levels"
+        },
+        {
+          "title": "04. 측정 계층을 나누어 원인 분석",
+          "detail": "무부하 배치 1의 warm-up 10번+50번 측정, 정책 폐루프 중앙 latency, Nsight의 operator별 병목을 구분합니다. 동등 engine의 F16 대비 배율만 성능 근거로 사용합니다.",
+          "io": "memory · kernel · same-engine end-to-end latency"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "왜 모델 크기가 줄어도 빠르지 않을까?",
+          "body": "LLM은 토큰별 디코딩으로 weight traffic의 비중이 크지만 π0.5는 PaliGemma prefix를 한 번에 처리하고 action expert에서 짧은 action chunks를 반복합니다. Fig.2 기준 H100 FP16 작업시간의 63%는 양자화 대상 밖 action expert에 배분되고, 선택된 linear를 완전히 공짜로 만들어도 전체 호출 speed-up의 상한은 1.09배입니다.",
+          "watch": "Fig.2의 GPU 실행시간 59.4ms와 host/launch 71.1ms를 합친 130.5ms를 구분합니다."
+        },
+        {
+          "title": "LIBERO 성공률 포화와 paired shift",
+          "body": "LIBERO-plus는 camera viewpoint, robot 초기 자세, 명령, 조명, 배경, 센서 노이즈, 물체 배치의 변형을 추가합니다. QuantVLA/ActQuant는 기본 LIBERO에서 거의 같은 점수를 내더라도 변형 상황에서 손실이 커질 수 있습니다. 통계 검정은 p<0.05와 다중비교 Holm correction 여부까지 따라 읽어야 합니다.",
+          "watch": "Table 3의 별표/bold/†와 ‘시뮬레이션 양자화’ 표기를 확인합니다."
+        },
+        {
+          "title": "실제 low-bit과 simulated PTQ",
+          "body": "가중치를 잘라 저장한 뒤 FP16으로 복원하여 GEMM하는 방식은 실제 GPU INT 저비트 커널의 latency·memory 측정을 대체하지 못합니다. 저자는 π0.5·실제 OFT와 그 외 모의 quantizer의 검증 수준을 명확히 분리합니다.",
+          "watch": "일부 구성은 L4나 Thor에서 별도 low-bit kernel path의 성능 역전이 나타납니다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "Table 3 · π0.5 GGML F16",
+          "value": "LIBERO 96.5 / plus 86.6%",
+          "context": "기준: GGML F16; real low-bit과 짝지은 동일 엔진"
+        },
+        {
+          "metric": "Table 3 · π0.5 RTN Q4_0",
+          "value": "96.9 / 86.9%",
+          "context": "GGML F16 대비 +0.4 / +0.2%p; 성공률 보존과 속도 증가를 혼동 금지"
+        },
+        {
+          "metric": "Table 3 · π0.5 ActQuant 3 bpw",
+          "value": "94.5 / 77.6%",
+          "context": "AQ 엔진 자체 F16 97.0 / 82.9% 대비 -2.5 / -5.3%p"
+        },
+        {
+          "metric": "Table 3 · GR00T QuantVLA W4A8",
+          "value": "92.8 / 74.0%",
+          "context": "GR00T FP 93.0 / 78.2% 대비 기본 -0.3, plus -4.2%p(표 반올림)"
+        },
+        {
+          "metric": "Table 3 · UniVLA AWQ W4",
+          "value": "92.0 / 48.2%",
+          "context": "UniVLA FP 92.7 / 52.5%, 변형 조건 -4.3%p"
+        },
+        {
+          "metric": "Figure 1 · H100",
+          "value": "1.06–1.58× slower",
+          "context": "저비트 π0.5/OFT batch 1; 모델 크기 축소는 2–3×"
+        },
+        {
+          "metric": "Figure 2 · π0.5 profile",
+          "value": "63% GPU time",
+          "context": "FP16 H100 action expert는 주요 비양자화 병목; 같은 호출의 전체 latency는 130.5ms"
+        },
+        {
+          "metric": "§8 · L4",
+          "value": "4–14% faster",
+          "context": "일부 INT8 커널만 향상; H100·Jetson Thor로 외삽 금지"
+        },
+        {
+          "metric": "§3.2 · 총 closed-loop",
+          "value": "170,524 + 11,310 episodes",
+          "context": "H100 전체 170,524; L4·Thor 합산 11,310로 연구 초록의 180k+ 설명"
+        }
+      ],
+      "evidence_note": "성공률은 저자 논문의 Table 3에 한정합니다. ‘차이 %p’는 같은 모델·엔진·paired task의 F16 대비이며, 실제 low-bit/시뮬레이션 그룹을 섞어 평균내지 않습니다. 장치별 실행시간은 동일 engine F16 기준으로 비교해야 합니다.",
+      "comparison": "특정 양자화 기법의 새로운 효율을 주장하는 연구와 달리, LoopQ는 새 양자화 모델이 아니라 **양자화법을 엄격하게 비교할 수 있는 평가 틀**입니다. GPTQ/AWQ의 calibration 비용이 ‘작업 성공률 보존’으로 환원될 수 있는지 RTN과 비교하며, 실험 설계 차이를 전용 모델의 진보로 착각하는 문제를 겨냥합니다.",
+      "reading_guide": [
+        "§3 Table 1에서 4개 VLA의 quantized layer scope와 real/simulated 실행 경로 체크",
+        "Figure 4에서 분포변형 범주별 성공률 차이와 다중비교 보정 각주 확인",
+        "Table 3에서 F16의 엔진이 π0.5 GGML과 AQ로 두 번 등장하는 이유 정리",
+        "부록의 각 엔진 실측 batch/kernels/seed, §9.1의 외부 릴리스 재현 실패를 확인"
+      ],
+      "replication": {
+        "hypothesis": "같은 엔진·동일 레이어에서 PTQ의 LIBERO 손실과 LIBERO-plus 손실은 다르며, 속도 개선은 profiling bottleneck에 종속될 것입니다.",
+        "setup": "공개 원본 2개 VLA, RTN/AWQ/GPTQ, 동일 layer scope, 같은 calibration seed와 동일 LIBERO-plus task ID를 고정합니다. H100·Jetson-class GPU에서 batch1 warmup10/measured50 및 Nsight GPU active time을 모두 기록합니다.",
+        "baselines": "FP16, RTN W8/W4, AWQ W4, GPTQ W4; 가능할 때 저자가 공개한 ActQuant 실행 엔진 포함.",
+        "metrics": "paired exact McNemar+Holm adjusted p, per-category success %p, peak VRAM, p50/p95 action-chunk latency, GPU energy, kernel occupancy, real-vs-simulated quantization path.",
+        "risks": "실물 로봇 충돌·낙하 안전은 검증 밖입니다. simulator seed 및 GPU 소프트웨어 버전/clock/power cap을 함께 공개해야 합니다."
+      },
+      "related": [
+        "2504.16054",
+        "2406.09246",
+        "2611.05249"
+      ]
+    }
+  },
+  "2611.04527": {
+    "summary_ko": "DreamFree는 World-Action Model의 미래 비디오 생성 반복을 없애면서 영상 확산모델의 미래 예측 지식을 **현재 프레임의 표현**으로 증류합니다. RoboCasa-Kitchen 24과제 평균 71.7%(14B), 추가 비디오 74.4%; DROID 실물 10과제×5회에서 성공률 64.0%(DreamZero 56.0%, π0.5 16.0%)와 H200 기준 chunk당 91ms를 보고합니다. (arXiv:2611.04527v2 Fig.2·4, Table 1–3, Appendix A–E)",
+    "reading_minutes": 31,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-10",
+    "editorial_published_at": "2026-11-10",
+    "primary_category": "wam",
+    "source_scope_ko": "검증: arXiv:2611.04527v2 PDF 23pp, §3–4, Figure 2·4, Table 1–3, Appendix A–E. 그림 2·4는 저자 공식 프로젝트 페이지의 원본 이미지를 인용하며 로컬 복제 파일이 아닙니다.",
+    "abstract": "DreamFree는 World-Action Model의 미래 비디오 생성 반복을 없애면서 영상 확산모델의 미래 예측 지식을 **현재 프레임의 표현**으로 증류합니다. RoboCasa-Kitchen 24과제 평균 71.7%(14B), 추가 비디오 74.4%; DROID 실물 10과제×5회에서 성공률 64.0%(DreamZero 56.0%, π0.5 16.0%)와 H200 기준 chunk당 91ms를 보고합니다. (arXiv:2611.04527v2 Fig.2·4, Table 1–3, Appendix A–E) 이 글은 원문의 본문·실험 표와 공개된 부록을 대조한 한국어 기술 해설이며, 제3자 재현 실험 결과가 아닙니다.",
+    "review": {
+      "one_line": "**미래 비디오를 생성하지 않고 미래를 내다보는 특징을 쓰는 WAM.** DreamFree는 frozen video diffusion teacher가 현재+미래 프레임을 읽어 만든 표현을 student visual encoder의 현재 프레임 특징에 증류하고, 다음 단계에서 별도 Action DiT를 지도학습합니다. (§3; Fig.2)",
+      "problem": "이미지를 한 장 본 로봇에게 ‘얇은 장갑을 잡아서 접어라’라고 하면, 단순 텍스처보다 접으면 어떤 형태가 될지의 미래 정보가 중요합니다. DreamZero 등 생성형 WAM은 미래 영상을 매번 확산 샘플링해 행동을 도출하므로 3D 물체 변형의 생성 오류와 긴 지연시간을 피하기 어렵습니다. Fast-WAM은 추론 시 미래 영상을 생략해도 공유 visual representation에 미래 정보가 충분히 남는지는 별개 문제입니다. (§1–2)",
+      "idea": "사람이 컵을 기울이는 동영상 전체를 재생하지 않고도 첫 프레임에서 ‘곧 쏟아질 수 있다’는 특징을 떠올리는 상황을 생각하면 쉽습니다. 학습 중 teacher는 비디오의 처음과 미래를 모두 보지만 student는 현재 관측만 보고 teacher의 특정 hidden representation을 맞힙니다. 배포할 때 teacher와 future frames는 필요 없고 예측적 특징만 Action DiT가 사용합니다. ‘비디오 생성을 안 한다’는 말은 Action DiT의 행동 확산 denoising까지 없앤다는 뜻은 아닙니다. (§3.1–3.2)",
+      "method": "먼저 Wan2.2 5B 또는 14B 고잡음 전문가 video backbone과 VAE·텍스트 인코더를 사용합니다. Stage 1에서 teacher VDM은 현재+미래 프레임의 노이즈 있는 latent를 보고 representation을 만들고 파라미터는 frozen입니다. student encoder는 현재 영상·지시문만 입력받아 미래-aware teacher representation과 cosine 유사도를 최대화합니다(L_distill). 원 비디오 생성 flow-matching loss(L_gen)도 함께 두어 L_gen+L_distill을 학습합니다. teacher와 projection은 추론에 사용하지 않습니다. Stage 2에서 state/proprioception과 visual tokens를 action readout(query cross-attention)으로 연결하고 1B Action DiT가 horizon 32 action chunk의 flow를 학습합니다. 추론은 current VAE/encoder **단 한 번** + action DiT denoising → 일부 chunk 실행 → 새 관측으로 재계획하는 폐루프입니다. (Fig.2, Eq.1–4, Appendix A.2–A.6 Algorithm 1·2)",
+      "findings": "Table 1에서 LIBERO 4개 suite 평균은 98.6%로 π0 94.1%, π0.5 96.9%, Fast-WAM 97.6%, LingBot-VA 98.5% 등과 비교했습니다. Table 2는 RoboCasa 24과제 평균으로 14B DreamFree 71.7%, 추가 비디오-only 74.4%, Fast-WAM 14B 44.7%, Cosmos Policy 67.1%입니다. Figure 4에서 DROID 실물 10과제×5회는 DreamFree 64.0%, DreamZero 56.0%, π0.5 16.0%; task progress는 각각 83.0/71.8/33.5%로 별도 지표입니다. H200 실측 action chunk latency는 DreamFree 91ms, DreamZero 1,632ms, π0.5 81ms로 DreamZero 대비 17.8배 단축입니다. (Table 1–3, Figure 4–5, Appendix C.2)",
+      "limitations": "DROID 실물은 사전학습 분포에 속하는 작업 유형 10개에서 **각 5회**, 새 물체/배치로 검증한 것으로, 임의의 새로운 로봇 기체나 장시간 과제 성공률을 보장하지 않습니다. π0.5의 학습 데이터·세부 실행 설정까지 완전 동일한 학술적 controlled ablation은 아니며, 일부 baseline 값은 선행 연구 프로토콜을 따릅니다. 저자가 공개한 실패 사례로 지시한 주황색 대신 빨간 블록을 집거나 천 접기·화이트보드 지우기가 불안정한 문제가 있습니다. 14B encoder의 사전학습과 2단계 학습 비용은 작은 모델과 다르며, 추가 비디오 효과는 실물 DROID에서 계산비용으로 검증하지 않았습니다. (Appendix C–E)",
+      "questions": [
+        "Table 3에서 L_distill 제거 후 RoboCasa 71.7→47.2%가 되는 반면 L_gen 제거는 55.6%인 원인은?",
+        "Action DiT 학습 때 encoder를 freeze하는 것과 joint fine-tuning의 정보 보존은 어떻게 다를까요?",
+        "DROID 10개×5회에서 64%의 이항 신뢰구간은 얼마나 넓을까요?",
+        "추가 비디오로 74.4%가 된 이득은 어떤 task family에서 가장 컸는지 Appendix D.2를 확인해 볼까요?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**읽는 목표:** 추론 시 영상을 만들지 않는 WAM의 성능을 ‘모델이 미래를 모른다’와 동일시하지 않습니다. 2026-11-04 기준 arXiv:2611.04527v2 공식 PDF의 Eq.1–4, Algorithm 1·2, Table 1–3, Figure 2·4 및 Appendix A–E를 확인했습니다.",
+      "pipeline": [
+        {
+          "title": "01. 미래를 보는 동결 교사 준비",
+          "detail": "동영상 VDM 교사는 노이즈가 섞인 현재·미래 latent와 언어를 받습니다. 교사 가중치는 변경하지 않고 표현 목표를 제공합니다. 이는 action label이 없는 일반 비디오에서도 가능합니다.",
+          "io": "current + future video → frozen teacher features"
+        },
+        {
+          "title": "02. 현재만 보는 예측 인코더 증류",
+          "detail": "student visual encoder는 오직 현재 프레임과 지시문을 받고, training-time projector로 teacher의 future-aware embedding에 정렬합니다. 원래 비디오 flow-matching 목표와 미래 표현 유사도 손실을 합합니다.",
+          "io": "L = L_gen + L_distill"
+        },
+        {
+          "title": "03. 행동 의미를 추출하는 readout 학습",
+          "detail": "고정/학습 가능한 encoder 출력의 특정 layer에서 learned latent-query readout이 action-facing tokens를 뽑습니다. robot state와 language도 Action DiT의 조건이 됩니다.",
+          "io": "visual context + proprioception → readout tokens"
+        },
+        {
+          "title": "04. 1B Action DiT의 flow sampling",
+          "detail": "행동 chunk에 노이즈를 섞어 velocity regression 학습한 1B DiT가 action 시퀀스를 복원합니다. Appendix A.6 Algorithm 2에서는 encoder 한 번, action sampling N step 이후 앞부분 R개 행동만 실행하고 관측을 갱신합니다.",
+          "io": "action horizon 32 → execute prefix → observe again"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "L_distill과 L_gen의 역할 분리",
+          "body": "frozen teacher는 미래 프레임을 보므로 지도 표현에 미래 정보가 있습니다. L_distill만 있으면 teacher의 구조를 따라갈 수 있지만 생성형 backbone의 기존 비디오 priors를 잃을 수 있어 L_gen을 유지합니다. Table 3에서 두 loss 모두 없애면 성능이 악화되며 distill 제거 쪽이 더 큽니다.",
+          "watch": "Table 3: RoboCasa ours 71.7; w/o L_gen 55.6; w/o L_distill 47.2."
+        },
+        {
+          "title": "‘한 번의 인코딩’과 ‘denoising 불필요’는 다름",
+          "body": "비디오 VDM의 미래 프레임 반복 생성은 없애지만, action decoder의 flow-matching ODE sampling은 여전히 iterated denoising을 사용합니다. 실측 91ms/chunk는 H200 GPU, fused kernels/torch.compile/CUDA graphs와 instruction cache 등 최적화를 포함합니다.",
+          "watch": "Fig.2 inference와 Appendix C.2 latency 최적화 요소를 함께 읽어야 합니다."
+        },
+        {
+          "title": "Video-only data의 이점 범위",
+          "body": "RoboCasa365 원자적 기술 영상은 visual encoder pretraining에 추가하지만 action head에는 기존 50 demos/task만 사용합니다. 따라서 71.7→74.4%는 행동 라벨 확장 없이 비디오 표현만 강화한 조건입니다.",
+          "watch": "추가 비디오 실험을 DROID 실물 64%에 그대로 합성해서 66.7%라고 추정하면 안 됩니다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "Table 1 · LIBERO 4 suites",
+          "value": "DreamFree 98.6%",
+          "context": "Fast-WAM 97.6%; π0.5 96.9%; 평가 데이터·학습 조건의 차이 주의"
+        },
+        {
+          "metric": "Table 2 · RoboCasa Kitchen",
+          "value": "DreamFree 14B 71.7%",
+          "context": "24 tasks, task당 50 demo; Cosmos Policy 67.1%, Fast-WAM 14B 44.7%"
+        },
+        {
+          "metric": "Table 2 · 5B→14B",
+          "value": "58.5% → 71.7%",
+          "context": "DreamFree backbone 확대 +13.2%p; Fast-WAM 44.4→44.7%"
+        },
+        {
+          "metric": "Table 2 · action 없는 추가 비디오",
+          "value": "+ extra videos 74.4%",
+          "context": "14B 71.7→74.4%; Action DiT 학습용 행동 라벨 증가는 없음"
+        },
+        {
+          "metric": "Table 3 · w/o L_gen",
+          "value": "RoboCasa 55.6%",
+          "context": "Full 71.7%; LIBERO 98.0 vs 98.6"
+        },
+        {
+          "metric": "Table 3 · w/o L_distill",
+          "value": "RoboCasa 47.2%",
+          "context": "Full 71.7%; LIBERO 94.6 vs 98.6"
+        },
+        {
+          "metric": "Figure 4 · DROID physical",
+          "value": "64% / 83%",
+          "context": "10 tasks×5 trials; strict success/task progress 서로 다른 지표"
+        },
+        {
+          "metric": "Figure 4 · baselines",
+          "value": "DreamZero 56%, π0.5 16%",
+          "context": "동일 DROID 시험에서 비교, fine-tuning 없이 실행"
+        },
+        {
+          "metric": "Figure 5 · H200 latency",
+          "value": "91 vs 1632 vs 81 ms",
+          "context": "DreamFree / DreamZero / π0.5, action chunk 당; 17.8×는 DreamZero 대비"
+        }
+      ],
+      "evidence_note": "RoboCasa는 24개 주방 과제 평균이고, DROID 실물은 10과제×5회를 대상으로 한 저자 평가입니다. 성공률/부분 진척/latency는 서로 다른 지표입니다. 11Hz는 H200 최적화 환경의 폐루프 rate이며 모든 GPU에서 보장되는 수치가 아닙니다.",
+      "comparison": "생성 WAM(DreamZero)은 프레임의 미래 경로를 실제로 샘플링하고, Fast-WAM은 VDM과 행동 예측을 공동학습하되 추론에서는 비디오를 생략합니다. DreamFree는 여기에 **future-aware teacher representation을 목표로 직접 증류**하여, ‘생성 없이 행동을 낸다’라는 형태는 유사해도 학습 감독 신호가 다릅니다. (Fig.2, Table 2)",
+      "reading_guide": [
+        "원문 Figure 2(a)의 교사/학생/투영기 중 inference에 남는 블록 표시",
+        "Eq.1 L_distill과 Eq.2 L_gen, Table 3 제거실험을 연결",
+        "Figure 4 DROID task 성공률 64%가 10×5 trials임을 Appendix C.2에서 재확인",
+        "Appendix A.6 Algorithm 2의 행동 chunk 앞 R개만 실행하는 폐루프 및 Appendix E.2 한계 확인"
+      ],
+      "replication": {
+        "hypothesis": "예측 visual embedding의 distillation은 동일 backbone·동일 비디오 데이터에서 feature-only Fast-WAM 학습보다 미래 상태 선형 probe와 조작 성공률을 함께 높일 것입니다.",
+        "setup": "Wan 5B 하나로 시작해 L_gen only, L_distill only, both를 같은 학습시간/초기화/행동 demo 50 per task에서 비교하고 교사 층/노이즈 timestep을 별도 ablate합니다.",
+        "baselines": "Fast-WAM, video-generation WAM, DreamFree full, w/o L_gen, w/o L_distill, encoder frozen vs joint fine-tuned.",
+        "metrics": "24-task RoboCasa per-task strict SR, 4 LIBERO suites paired SR, DROID unseen object 10×5 이상의 반복 평가, feature future-probe error, p50/p95 chunk latency, GPU peak memory.",
+        "risks": "동영상의 ‘예측’ 표현을 안전한 물리적 결과 보증으로 오해하지 말고 로봇 실제 실행에는 별도 충돌 감지·낙하 안전조치를 두어야 합니다."
+      },
+      "related": [
+        "2611.04711",
+        "2611.05023",
+        "2504.16054"
+      ]
+    }
+  },
+  "2611.04493": {
+    "summary_ko": "Physical Diffusion Policy는 FF-3DGS와 미분 가능한 MPM 시뮬레이터로 물체의 탄성·항복·점성을 추정하고, 물성 정보로 네 개 material expert의 Diffusion Policy를 라우팅합니다. 실물 pick-and-place 범주 평균은 단일 DP 28.9%에서 physics-conditioned 공유 모델 49.4%, 최종 MoE 62.5%로 상승하지만, 이는 특정 재료 및 시연 데이터에 한정됩니다. (arXiv:2611.04493v1 §IV–V, Figure 1·2, Table I–VI)",
+    "reading_minutes": 31,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-10",
+    "editorial_published_at": "2026-11-10",
+    "primary_category": "robotics",
+    "source_scope_ko": "검증: arXiv:2611.04493v1 PDF 10pp 및 공식 HTML §IV–V, Figure 1·2, Table I–VI. 독립 Appendix 없음. 3DGS·MPM·성공률 근거 대조.",
+    "abstract": "Physical Diffusion Policy는 FF-3DGS와 미분 가능한 MPM 시뮬레이터로 물체의 탄성·항복·점성을 추정하고, 물성 정보로 네 개 material expert의 Diffusion Policy를 라우팅합니다. 실물 pick-and-place 범주 평균은 단일 DP 28.9%에서 physics-conditioned 공유 모델 49.4%, 최종 MoE 62.5%로 상승하지만, 이는 특정 재료 및 시연 데이터에 한정됩니다. (arXiv:2611.04493v1 §IV–V, Figure 1·2, Table I–VI) 이 글은 원문의 본문·실험 표와 공개된 부록을 대조한 한국어 기술 해설이며, 제3자 재현 실험 결과가 아닙니다.",
+    "review": {
+      "one_line": "컵처럼 딱딱한 물체와 스펀지처럼 눌리는 물체를 똑같은 집게 압력·속도로 들면 실패합니다. 이 연구는 **비디오에서 재료 물성 추정 → 물성에 따른 diffusion expert 혼합 → 메모리 검색으로 온라인 추정 생략**이라는 경로를 만들었습니다. (§IV; Fig.1)",
+      "problem": "기존 Diffusion Policy나 DP3는 영상·점군·로봇 상태를 기반으로 다중 모드 행동을 생성하지만, 외관이 비슷한 스펀지와 고무 덩어리의 강성·소성·접촉 변형을 직접 표현하지 않습니다. 재료마다 상충하는 행동 사례를 한 모델에 모두 섞으면 접촉 힘과 이동 속도가 평균화되어 물체를 놓치거나 찌그러뜨립니다. 별도 힘 센서로 매 물체의 물성을 측정하는 것도 고비용입니다. (§I–II)",
+      "idea": "로봇이 포도를 집는 경우, ‘어디에 있다’는 3D 좌표만큼 ‘얼마나 잘 찌그러지는가’가 중요합니다. 카메라로 물체를 여러 각도에서 관측한 뒤, 3D Gaussian을 MPM 입자에 붙여 영상의 물체 변화가 맞도록 물성 파라미터를 역최적화합니다. 추정한 Young 계수 E, 포아송비 ν, 항복응력 τY, 점성 η를 조건으로 4개 diffusion 전문가(탄성·폼·플라스틱·강체)의 예측을 가중 혼합합니다. 배포 시마다 느린 최적화를 하지 않도록 영상 특징으로 물성 memory bank를 검색합니다. (§IV-A–D)",
+      "method": "첫 단계에서 반구형 멀티뷰 영상 64프레임을 ZFormer FF-3DGS로 복원하고, Gaussian과 MPM 입자를 일대일 결합합니다. 물성 θ={E,ν,τY,η}의 초기값은 VLM으로 추정한 뒤 재료별 합리적 범위로 clipping합니다. 고정된 로봇 조작 영상과 시뮬레이션을 시간 정렬한 후 video-guided rendering 차이, 물체 형상 Chamfer loss, 그리퍼 접촉구간 Dirichlet 제약을 합쳐 역미분합니다(Eq.6–11). 두 번째 단계는 재료별 4개 diffusion expert를 독립적으로 사전학습한 다음 router를 붙여 전체를 공동 fine-tune합니다(Eq.12–16). 추론은 DINOv2의 고정/손목 카메라 feature cosine 유사도 0.6:0.4로 bank에서 물성을 찾아, static+ wrist 영상·언어·로봇상태와 함께 diffusion trajectory 및 gripper state를 DDIM으로 샘플링합니다. (§IV-A–D, §V Setup)",
+      "findings": "Isaac Lab과 실물에서 pick-and-place 및 stacking을 평가했습니다. 데이터는 시뮬레이션 scripted 300회, 실물 PS5 원격조작 100회(20Hz); 배치당 시뮬레이션 task 120회, 실물 task 30회 평가라 보고합니다. Table IV 실물 pick-and-place 범주평균은 DP 28.9%, physics-only shared 49.4%, MoE without expert pretrain 51.6%, full 62.5%입니다. Table II에서 실물 elastic pick 25.2% DP, 30.0% DP3, 57.1% full; rigid pick 34.2/49.2/70.0%입니다. Fig.2는 물성 추정 오류가 커질수록 성공률이 떨어짐을 보여주고, Table I 물성 추정 오차 평균은 완전모델 0.565로 VLM 초기화 제거 1.257보다 낮았습니다. Table VI bank 조회는 약 415ms로 물리 역최적화 798.22초보다 훨씬 빠르지만, 실물 평균 성공률은 60.7→59.2%로 조금 떨어집니다.",
+      "limitations": "물성을 정답처럼 제공하는 oracle이 아니라 VLM 초기화·3DGS/MPM 식별에 의존한 추정입니다. 선형탄성·소성 모델이 맞지 않는 재료에서는 파라미터 식별 자체가 불안정할 수 있습니다. 네 물성군 및 pick/stack 조작 과제에 한정되고 모든 접촉·충돌을 안전하게 다룬다고 입증하지 않았습니다. 논문 Figure 3의 포도·일회용 컵 보존 성공은 30회의 성공적 pick 조건을 별도로 평가하므로 원래 전체 60회 시도의 strict 성공률과 동일하지 않습니다. 원문 v1은 별도 Appendix 없이 V장에 실험 및 Table I–VI를 제시합니다.",
+      "questions": [
+        "포도 손상률과 strict 집기 성공률을 결합한 새로운 무손상 task-success를 계산하면 세 모델 순위는?",
+        "물성 retrieval의 cosine 유사도와 실제 물성 θ 오차가 어긋나는 OOD 재료의 failure case는?",
+        "Table IV의 shared policy+physics vs full MoE 비교에서 expert parameter 수를 동일하게 맞췄다면 이득이 유지될까요?",
+        "Fig.2에서 E/η/τY 오류에 더 민감한 이유를 material category별로 측정할 수 있을까요?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**읽는 목표:** 3D Gaussian이 행동을 직접 만들어낸다는 오해를 피하고, 물성 추정 시스템과 정책 학습/추론의 경계를 명확히 봅니다. arXiv:2611.04493v1 공식 HTML·PDF §IV–V, Figure 1·2, Table I–VI를 실제 대조했습니다. 공개 v1 10쪽에는 별도 Appendix 섹션이 없습니다.",
+      "pipeline": [
+        {
+          "title": "01. 물체의 시각적·물리적 장면 복원",
+          "detail": "반구형 영상 64프레임→ZFormer FF-3DGS로 Gaussian 생성→각 Gaussian에 MPM particle 하나를 결합. 입자 운동에 따라 Gaussian 중심과 회전이 변해 렌더링을 다시 관찰 영상과 비교합니다.",
+          "io": "multi-view RGB → Gaussian/MPM particles"
+        },
+        {
+          "title": "02. 재료 물성의 역최적화",
+          "detail": "VLM이 물성 초기값을 제시하고 재료별 범위로 clip합니다. 영상 유사도 L_video, Chamfer L_geo, 접촉영역 경계 L_bc를 합쳐 E,ν,τY,η를 최적화합니다. 100³ MPM grid, 30 epochs, 8 keyframes의 구현 조건을 논문이 제시합니다.",
+          "io": "θ={E,ν,τY,η} ← differentiable simulation"
+        },
+        {
+          "title": "03. 재료별 전문가를 분리해 행동학습",
+          "detail": "탄성/폼/플라스틱/강체 네 expert를 먼저 각각 학습합니다. 이후 shared condition c_t에서 router가 softmax weight를 만들어 전문가별 noise prediction을 가중 합하고 action denoising objective로 공동 업데이트합니다.",
+          "io": "visual+physical condition → 4 experts → weighted denoised action"
+        },
+        {
+          "title": "04. 추론 때는 기억장치에서 θ 검색",
+          "detail": "초기 table camera·wrist camera의 고정 DINOv2 표현을 bank와 cosine 비교(0.6:0.4)해 가까운 물성 θ를 가져옵니다. 매 query마다 수백초 MPM 최적화를 하지 않습니다. 두 task에는 각각 task-level generalist policy가 존재합니다.",
+          "io": "DINOv2 feature → nearest θ → DDIM policy"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "미분 가능한 3DGS-MPM의 이득과 가정",
+          "body": "MPM 입자는 변형 F와 속도를 계산하고 Gaussian render는 관측 가능 이미지로 되돌립니다. 렌더링 오차의 gradient가 θ까지 전파되므로 물성 추정에 센서 없는 영상 감독을 쓸 수 있지만, 잘못된 접촉 영역이나 잘못된 constitutive model은 식별을 편향시킬 수 있습니다.",
+          "watch": "Eq.3–5 particle ↔ Gaussian 결합과 Eq.8–11 손실항을 함께 봅니다."
+        },
+        {
+          "title": "왜 전문가를 미리 따로 학습할까?",
+          "body": "Table IV에서 MoE without pretraining은 실물 평균 51.6%, full 62.5%입니다. 물성별 interaction specialization을 충분히 학습한 뒤 router를 공동 미세조정하는 것이 초기부터 모든 전문가를 경쟁시키는 것보다 좋다는 저자 가설을 지지합니다.",
+          "watch": "공유 single policy + physics 49.4% vs MoE without pretrain 51.6% 차이도 따로 봅니다."
+        },
+        {
+          "title": "정확도와 latency의 서로 다른 타협",
+          "body": "Table V는 정답 물체 instance retrieval/재료 retrieval/물성 recall이 같은 지표가 아님을 구분합니다. Table VI에서는 물리 역최적화 798.22s와 bank query 414.91ms를 비교하지만 두 방식의 성공률은 60.7% 대 59.2%로 완전히 동등하지 않습니다.",
+          "watch": "‘1900배 빠르다’는 MPM physics optimization 대비 lookup의 시간 비율이지 로봇 전체 행동 주기의 속도 개선이 아닙니다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "§V · 학습 데이터",
+          "value": "300 sim / 100 real demos",
+          "context": "scripted simulation, PS5 teleoperation real; recorded 20Hz"
+        },
+        {
+          "metric": "Table I · 물성 평균 오차",
+          "value": "0.565 (ours)",
+          "context": "w/o VLM initialization 1.257, w/o Geo 0.774, w/o Bounds 0.588; E/τY/η log-MAE, ν MAE"
+        },
+        {
+          "metric": "Table II · 실물 elastic pick",
+          "value": "DP 25.2 / DP3 30.0 / Ours 57.1%",
+          "context": "특정 elastic objects 평균; 모든 과제 평균 아님"
+        },
+        {
+          "metric": "Table II · 실물 rigid pick",
+          "value": "34.2 / 49.2 / 70.0%",
+          "context": "DP / DP3 / Ours, pick-and-place 조건"
+        },
+        {
+          "metric": "Table IV · real average ablation",
+          "value": "28.9 → 49.4 → 51.6 → 62.5%",
+          "context": "DP / shared+physics / MoE w/o expert pretrain / full, pick-only material means"
+        },
+        {
+          "metric": "Table IV · sim average ablation",
+          "value": "83.3 → 87.9 → 85.8 → 89.9%",
+          "context": "동일 네 variant; 실물 success와 별도"
+        },
+        {
+          "metric": "Figure 2 · 물성 오차",
+          "value": "오차↑ → 성공률↓",
+          "context": "ν보다 E·τY·η에 민감; 그래프 회귀를 새 수치로 추정하지 않음"
+        },
+        {
+          "metric": "Figure 3 · 포도 보존",
+          "value": "DP 33.3 / DP3 43.3 / Ours 76.7%",
+          "context": "손상 여부, 성공적으로 들어올린 시도 안에서 30회 평가"
+        },
+        {
+          "metric": "Table VI · online 효율",
+          "value": "798.22s → 414.91ms",
+          "context": "offline optimization vs bank size 15 retrieval; real task average 60.7% vs 59.2%"
+        }
+      ],
+      "evidence_note": "Table II는 물성별·task별 성공률을 나누며, Table IV의 Avg는 실물 pick-and-place 물성 평균입니다. Table I의 평균은 로그오차와 MAE 혼합 지표라 물성의 SI 단위 평균오차로 오해하면 안 됩니다. Appendix가 없는 arXiv v1의 §V가 실험 조건의 1차 근거입니다.",
+      "comparison": "DP의 시각 입력과 DP3의 점군 기반 기하 입력은 물체 형상을 파악해도 ‘같은 컵 모양이지만 다르게 찌그러지는 물체’의 재료 파라미터를 명시적으로 넣지 않습니다. 본 논문은 물성 추정을 정책 바깥에서 수행하고, 학습 시 물성별 전문가 specialization을 추가합니다. 다만 파라미터 수와 재료별 demonstration 양을 완전히 동일하게 통제한 대규모 일반화 결과는 아닙니다.",
+      "reading_guide": [
+        "Figure 1에서 3DGS/MPM 역최적화와 diffusion policy 학습·추론의 별도 단계 식별",
+        "Eq.6 VLM material clipping, Eq.8–11 video/geometry/contact 제약과 Fig.2 물성 오류 민감도 연결",
+        "Table II 실물/시뮬레이션 및 pick/stack 영역을 섞지 않고 읽기",
+        "Table IV expert pretraining/router ablation과 Table VI memory bank 속도/성공률 절충 확인"
+      ],
+      "replication": {
+        "hypothesis": "동일 학습 데이터/파라미터 수에서도 물성 θ를 갖는 routing이 DP3보다 새로운 재료에서 무손상 pick 성공률을 높일 것입니다.",
+        "setup": "Isaac Lab 4개 material category, 300 scripted demos, real 100 demos를 동일 split에서 시작하고 θ ground-truth/oracle vs retrieved vs noisy를 교차 적용합니다. 작은 조작 힘에서의 안전한 진입과 손상은 별도 감독장치로 검증합니다.",
+        "baselines": "DP, DP3, DP+θ, shared+θ, MoE without expert pretrain, full MoE, oracle θ vs bank θ; same expert budget 및 demonstrations.",
+        "metrics": "pick/stack strict SR, fragile-object intact SR, parameter log-MAE/MAE, retrieval Hit@1/Recall@1, real latency median/p95, unseen material OOD SR.",
+        "risks": "접촉력 기록 없이 포도·컵 등 파손을 반복하는 실험은 위험합니다. 손상 한계를 사전에 정의하고 로봇 force/velocity 제한과 실험자 감독을 둡니다."
+      },
+      "related": [
+        "2611.05302",
+        "2611.05163",
+        "2410.24164"
+      ]
+    }
   }
 }
