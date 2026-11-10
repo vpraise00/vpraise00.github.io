@@ -146,7 +146,10 @@ def render_visual_figures(p: dict) -> dict[str, str]:
         remote=str(record.get('remote_url') or '')
         author_remote=bool(pid == '2611.04527'
           and record.get('method') == 'author_project_exact_figure'
-          and re.fullmatch(r'https://harryjo97\\.github\\.io/dreamfree/assets/figures/[A-Za-z0-9_-]+\\.png(?:\\?v=[0-9]+)?', remote))
+          and remote in {
+            'https://harryjo97.github.io/dreamfree/assets/figures/method_v2.png?v=20261103',
+            'https://harryjo97.github.io/dreamfree/assets/figures/droid_real_two_row.png'
+          })
         image_exists=bool((path and (ROOT/path).exists()) or author_remote)
         if image_exists:
             img=(remote if author_remote else '../'+path)
