@@ -1,27 +1,30 @@
 {
   "2610.42021": {
-    "heading": "사람 영상이 로봇 제어에 쓰이기까지",
-    "intro": "이 글은 Nexus-VLA: Bridging Human and Robot Experiences via a Shared Hierarchical Semantic Latent Space의 원본 Figure를 보며 읽는 가이드입니다. 각 그림은 저자 논문에서만 추출합니다. **캡션은 원문을 기준으로**, 아래 설명은 한국어 독해를 위해 별도로 작성했습니다.",
+    "heading": "Nexus-VLA — 인간 영상·로봇 행동을 연결하는 의미 latent의 원본 그림",
+    "intro": "저자의 기존 arXiv HTML Figure 1·2 원본 이미지·캡션을 사용합니다. Figure 1은 문제와 핵심 의도, Figure 2는 학습용 semantic supervision/행동 모델 구조를 확인하기 위해 배치합니다. 이 실행에서 arXiv HTML의 직접 재접속이 제한되어 기존 추출 provenance를 명시합니다.",
     "figures": [
       {
         "number": 1,
-        "reading_title": "사람과 로봇의 경험을 연결하는 문제",
-        "context": "사람의 손과 로봇 그리퍼는 관찰 모습과 움직이는 방법이 다르다. 공통으로 보존해야 할 것은 특정 관절각이 아니라 조작 의도와 상호작용 의미다.",
+        "placement": "idea",
+        "reading_title": "Figure 1 — 인간 경험의 '공유 가능한 부분'을 로봇 행동에 전이",
+        "context": "사람 손과 로봇 gripper의 다른 관측 형태를 동일 관절 값으로 맞추지 않고 계층 의미 latent를 매개로 인식합니다. 이 개념 그림은 성공률의 직접 증거가 아니라 문제 정의와 전이 방향을 보여줍니다.",
         "steps": [
-          "입력 자료가 사람 영상인지 로봇 궤적인지, 정렬할 대상을 단순 이미지 특징으로 둘지 행동 의미로 둘지 구분해서 읽는다.",
-          "공통 의미가 실제 로봇의 제어 신호로 이어지는지 확인하는 것이 중요하다."
-        ],
-        "locator": "원문 Figure 1 / arXiv:2610.42021"
+          "인간 egocentric 영상에서 robot joint label이 없는 사실을 먼저 확인합니다.",
+          "의도·공간·손목 움직임·접촉에 걸쳐 어떤 의미를 공유하는지 봅니다.",
+          "학습 신호를 실제 DiT action 생성과 이어주는 지점이 있는지 읽습니다."
+        ]
       },
       {
         "number": 2,
-        "reading_title": "계층적 공유 의미 잠재공간",
-        "context": "논문은 작업 의도에서 세부 상호작용까지 여러 수준의 공통 의미를 정렬하고 이를 연속 행동 생성에 직접 사용하는 공유 잠재표현을 제안한다.",
+        "placement": "method",
+        "reading_title": "Figure 2 — Hierarchical semantic latent, 보조 정렬, Flow Matching 행동 head",
+        "context": "Qwen2.5-VL 기반 semantic token에서 추출한 z_sem을 여러 supervision target으로 정렬합니다. 로봇 전용 joint와 공통 wrist의 분할·mask를 통해 사람 영상의 감독 범위를 구분하고 DiT action 생성에 연결합니다.",
         "steps": [
-          "정렬 손실과 정책 학습이 분리되어 있는지, 공동학습이 어떻게 작용하는지 원문 Methods와 함께 읽는다.",
-          "80.5% RoboCasa-GR1 결과는 해당 평가 조건에서의 성공률이며 모든 로봇 플랫폼으로 일반화되는 수치는 아니다."
-        ],
-        "locator": "원문 Figure 2 / arXiv:2610.42021"
+          "semantic token의 출력 z_sem과 네 auxiliary projection head를 구분합니다.",
+          "Intent·Spatial·Motion·Interaction target은 학습용이며 실제 로봇 추론에서 explicit label 출력으로 간주하지 않습니다.",
+          "human joint channel masking과 robot joint+wrist 학습 경로를 분리합니다.",
+          "16-step action chunk가 DiT flow matching으로 산출되는 경로를 확인합니다."
+        ]
       }
     ]
   },
@@ -78,28 +81,32 @@
     ]
   },
   "2610.07922": {
-    "heading": "월드 모델과 행동 모델을 같은 조건에서 비교하기",
-    "intro": "이 글은 OpenWAM: An Open Framework for Composable World-Action Models의 원본 Figure를 보며 읽는 가이드입니다. 각 그림은 저자 논문에서만 추출합니다. **캡션은 원문을 기준으로**, 아래 설명은 한국어 독해를 위해 별도로 작성했습니다.",
+    "heading": "OpenWAM — 복수 생성 프로그램과 shared MoT의 저자 Figure",
+    "intro": "arXiv:2610.07922v1 PDF/HTML의 Figure 1·2 캡션을 대조했습니다. Figure 2는 원본 PDF에서 추출한 crop이며 저장소의 수동 crop 검수 상태는 그대로 표시합니다.",
     "figures": [
       {
         "number": 1,
-        "reading_title": "OpenWAM의 공통 실험 기반",
-        "context": "기존 WAM 비교는 비디오 백본·상호작용 순서·학습 신호를 동시에 바꿔 원인 분석이 어렵다. OpenWAM은 공통 비디오 기반에서 여러 조합을 실험한다.",
+        "placement": "idea",
+        "reading_title": "Figure 1 — 로봇 video backbone → MoT → 네 생성 순서와 동역학",
+        "context": "왼쪽은 causal robot-video pretraining, 우측은 video/action MoT, Joint·VTA·ATV·Decoupled의 프로그램, 아래는 counterfactual IDM/FDM 전이까지 한 장에 나눠 놓은 그림입니다. 서로 다른 성능 실험의 차례도 이 흐름에 맞춰 읽습니다.",
         "steps": [
-          "입력이 현재 관측인지 예측 영상인지, 생성 순서가 video-first/action-first/joint 중 무엇인지 구분한다.",
-          "그림 속 비디오와 행동 스트림의 결합은 추론 순서를 비교하는 실험 조건이다."
-        ],
-        "locator": "원문 Figure 1 / arXiv:2610.07922"
+          "사전학습은 action labels 없이 video에 대해 이뤄지는 단계임을 봅니다.",
+          "VTA와 ATV의 visible future tokens 차이를 확인합니다.",
+          "Frozen inverse dynamics transfer는 대상 영상 생성기를 fine-tune한다는 조건이 있음을 확인합니다.",
+          "Table3 프로그램별 success와 Table5 IDM transfer는 별도 측정입니다."
+        ]
       },
       {
         "number": 2,
-        "reading_title": "동역학·반사실적 데이터·정책의 관계",
-        "context": "비디오 생성과 행동 추정을 분리하거나 결합해 학습할 때, 예측 세계가 로봇 조작과 정합적인지를 본다.",
+        "placement": "method",
+        "reading_title": "Figure 2 — Video/Action 전문가의 분리와 공동 attention",
+        "context": "두 stream은 각각 projection·normalization·feed-forward parameter를 가지고 video/action tokens는 packed attention으로 만납니다. PDF 페이지 크롭 이미지의 시각적 정확성은 추가 수동 검수가 필요합니다.",
         "steps": [
-          "실험 수치를 읽을 때 데이터 규모·로봇·공통 백본 여부를 동일하게 맞춘 비교인지 확인한다.",
-          "반사실적 데이터의 효과는 환경·평가 범위를 벗어나 일반화하면 안 된다."
-        ],
-        "locator": "원문 Figure 2 / arXiv:2610.07922"
+          "video branch 5B와 action branch 2B의 목적·출력 차이를 구분합니다.",
+          "modality-specific FFN과 cross-token attention에서 공유되는 표현 범위를 구분합니다.",
+          "본문 Appendix A의 4 video latent frames·16 actions·7D control을 함께 읽습니다.",
+          "PDF crop 경계가 완전히 검수되었다고 주장하지 않습니다."
+        ]
       }
     ]
   },
@@ -873,6 +880,36 @@
           "ν의 오류에는 상대적으로 성공률 감소가 작습니다.",
           "각 축의 error 단위가 같다고 가정하면 안 됩니다: 본문은 로그 도메인과 상대오차를 구분합니다.",
           "Table I의 물성 추정 정확도와 Fig.2의 downstream 성능 민감도는 서로 다른 실험입니다."
+        ]
+      }
+    ]
+  },
+  "2611.05080": {
+    "heading": "CRONOS — 비에피소드 로봇 강화학습의 상태 분포 및 EER 그림",
+    "intro": "arXiv:2611.05080v1 HTML에 실린 저자 원본 Figure 1과 Figure 4를 논문의 문제 정의와 EER 설계 위치에 각각 배치합니다. 실험 수치는 Figure 4 곡선의 대략적 증가폭과 Table1의 정밀 수치를 구분합니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Figure 1 — 여러 과제 사이에 장면을 그대로 두는 훈련",
+        "context": "왼쪽의 shared-scene 다중 과제와 아래의 object drift/success decay를 연결합니다. T80의 task별 scene reset과 더 긴 T320/T2560에서 물체 배치가 누적되는 차이가 핵심입니다.",
+        "steps": [
+          "지시 task가 바뀐다고 물체 배치가 자동으로 복구되는 것은 아님을 확인합니다.",
+          "Episodic T80과 non-episodic T320/T2560의 실제 reset 간격을 구분합니다.",
+          "우측 일반화 성능은 independently sampled OOD과 연속 작업 결과 중 무엇인지 읽습니다.",
+          "이 논문은 simulation benchmark이며 안전한 실물 로봇 검증을 대신하지 않습니다."
+        ]
+      },
+      {
+        "number": 4,
+        "placement": "method",
+        "reading_title": "Figure 4 — End-effector reset이 VLA의 사전학습 시작자세 편향을 줄임",
+        "context": "EER는 다음 지시로 넘어갈 때 end-effector만 canonical 초기 위치로 이동시키고 물체 장면은 유지합니다. 장면 전체를 reset하는 것보다 조건이 완화되지만, 실제 로봇에서 이동 안전성·시간은 별도 실험해야 합니다.",
+        "steps": [
+          "그리퍼의 canonical pose 복귀와 scene 재설정을 혼동하지 않습니다.",
+          "SpatialVLA T320·T2560 조건의 rollout 성공 추세를 따로 읽습니다.",
+          "곡선 기반 성능 개선폭은 약 +25%p 및 +10%p이며 정밀 표값으로 인용하지 않습니다.",
+          "Figure 7 HSR의 scene-reset heuristic와 다른 개입입니다."
         ]
       }
     ]

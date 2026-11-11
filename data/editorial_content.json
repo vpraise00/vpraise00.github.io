@@ -2904,5 +2904,468 @@
         "2410.24164"
       ]
     }
+  },
+  "2610.42021": {
+    "summary_ko": "사람의 1인칭 조작 영상에 로봇 관절 명령이 없더라도 작업 의도·공간 목표·손의 이동·접촉을 계층적 의미 잠재공간에서 정렬하면 로봇 행동 정책에 도움이 될까요? Nexus-VLA는 인간 21,446개 영상과 로봇 24,000개 시연을 공동학습해 RoboCasa-GR1 24과제 성공률 80.5%를 보고합니다. 공동학습과 계층적 감독의 효과를 구분하고 실물·OOD 수치의 분모를 확인합니다.",
+    "reading_minutes": 34,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-11",
+    "editorial_published_at": "2026-11-11",
+    "primary_category": "vla",
+    "source_scope_ko": "arXiv:2610.42021 공식 메타데이터 및 저장소에 이미 보존된 arXiv HTML Figure 1·2의 원본 출처·캡션을 확인했습니다. Methods §3, Experiments §4, Appendix A–C, Tables 1–8은 원문 전체 텍스트 렌더링(PaperPeel)을 대조했습니다. 이번 실행에서는 arXiv PDF/HTML 원본 직접 접속이 제한되어 공식 PDF 재열람을 완료했다고 주장하지 않습니다. 연구 결과는 저자 보고이며 독립 실험은 아닙니다.",
+    "abstract": "사람의 1인칭 조작 영상에 로봇 관절 명령이 없더라도 작업 의도·공간 목표·손의 이동·접촉을 계층적 의미 잠재공간에서 정렬하면 로봇 행동 정책에 도움이 될까요? Nexus-VLA는 인간 21,446개 영상과 로봇 24,000개 시연을 공동학습해 RoboCasa-GR1 24과제 성공률 80.5%를 보고합니다. 공동학습과 계층적 감독의 효과를 구분하고 실물·OOD 수치의 분모를 확인합니다. 아래 내용은 논문 저자들이 보고한 결과의 조건부 해석이며, 실제 하드웨어 독립 재현은 아닙니다.",
+    "review": {
+      "one_line": "**사람과 로봇의 동작 좌표를 억지로 일치시키는 대신**, 작업의 단계와 접촉 의미를 하나의 잠재표현으로 묶어 실제 로봇의 연속 동작 생성 손실과 연결하는 것이 핵심입니다. (§3, Fig.2)",
+      "problem": "사람의 POV 영상에는 손으로 컵을 집는 장면이 담기지만 로봇 관절각·그리퍼 열림값은 없습니다. 사람 영상으로 단순 VLM을 사전학습하고 로봇 정책을 별도로 학습하면 시각 특징이 행동에 정말 필요한지 최종 손실이 피드백하지 못합니다. 반대로 사람 손목 경로를 로봇 관절 명령으로 바로 복제하면 embodiment·카메라 좌표계와 접촉점이 달라질 때 실패합니다. 이 논문의 질문은 인간 경험에서 공유할 수 있는 '무엇을 어떻게 옮기는가'라는 의미를 로봇 행동의 학습 신호로 바꾸는 방법입니다. (§1–3)",
+      "idea": "직관적으로 사람이 머그컵을 선반에 올리는 영상을 볼 때 로봇에게 중요한 것은 사람 손가락의 각도 자체보다 '컵 선택→목표 선반 식별→손목 이동→접촉·해제'입니다. Nexus-VLA는 하나의 semantic token에 거친 의도, 2D 공간 목표, 손목 이동, 상호작용 상태를 함께 담도록 학습하고, 해당 토큰 표현을 로봇용 행동 diffusion 조건으로 사용합니다. 의미 라벨은 학습 때만 사용하는 보조 감독이며 추론 때 매번 네 가지 문구를 언어로 출력하는 시스템이 아닙니다. (Fig.1–2, §3)",
+      "method": "시각언어 백본 Qwen2.5-VL-3B의 입력에 learnable semantic token을 추가하고 인과 self-attention 후 hidden state z_sem을 읽습니다. 네 종류 Structured Manipulation Expert가 학습용 의사 감독을 제공합니다: Intent는 로컬 subtask, Spatial은 조작 물체·목표의 2D box, Motion은 미래 양손/손목 2D 궤적, Interaction은 손·물체 접촉점/상태입니다. 각 supervision은 별도 projection head를 통해 단일 z_sem을 훈련시킵니다. 사람 데이터는 로봇 관절 label이 없으므로 action을 [robot-specific joint, shared wrist]로 나누고 사람 샘플에서는 joint 부분을 mask합니다. 로봇 시연은 두 부분을 모두 학습시키고 DiT 연속 행동 head가 16-step action chunk를 flow matching으로 학습·추론합니다. 인간:로봇 혼합비는 1:2이며 별도 라벨 추론이 실행 시 필요하지 않습니다. (§3 및 Appendix A–B)",
+      "findings": "RoboCasa-GR1 24과제 Table 1에서 Nexus-VLA 80.5%, ACE-Ego-0 72.8%, ZR-0 69.3%, GR00T-N1.6 47.6%입니다. 표의 서로 다른 모델·훈련 구성을 완벽하게 통제한 인과 효과로 해석해서는 안 됩니다. Table 2의 각 OOD 설정 500 rollouts 비교에서는 평균 68.9% 대 기준선 48.2%; fully unseen object 조건은 55.6% 대 31.6%입니다. Table 3의 ablation은 robot-only 72.42%, hierarchy-only 75.67%, independent latents 76.92%, unified latent 78.25%, 완전 인간 공동학습 80.17%, hierarchy 제거 공동학습 71.75%로, Table1 80.5%와 서로 다른 실험 설정/체크포인트입니다. 실제 로봇 6과제의 설정별 50 rollouts에서 Nexus 표준 82%, distractor 76%, spatial 74%, motion 70%, unseen object 68%, 조건 평균 74%이며, 사람 데이터로만 본 과제 6종의 전이 결과는 72.7% 대 기준선 47.0%입니다. (§4, Tables 1–4, Fig.6)",
+      "limitations": "Nexus의 개선이 학습 데이터 양의 증가, 계층 감독, 디코더/백본, 학습 비용 중 어디서 얼마나 비롯됐는지 단일 벤치마크 평균으로 완벽히 분해할 수는 없습니다. 사람 손목의 2D 이미지 좌표와 실제 로봇의 3D 제어·접촉 정보 사이의 카메라 보정과 스케일 차이는 근본 난점입니다. 24개의 모의 주방 과제와 선택된 실제 6과제는 무한한 실제 환경의 범위를 보증하지 않습니다. Appendix의 개별 작업에서는 Nexus가 항상 최고가 아니며, PlateToPan과 PlateToPlate 등의 하위 사례를 함께 봐야 합니다. 공식 arXiv PDF/HTML의 이번 실행 직접 접근이 제한된 점도 이 글의 근거 범위에 명시합니다.",
+      "questions": [
+        "사람 영상의 보조 semantic supervisor가 잘못된 bounding box를 부여할 때 z_sem과 행동 정확도가 함께 무너지는가?",
+        "human:robot 비율 1:2를 유지하면서 인간 데이터 5.4k→21.4k 증가 효과와 업데이트 수를 정확히 맞춘 비교가 가능한가?",
+        "2D wrist trajectory를 새로운 카메라 위치에 옮겼을 때 어느 계층의 latent가 먼저 취약해지는가?",
+        "Table3의 공동학습 80.17%와 Table1의 80.5%가 체크포인트·분할에 따라 달라지는 이유는 무엇인가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**독해 핵심:** Nexus-VLA는 사람의 손 궤적을 그대로 로봇 관절에 역운동학으로 옮기는 연구가 아닙니다. 인간·로봇 데이터에서 공유되는 작업 의미를 z_sem에 학습시키고, 이 표현을 실제 조건부 행동 생성에 집어넣습니다. 수치는 논문 Tables 1–4와 Appendix의 서로 다른 평가 범위를 먼저 분리해 읽어야 합니다.",
+      "pipeline": [
+        {
+          "title": "01. 서로 다른 두 데이터의 관측을 구성",
+          "detail": "RoboCasa-GR1 24과제 로봇 시연 약 24,000개와 EgoDex에서 필터링한 사람의 egocentric 영상 21,446개를 섞습니다. 짝지어진 동일 작업 인간–로봇 촬영본이 아니라 서로 다른 도메인에 존재하는 관찰·행동 신호입니다.",
+          "io": "RGB + 언어 지시 + (로봇만) 관절·동작"
+        },
+        {
+          "title": "02. Semantic token이 사전학습 VLM에서 의미를 읽음",
+          "detail": "Qwen2.5-VL-3B가 이미지/언어 토큰을 처리할 때 학습 가능한 semantic token을 추가합니다. 마지막 semantic 위치의 hidden representation z_sem이 후속 의미 정렬과 행동 생성의 공통 인터페이스가 됩니다.",
+          "io": "(visual, language, semantic token) → z_sem"
+        },
+        {
+          "title": "03. Intent·Spatial·Motion·Interaction 네 감독",
+          "detail": "학습에서만 네 전문 모델이 pseudo semantic target을 만듭니다. Intent는 현재 소과제, Spatial은 원천/목표 bounding box, Motion은 미래 손목 2D 궤적, Interaction은 손과 물체의 접촉점·접촉 상태를 제공합니다. 개별 projection head에 가해지는 손실이 공유 z_sem을 조정합니다.",
+          "io": "z_sem → 4 auxiliary losses; 지도는 추론에서 생략"
+        },
+        {
+          "title": "04. Embodiment mask로 사람과 로봇 행동 감독을 구분",
+          "detail": "행동 표현의 로봇 고유 joint 부분과 공통 wrist 부분을 분리합니다. 인간 샘플은 관절 지시가 없으므로 joint loss를 mask하고, 로봇 샘플은 둘 다 학습합니다. 사람의 손동작을 로봇 관절과 동일시하지 않는 핵심 장치입니다.",
+          "io": "[joint,wrist] action + per-domain supervision mask"
+        },
+        {
+          "title": "05. DiT flow matching으로 연속 행동 chunk 생성",
+          "detail": "z_sem과 로봇 관측을 조건으로 action DiT가 길이 16의 연속 행동을 생성하도록 학습합니다. 추론에서는 이미지·언어→z_sem→DiT action 순서이며, 학습용 의사감독 모델과 사람별 관절 추정기는 추가로 실행하지 않습니다.",
+          "io": "image+instruction → z_sem → 16-step robot action"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "왜 네 개 의미 target을 하나의 latent에 몰아넣는가?",
+          "body": "소과제 의도만 잘 맞혀도 실제 그립 접촉 시점은 놓칠 수 있습니다. 물체 box·손목 궤적·접촉 정보를 동시에 감독해 복수 시간척도를 공유 표현에 강제하는 것입니다. 다만 잠재 차원에 과부하가 생길 수 있어 독립 head와 unified latent의 비교(Table3)가 중요합니다.",
+          "watch": "ablation에서 independent latents 76.92% vs unified 78.25%가 같은 설정인지 확인합니다."
+        },
+        {
+          "title": "사람 영상과 로봇 action의 손실을 왜 마스킹하는가?",
+          "body": "사람 영상에는 로봇 관절 action target이 없는데 이를 0벡터 정답으로 학습시키면 정책에 잘못된 행동을 강화할 수 있습니다. joint channel은 robot-only로 감독하고 wrist channel을 공유하면 사람의 공간적 움직임을 이용하면서 로봇 특유의 구동 제약은 정책에서 유지할 수 있습니다.",
+          "watch": "mask 적용 위치와 observation-to-wrist coordinate 차이는 별도로 평가해야 합니다."
+        },
+        {
+          "title": "학습 프로토콜이 다른 성공률을 섞지 않기",
+          "body": "Table1의 80.5%는 24과제 종합 비교, Table3의 80.17%는 공동학습 구조의 ablation, Table2의 68.9%는 OOD 6개 설정 평균, 실물 74%는 여러 테스트 조건 평균입니다. 정확도 범위가 다르기 때문에 단일 수치로 대체할 수 없습니다.",
+          "watch": "분모(rollouts, tasks, settings)·훈련 스텝·선정 체크포인트를 함께 표기합니다."
+        },
+        {
+          "title": "실환경 성능을 과대 일반화하지 않기",
+          "body": "표준 실제 환경 82%에서 unseen object 68%로 떨어지는 것은 학습된 잠재공간이 일반화 이득을 제공하더라도 물체 형태·시점 분포 이동에 취약함을 보여줍니다. Figure 1은 정성적 파이프라인, Figure 2는 메커니즘 구조이지 그 자체가 성공률의 증거가 아닙니다.",
+          "watch": "Appendix 작업별 분산 및 실패 사례를 함께 검토합니다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "§4 / 데이터 구성",
+          "value": "Robot 24,000 / Human 21,446",
+          "context": "RoboCasa-GR1 24 tasks, EgoDex filtered human demonstrations, unpaired"
+        },
+        {
+          "metric": "Table 1 / RoboCasa-GR1",
+          "value": "80.5% (Nexus)",
+          "context": "ACE-Ego-0 72.8, ZR-0 69.3, GR00T-N1.6 47.6%; 24-task aggregate"
+        },
+        {
+          "metric": "Table 2 / OOD 평균",
+          "value": "68.9% vs 48.2%",
+          "context": "6 OOD categories, each 500 rollouts; Nexus vs reference"
+        },
+        {
+          "metric": "Table 2 / 완전 새로운 물체",
+          "value": "55.6% vs 31.6%",
+          "context": "fully unseen objects only; not overall task success"
+        },
+        {
+          "metric": "Table 3 / 로봇-only",
+          "value": "72.42%",
+          "context": "Ablation protocol robot-only baseline; not Table1 baseline"
+        },
+        {
+          "metric": "Table 3 / Hierarchy-only",
+          "value": "75.67%",
+          "context": "semantic target ablation under matched protocol"
+        },
+        {
+          "metric": "Table 3 / Independent → Unified",
+          "value": "76.92% → 78.25%",
+          "context": "separate latents vs one unified latent"
+        },
+        {
+          "metric": "Table 3 / Human cotrain",
+          "value": "80.17%; w/o hierarchy 71.75%",
+          "context": "Ablation variants, protocol differs from Table1's 80.5%"
+        },
+        {
+          "metric": "Table 4 / 실물 조건",
+          "value": "82 / 76 / 74 / 70 / 68%",
+          "context": "standard / distractor / spatial / motion / unseen-object, 50 attempts per setting"
+        },
+        {
+          "metric": "실물 조건 평균과 인간-only 전이",
+          "value": "74%; 72.7 vs 47.0%",
+          "context": "첫 수치는 5 test settings mean, 두 번째는 human-only task transfer 6 classes"
+        }
+      ],
+      "evidence_note": "표의 수치는 저자 보고입니다. Table1과 Table3의 모델 선정·학습 스텝이 다르며 Table2 OOD, Table4 실물 테스트는 분모와 분포가 다릅니다. 80.5%를 실물 성공률로 인용하면 오류입니다.",
+      "comparison": "로봇 전용 imitation learning은 명확한 관절 행동 레이블을 쓰지만 사람 영상 확장성은 제한됩니다. Human-video representation을 따로 학습해 freeze하는 방법은 이미지 표현을 전이하되 제어 손실이 의미 표현을 거꾸로 최적화하기 어렵습니다. Nexus-VLA는 **semantic token에 네 종류 감독→joint+wrist 분리 및 mask→DiT flow matching**을 하나의 공동학습 경로에 넣습니다. 이것은 human-motion retargeting을 완전히 해결했다는 주장이 아니라, robot-specific controller 안에 human semantic signal을 주입한다는 주장을 검증하는 설계입니다.",
+      "reading_guide": [
+        "Figure 2에서 q_sem/z_sem, 네 auxiliary projector, action DiT 사이의 경계와 실제 inference path를 따로 표시합니다.",
+        "Methods의 human/robot joint-wrist mask를 다시 적고 사람 영상에 존재하지 않는 행동 channel이 무엇인지 확인합니다.",
+        "Table1·Table3의 checkpoint/학습 iteration 차이를 확인한 후 독립적 인과비교만 추립니다.",
+        "Table2의 각 OOD category 500 rollouts와 Table4의 50 per condition을 다른 평가 지표로 보관합니다.",
+        "Appendix C task별 반례(PlateToPan 등)에서 평균보다 실패가 큰 작업을 기록합니다."
+      ],
+      "replication": {
+        "hypothesis": "의도/접촉 중심의 통합 표현을 DiT 행동 손실과 공동학습하면 단순 human video concat 또는 frozen human encoder보다 적은 로봇 시연에서도 OOD task 성공률이 높아질 것입니다.",
+        "setup": "RoboCasa-GR1 8개 고정 과제, 동일 Qwen2.5-VL와 동일 DiT를 사용합니다. 로봇 시연 25/50/100%와 사람 영상 0/5k/20k를 교차하고, 모든 조건에서 동일 로봇 gradient update·seed 5개를 사용합니다.",
+        "baselines": "Robot-only, raw human video mixture(no semantic losses), frozen semantic encoder, four-independent latents, unified latent without interaction, full model; backbone/action steps/GPU budget control.",
+        "metrics": "Strict task success(각 작업 100 attempts), 6종 OOD 분리 성공률, 미관측 물체 category별 혼동, contact timing error, GPU-hour 및 데이터 라벨 생성 비용.",
+        "risks": "생성된 pseudo labels의 오류, 평가 로봇 카메라 캘리브레이션 차이, human-vs-test task semantic overlap이 인간 데이터의 이득을 과장할 수 있습니다."
+      },
+      "related": [
+        "2406.09246",
+        "2504.16054",
+        "2611.04522"
+      ]
+    }
+  },
+  "2610.07922": {
+    "summary_ko": "OpenWAM은 Wan2.2 기반 로봇 비디오 사전학습과 video/action Mixture-of-Transformers 위에서 Joint·Video-then-Action·Action-then-Video·Decoupled 예측 순서를 비교하는 공개 World-Action Model입니다. LIBERO-Long VTA에서 로봇 비디오 사전학습 전 68.4%에서 후 97.8%, 실제 양팔 로봇 3과제 VTA 평균 92.1%를 저자가 보고하며, counterfactual inverse/forward dynamics의 독립 전이 가능성도 검증합니다.",
+    "reading_minutes": 34,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-11",
+    "editorial_published_at": "2026-11-11",
+    "primary_category": "wam",
+    "source_scope_ko": "arXiv:2610.07922 원본 PDF 총 18쪽의 모델·실험·Appendix A 및 Figure 1·2, Table 3·4·5·6·7을 실제 대조했습니다. Figure 2의 저장 이미지(원본 PDF crop)는 아직 수동 크롭 검수 필요로 표시됩니다. 결과 수치는 원논문 내부 평가입니다.",
+    "abstract": "OpenWAM은 Wan2.2 기반 로봇 비디오 사전학습과 video/action Mixture-of-Transformers 위에서 Joint·Video-then-Action·Action-then-Video·Decoupled 예측 순서를 비교하는 공개 World-Action Model입니다. LIBERO-Long VTA에서 로봇 비디오 사전학습 전 68.4%에서 후 97.8%, 실제 양팔 로봇 3과제 VTA 평균 92.1%를 저자가 보고하며, counterfactual inverse/forward dynamics의 독립 전이 가능성도 검증합니다. 아래 내용은 논문 저자들이 보고한 결과의 조건부 해석이며, 실제 하드웨어 독립 재현은 아닙니다.",
+    "review": {
+      "one_line": "같은 video foundation을 쓰더라도 **어떤 정보를 어느 시점에 생성하고 서로 보게 하느냐**에 따라 행동 성공률과 비용이 달라집니다. OpenWAM은 이를 실험 가능한 MoT 구성요소로 분해합니다. (§3–5)",
+      "problem": "비디오를 먼저 상상하고 뒤에 행동을 구하는 모델, action과 미래 영상을 함께 샘플링하는 모델, 관측만 보고 동작을 직접 생성하는 정책은 비디오 backbone·로봇 데이터 양·학습기간까지 서로 다르기 쉽습니다. 그러면 성능 차이가 'world model 덕분'인지 '더 많은 pretraining 때문'인지 구분하기 어렵습니다. 비디오 예측이 좋은데 로봇은 실패하는 예와, 빠른 제어가 필요한데 모든 이미지 프레임을 만들어 지연이 커지는 예를 같은 기반에서 비교해야 합니다. (§1–2)",
+      "idea": "로봇이 컵을 집어 책상 오른쪽에 놓는 장면을 생각해 보겠습니다. VTA는 먼저 이동 뒤 컵이 놓일 미래 화면을 만들고 그 장면에 맞는 제어를 구합니다. ATV는 우선 움직임을 샘플링한 뒤 그 행동이 만드는 다음 화면을 예측합니다. Joint는 둘을 한 프로세스에서 일관되게 만듭니다. Decoupled는 두 경로가 현재 관측을 공유하지만 서로의 예측을 조건으로 하지 않습니다. OpenWAM은 동일한 비디오 stream과 action expert, 토큰 가림 규칙을 써서 이 차이를 비교합니다. (Fig.1–3)",
+      "method": "Wan2.2-5B에서 시작해 10,000시간 이상의 로봇/인간 상호작용 비디오에 causal pretraining을 수행하며 action label은 이 단계에 필요하지 않습니다. 5B video expert와 약 2B action expert가 Mixture-of-Transformers로 분리된 FFN·projection을 쓰면서 joint attention에서 정보 교환합니다. 논문의 단위 예시에서는 과거 RGB 두 시점(주 카메라/손목 카메라), 네 latent video frames, 16개의 7D end-effector actions를 함께 패킹합니다. Shared flow matching으로 video velocity와 action velocity를 학습하고, modality별 attention mask와 생성 순서를 바꿔 Joint, VTA, ATV, Decoupled를 실험합니다. 별도의 local-context inverse dynamics model(IDM)은 미래 관측에서 행동을 복구하고, forward dynamics model(FDM)은 행동 조건부 미래를 예측합니다. counterfactual rollout을 더해 두 모델을 훈련할 수 있습니다. (§3–4, Appendix A)",
+      "findings": "Table3 LIBERO-Long에서 causal robot-video pretraining 후 VTA 97.8±0.4%, Joint 96.6±0.4%, ATV 95.4%, Decoupled 97.0%이며, VTA의 raw Wan 초기화 대비 차이는 68.4→97.8%입니다. 네 suite 평균은 VTA98.6%, ATV96.8%, Joint97.6%, Decoupled98.0%로 long-suite와 분모가 다릅니다. Table4 실제 양팔 FR3에서 VTA Toast92.0%, Cube90.0%, Cups94.4%, 평균92.1%입니다. Table5에서는 LIBERO-90 중 *사전에 정한 네 held-out tasks*에 대해 타깃 task로 조정한 video predictor와 **동결된** source IDM을 연결합니다. 현지 학습 정책 참조 93.0%에 비해 local-context mixed counterfactual+demo IDM 84.0%; demo-only local IDM 21.5%; counterfactual-only local IDM 84.5%입니다. Table7 160contexts×16 alternative futures에서 FDM RGB MSE는 14.35→9.40(×10^-3), 16-way outcome identification은21.1→71.3%로 보고됩니다. (§5, Tables 3–7)",
+      "limitations": "공유된 backbone을 써도 생성 순서에 따라 영상 샘플링 횟수와 action 지연 비용은 다릅니다. 논문 결과를 로봇 실시간 제어 latency 동일 조건의 우승이라고 단정할 수 없습니다. 68.4→97.8%는 데이터 분포 변경과 causal adaptation이 함께 개입하므로 video training의 특정 한 요소의 순수 효과가 아닙니다. Frozen IDM transfer는 목적 task의 video predictor를 adaptation한 뒤 연결한 결과이며 zero-shot 전체 WAM 전이는 아닙니다. Counterfactual rollout의 simulator 물리 정확도도 제약입니다. Figure 2는 PDF에서 추출한 이미지로 저장소 기록상 수동 크롭 검수가 추가로 필요합니다.",
+      "questions": [
+        "미래 영상을 생성하지 않는 Decoupled와 VTA를 동일 GPU·정확한 robot wall-clock 제어 지연에서 비교하면 순위가 유지되는가?",
+        "counterfactual dynamics의 효과가 사실적인 접촉·미끄러짐 분포까지 일반화되는가?",
+        "local-context IDM이 카메라 위치·로봇 그리퍼·action frequency가 바뀐 뒤에도 transfer되는가?",
+        "VTA의 훈련 시 ground-truth future 영상 사용과 추론 시 generated future의 불일치(error accumulation)를 어떻게 줄일 수 있는가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**핵심 구분:** OpenWAM은 video-first 세계상상 기법 하나를 주장하는 논문이라기보다, 비디오·동작을 묶는 attention mask와 생성 순서를 체계적으로 비교하는 토대입니다. 로봇 비디오 pretraining, 상호작용 스케줄, 반사실적 동역학을 각각 분리해서 읽어야 하며, LIBERO 시뮬레이션과 FR3 실물 제어의 결과를 섞으면 안 됩니다.",
+      "pipeline": [
+        {
+          "title": "01. 비디오 world foundation의 로봇 적응",
+          "detail": "Wan2.2-5B 비디오 모델을 초기화로 삼고 10,000시간 이상 로봇·사람 상호작용 비디오를 원인순서(causal)로 사전학습합니다. 이때 행동 레이블 없이 시간적 상태 전이를 배우는 것이 목적입니다. 특정 로봇 궤적을 모방하는 정책 학습과 단계가 다릅니다.",
+          "io": "generic video model → causal robot video foundation"
+        },
+        {
+          "title": "02. Video 5B + Action 2B MoT 구성",
+          "detail": "비디오 디퓨전 stream과 저차원 action stream의 정규화·입출력 projection·FFN은 별도이고 packed tokens 간 attention은 공동으로 계산합니다. Figure2에서는 expert-specific branch가 joint attention에 모이는 지점을 확인할 수 있습니다.",
+          "io": "video tokens ⇄ shared attention ⇄ action tokens"
+        },
+        {
+          "title": "03. 관측·미래·행동 토큰 패킹",
+          "detail": "Appendix A는 주 카메라/손목 카메라 128×128 예시, 네 video latent frames, 16 environment action steps 및 7차원 말단효과기 명령을 설명합니다. '비디오 4개'를 RGB frame 4개와 그대로 동일시하면 안 됩니다; latent grid를 사용합니다.",
+          "io": "dual-view observations + future video latents + 16×7D actions"
+        },
+        {
+          "title": "04. Attention mask와 생성 순서를 실험 변수화",
+          "detail": "Joint는 두 stream 공동 예측, VTA는 video를 먼저 생성하고 action이 그것을 참조, ATV는 action 우선, Decoupled는 cross-future dependency를 제거합니다. Figure3에서 주어지는 관측과 생성 중인 미래 토큰의 가시성 차이를 읽어야 합니다.",
+          "io": "joint / video→action / action→video / independent"
+        },
+        {
+          "title": "05. Counterfactual transition으로 전이 가능한 동역학",
+          "detail": "순방향 FDM은 action에서 future video를, 역방향 IDM은 관찰 변화에서 action을 예측합니다. 시연 trajectory에 없는 다른 action 결과를 만드는 counterfactual data로 학습하고, 새 task에서는 video predictor를 조정하되 source-trained IDM을 freeze해 전이를 평가합니다.",
+          "io": "demonstration+counterfactual → frozen IDM + tuned future predictor"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "Shared MoT가 통합 단일 출력과 다른 점",
+          "body": "고차원 픽셀/latent velocity와 로봇 7D action velocity는 같은 조건일지라도 학습 신호·표본 난이도가 다릅니다. modality-specific FFN을 유지해 각 stream의 기능을 보존하면서 attention으로 교차 정보를 학습하는 것이 저자의 설계입니다.",
+          "watch": "Figure2/Appendix의 video/action branch, joint attention 위치를 보며 MoT와 shared-head를 구분합니다."
+        },
+        {
+          "title": "VTA의 미래 비디오가 행동을 도울 수 있는 조건",
+          "body": "VTA는 목표를 향한 시각적 전개가 충분히 맞을 때 행동 추론의 추가 조건을 제공합니다. 하지만 미래 영상 오류가 후속 행동을 오염시키는 경로도 열리므로 VTA가 모든 지연 환경에서 최선이라는 보장은 없습니다. Table3의 LIBERO-Long VTA97.8와 Decoupled97.0 차이를 비용 및 분산과 함께 읽습니다.",
+          "watch": "행동 예측시 GT future를 사용한 학습과 generated future를 사용한 추론 사이의 차이를 확인합니다."
+        },
+        {
+          "title": "Counterfactual supervision이 꼭 필요한 이유",
+          "body": "일반 시연은 한 상태에서 선택된 행동의 다음 장면만 보여줍니다. 그 상태에서 다른 행동을 취했을 때의 결과를 추가로 학습하면, 역동역학은 우연히 공존한 시각 물체에 의존하는 대신 action에 민감한 변화를 추정할 수 있습니다. 단 데이터 생성 시뮬레이터가 틀리면 오히려 편향됩니다.",
+          "watch": "Table5에서 local demonstration-only 21.5% vs counterfactual-only84.5%의 *네 held-out task* 평가 조건을 봅니다."
+        },
+        {
+          "title": "IDM 84%가 end-to-end zero-shot은 아님",
+          "body": "새 task에서는 별도로 task-adapted video predictor가 필요합니다. 고정해 재사용한 것은 inverse dynamics 모듈입니다. Table5의 93.0% task-specific policy와 84.0% transfer 수치는 모델 적응 방식이 달라, 세부 예산까지 모두 같은 baseline으로 오해하면 안 됩니다.",
+          "watch": "source IDM freeze, target video adaptation, held-out LIBERO-90의 4 task를 따로 적어 둡니다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "§3 / Causal video pretraining",
+          "value": ">10,000 h",
+          "context": "로봇/사람 비디오, action label 없이 학습; Wan2.2-5B 기반"
+        },
+        {
+          "metric": "Table3 / LIBERO-Long VTA",
+          "value": "68.4 → 97.8 ± 0.4%",
+          "context": "raw video model initialization → causal robot video pretraining"
+        },
+        {
+          "metric": "Table3 / LIBERO-Long schedule",
+          "value": "VTA97.8 / Joint96.6 / ATV95.4 / Decoupled97.0%",
+          "context": "동일 benchmark Long suite에서 생성 순서 비교"
+        },
+        {
+          "metric": "Table3 / 4-suite mean",
+          "value": "98.6 / 97.6 / 96.8 / 98.0%",
+          "context": "VTA / Joint / ATV / Decoupled, LIBERO Object/Goal/Spatial/Long 평균"
+        },
+        {
+          "metric": "Table4 / FR3 실물",
+          "value": "92.0 / 90.0 / 94.4%",
+          "context": "VTA Toast/Cube/Cups, mean92.1%; simulation benchmark와 분리"
+        },
+        {
+          "metric": "Table5 / 대상 task 정책 참조",
+          "value": "93.0%",
+          "context": "LIBERO-90 held-out 4 tasks, target-tuned reference"
+        },
+        {
+          "metric": "Table5 / local-context IDM",
+          "value": "21.5 / 84.5 / 84.0%",
+          "context": "demo-only / CF-only / mixed, frozen source IDM + tuned target video"
+        },
+        {
+          "metric": "Table5 / full-context IDM",
+          "value": "44.5 / 47.0%",
+          "context": "demo-only / mixed: local CF가 나은 결과의 맥락"
+        },
+        {
+          "metric": "Table6 / source IDM",
+          "value": "94.4%",
+          "context": "source LIBERO-Long local-context mixed IDM"
+        },
+        {
+          "metric": "Table7 / FDM RGB MSE",
+          "value": "14.35 → 9.40 (×10⁻³)",
+          "context": "demo-only → CF-only, 160 contexts×16 future outcomes"
+        },
+        {
+          "metric": "Table7 / 16-way discrimination",
+          "value": "21.1 → 71.3%",
+          "context": "demo-only → counterfactual-only, 비디오 결과 식별률; 로봇 success가 아님"
+        }
+      ],
+      "evidence_note": "저자 발표 수치이며 공개 코드의 독립 재현이 아닙니다. Table3의 VTA/Joint가 동일 benchmark에서 비교된 범위, Table4 실물 3과제, Table5 4개 target-transfer 과제, Table7 픽셀/결과 식별 지표는 서로 다른 모집단입니다. 84.0%는 zero-shot video model 성능이 아닙니다.",
+      "comparison": "전통적 VLA는 관측 영상→행동을 직접 생성하지만 오차가 왜 생기는지 드러나는 중간 미래가 없을 수 있습니다. 비디오 확산 기반 모델은 미래를 예측하지만 행동 추론이 항상 개선되는 것은 아닙니다. OpenWAM의 기여는 **하나의 비디오/행동 MoT에서 네 interaction schedule을 직접 비교하는 프레임워크**와 **counterfactual forward/inverse dynamics 학습**을 함께 제공한다는 점입니다. 일반화는 비디오 예측 능력·inverse dynamics transfer·실제 제어 지연이라는 세 항목으로 나눠 평가해야 합니다.",
+      "reading_guide": [
+        "Figure1의 데이터/사전학습/다운스트림 단계를 다른 화살표로 분리하고 각 단계에 action label이 존재하는지 표기합니다.",
+        "Figure2에서 MoT가 공유하는 attention과 expert-specific normalization·FFN을 구분합니다. PDF crop image는 수동 검수 필요합니다.",
+        "Figure3 attention visibility를 기준으로 VTA/Joint/ATV/Decoupled를 같은 입력 조건에서 해석합니다.",
+        "Table3의 suite 평균과 Long 수치를 분리해 오류 막대를 포함하여 기록합니다.",
+        "Table5의 held-out 네 task와 target video model adaptation, IDM frozen 여부를 확인합니다.",
+        "Table7의 16-way detection이 strict robot-success가 아니라 forward dynamics 일관성 지표임을 확인합니다."
+      ],
+      "replication": {
+        "hypothesis": "동일한 비디오 backbone에서 VTA가 Joint보다 개선된다고 해도, 로봇 제어 latency를 제한하면 Decoupled가 더 좋은 성공/시간 균형을 보일 수 있습니다.",
+        "setup": "4개 LIBERO-Long task subset, 동일 action head·video backbone·pretrain checkpoint·budget을 사용해 VTA/Joint/ATV/Decoupled를 재학습하고 비디오 chunk 수·action denoising step·실제 wall clock을 계측합니다. 작은 2×2 반사실 transition ablation을 추가합니다.",
+        "baselines": "No-video action-only policy, raw Wan backbone VTA, causal-pretrained backbone VTA, Joint/ATV/Decoupled, local IDM demo-only vs CF-only vs mixed. 데이터·컴퓨트·도메인 분할 통제.",
+        "metrics": "Strict task success by seed, first-action latency, end-to-end Hz, video prediction error, IDM mean action error, long-task recovery, GPU-hour.",
+        "risks": "서로 다른 생성 스케줄의 총 FLOPs가 다르면 같은 학습 step 수를 공정성으로 오해할 수 있으며, counterfactual 생성기가 비물리적 접촉을 만들 수 있습니다."
+      },
+      "related": [
+        "2609.16074",
+        "2609.23578",
+        "2611.04711"
+      ]
+    }
+  },
+  "2611.05080": {
+    "summary_ko": "CRONOS는 작업마다 로봇과 물체를 원상복구하는 episodic 강화학습이 아니라, 같은 장면에서 여러 조작 지시를 연달아 수행하는 저빈도 scene-reset 정책 학습을 평가합니다. OpenVLA-7B·SpatialVLA-4B의 PPO 미세조정에서 end-effector reset, 학습 초기 reset curriculum, 휴리스틱 장면 복구를 비교하고, overlap·clutter OOD 성공률과 연속 작업의 실패 누적을 분석합니다.",
+    "reading_minutes": 34,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-11",
+    "editorial_published_at": "2026-11-11",
+    "primary_category": "robotics",
+    "source_scope_ko": "arXiv:2611.05080 공식 PDF 총 17쪽의 benchmark 설계·훈련, §4 실험, Appendix B Table2, Figures 1·4와 Table1을 대조했습니다. 논문이 다루는 결과는 시뮬레이션 기반이며 실제 로봇 배치를 입증하지 않습니다.",
+    "abstract": "CRONOS는 작업마다 로봇과 물체를 원상복구하는 episodic 강화학습이 아니라, 같은 장면에서 여러 조작 지시를 연달아 수행하는 저빈도 scene-reset 정책 학습을 평가합니다. OpenVLA-7B·SpatialVLA-4B의 PPO 미세조정에서 end-effector reset, 학습 초기 reset curriculum, 휴리스틱 장면 복구를 비교하고, overlap·clutter OOD 성공률과 연속 작업의 실패 누적을 분석합니다. 아래 내용은 논문 저자들이 보고한 결과의 조건부 해석이며, 실제 하드웨어 독립 재현은 아닙니다.",
+    "review": {
+      "one_line": "**실험실에서는 매번 물체를 시작 자리로 돌리지만 실제 작업에서는 이전 행동의 결과가 다음 과제의 시작 상태가 됩니다.** CRONOS는 이 차이를 VLA 강화학습의 핵심 평가 변수로 만듭니다. (§1–4)",
+      "problem": "일반적인 로봇 조작 RL은 컵을 집은 뒤 80 step마다 물체와 그리퍼 위치를 초기 상태로 복원합니다. 실제 주방에서 그런 장면 초기화를 매번 사람이 대신 해주면 정책 학습보다 scene reset 비용이 더 커질 수 있습니다. 하나의 공간에서 첫 과제 성공 후 물체 배치가 바뀌고, 두 번째 과제는 그 변화와 이전 그리퍼 끝 위치에서 시작하면 이미 학습한 VLA도 실패를 누적합니다. 기존 non-episodic RL은 상대적으로 작은 정책 위주였고 큰 pretrained VLA를 fine-tune하는 조건이 충분히 검증되지 않았습니다. (§1–2)",
+      "idea": "책상에 사과·컵을 옮기는 지시가 4번 이어지는 상황을 생각해 보겠습니다. 매 지시마다 모든 물체를 시작 위치로 되돌리는 게 episodic T=80입니다. CRONOS의 T=320 설정은 4개 task를 수행한 후에야 장면을 복원하며, T=2560은 32개 task 동안 장면 reset을 줄입니다. 지시가 바뀔 때 그리퍼만 정해진 곳으로 되돌리는 end-effector reset(EER)은 물체를 매번 치우는 것과 다릅니다. 정책은 전 과제의 결과가 남은 상태를 훈련하게 됩니다. (Fig.1, §3–4)",
+      "method": "ManiSkill3/SimplerEnv 기반 물리 시뮬레이터를 확장해 4개 scene, scene마다 물체 2개·receptacle 2개를 두며 조건부 put-object-on-receptacle 지시를 구성해 총 16종 task를 평가합니다. Task switching은 80 steps이고 장면 초기화 간격을 T=80/320/2560으로 조절합니다. OpenVLA-7B 및 SpatialVLA-4B를 PPO+LoRA로 fine-tune하며 동일 장면에 task 지시가 반복해서 주어집니다. EER는 각 task switch 때 로봇 말단 위치만 canonical position으로 복귀시켜 action 초기조건 편향을 줄입니다. 별도 reset curriculum은 처음에는 잦은 scene reset으로 배우다가 간격을 늘리고, HSR은 물체가 테이블 아래로 떨어지거나 접근할 수 없는 경우 회복을 위한 reset을 선택합니다. 단순히 '장면을 절대 재설정하지 않는다'는 시스템이 아닙니다. (§3–4, Appendix B)",
+      "findings": "Table1은 학습 interaction steps를 2.9M으로 맞추고 T=80/320을 비교합니다. Overlap(최소 두 물체 간 거리 ≤12cm) OOD에서 OpenVLA 55.4→59.3%, SpatialVLA 55.2→64.3%; Cluttered(물체를 상단에서 떨어뜨린 뒤 안정화) OOD에서 OpenVLA 49.4→53.6%, SpatialVLA 51.2→55.0%입니다. 이는 각 조건 단일 task의 OOD 성공률이지 4단계 연속 수행의 성공률이 아닙니다. 연속 4과제에서 task2 성공률은 episodic→non-episodic 기준 OpenVLA 26→40%, SpatialVLA 18→33%로 두 번째 과제의 상태 편향이 완화되지만 실패 누적은 남습니다. Figure4의 EER는 SpatialVLA에서 T=320 약 +25%p, T=2560 약 +10%p 개선한 그래프입니다(그래프 판독 개략치이며 별도 정밀 표값으로 주장하지 않음). Figure7의 HSR은 T=2560에서 SpatialVLA in-domain 성공률 14→64%를 보고하지만, 특정 실패 트리거와 정책 조합의 결과입니다. (Table1, Figs.4–7)",
+      "limitations": "CRONOS는 실제 로봇 현장학습이 아니라 시뮬레이션 조작 환경입니다. EER의 물리적 이동 비용, HSR의 복구 판단 오류, 실제 그리퍼 재배치 중 발생하는 충돌 위험은 별도 검증이 필요합니다. 평가하는 VLA가 OpenVLA와 SpatialVLA 두 백본에 제한되고, OOD overlap·clutter 정의도 특정 장면 생성기와 물체군에 국한됩니다. 14→64%를 CRONOS의 보편적 학습 성능이라고 일반화해서는 안 됩니다. non-episodic은 'reset 없음'이 아니라 *정해진 더 긴 간격/조건부 reset*을 뜻합니다.",
+      "questions": [
+        "EER가 없는 완전 연속 task 수행에서 지시 전환 전후 end-effector drift의 분포를 정량화하면 얼마나 실패가 설명되는가?",
+        "HSR의 scene reset 횟수와 인건비까지 포함해 효율을 계산해도 PPO 학습 이득이 유지되는가?",
+        "Overlap과 Clutter에서 strict single-task success가 좋아져도 32-task sequence의 최종 완수율이 낮은 까닭은?",
+        "실환경에서 안전한 reset policy가 HSR의 임계치 휴리스틱을 대체할 수 있는가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**핵심 경계:** CRONOS는 새로운 VLA backbone 제안이 아니라, 이미 학습된 거대 VLA의 강화학습 세팅을 '각 과제별 scene reset'에서 '같은 장면에서 연속 과제'로 바꾸어 평가하는 벤치마크입니다. Table1의 unseen object configurations와 Figure4의 gripper reset, Figure7의 heuristic recovery는 각각 다른 개입을 시험합니다.",
+      "pipeline": [
+        {
+          "title": "01. Shared-scene manipulation benchmark 생성",
+          "detail": "네 가지 scene에 각각 두 object와 두 receptacle을 배치하고 4개의 조건부 put-on 관계를 조합해 16개의 조작 과제를 정의합니다. 한 scene을 여러 과제가 공유하므로 완료한 작업의 물체 배치가 다음 정책 관측으로 남습니다.",
+          "io": "4 scenes × 4 tasks = 16 manipulation tasks"
+        },
+        {
+          "title": "02. 세 수준의 scene reset interval 비교",
+          "detail": "모든 task는 최대 80 environment step. Episodic T=80은 한 task마다 scene reset, non-episodic T=320은 4 tasks마다, T=2560은 32 tasks마다 scene reset합니다. 'non-episodic=영구 무초기화'와 다릅니다.",
+          "io": "T=80 / 320 / 2560 steps per scene reset"
+        },
+        {
+          "title": "03. Pretrained VLA를 PPO로 후속학습",
+          "detail": "OpenVLA-7B와 SpatialVLA-4B를 LoRA로 업데이트하고 64개의 병렬 시뮬레이션 환경을 사용합니다. Appendix B의 예시는 LoRA rank32, 1 PPO epoch, clip0.2, γ=0.99, GAE λ=0.95, 학습 T=320/지시 전환80, optimizer AdamW의 backbone LR1e-4입니다.",
+          "io": "pretrained VLA → PPO + LoRA → closed-loop policy"
+        },
+        {
+          "title": "04. EER는 scene을 아니라 팔의 위치만 복구",
+          "detail": "태스크 전환 시 gripper/end-effector의 pose를 정해진 초기 위치로 되돌리되, 객체·receptacle은 원위치시키지 않습니다. 사전학습 VLA가 주로 보던 고정 end-effector 시작 pose와 현 과제의 실제 입력 분포 차이를 줄입니다. Figure4는 EER 적용 유무 ablation입니다.",
+          "io": "task switch → gripper canonical pose; scene persists"
+        },
+        {
+          "title": "05. Curriculum 및 HSR로 비정상 장면 회복",
+          "detail": "처음에는 잦은 scene reset으로 기본 조작을 학습시키고 점차 reset 간격을 늘립니다. HSR은 물체가 떨어지거나 작업공간 접근이 어려워 학습을 이어가기 힘든 비정상 배치에서 scene reset을 선택합니다. 이 방식은 인공적인 복구 oracle/heuristic을 허용하는 시뮬레이션 설정입니다.",
+          "io": "short-reset curriculum → long-reset rollout; heuristic recovery"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "문제는 보상 설계만이 아니라 초기 상태 분포 이동",
+          "body": "고정 위치 물체를 향해 집기를 배운 정책이 이어진 작업에서는 이전 조작 때문에 물체가 겹치고 그리퍼가 엉뚱한 쪽을 향한 장면을 봅니다. Rollout을 계속한다고 성능이 자동 상승하지 않으며, state distribution을 바꾸는 장면·gripper reset 정책을 별도로 설계해야 합니다.",
+          "watch": "Figure1의 reset 직후 대비 다음 instruction에서 object drift와 success decay를 확인합니다."
+        },
+        {
+          "title": "EER가 도움 되는 백본과 조건",
+          "body": "VLA pretrained policy는 특정 말단 시작 자세에 익숙할 수 있습니다. EER는 scene reset보다 저렴해 보이지만 실제 로봇에선 안전한 경로계획·충돌검사가 필요합니다. Figure4의 SpatialVLA 개선 곡선을 T=320과 T=2560로 나누어 보아야 합니다.",
+          "watch": "Figure4에서 +25%p / +10%p는 곡선에서 읽은 대략값이며 논문 표에 보고된 정확한 point estimate와 혼동하지 않습니다."
+        },
+        {
+          "title": "왜 reset curriculum과 HSR을 별도로 비교하는가?",
+          "body": "초기부터 T=2560 같은 매우 긴 rollout을 강요하면 정책이 실수로 작업공간을 훼손한 뒤 유익한 경험을 충분히 모으지 못할 수 있습니다. Curriculum은 초반의 안정적인 성공 경험을 늘리고, HSR은 정상 작업으로 회복 불가능할 때 데이터 낭비를 줄입니다. 두 개입은 서로 다른 실패 메커니즘을 겨냥합니다.",
+          "watch": "Fig.5 curriculum, Fig.7 HSR과 EER Fig.4를 한 가지 기법의 성공으로 합산하지 않습니다."
+        },
+        {
+          "title": "OOD 개선과 장기 sequence 개선을 혼동하지 않기",
+          "body": "Table1의 OOD 성공률은 독립 단일 과제 평가이며, 4-task order의 task2 성공률은 연속 수행 지표입니다. 학습에서 reset을 줄였다는 이유만으로 학습하지 않은 길이 32의 성공률이 같은 폭으로 향상된다고 추론할 수 없습니다.",
+          "watch": "OOD scene sampling 규칙(Overlap≤12cm, Clutter dropped-from-above)과 rollout length를 기록합니다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "§3 / Benchmark scale",
+          "value": "4 scenes, 16 tasks",
+          "context": "scene당 2 objects/2 receptacles, task length up to 80 steps"
+        },
+        {
+          "metric": "§3 / Reset frequencies",
+          "value": "T=80 / 320 / 2560",
+          "context": "task마다 / 4 tasks / 32 tasks마다 scene reset"
+        },
+        {
+          "metric": "Appendix B / PPO",
+          "value": "64 env, LoRA r32",
+          "context": "OpenVLA-7B / SpatialVLA-4B, γ=.99, clip=.2, GAE λ=.95"
+        },
+        {
+          "metric": "Table1 / OOD Overlap OpenVLA",
+          "value": "55.4 → 59.3%",
+          "context": "episodic T80 → non-episodic T320, 2.9M interactions matched"
+        },
+        {
+          "metric": "Table1 / OOD Overlap SpatialVLA",
+          "value": "55.2 → 64.3%",
+          "context": "Overlap: >=2 objects within 12cm, single-task test"
+        },
+        {
+          "metric": "Table1 / OOD Clutter OpenVLA",
+          "value": "49.4 → 53.6%",
+          "context": "cluttered by dropping objects from above and settling"
+        },
+        {
+          "metric": "Table1 / OOD Clutter SpatialVLA",
+          "value": "51.2 → 55.0%",
+          "context": "single-task OOD success, not long sequence success"
+        },
+        {
+          "metric": "§4 / 4-task sequence task2",
+          "value": "OpenVLA 26→40%; SpatialVLA 18→33%",
+          "context": "T80 vs T320, second instruction after prior scene changes"
+        },
+        {
+          "metric": "Figure4 / End-effector reset",
+          "value": "~+25pp (T320), ~+10pp (T2560)",
+          "context": "SpatialVLA graph approximate visual reading; exact tabular values not reported"
+        },
+        {
+          "metric": "Figure7 / HSR",
+          "value": "14 → 64%",
+          "context": "SpatialVLA T2560 in-domain under heuristic scene-reset recovery"
+        }
+      ],
+      "evidence_note": "Table1은 matched 2.9M steps의 OOD 독립 과제, §4의 sequence는 전 작업의 상태를 이어받는 지표, Figure4는 end-effector 재배치 intervention, Figure7은 HSR을 허용한 개별 실험입니다. 서술된 수치를 묶어서 한 벤치마크의 동일 실험값처럼 비교하지 않습니다.",
+      "comparison": "Episodic PPO에서는 환경이 모든 reset 때 원래 물체 위치와 그리퍼를 제공하므로 VLA는 비교적 좁은 초기 상태에서 학습합니다. 작은 모델을 scratch 학습한 기존 non-episodic RL 결과를 바로 대형 pretrained VLA에 적용하기도 어렵습니다. CRONOS는 **사전학습 VLA에서 scene reset interval이 만드는 state distribution shift를 측정**하고, gripper pose correction(EER), 쉬운→어려운 reset curriculum, heuristic scene recovery(HSR)를 각각 ablation으로 평가합니다. 보상 스케일을 높이면 해결된다는 주장과 다릅니다.",
+      "reading_guide": [
+        "Figure1의 episodic/non-episodic 타임라인에서 object state와 end-effector state가 언제 복원되는지 두 색으로 표시합니다.",
+        "논문 §3 task generation의 4 scenes×4 tasks와 fixed 80-step horizon이 실제 object diversity를 얼마나 포괄하는지 확인합니다.",
+        "Figure4의 EER는 scene reset이 아니라 end-effector reset임을 구분하고, 예상 안전비용과 성능 향상을 함께 적습니다.",
+        "Table1의 2.9M training steps matching과 Overlap/Clutter OOD 생성 규칙을 확인합니다.",
+        "Appendix B Table2의 PPO epochs, LoRA rank, LR, switch interval을 추출해 실험을 재현합니다.",
+        "Figure7 14→64%에 HSR intervention의 인적/자동 비용이 포함되는지 확인합니다."
+      ],
+      "replication": {
+        "hypothesis": "동일한 VLA와 PPO 예산에서 scene reset을 덜 자주 하면 미관측 초기 배치 일반화가 개선되지만, EER와 안전한 복구가 없으면 연속과제 종료 성공률이 오히려 낮아질 수 있습니다.",
+        "setup": "ManiSkill3에서 4 scenes, 16 task definitions, T80/320/2560과 EER on/off를 3 seeds로 반복합니다. 학습 total 2.9M steps와 평가 target pose·로봇 백본·action step를 일치시키고 unseen overlap/clutter를 완전 분리합니다.",
+        "baselines": "Episodic T80, non-episodic T320 alone, T320+EER, T2560+EER, curriculum with/without EER, T2560+HSR; OpenVLA & SpatialVLA separately; same PPO/LoRA hyperparams.",
+        "metrics": "Single-task success by OOD category, 4-task & 32-task strict full-sequence completion, task-index performance decay, physical reset count, EER travel distance/collision proxy, GPU interaction efficiency.",
+        "risks": "실물 robot의 end-effector pose reset은 안전한 이동/충돌 계획 없이 구현할 수 없고, heuristic HSR이 evaluation scene에 과적합할 수 있습니다. 복구에 드는 시간과 실패 위험까지 보고해야 합니다."
+      },
+      "related": [
+        "2611.05093",
+        "2504.16054",
+        "2611.05372"
+      ]
+    }
   }
 }
