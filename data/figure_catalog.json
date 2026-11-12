@@ -111,28 +111,30 @@
     ]
   },
   "2609.23578": {
-    "heading": "시각 조건부 WAM과 실제 로봇 조작",
-    "intro": "이 글은 AR-WAM: A Visual-Conditioned Agent-Ready World Action Model for Robotic Manipulation의 원본 Figure를 보며 읽는 가이드입니다. 각 그림은 저자 논문에서만 추출합니다. **캡션은 원문을 기준으로**, 아래 설명은 한국어 독해를 위해 별도로 작성했습니다.",
+    "heading": "에이전트와 월드액션 정책을 연결하는 실험",
+    "intro": "저자 공식 원문(arXiv:2609.23578)과 원본 Figure 2개를 비교했습니다. 그림은 원저자가 제공한 그대로이며 방법·한계를 설명하는 자리에서 근거로 배치합니다. 본문 한국어 설명은 독립적인 비판적 독해입니다.",
     "figures": [
       {
         "number": 1,
-        "reading_title": "관측 장면과 예측 장면의 관계",
-        "context": "시각 조건은 그럴듯한 영상 생성과 조작에 필요한 상태 변화 사이의 차이를 드러낸다.",
+        "placement": "idea",
+        "reading_title": "Figure 1 — 0.5B shared transformer의 Reasoning/World Action 경로",
+        "context": "상위 agent가 bbox+atomic skill을 주는 왼쪽과 중간의 공유 reasoning/world-action 전문가, 오프라인 훈련용 latent future-gist target(오른쪽)을 구분해야 합니다. 미래 영상 ground truth가 추론 시 입력된다고 오해하면 안 됩니다.",
         "steps": [
-          "입력이 관측 이미지인지 생성된 시각 조건인지 구분하고 행동 출력의 위치를 찾는다.",
-          "정책이 예측된 장면에 의존한다면 영상 오류가 행동으로 전달될 수 있다."
+          "DINOv3(동결), bbox/operation AdaLN, reasoning mask/pose/task abstract를 찾습니다.",
+          "훈련용 future-gist 목표와 다단계 flow-matching inference/KV-cache를 구분합니다."
         ],
-        "locator": "원문 Figure 1 / arXiv:2609.23578"
+        "locator": "원문 Fig. 1 / arXiv:2609.23578v2"
       },
       {
         "number": 2,
-        "reading_title": "조작 성공과 비디오 품질의 차이",
-        "context": "예측 영상의 지각적 정확도가 높아도 로봇 액션 성공률이 자동으로 따라오지는 않는다.",
+        "placement": "findings",
+        "reading_title": "Figure 2 — agent의 실행 결과 확인과 실패 복구",
+        "context": "원저자 그림의 핵심은 action generation 자체보다 상위 에이전트가 실패를 감지해 현재 장면에서 다시 detect·execute·query를 수행하는 루프입니다. RoboTwin 메트릭과 실제 배치에서 agent 비용이 다르다는 점을 읽는 위치에 배치합니다.",
         "steps": [
-          "평가에서 정책 성능·영상 정합성·OOD 환경을 구분해 읽는다.",
-          "저자 수치를 벤치마크가 다른 다른 논문과 직접 비교하지 않는다."
+          "집기 실패·물체 낙하 발생 후 agent가 재지정한 객체·skill이 어떻게 달라지는지 추적합니다.",
+          "RMBench agent별 성공률을 보면서 policy와 상위 VLM의 실패 원인을 분리합니다."
         ],
-        "locator": "원문 Figure 2 / arXiv:2609.23578"
+        "locator": "원문 Fig. 2 / arXiv:2609.23578v2"
       }
     ]
   },
@@ -276,28 +278,30 @@
     ]
   },
   "2503.14734": {
-    "heading": "GR00T N1의 두 시스템",
-    "intro": "이 글은 GR00T N1: An Open Foundation Model for Generalist Humanoid Robots의 원본 Figure를 보며 읽는 가이드입니다. 각 그림은 저자 논문에서만 추출합니다. **캡션은 원문을 기준으로**, 아래 설명은 한국어 독해를 위해 별도로 작성했습니다.",
+    "heading": "GR00T N1의 학습 데이터 피라미드와 듀얼 시스템",
+    "intro": "저자 공식 원문(arXiv:2503.14734)과 원본 Figure 2개를 비교했습니다. 그림은 원저자가 제공한 그대로이며 방법·한계를 설명하는 자리에서 근거로 배치합니다. 본문 한국어 설명은 독립적인 비판적 독해입니다.",
     "figures": [
       {
         "number": 1,
-        "reading_title": "대규모 데이터 피라미드",
-        "context": "사람 영상·합성 궤적·시뮬레이션·실제 로봇 데이터를 함께 쓰는 이유는 각 소스가 부족한 경험 범위를 메우기 때문이다.",
+        "placement": "idea",
+        "reading_title": "Figure 1 — 서로 다른 물리·비디오 데이터가 쌓이는 피라미드",
+        "context": "저자 원본은 아래쪽 데이터일수록 양이 많고 embodiment specificity가 낮고, 위쪽으로 갈수록 특정 로봇 행동에 직접 대응하는 비중이 커지는 구조를 그립니다. 이는 실험 수치가 아닌 학습 자료의 구성 원리입니다.",
         "steps": [
-          "어떤 데이터에 실제 로봇 action label이 존재하는지 확인한다.",
-          "인간 영상과 로봇 명령 데이터는 같은 감독 신호가 아니다."
+          "대규모 인간 비디오/합성 영상과 적은 실제 로봇 시연을 별도 층으로 구별합니다.",
+          "그림의 데이터 층을 출발점으로 §2.2/§3의 latent action·IDM 가상 라벨을 연결합니다."
         ],
-        "locator": "원문 Figure 1 / arXiv:2503.14734"
+        "locator": "원문 Figure 1 / arXiv:2503.14734v2"
       },
       {
         "number": 2,
-        "reading_title": "VLM과 DiT 액션 생성 경로",
-        "context": "저자 Figure 2의 System 2는 영상/텍스트를 의미적으로 해석하고 System 1의 DiT가 로봇 상태를 바탕으로 연속 행동을 생성한다.",
+        "placement": "method",
+        "reading_title": "Figure 2 — VLM System 2에서 DiT System 1으로",
+        "context": "이미지·언어 입력은 Eagle-2 쪽에서 표현되고, robot state 및 noisy action은 embodiment별 인코더를 거쳐 DiT flow-matching action generation으로 들어갑니다. 16-step chunk와 closed-loop 재추론을 설명할 때 참고해야 할 원본 개요입니다.",
         "steps": [
-          "VLM 토큰이 어떻게 action module을 조건화하는지, embodiment별 인코더는 어디 있는지 찾는다.",
-          "해당 모델의 속도 수치는 지정 하드웨어와 액션 청크 조건에서만 비교한다."
+          "System 2의 이미지·텍스트 토큰과 System 1의 로봇 상태·행동 토큰을 따라갑니다.",
+          "본문 §2.1의 Eagle-2, robot-specific MLP, H=16을 Figure와 함께 읽습니다."
         ],
-        "locator": "원문 Figure 2 / arXiv:2503.14734"
+        "locator": "원문 Figure 2 / arXiv:2503.14734v2"
       }
     ]
   },
@@ -418,28 +422,30 @@
     ]
   },
   "2403.12945": {
-    "heading": "DROID 데이터가 다양한 이유",
-    "intro": "이 글은 DROID: A Large-Scale In-The-Wild Robot Manipulation Dataset의 원본 Figure를 보며 읽는 가이드입니다. 각 그림은 저자 논문에서만 추출합니다. **캡션은 원문을 기준으로**, 아래 설명은 한국어 독해를 위해 별도로 작성했습니다.",
+    "heading": "시연 수보다 데이터의 장면 다양성이 중요한 이유",
+    "intro": "저자 공식 원문(arXiv:2403.12945)과 원본 Figure 2개를 비교했습니다. 그림은 원저자가 제공한 그대로이며 방법·한계를 설명하는 자리에서 근거로 배치합니다. 본문 한국어 설명은 독립적인 비판적 독해입니다.",
     "figures": [
       {
         "number": 1,
-        "reading_title": "실제 장소에서 모은 로봇 시연",
-        "context": "Figure 1은 DROID 수집·분석 개요다. 실험실의 좁은 장소를 벗어나 다양한 환경에서 조작 데이터를 모으는 것이 핵심이다.",
+        "placement": "idea",
+        "reading_title": "Figure 1 — DROID verbs·objects의 long-tail 분포",
+        "context": "윗부분은 중복 정리된 동작 동사 분포, 아래는 조작한 물체를 범주별로 정리한 분포입니다. '86개의 과제 각각에서 정책이 성공한다'는 의미가 아니라 학습 데이터의 작업 다양성 근거입니다.",
         "steps": [
-          "수집 장치·카메라·언어 주석·관절과 그리퍼 기록의 관계를 살핀다.",
-          "동일 환경 반복 수집이 실제 장면 다양성을 대신하지 않는다."
+          "학습 데이터 객체·동작 분포를 따로 읽고 레어 클래스가 존재하는지 확인합니다.",
+          "§V의 실제 성공률 시험은 전체 86 verbs가 아니라 6 task에서 수행됐음을 구분합니다."
         ],
-        "locator": "원문 Figure 1 / arXiv:2403.12945"
+        "locator": "원문 Fig. 1 / arXiv:2403.12945v2"
       },
       {
         "number": 2,
-        "reading_title": "장소 유형의 분포",
-        "context": "Figure 2는 장면 유형별 장면 수를 비교한다. 집·사무실 등 환경의 차이는 정책이 다양한 배경을 학습하도록 돕는다.",
+        "placement": "method",
+        "reading_title": "Figure 2 — 564 workspace를 다양한 scene type으로 분포화",
+        "context": "저자는 kitchen, office 등 실제 로봇이 위치한 작업공간 유형별 scene 수를 시각화했습니다. 같은 책상에서 물건만 옮긴 것을 새 scene으로 세지 않으며 Appendix D의 중복 검수 규칙과 연결됩니다.",
         "steps": [
-          "단순 총 에피소드 수보다 고유 장면 수와 데이터 분포에 주목한다.",
-          "데이터가 많다는 사실만으로 미지 물체 제어의 성공률을 보장하지 않는다."
+          "Figure2의 장소 유형 다양성을 원본 Table I의 564 scenes와 연결합니다.",
+          "20 scenes 대 diverse scenes의 동량 Fig.8 ablation을 읽기 전에 scene 정의를 확정합니다."
         ],
-        "locator": "원문 Figure 2 / arXiv:2403.12945"
+        "locator": "원문 Fig. 2 / arXiv:2403.12945v2"
       }
     ]
   },

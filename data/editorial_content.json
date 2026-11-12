@@ -3367,5 +3367,489 @@
         "2611.05372"
       ]
     }
+  },
+  "2503.14734": {
+    "summary_ko": "GR00T N1은 언어·영상의 과제 이해(System 2)와 고주파 로봇 행동 생성(System 1)을 결합한 휴머노이드 VLA입니다. 데이터 피라미드·16-step flow-matching, 서로 다른 embodiment의 상태·행동 인코더, RoboCasa/DexMG/GR-1의 비교 실험과 원문 Appendix D/F까지 분석합니다.",
+    "reading_minutes": 36,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-12",
+    "editorial_published_at": "2026-11-12",
+    "primary_category": "vla",
+    "source_scope_ko": "arXiv:2503.14734v2 공식 HTML §2 아키텍처/학습, §3 데이터, §4 시뮬레이션·실물 평가의 Tables 2·3, Appendix B/D/E/F 및 저자 Figure 1·2를 원문과 대조함. 성능 수치는 저자 보고이며 독립 재현이 아님.",
+    "abstract": "GR00T N1은 언어·영상의 과제 이해(System 2)와 고주파 로봇 행동 생성(System 1)을 결합한 휴머노이드 VLA입니다. 데이터 피라미드·16-step flow-matching, 서로 다른 embodiment의 상태·행동 인코더, RoboCasa/DexMG/GR-1의 비교 실험과 원문 Appendix D/F까지 분석합니다.",
+    "review": {
+      "one_line": "**GR00T N1은 범용 휴머노이드의 두 난제를 동시에 다룹니다.** 이미지를 보고 과제를 해석하는 VLM과 매 순간 관절·그리퍼 행동을 만드는 DiT를 분리하면서, 데이터가 적은 개별 몸체로 전이할 수 있도록 다양한 소스의 훈련 신호를 합칩니다. (원문 §2–4)",
+      "problem": "사람의 '왼쪽 선반에 용기를 넣으세요'라는 지시를 로봇이 듣는 상황을 생각해 보겠습니다. 지시의 물체·도착 위치를 이해하는 일과 손가락 압력·양팔 이동을 10여 밀리초 단위로 갱신하는 일은 서로 다른 계산 문제입니다. 단일 로봇 시연은 수집 비용이 매우 비싸고, 로봇별 관절 수·카메라·행동 표현이 달라 같은 학습 데이터로 묶기 어렵습니다. 기존 Diffusion Policy를 특정 과제에 처음부터 훈련하면 새로운 물체·환경·데이터 부족 상황에서 약해집니다. (서론, §2)",
+      "idea": "**직관적인 사례:** 팔로 컵을 잡아 다른 손에 넘길 때, System 2가 '컵을 잡아 상대 손에 건네야 한다'는 장면·언어 맥락을 인코딩하고 System 1이 해당 로봇의 상태에서 16개의 연속 행동 후보를 복원합니다. Eagle-2 VLM 토큰과 로봇별 상태/행동 인코더를 DiT에서 결합하므로 같은 개념적 정책도 Franka 단팔·양팔 Panda·GR-1 휴머노이드 등 상이한 구동 인터페이스로 전이될 수 있습니다. 다만 '아무 로봇에서나 즉시 작동'한다는 주장은 아닙니다. (Figure 2, §2.1)",
+      "method": "출발은 인터넷으로 사전학습된 Eagle-2 비전언어 모델이며 공개 GR00T-N1-2B 체크포인트는 총 2.2B(그중 VLM 1.34B)입니다. 영상과 텍스트 토큰이 System 2에서 처리되고, proprioception과 noised action을 embodiment별 MLP가 공통 임베딩으로 투영합니다. DiT의 cross-attention이 VLM 정보를 참조해 flow matching으로 길이 H=16 행동 chunk를 반복 디노이징합니다. 데이터 피라미드는 하단의 대량 인간 비디오·합성 영상 및 가상 행동, 그 위의 로봇 시연 등 출처와 embodiment 적합도가 다른 데이터를 조합합니다. 학습은 광범위 사전학습 후 목표 로봇/과제의 소규모 post-training으로 이어지며 일부 비디오에는 latent action 또는 inverse dynamics로 얻은 pseudo-action을 부여합니다. (Figure 1–2, §2–3, Appendix F)",
+      "findings": "**Table 2, 100 demonstrations/task**에서 RoboCasa(24 과제)·DexMG(9 과제)·GR-1 시뮬레이션(24 과제) 성공률은 GR00T N1 32.1%/66.5%/50.0%, Diffusion Policy 25.6%/56.1%/32.7%, BC Transformer 26.3%/53.9%/16.1%입니다. 저자가 제시한 통합 Average는 각각 45.0%/33.4%/26.4%이며 세 열의 단순 산술평균이 아닙니다. **Table 3, 실제 GR-1**에서는 실물 전체 학습데이터 기준 76.8% 대 Diffusion Policy 46.4%, 10% 데이터 조건 42.6% 대 10.2%입니다. Figure 9의 neural trajectory 후속학습 성능 향상은 모델 학습 데이터가 달라진 추가 실험이지 System1/2 단독 효과를 증명하는 순수 ablation이 아닙니다. (원문 §4, Table 2·3, Fig.9)",
+      "limitations": "이 연구는 실험대 수준의 선택된 조작 과제와 제한된 로봇 구성에 대한 저자 실험입니다. 휴머노이드의 자유로운 보행·전신 안전이나 미지의 모든 환경 일반화를 증명하지 않습니다. System 2를 약 10Hz, System 1을 120Hz로 기술하지만 특정 GPU·스트림/하드웨어 조건이며 '모든 로봇에서 120Hz 보장'이 아닙니다. 사전학습·합성영상·후속학습을 동시에 바꾸면 어느 요소가 유효했는지 분리하기 어렵습니다. 11.5/15의 76.6%는 부분 점수 0.5가 포함된 저자 정의이므로 11.5회의 binary 완전 성공이 아닙니다. 원문 비교에는 데이터 출처·로봇 embodiment별 confound가 남습니다.",
+      "questions": [
+        "Figure 2의 DiT가 System 2 영상·언어 토큰을 언제 cross-attend하며 H=16 chunk 재계산 지연에 어떤 영향을 주는가?",
+        "Appendix D의 pre/post batch 규모 변화가 데이터 효율·과적합에 미치는 영향을 동일 steps 조건에서 분리할 수 있는가?",
+        "실물 Table 3의 그룹 평균과 pre-training의 부분 성공(11.5/15)을 혼합해 보도하면 어떤 해석 오류가 생기는가?",
+        "Latent action/IDM pseudo-action 품질이 낮은 인간 비디오를 넣었을 때 negative transfer가 나타나는가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**읽기 포인트:** GR00T N1의 본질은 'VLM + DiT'라는 부품 목록보다, 이종 데이터의 비균일한 행동 정의를 **구조가 다른 로봇에 재사용 가능한 정책**으로 바꾸는 인터페이스와 학습 단계입니다. Figure 1의 데이터 피라미드, Figure 2의 두 모듈, Table 2·3의 독립 평가 단위를 차례로 읽겠습니다. (arXiv v2 §2–4, Appendix B/D/F)",
+      "pipeline": [
+        {
+          "title": "01. 서로 다른 종류의 데이터에 역할 부여",
+          "detail": "실제 로봇 demonstration은 해당 몸체의 센서·제어 기준에 정렬되지만 규모가 작고, 인간 비디오와 합성 비디오는 크지만 직접적인 로봇 action이 부족합니다. 데이터 피라미드는 양이 많은 약한 신호와 양이 적은 몸체별 정밀 신호의 층위를 묘사합니다. 이를 '모든 영상에 정확한 로봇 행동이 있다'고 해석하면 안 됩니다. (Fig.1, §2.2–3)",
+          "io": "real demos + human video + simulation + neural trajectories"
+        },
+        {
+          "title": "02. 영상에 학습 가능한 행동 신호 붙이기",
+          "detail": "인간 비디오나 생성된 영상은 로봇 관절 각도 정답이 없으므로 latent action model 또는 inverse dynamics model(IDM)이 시각 상태 변화에서 행동 유사 라벨을 추정합니다. 이 라벨은 실제 물리적 제어값의 완전한 ground truth가 아닙니다. 후속학습 시 neural trajectory의 추가 전이 효과를 별도로 평가합니다. (§2.2, Appendix F)",
+          "io": "unlabeled visual transition → latent / IDM pseudo-action"
+        },
+        {
+          "title": "03. Eagle-2 System 2에서 장면과 지시 인코딩",
+          "detail": "224×224 이미지 패치와 자연어를 Eagle-2 VLM에 입력해 언어적 목표·물체 맥락이 있는 토큰을 얻습니다. 공개 N1-2B는 총 2.2B 중 VLM 1.34B, System 2가 정책 출력과 독립된 자동 계획기를 실행한다는 뜻은 아닙니다. (§2.1)",
+          "io": "observations + instruction → multimodal context tokens"
+        },
+        {
+          "title": "04. Embodiment별 상태와 행동을 공유 공간으로 변환",
+          "detail": "로봇마다 관절 수·end-effector 제어·그리퍼가 달라서 state/action을 동일한 벡터 길이로 무조건 덧붙일 수 없습니다. 각각의 MLP encoder/decoder를 두어 공유 DiT가 쓰는 토큰 공간으로 바꾸고, diffusion time을 noisy action에 조건화합니다. (Fig.2, §2.1, Appendix E)",
+          "io": "robot-specific state/action MLP → shared action tokens"
+        },
+        {
+          "title": "05. DiT flow matching으로 16-step 행동 chunk 생성",
+          "detail": "DiT는 VLM 토큰에 cross-attention하고 robot state+noise를 받아 denoising을 반복해 H=16 액션을 생성합니다. 논문 보고 16-action chunk 생성에 L40 bf16 약 63.9ms이며 로봇 제어 파이프라인 전체의 네트워크·센서 지연은 포함하지 않습니다. (§2.1, Figure 2)",
+          "io": "noisy 16-step actions + VLM context → denoised actions"
+        },
+        {
+          "title": "06. 사전학습→로봇별 후속학습→평가 조건 분리",
+          "detail": "광범위 데이터로 사전학습한 뒤, RoboCasa·DexMG·GR-1 각 task별 30/100/300 시연 조건에서 미세조정합니다. Appendix D의 pretrain batch 16,384/200k steps와 posttrain batch 128 또는 1,024/20–60k steps를 섞어 단일 동일 예산 실험으로 기술하지 않습니다. (§4.4, Appendix D)",
+          "io": "generalist checkpoint → target-embodiment adaptation"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "System 2/1은 느린 '말'과 빠른 '손'의 조합",
+          "body": "언어 이해와 모터 제어가 필요한 temporal frequency가 다릅니다. 논문은 System 2 10Hz(L40 기준), System 1 120Hz로 설명하지만 모델 모듈의 동작 설명이지 두 개의 독립 CPU 프로세스 성능을 약속하는 수치가 아닙니다.",
+          "watch": "실물은 실제 제어 주기/trajectory execution/replanning latency를 함께 측정합니다."
+        },
+        {
+          "title": "H=16 flow matching과 diffusion policy baseline의 차이",
+          "body": "두 접근 모두 미래 action chunk를 생성할 수 있으나 GR00T는 VLM 의미 토큰과 robot-specific state/action을 함께 조건화하고 pretraining의 이득을 목표 로봇에 전이합니다. 단지 확산모델을 사용했다는 점만으로 새로운 것은 아닙니다.",
+          "watch": "Table2에서 training demos/task=100 고정, 환경 구성/백본/학습단계를 비교합니다."
+        },
+        {
+          "title": "Data pyramid와 pseudo-actions의 trade-off",
+          "body": "인간 행동을 로봇에 매핑할 때 embodiment mismatch가 생깁니다. Latent action이나 IDM 라벨은 대량 영상의 temporal affordance를 활용하는 우회로지만, physical contact fidelity까지 갖춘 것은 아닙니다.",
+          "watch": "원본 비디오/latent/IDM를 동일 데이터량·학습 compute로 ablate해야 합니다."
+        },
+        {
+          "title": "Figure9 neural trajectory 향상은 어떤 비교인가",
+          "body": "RoboCasa에서 실험 데이터 30/100/300 조건에 3k neural trajectories/task를 추가하고, 실물에서는 100 neural trajectories/task를 추가합니다. 저자는 각각 +4.2/+8.8/+6.8pp 및 8개 실물 tasks 평균 +5.8pp를 보고합니다.",
+          "watch": "라벨 종류와 추가 학습 예산이 동시에 달라진 조건을 분리합니다."
+        },
+        {
+          "title": "부분 성공과 strict task success의 구분",
+          "body": "실물 처음 보는 대상에 대한 pretrain-only 11.5/15는 grasp는 했으나 place 실패 시 0.5를 준 결과입니다. strict 성공 11.5건이라고 부르면 잘못된 성공률 해석입니다.",
+          "watch": "Appendix B 및 §4.4 평가단위와 fractional scoring을 함께 기록합니다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "모델/§2.1",
+          "value": "GR00T N1-2B 2.2B",
+          "context": "Eagle-2 VLM 1.34B; action chunk H=16; L40 bf16 inference 63.9ms/16 actions"
+        },
+        {
+          "metric": "시뮬레이션/Table2 RoboCasa",
+          "value": "32.1% / DP 25.6%",
+          "context": "24 tasks, 100 demonstrations/task; BC Transformer 26.3%"
+        },
+        {
+          "metric": "시뮬레이션/Table2 DexMG",
+          "value": "66.5% / DP 56.1%",
+          "context": "9 cross-embodiment tasks; BC Transformer 53.9%"
+        },
+        {
+          "metric": "시뮬레이션/Table2 GR-1",
+          "value": "50.0% / DP 32.7%",
+          "context": "24 simulation tasks; BC Transformer 16.1%"
+        },
+        {
+          "metric": "Table2 저자 통합 평균",
+          "value": "45.0% / DP 33.4%",
+          "context": "서로 다른 과제 수를 고려한 저자 제시 평균; 세 열 단순 산술평균 아님"
+        },
+        {
+          "metric": "실제 GR-1/Table3 10%",
+          "value": "42.6% / DP 10.2%",
+          "context": "같은 10% teleoperation dataset 조건, category 평균"
+        },
+        {
+          "metric": "실제 GR-1/Table3 Full",
+          "value": "76.8% / DP 46.4%",
+          "context": "로봇 실제 tabletop manipulation; 4 categories"
+        },
+        {
+          "metric": "실물 pretrain-only 평가",
+          "value": "11.5/15 및 11/15",
+          "context": "두 task, 객체별 3회×5개; 첫 점수는 부분 성공 0.5 포함"
+        },
+        {
+          "metric": "Appendix D / 학습",
+          "value": "200k vs 20k–60k steps",
+          "context": "pretrain batch16,384; posttrain 128/1024; AdamW lr1e-4"
+        }
+      ],
+      "evidence_note": "Table2의 100 demo/task 시뮬레이션과 Table3의 실물 데이터 비율은 다릅니다. 각 성능은 연구진 평가이고 범용 무조건적 성공률이 아닙니다. Figure 9의 neural-trajectory gain은 추가 데이터를 넣은 실험임을 표시합니다.",
+      "comparison": "기존 per-task Diffusion Policy나 BC Transformer가 로봇마다 적은 데이터를 처음부터 학습한다면, GR00T는 인터넷 이미지·언어 사전학습을 가진 System2와 embodiment별 encoder가 붙은 System1 DiT를 결합하고 이종 비디오/로봇데이터로 pretrain합니다. 그러나 공정한 비교를 위해 목표 task 데모 수·설정뿐 아니라 사전학습 규모/compute도 기록해야 하며, Figure1의 데이터 피라미드가 causal ablation 결과인 것처럼 해석하지 않습니다.",
+      "reading_guide": [
+        "원문 Figure1의 피라미드는 데이터 *수량과 embodiment 특이성*을 표시한다는 점을 확인하고 데이터 출처에 행동 라벨이 있는지 점검합니다.",
+        "Figure2의 System2 Eagle-2와 System1 DiT 사이 정보 흐름 및 robot-specific action encoder/decoder를 추적합니다.",
+        "Table2의 세 벤치마크 과제 수(24/9/24)와 100 demos/task 기준을 표시합니다.",
+        "Table3의 10% vs Full data 비교에서 각 category와 보고 평균의 계산 단위를 확인합니다.",
+        "Appendix D Table6의 batch/steps/optimizer와 Appendix F의 pseudo-action supervision을 분리합니다.",
+        "Figure9의 추가 neural trajectories에서 양과 라벨 품질을 고정한 검증 실험이 더 필요함을 기록합니다."
+      ],
+      "replication": {
+        "hypothesis": "같은 목표로봇 학습 예산에서 사전학습된 System2·DiT와 비디오기반 pseudo-action 학습을 같이 쓰면 low-data 실물 task 성공률이 개선되지만, pseudo-action의 domain mismatch가 심하면 이득이 약해집니다.",
+        "setup": "RoboCasa 24 tasks와 GR-1 tabletop 하위 4 categories에서 30/100/300 demos per task, 3 seeds, 원본 hyperparameters의 action horizon16/optimizer 유지, 목표 객체 OOD split 고정; 실제 로봇에는 안전 중단 스위치와 latency 모니터링을 둡니다.",
+        "baselines": "DP from scratch, BC Transformer, GR00T pretrained+target fine-tune, frozen System2, no human video, no IDM neural trajectories, same-sized synthetic trajectory augmentation.",
+        "metrics": "strict whole-task success, partial progress(별도), category macro & task-weighted average, sample efficiency, p50/p95 action inference, GPU-hours, 안전 정지 횟수.",
+        "risks": "대형 VLM pretraining compute와 합성영상 비용 차이를 동일 fine-tuning data로 가려서는 안 됩니다. 11.5/15의 fractional partial credit은 strict success에서 제외하고, 실물 실패도 보존합니다."
+      },
+      "related": [
+        "2504.16054",
+        "2410.24164",
+        "2406.09246"
+      ]
+    }
+  },
+  "2609.23578": {
+    "summary_ko": "AR-WAM은 상위 AI 에이전트와 로봇 정책 사이의 언어 중복을 없애고, bounding box+operation token으로 원자 skill을 실행하는 0.5B latent World-Action Model입니다. RoboTwin 2.0의 clean/randomized·RMBench 기억 과제·실물 Astribot S1, 구성요소 ablation과 4090 지연을 PDF Table I–VI로 대조합니다.",
+    "reading_minutes": 38,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-12",
+    "editorial_published_at": "2026-11-12",
+    "primary_category": "wam",
+    "source_scope_ko": "arXiv:2609.23578v2 공식 8쪽 PDF §I–V, Figures 1–2 및 Tables I–VI의 평가/ablation/지연과 저자 원본 HTML figure caption 검증. 이 버전에 별도 Appendix는 없으며 결과는 저자 측 보고입니다.",
+    "abstract": "AR-WAM은 상위 AI 에이전트와 로봇 정책 사이의 언어 중복을 없애고, bounding box+operation token으로 원자 skill을 실행하는 0.5B latent World-Action Model입니다. RoboTwin 2.0의 clean/randomized·RMBench 기억 과제·실물 Astribot S1, 구성요소 ablation과 4090 지연을 PDF Table I–VI로 대조합니다.",
+    "review": {
+      "one_line": "**AI 에이전트가 이미 지시를 이해했다면 하위 로봇 정책이 다시 자연어를 처리해야 할까요?** AR-WAM은 목표 객체 bbox와 원자적 operation token만을 정책 입력으로 넘기고, 에이전트가 기억·재시도·작업 분해를 담당하게 합니다. (PDF §I–III)",
+      "problem": "두 개의 비슷한 흰 병이 놓인 책상에서 '오른쪽 병을 두 번 들어 주세요'라는 지시를 받는다고 가정하겠습니다. 상위 에이전트는 사진으로 어떤 병인지 알았어도, 하위 VLA에 다시 문장으로 전달하면 물체 참조가 불분명해지거나 이미 수행한 자연어 이해를 중복합니다. 또한 집기 실패 시 무엇이 잘못됐는지(에이전트의 의도인지 로봇의 운동 실행인지) 구분하기 어렵습니다. 기존 거대 VLA/WAM의 언어 조건이 상위 agent와 저수준 정책 사이의 병목이 되는지 문제를 제기합니다.",
+      "idea": "에이전트는 '저 병'의 **픽셀 bounding box g**와 '집기' 같은 **학습형 skill token s**를 제공합니다. 하위 로봇은 bbox로 목표 물체를 식별하고 operation token으로 수행할 조작 유형을 선택하며, 0.5B 세계-행동모델이 현 영상·proprioception에서 action chunk를 생성합니다. 결과를 query로 다시 살펴 실패라면 상위 에이전트가 재계획·재실행합니다. Figure 1은 reasoning head, future gist, action expert를 함께 보여주며 Figure 2는 실제로 실패가 일어났을 때 재시도하는 agent-policy loop입니다.",
+      "method": "0.5B는 **동결된 DINOv3 비전 인코더 약 0.3B와 0.2B Transformer**를 합친 규모입니다. Reasoning expert와 World Action Expert가 transformer를 공유하며, 작은 bbox-embedding 및 skill embedding이 AdaLN conditional modulation으로 통합됩니다. Reasoning head는 대상 mask, 양팔 end-effector 목표, task abstract를 감독합니다. 보조 foresight-gist extractor는 관측 두 시점에서 학습 목표를 만들어 주지만, 추론 시 미래 정답 영상을 요구하지 않습니다. Action expert는 action/foresight/reasoning gist를 flow matching 기반으로 학습하고 KV cache를 재사용합니다. detect·execute·query는 에이전트의 인터페이스이며 homing 등 보조 이동은 별도 고전적 계획기로 처리합니다. (PDF §III, Figure 1)",
+      "findings": "RoboTwin 2.0 Table I: **10개 양팔 과제, 과제·setting별 50회**에서 AR-WAM clean 87.2%, randomized 84.2%, Fast-WAM 87.8%/82.5%입니다. clean에서는 Fast-WAM에 0.6%p 뒤지고 randomized에서는 1.7%p 앞섭니다. Table II: Text만 조건화 74.2%, reasoning 제거79.4%, foresight 제거78.6%, future patch target76.4%, 완전모델87.2%(같은 RoboTwin clean 기준). Table IV RMBench M(n)에서는 agent Kimi-K3 **52.5%**, Qwen3.8-27B **63.5%**로 agent 성능도 변수입니다. Table V 실물 Astribot S1 3과제 20회씩, 각 100건 실제 expert demo로 추가 학습: 70/65/80%, 평균71.7%; π0.5 평균35%. Table VI 단일 RTX 4090 bf16 모델 chunk latency는14.09ms입니다. 동일 실험으로 묶어 비교하면 안 됩니다.",
+      "limitations": "물체 bbox가 틀리거나 작은 물체가 겹치면 정책의 semantic condition도 틀리며, RMBench M(1)에서는 메모리강화 Cortex의 75.2%보다 Kimi 71.2%로 낮습니다. 'Swap T'에서도 개선이 없고, 조작 어휘는 케이블 끼우기 등 세밀한 접촉에 부족합니다. 실제 로봇은 시뮬레이션 정책을 **100 시연/과제 추가 미세조정**했으므로 zero-shot sim2real 아님을 분명히 합니다. 14.09ms는 agent detector·API 지연·로봇 운동 시간 미포함이며, AdaLN 대 cross-attention 비교는 파라미터 수(0.50B/0.44B)가 달라 순수 동일용량 causal test가 아닙니다.",
+      "questions": [
+        "실시간 bounding box 오차가 늘면 Table II의 언어대비 13pp 차이가 유지되는가?",
+        "Reasoning/foresight 제거 실험은 서로 독립적인 편익인가, 함께 넣었을 때 상호작용하는가?",
+        "상위 agent를 고정하고 policy만 바꿔 RMBench M(n) 성공률이 달라지는지 재검증하려면?",
+        "실제 end-to-end detect→execute→query 지연과 손 재배치(homing) 비용을 포함하면 추론 효율 우위가 얼마나 남을까?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**핵심 주장과 검증 경계:** 이 논문은 거대한 언어모델을 소형 모델로 압축했다는 이야기보다, 상위 agent와 실행 policy 사이에서 **의도/대상/행동을 어떤 인터페이스로 전달해야 하는가**를 실험합니다. PDF Figure1의 구성요소를 읽고, Table I(로봇 조작), II–III(ablation), IV(에이전트 기억), V(실물), VI(추론 지연)을 서로 다른 평가로 분리합니다.",
+      "pipeline": [
+        {
+          "title": "01. 에이전트가 자연어를 해석하고 목표 객체 선택",
+          "detail": "상위 VLM agent는 사용자의 작업을 원자 skill로 분해한 뒤 현재 RGB 관측의 대상 bbox와 pick/place/click/handover 같은 operation token을 지정합니다. Spatial grounding이 완벽하다거나 로봇이 원문 텍스트를 재처리한다는 뜻은 아닙니다. (PDF §III-A/E)",
+          "io": "agent: language+history → target bbox g + operation s"
+        },
+        {
+          "title": "02. 고정 DINOv3로 시각 표현과 목표 조건 구성",
+          "detail": "관측 이미지는 동결 0.3B DINOv3로 인코딩합니다. bbox는 경량 MLP로 embedding이 되고 operation·actor/arm·style condition과 결합해 AdaLN으로 transformer에 주입됩니다. 고정 비전 인코더와 실행 정책을 구별합니다. (PDF §III-B, Figure 1)",
+          "io": "RGB + bbox + skill + proprioception → condition tokens"
+        },
+        {
+          "title": "03. Reasoning expert: 정답 감독이 있는 의도 중간출력",
+          "detail": "Shared 0.2B transformer 안의 reasoning expert는 목적 객체 mask, 양팔 종료 pose, one-hot task abstract를 예측하도록 훈련받습니다. 이는 inference에서 매번 LLM text thought를 생성하는 것이 아니라 시각적 의도와 조작 목표를 감독하기 위한 조건 출력입니다. (§III-B)",
+          "io": "object mask + end-effector target + task abstract"
+        },
+        {
+          "title": "04. Latent foresight gist를 보조 목표로 학습",
+          "detail": "시연의 시간적으로 떨어진 두 RGB 프레임을 frozen visual encoder와 offline future-gist model로 압축해 future state가 어떻게 변화하는지 학습 목표를 구성합니다. Future gist는 예측할 latent target이지 미래를 실제 관측하거나 test-time video diffusion을 돌리는 것이 아닙니다. (Figure 1, §III-B/C)",
+          "io": "observed demonstration future → compact training target"
+        },
+        {
+          "title": "05. World Action Expert가 action chunk를 flow matching",
+          "detail": "현재 상태와 입력 조건, noisy action, reasoning/foresight latent guidance를 공유 transformer가 함께 처리해 action chunk를 denoise합니다. Reasoning expert의 KV cache를 활용해 반복 ODE 단계에서 조건 부분의 중복 연산을 줄입니다. (PDF §III-C, Figure 1)",
+          "io": "noisy action → multi-step denoising → motion action chunk"
+        },
+        {
+          "title": "06. detect·execute·query로 메모리와 실패 복구 분리",
+          "detail": "상위 agent는 실행 이후 대상 위치와 결과를 다시 질의하여 기억 상태를 갱신합니다. 집기가 실패하거나 물체를 떨어뜨리면 Figure 2처럼 현재 관측에서 새 bbox와 skill을 지정해 재시도합니다. 필요시 homing은 classical planning; learned action policy 성능과 다른 시스템 구성요소입니다. (§III-E, Figure 2)",
+          "io": "observe → detect → execute → query → replan / retry"
+        },
+        {
+          "title": "07. 평가: agent-independent / agent-dependent / real robot 구분",
+          "detail": "RoboTwin 2.0에서는 state-machine expert와 검출기로 상위 agent 변동을 통제합니다. RMBench에서는 Kimi-K3/Qwen3.8-27B의 memory reasoning이 성능에 영향을 줍니다. Astribot S1은 실제 demo 100개/task post-training 후 평가합니다. 이 셋의 성공률은 다른 정의입니다. (§IV-A–E)",
+          "io": "simulation clean/randomized → RMBench memory → S1 20-trial real eval"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "Text condition 대비 bounding box 효과",
+          "body": "Table II Text-only 모델 평균74.2%와 VP 모델87.2%는 같은 학습 스케줄의 RoboTwin 시험이며 -13.0%p 차이입니다. 그러나 bbox 생성기의 오류가 실제 배포 성능에 그대로 들어갈 수 있으므로 '텍스트는 모든 로봇에서 필요 없다'가 아닙니다.",
+          "watch": "Detection confidence·oracle bbox 조건을 별도 ablation으로 나눕니다."
+        },
+        {
+          "title": "Reasoning head가 학습하는 정보",
+          "body": "Target mask는 bbox보다 정밀한 객체 영역, end-effector target pose는 양팔 실행 목표, task abstract는 skill 상태를 감독합니다. 학습한 내부 의도가 실제 행동의 원인인지 확인하려면 제거 ablation 및 오류 사례를 같이 봐야 합니다.",
+          "watch": "Table II w/o reasoning 79.4 vs full 87.2, 같은 지표 단위임을 확인."
+        },
+        {
+          "title": "Future gist를 patch로 대체하면 왜 나빠지나",
+          "body": "Future patch target은 시각적 상세 정보와 운동에 불필요한 variation까지 학습하므로 TableII에서 76.4%, 미래 gist는87.2%로 차이납니다. 시각화가 더 선명해서 제어가 더 좋은 건 아니며 inference-time 미래 정답이 필요한 방식도 아닙니다.",
+          "watch": "Figure1의 offline gist extraction 부분과 테스트 추론 경로를 구분합니다."
+        },
+        {
+          "title": "AdaLN과 cross-attention의 속성 차이",
+          "body": "Table III(b)의 AdaLN87.2%, Cross73.4%, 파라미터0.50B 대0.44B. 논문은 condition perturbation 감도 분석을 함께 제시하지만 용량·토큰 경로가 달라 학습 예산을 추가 통제할 필요가 있습니다.",
+          "watch": "proprioception shortcut에 대한 sensitivity를 입력 변경량/동일 random seed로 비교합니다."
+        },
+        {
+          "title": "Long-horizon memory는 하위 정책이 아닌 agent의 책임",
+          "body": "RMBench M(n)에서 Kimi 52.5/Qwen63.5 vs Goal2Skill38.7%인 반면 M(1)은 Cortex75.2%가 더 좋습니다. Agent 모델과 detector의 차이가 생길 수 있으므로 0.5B 자체의 memory 능력이라고 서술해서는 안 됩니다.",
+          "watch": "두 에이전트의 prompt/grounding/detect 조건을 고정한 실험을 제안합니다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "Table I / RoboTwin2.0 Clean",
+          "value": "AR 87.2% / Fast-WAM 87.8%",
+          "context": "10 tasks, each 50 trials per setting; clean 비교에서 최상위 아님"
+        },
+        {
+          "metric": "Table I / RoboTwin2.0 Random",
+          "value": "AR 84.2% / Fast-WAM 82.5%",
+          "context": "동일 10 tasks, 각 50 trials, randomized setting"
+        },
+        {
+          "metric": "Table II / conditioning ablation",
+          "value": "VP 87.2% / Text 74.2%",
+          "context": "동일 백본·데이터·schedule, full model 기준 −13.0pp"
+        },
+        {
+          "metric": "Table II / internal ablation",
+          "value": "No reasoning 79.4%; no foresight 78.6%",
+          "context": "complete model 87.2%; 각 독립 제거 실험"
+        },
+        {
+          "metric": "Table II / foresight target",
+          "value": "Patch 76.4% / Gist 87.2%",
+          "context": "future patch target과 compressed gist objective 비교"
+        },
+        {
+          "metric": "Table III(b) / modulation",
+          "value": "AdaLN87.2% / Cross73.4%",
+          "context": "params0.50B vs0.44B, 순수 동일 파라미터 대조는 아님"
+        },
+        {
+          "metric": "Table IV / RMBench M(n)",
+          "value": "AR Kimi52.5% / Qwen63.5%",
+          "context": "50 trials/task; Goal2Skill38.7%; agent model effects"
+        },
+        {
+          "metric": "Table V / Astribot S1",
+          "value": "AR71.7% / π0.5 35.0%",
+          "context": "3 real tasks, 20 trials/task; task당 100 실물 시연 fine-tune"
+        },
+        {
+          "metric": "Table VI / RTX4090 bf16",
+          "value": "14.09ms / chunk",
+          "context": "π0.5 62.09ms; local model processing, no upstream agent latency"
+        }
+      ],
+      "evidence_note": "RoboTwin TableI의 clean/rand, TableII·III의 clean ablation, RMBench의 agent-dependent memory, real Astribot20 trials/task, RTX4090 latency는 서로 다른 실험입니다. 실물 수치는 100회 평가가 아니라 학습 시연 100개와 평가 시도 20회를 반드시 분리해야 합니다.",
+      "comparison": "π0.5나 X-VLA는 보통 시각·언어 지시를 VLA에 입력하는 반면 AR-WAM은 의미 해석/기억을 상위 agent가 하고 하위 policy는 **target bbox와 discrete atomic skill**만 사용합니다. Fast-WAM과 LiLa-WAM처럼 latent future target을 쓰되, explicit reasoning target 및 detect/execute/query API를 통합합니다. TableI clean에서는 Fast-WAM이 앞서고 TableIV M(1)에서는 Cortex가 앞서므로 '전 과제 절대 최고' 주장은 틀립니다.",
+      "reading_guide": [
+        "PDF Figure1의 orange action/green foresight/purple reasoning 흐름에서 train-only target과 infer-time 경로를 구분합니다.",
+        "Figure2의 object grasp 실패→에이전트 새 bbox→재시도 순서를 알고리즘상 failure recovery로 해설합니다.",
+        "TableI(50 trials/task clean/random)와 TableII·III 아키텍처 ablation이 어떤 동일조건인지 비교합니다.",
+        "TableIV RMBench에서 같은 AR policy의 Kimi/Qwen 에이전트 변경 효과 및 M(1)/M(n) 구분을 확인합니다.",
+        "TableV는 100 expert demonstrations per real task로 미세조정한 후 20 trial/task 평가임을 명시합니다.",
+        "TableVI의 RTX4090 bf16 chunk latency와 end-to-end agent/perception/robot wall-clock을 분리합니다."
+      ],
+      "replication": {
+        "hypothesis": "동일 policy 크기·시연·비전 인코더를 사용할 때 bbox+operation condition과 gist supervision이 다중 객체 선택·반복 조작에서 자연어 조건 대비 강건하지만 detector 오차가 증가하면 장점이 줄어듭니다.",
+        "setup": "RoboTwin2.0에서 논문 10 tasks clean/random 50 trials/setting을 3 random seeds로 재실행하고 동일 초기상태, demo 50 clean+500 random/task 및 agent state-machine을 고정합니다. 실물 S1은 100 expert demos/task fine-tune, 20 trials/task와 안전 중단 규칙을 유지합니다.",
+        "baselines": "VP+Gist+Reasoning, Text+Gist, VP w/o reasoning, VP w/o foresight, VP+future patch, VP+oracle bbox, VP+detector jitter; AdaLN vs Cross parameter-matched control.",
+        "metrics": "task strict success 및 confidence intervals, bbox IoU/target selection errors, retry counts, agent API token usage, p50/p95 full-loop latency, 4090 chunk latency, homing time.",
+        "risks": "agent detector의 품질이 정책에 귀속될 수 있으며 RoboTwin clean/real robot 결과는 직접 합산할 수 없습니다. 같은 model capacity와 추론 조건 통제 없이 AdaLN 우월성을 단정하지 않습니다."
+      },
+      "related": [
+        "2610.07922",
+        "2611.05023",
+        "2504.16054"
+      ]
+    }
+  },
+  "2403.12945": {
+    "summary_ko": "DROID는 76,000회·350시간의 실제 로봇 조작 시연을 564개 장면과 86종 동작에 걸쳐 50명의 수집자가 구축한 데이터셋입니다. 휴대형 다중카메라·Franka·VR 원격조작 프로토콜, Diffusion Policy의 DROID/OXE 비교, scene-diversity 7,362건 통제 ablation과 Appendix E/F/G의 재현 조건을 분석합니다.",
+    "reading_minutes": 35,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-12",
+    "editorial_published_at": "2026-11-12",
+    "primary_category": "robotics",
+    "source_scope_ko": "arXiv:2403.12945v2 공식 HTML §III 수집, §IV 데이터 분석, §V 6과제 비교·scene diversity ablation, Table I·Figure 1·2·6·8 및 Appendix D/E/F/G 확인. Fig1·2는 논문 제공 원본 이미지이며 표본·실험 지표는 저자 기준.",
+    "abstract": "DROID는 76,000회·350시간의 실제 로봇 조작 시연을 564개 장면과 86종 동작에 걸쳐 50명의 수집자가 구축한 데이터셋입니다. 휴대형 다중카메라·Franka·VR 원격조작 프로토콜, Diffusion Policy의 DROID/OXE 비교, scene-diversity 7,362건 통제 ablation과 Appendix E/F/G의 재현 조건을 분석합니다.",
+    "review": {
+      "one_line": "**DROID는 새로운 로봇 정책 아키텍처가 아니라 데이터 수집의 다양성을 실제 제어 일반화로 연결한 연구입니다.** 같은 Diffusion Policy에 다른 공동학습 데이터를 넣을 때 장면 다양성이 행동 성공에 어떻게 영향을 주는지 보여줍니다. (원문 §III–V)",
+      "problem": "학습실 한 테이블에서 컵을 집는 정책은 다른 집 주방의 조명·식기·카메라 배치에서 쉽게 실패합니다. 기존 로봇 시연 데이터는 수집량이 많아도 촬영 공간 몇 군데에 집중되기 쉬웠습니다. 필요한 것은 단지 시연 편수를 늘리는 것뿐 아니라 **완전히 다른 작업 공간에서 수집한 조작 데이터**입니다. 하지만 50개 연구실에 같은 로봇 카메라와 제어 인터페이스를 설치·보정하는 비용도 만만치 않습니다. (Table I, §I–III)",
+      "idea": "**직관적인 예:** 책상 위 과자봉지를 접시에 올리는 동작을 훈련할 때, 목표 과제 시연만 50회 학습한 policy보다 서로 다른 주방/사무실/실험실에서 사람의 팔 동작이 포함된 DROID 시연과 함께 배우는 policy가 새로운 과자 종류나 방해물 앞에서 더 잘 대처할 수 있습니다. 논문은 이를 '장면을 늘리는 것이 실제로 이득인가?'라는 정량 검증으로 연결합니다. 564 scenes란 물건 배치 변경 건수가 아니라 실제 로봇 workspace 변경을 가리키며 중복 제거 규칙은 Appendix D에 있습니다. (Figure 1·2, Appendix D)",
+      "method": "Franka Panda 로봇과 이동형 다중카메라 환경, Oculus Quest 2 기반 원격조작을 표준화해 13개 연구기관의 18대 로봇에서 50명의 수집자가 12개월간 시연을 모았습니다. 총 76k demonstrations/350h, 86개 동작(verb) 및 564개 고유 작업공간을 분석합니다. 시험 policy는 Robomimic Diffusion Policy로 새 알고리즘을 제안하지 않습니다. 두 대 외부 RGB 카메라의 128×128 영상, robot proprioception, frozen DistilBERT task embedding을 ResNet-50+MLP에서 합치고 U-Net/DDIM으로 16-step action을 생성해 처음 8 step 실행 후 재계산합니다. 목표 과제 demo와 DROID 성공 사례를 미니배치 50:50 공동학습하고 No co-training 및 curated OXE와 동일한 6과제 ID/OOD 평가로 비교합니다. (Appendix F)",
+      "findings": "**Table I**: DROID 76k trajectories/564 scenes/86 verbs, BridgeData V2 60.1k/24 scenes/82 verbs, OXE는 여러 출처의 집계(1.4M/311 scenes)로 종류가 다릅니다. 6개 실제 로봇 과제/4개 장소의 Fig.6에서 DROID 공동학습은 다음 비교군보다 **ID 평균 +22%p, OOD +17%p** 성공률이 높다고 보고하며, 각 방법×과제×설정당 10 rollout의 작은 표본입니다. Fig.8의 scene ablation은 똑같은 7,362개 DROID 성공 시연으로 상위 20개 장면만 뽑는 조건과 다양한 장면 무작위 표본을 비교하고 **다양한 장면 구성의 OOD 결과가 더 좋다**고 관찰합니다. 이 ablation은 '모든 늘어난 데이터의 향상은 scene 다양성 때문'이라는 완전한 인과 증명은 아닙니다.",
+      "limitations": "DROID는 데이터셋이며 신규 SOTA 제어 네트워크가 아닙니다. '86 tasks'는 수집된 verb 유형의 분류이지 각 verb별 동일하게 엄격한 success 평가가 있다는 뜻이 아닙니다. Table I의 OXE는 데이터셋 집계로, 해당 비교에서는 원본 전체가 아닌 curated split(일부 Language Table 제거, 약 400k trajectories)을 사용합니다. OOD는 과자 종류, 새로운 방해물, 카메라 이동 등 정의된 6개 과제에 제한됩니다. Appendix E에서 책상 서랍 안에 distractor를 두었을 때 모든 정책이 실패했다는 사례도 있습니다. 각 조건 10회 평가로 유의한 통계적 일반화를 단정할 수 없고, 564 scenes는 Appendix D의 로봇 일련번호 기반 중복 제거 규칙에 의존합니다.",
+      "questions": [
+        "동일 데이터 크기 7,362 시연에 대한 scene 다양성 기여를 object·action 분포까지 고정했을 때 재현할 수 있는가?",
+        "DROID에 실패 시연을 포함하거나, 성공만 골라 공동학습할 경우 오프라인 RL 성능은 어떻게 달라지는가?",
+        "OXE에서 Language Table을 제외한 차이가 비교군 성능에 미치는 영향을 독립적으로 검증할 수 있는가?",
+        "카메라 보정 잔차·수집자 숙련도·로봇별 설정 차이를 얼마나 고려해야 진정한 scene diversity 효과를 추정할 수 있는가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**핵심 경계:** DROID는 새로운 policy 구조를 주장하지 않으며, **학습 데이터의 공간 다양성 자체가 왜 OOD 조작에 기여할 수 있는지**를 다룹니다. Figure1은 동작·물체의 롱테일, Figure2는 장소 유형 분포입니다. 두 원본 그림을 '모델 아키텍처'라고 오해하지 말고 §V의 공동학습 비교와 Appendix D/E/F의 통제를 따라 읽어야 합니다.",
+      "pipeline": [
+        {
+          "title": "01. 실제 세계에서 데이터 수집 프로토콜을 표준화",
+          "detail": "휴대 가능한 Franka Panda manipulation setup, 외부 ZED RGB-D와 손목 카메라, Oculus Quest 2 원격조작을 공유하여 로봇 데이터 포맷·카메라 캘리브레이션·수집자 안내를 표준화합니다. 다른 사람이 여러 장소에서 수집해도 정책이 같은 관측/행동 표현을 활용할 수 있어야 합니다. (§III, Appendix G)",
+          "io": "18 robots, 50 collectors, 13 institutions"
+        },
+        {
+          "title": "02. 장면·동작·물체를 구분하여 다변량 데이터셋 구성",
+          "detail": "86 verbs는 언어 지시에서 파생된 행동군, 564 scenes는 로봇이 실제로 바라보는 workspace 교체를 뜻합니다. 같은 식탁에서 사과를 바꾸는 것은 새로운 장면이 아닙니다. Figure1은 동작과 물체 분포의 long tail, Figure2는 위치 유형별 scene count를 표시합니다. (§IV, Appendix C/D)",
+          "io": "76k demonstrations / 350 hours / 564 scenes"
+        },
+        {
+          "title": "03. 중복 scene ID 검수 및 성공 trajectory 선택",
+          "detail": "데이터 수집 중 자동 할당된 scene ID는 2,080개였으나 실제 다른 공간이 아닐 수 있어 로봇 serial·기관·건물·시간을 기준으로 중복 제거해 564개 고유 장면을 판정합니다. training에는 언어 주석이 있는 성공 trajectory 중 처음 약 40k를 선택합니다. (Appendix D, F-B)",
+          "io": "raw scene IDs → distinct workspace IDs; success-only train subset"
+        },
+        {
+          "title": "04. 동일 Diffusion Policy 입력 처리",
+          "detail": "두 외부 카메라 RGB를 각각 128×128로 만들고 ResNet-50으로 처리합니다. frozen DistilBERT 지시 임베딩, gripper position/state와 결합한 특징을 MLP→U-Net diffusion head에 공급합니다. 작업 주어진 상태를 기억한 2-step 관측과 16-step 미래 action을 학습합니다. (§V-A, Appendix F-A)",
+          "io": "2 external RGB + frozen language embedding + robot state"
+        },
+        {
+          "title": "05. 16-step 예측 중 첫 8 actions를 실행",
+          "detail": "DDIM diffusion rollout은 16 행동을 예측하지만 16개를 끝까지 실행하는 게 아니라 8개만 open-loop 실행하고 새 관측에서 재추론합니다. train 25k steps, batch128, Adam lr1e-4; Cook Lentils OOD는 50k steps 예외를 명시해야 합니다. (Appendix F, Table II)",
+          "io": "obs horizon2 → pred horizon16 → exec horizon8"
+        },
+        {
+          "title": "06. 세 가지 공동학습 조건으로 비교",
+          "detail": "No Co-training=목표 과제 시연만, DROID=목표 과제와 성공 DROID 50:50, OXE=목표 과제와 curated OXE 50:50. 6 task/4 location, 각 task×ID/OOD×방법 조건 10번 실행합니다. 성공 판정은 와플 닫기와 3단계 렌틸 요리처럼 과제마다 정의되어 있습니다. (§V, Appendix E/F)",
+          "io": "target-only vs target+DROID vs target+OXE"
+        },
+        {
+          "title": "07. 데이터량 고정한 scene diversity ablation",
+          "detail": "7,362 시연을 20개 풍부한 장면에서 선택한 조건과 전체 DROID에서 무작위로 뽑은 다양한 장면 조건을 비교하고 50:50 공동학습 비율을 고정합니다. OOD success가 높아도 object/collector 분포까지 동일하다는 보장은 없어 후속 통제가 필요합니다. (Fig.8, §V-C)",
+          "io": "same 7,362 demonstrations; low vs high scene coverage"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "왜 image 수보다 scene 수가 중요한가",
+          "body": "사진이 천 장이어도 한 테이블에서만 촬영하면 조명·가림·대상 깊이 등 배경 변화를 제대로 배우지 못합니다. 로봇이 작동하는 workspace를 바꿔야 시각 특징과 작업 의미의 우연한 결합을 줄일 수 있습니다.",
+          "watch": "Figure2의 scene type counts와 AppendixD 중복 scene 정의를 함께 봅니다."
+        },
+        {
+          "title": "원본 Figure 1의 long-tail은 단일 성공률이 아니다",
+          "body": "여러 verbs/objects의 분포가 넓다는 것은 의미적 다양성의 신호지만 rare task에서 high success가 자동으로 보장되지는 않습니다. 저자는 Figure1 분포와 TableI dataset attributes를 제시합니다.",
+          "watch": "실제 평가에 쓰인 6 task의 분포와 학습에 쓰인 40k subset 차이를 확인합니다."
+        },
+        {
+          "title": "DROID vs OXE 비교에서 공정성 변수",
+          "body": "두 공동학습 조건은 target-task 데이터 비율 50:50을 통제하지만 출처·양·수집 장비·성공 필터·언어 라벨 분포가 다를 수 있습니다. OXE는 원본 전체가 아닌 curated ~400k, Language Table split 제외가 핵심입니다.",
+          "watch": "한정된 동일 수의 trajectories와 동일 augmentation을 맞춘 재실험을 제안합니다."
+        },
+        {
+          "title": "Scene ablation은 양 고정, 의미 분포는 미통제",
+          "body": "7362 trajectory 대 7362 trajectory라서 수량 가설을 줄이지만 어떤 실물 objects·verbs가 포함되는지까지 똑같지는 않습니다. 논문 저자도 scene diversity가 '한 가지 원인'이라고 제안합니다.",
+          "watch": "20 scenes와 diverse scenes에서 task/object/robot/collector stratification을 새로 맞춥니다."
+        },
+        {
+          "title": "실험 조건별 OOD 정의를 분리",
+          "body": "와플 메이커에는 distractor, 과자는 새로운 브랜드나 여분 물체, 렌틸 요리에는 camera shift와 distractor가 등장합니다. 전혀 접하지 않은 모든 조작을 zero-shot으로 해결한다는 평가가 아닙니다.",
+          "watch": "AppendixE의 'drawer inside distractor' 전 모델 실패도 실패모드로 기록합니다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "Table I / corpus",
+          "value": "76k trajectories / 350h",
+          "context": "50 collectors, 564 scenes, 86 verbs, 12 months"
+        },
+        {
+          "metric": "Table I / BridgeData V2",
+          "value": "60.1k / 24 scenes",
+          "context": "82 verbs; 다른 수집정의와 scene 비교 주의"
+        },
+        {
+          "metric": "Table I / OXE aggregation",
+          "value": "1.4M / 311 scenes",
+          "context": "독립 수집 코퍼스가 아닌 여러 데이터셋 집계"
+        },
+        {
+          "metric": "§V-A / 6 task eval",
+          "value": "6 tasks / 4 places",
+          "context": "ID·OOD setting; each task/method/setting 10 rollouts"
+        },
+        {
+          "metric": "Figure6 / in-distribution",
+          "value": "+22 percentage points",
+          "context": "DROID co-train vs next best averaged across six tasks, 저자 평균"
+        },
+        {
+          "metric": "Figure6 / OOD",
+          "value": "+17 percentage points",
+          "context": "DROID co-train vs next best in six specified OOD variants"
+        },
+        {
+          "metric": "Figure8 / diverse-scene ablation",
+          "value": "7,362 vs 7,362 demos",
+          "context": "top-20 scenes vs random diverse-scene split, 50:50 co-training"
+        },
+        {
+          "metric": "Appendix F / diffusion",
+          "value": "pred16 / execute8",
+          "context": "obs horizon2; frozen DistilBERT + two RGB ResNet50; DDIM"
+        },
+        {
+          "metric": "Appendix F / training",
+          "value": "batch128 / lr1e-4",
+          "context": "25k steps default, Cook Lentils OOD 50k exception"
+        }
+      ],
+      "evidence_note": "Figure6의 +22pp와 +17pp는 저자 그래프가 서술한 '다음 성능 좋은 비교군 대비 평균 성공률 차이'입니다. 데이터 76k 전체를 훈련에 모두 쓴 것이 아니고, Appendix F-B에는 당시 언어 주석이 있었던 약 40k 성공 trajectory를 이용했다고 명시합니다. 표본은 각 task×setting×method 당 10 rollout입니다.",
+      "comparison": "기존 로봇 데이터셋은 100k 이상의 데이터라도 특정 workspace가 제한될 수 있습니다. DROID는 비슷한 수의 trajectory보다 훨씬 넓은 장소/객체/조작을 포괄하도록 설계하며, 결과를 Diffusion Policy라는 **동일 학습기**에서 비교합니다. 여기서 제안한 것은 'Diffusion Policy 개선 알고리즘'이 아니라 '학습 데이터 수집 및 혼합 전략'입니다. 7k 동량 scene ablation이 모델 규모나 hyperparameter 효과와 구분되는 핵심 근거입니다.",
+      "reading_guide": [
+        "원본 Figure1의 verb 및 object histogram이 무엇을 분류한 건지 확인하고 '86개 평가 과제'로 오독하지 않습니다.",
+        "Figure2의 scene 유형 개수와 AppendixD의 2,080 raw IDs→564 distinct scenes 중복 제거 절차를 확인합니다.",
+        "§V의 6 평가과제별 ID/OOD 정의, 10 rollouts/condition 및 strict completion 조건을 확인합니다.",
+        "Figure6의 +22pp/+17pp를 각 task 수치로 오인하지 않고 평균 비교 조건을 설명합니다.",
+        "Figure8의 7,362개 동량 sampling과 scene20 vs diverse 분할 외 차이를 따집니다.",
+        "Appendix F TableII의 action horizon8/16, 25k steps, Cook Lentils50k exception, 성공 시연만 사용한 40k subset을 재현합니다."
+      ],
+      "replication": {
+        "hypothesis": "성공 데이터 총량과 task/verb/object 빈도까지 맞추면 scene 다양성이 높은 데이터 split은 같은 Diffusion Policy의 OOD 작업 성공률을 유의미하게 끌어올릴 수 있습니다.",
+        "setup": "DROID에서 동일 7,362개의 성공 trajectory를 로봇기종·object class·verb 및 collector로 층화한 뒤 scene-20 vs scene-diverse로 나누고 6 과제의 frozen ID/OOD object positions에 대해 3 seeds×최소 50rollouts/method를 확보합니다.",
+        "baselines": "target-only, target+DROID full40k, target+DROID 7362/20 scenes, target+DROID 7362/diverse scenes, target+curated OXE; 50:50 mixture/25k steps/Adam lr1e-4 and Cook Lentils50k fixed.",
+        "metrics": "각 과제 binary task completion (Cook Lentils 3단계 strict), ID & OOD mean/CI, robot/contact safety interruptions, object-distribution shift, dataset curation costs, calibration error.",
+        "risks": "동일 수의 시연이라도 물체/verb/촬영자가 다르면 원인을 scene 다양성 하나에 귀속할 수 없습니다. 안전한 실물 평가와 독립 평가자가 필요하며 failed rollout도 버리지 않습니다."
+      },
+      "related": [
+        "2405.12213",
+        "2406.09246",
+        "2611.05080"
+      ]
+    }
   }
 }
