@@ -3102,6 +3102,165 @@
           "2504.16054"
         ]
       }
+    },
+    {
+      "id": "2610.22146",
+      "title": "FastVLA: Task-Conditioned and Temporally Adaptive Visual Token Compression for Efficient Vision-Language-Action Models",
+      "authors": [
+        "Jiuyi Xu",
+        "Chengyuan Qian",
+        "Zhengzhong Tu",
+        "Yang Sui",
+        "Yangming Shi"
+      ],
+      "published": "2026-10-15",
+      "updated": "2026-10-19",
+      "source_url": "https://arxiv.org/abs/2610.22146",
+      "pdf_url": "https://arxiv.org/pdf/2610.22146",
+      "primary_category": "vla",
+      "categories": [
+        "vla",
+        "robotics"
+      ],
+      "curated": true,
+      "featured": true,
+      "summary_ko": "FastVLA는 기존 VLA의 가중치를 다시 학습하지 않고, 매 제어 단계마다 언어 명령에 중요한 시각 토큰을 골라 후단 LLM 입력을 줄입니다. OpenVLA·OpenVLA-OFT·CogACT, LIBERO·SIMPLER 및 Franka Research 3 실험에서 성공률 변화와 지연 감소를 같은 표에 놓고 검토합니다.",
+      "abstract": "기존 VLA에 학습 없이 적용하는 FastVLA는 task-to-vision attention을 통해 중요도를 구하고 inverse-Simpson 기반의 최근 시간창 보정으로 단계별 시각 토큰 압축률을 변경합니다. 이 글은 속도와 성공률을 교환하는 실제 결과, 고정 예산 대조 실험, 실물 로봇 성능 저하 가능성까지 확인하는 편집 요약입니다.",
+      "review": {
+        "one_line": "**핵심은 토큰을 많이 버리는 것이 아니라, 조작 중 어느 시점에 얼마만큼 버릴지 결정하는 것입니다.** 주어진 언어 명령과 관찰 장면에 따라 남겨야 할 시각 증거의 양이 달라진다는 가설을 온라인으로 구현합니다. (원문 §3)",
+        "problem": "한 로봇이 '검은 그릇을 집어 왼쪽에 놓으세요'를 수행할 때, 손이 그릇에 접근하는 단계와 이미 들어 옮기는 단계에서 필요한 영상 정보는 다릅니다. 그러나 VLA는 보통 매 순간 카메라의 수백 개 토큰을 LLM 백본에 그대로 입력합니다. 많은 토큰을 처리하느라 제어 지연이 커지면 한 번의 예측이 완료되기 전에 환경이 달라질 수 있습니다. 학습용 정지 이미지의 품질과 달리, 실제 문제는 **반복되는 폐루프 제어의 응답시간**입니다. (원문 §1, Figure 1)",
+        "idea": "FastVLA는 세 가지 제약을 동시에 택합니다. 첫째, '그릇'처럼 **언어 목표에 관계있는 영상 위치**를 task-to-vision attention으로 점수화합니다. 둘째, 점수가 소수 패치에 집중됐다면 과감히 줄이고 넓게 퍼져 있다면 더 남겨야 하므로, 중요도 분포의 집중도를 inverse-Simpson 지표로 계산합니다. 셋째, 절대 척도가 다른 시간 구간에서도 작동하도록 직전 T개 단계의 최솟값·최댓값에 현재 지표를 대응해 압축률을 조절합니다. 기존 모델 파라미터를 변경하는 추가 학습은 요구하지 않습니다. (원문 §3.2–3.3)",
+        "method": "매 제어 단계에서 모델의 시각 입력 V와 명령 토큰 T를 가져오고, RMSNorm 후 두 집합 간 dot-product와 softmax로 중요도 s_i를 구합니다. 상위 K개의 점수를 합 1로 정규화한 q_i에 대해 U=(1/Σq_i²)/K를 계산합니다. U가 작으면 일부 토큰에 주의가 모였으므로 압축률을 높일 근거가 됩니다. 윈도 W의 U_min, U_max로 상대 위치 α를 정하고, 목표 압축률 ρ와 편차 τ 범위에서 현재 ρ_t=clip(ρ+τ(1-2α),ρ-τ,ρ+τ)를 정합니다. 점수가 큰 round((1-ρ_t)N)개의 토큰만 원래 순서대로 LLM 백본에 통과시킵니다. 첫 두 단계는 기록 부족으로 보수적으로 시작하며 에피소드마다 윈도를 초기화합니다. 공통 τ=0.1, T=10; ρ는 벤치마크/백본에 따라 지정합니다. Fig.1과 Algorithm 1의 순서를 서로 비교해야 합니다. (원문 §3, Algorithm 1)",
+        "findings": "LIBERO Table 1에서 OpenVLA는 원본 평균 76.4%, FastVLA 75.8±0.2%로 0.6%p 떨어지지만 1.86→1.20T FLOPs, 186.64→161.53ms 지연을 보고합니다. OpenVLA-OFT는 97.0→96.5±0.3%로 0.5%p 감소하고 3.98→1.65T, 118.52→81.17ms입니다. 실물 Franka Table 3에서는 Pick 84→80%, Pick-and-place 68→66%로 성공률이 낮아졌습니다. 따라서 '성공률 무손실'이라고 표현하면 안 됩니다. Table 4의 **실제 유지 토큰 수를 맞춘 고정 압축률 대조군**에서 적응형이 Goal 97.0 vs 95.7%, Long 93.1 vs 92.0%로 앞섭니다. (원문 §4.3–4.4)",
+        "limitations": "토큰 중요도의 attention은 인과적 설명이나 장애물 회피 안전을 보증하지 않습니다. 목표 압축률 ρ는 모델·평가 세트별로 선택했고, 단일 RTX 4090 환경에서 추론 속도를 측정했으므로 다른 GPU에서 같은 비율을 보장할 수 없습니다. LightVLA는 추가 학습이 필요하지만 동등한 성공률에서 더 저렴한 계산량과 더 낮은 지연을 보고합니다. 논문의 일부 타 기법은 저자 환경에서 재현하지 못해 보고된 수치를 인용한 비교이며, 실물 과제는 두 가지와 단일 로봇뿐입니다. Supplement A는 FLOPs 감소와 wall-clock 지연 감소가 선형 관계가 아니라고 설명합니다. (원문 §4, §5, Supplement A–C)",
+        "questions": [
+          "명령이 모호하거나 두 대상이 겹치는 장면에서 task-to-vision 점수는 어느 패치를 버리는가?",
+          "동일한 실제 토큰 수에서 적응형 정책의 이득은 모든 로봇·조도·과제 길이에서 유지되는가?",
+          "정책 정확도 손실 2~4%p와 지연 감소가 실제 단위 시간 작업 처리량에서 어떤 교환을 만드는가?",
+          "드문 충돌 위험 패치에 낮은 attention이 할당되는 상황을 안전하게 탐지할 수 있는가?"
+        ]
+      },
+      "deep_dive": {
+        "lead": "**독해 목표:** (1) Figure 1의 토큰 점수화와 시간 적응을 분리하고, (2) Table 1과 3의 '비슷한 성공률'이 정확히 얼마의 성공률 감소인지 확인하고, (3) Table 4와 Supplement A를 읽어 FLOPs 감소와 실측 속도 향상의 차이를 이해합니다. 본문은 공식 PDF v2와 원본 Figure 1·2를 대조했으며, 독립 재현은 하지 않았습니다.",
+        "pipeline": [
+          {
+            "title": "관찰과 과제 명령 획득",
+            "detail": "각 action prediction step마다 카메라 영상을 비전 토큰으로 만들고 텍스트 명령 토큰을 확보합니다. 저자는 OpenVLA, OpenVLA-OFT, CogACT 세 백본에 동일 원리를 적용합니다. 영상 인코더의 계산량까지 없애는 구조는 아닙니다.",
+            "io": "RGB → visual tokens V; instruction → task tokens T"
+          },
+          {
+            "title": "명령 기반 토큰 중요도 계산",
+            "detail": "텍스트 토큰이 시각 토큰에 주는 task-to-vision attention을 추출해 패치별 점수를 만듭니다. vision-to-vision이나 all-to-vision보다 제어 성공률이 강건했음을 Figure 2의 토큰 제거 곡선에서 확인합니다.",
+            "io": "s_i = mean(task→vision attention)"
+          },
+          {
+            "title": "중요도 분포의 유효 토큰 수 추정",
+            "detail": "상위 K개의 점수를 확률 q로 정규화하고 inverse Simpson 1/Σq_i²를 구한 뒤 K로 나눕니다. 편향된 분포는 작은 U, 넓게 퍼진 분포는 큰 U를 냅니다. 이는 모델 확률의 정확도 보증이 아니라 예산 선택용 휴리스틱입니다.",
+            "io": "U = 1/(K·Σ q_i²)"
+          },
+          {
+            "title": "시간창에서 압축률 조절",
+            "detail": "과거 최대 10단계 U의 최소·최대와 현재 U를 비교해 상대 위치 α를 정합니다. 집중도가 높으면 ρ+τ 가까이, 낮으면 ρ-τ 가까이 이동시키며 최초 단계에는 보수적 설정을 씁니다. τ=0.1입니다.",
+            "io": "ρ_t = clip(ρ+τ(1-2α), ρ-τ, ρ+τ)"
+          },
+          {
+            "title": "선택 토큰으로 기존 행동 생성",
+            "detail": "중요도 상위 (1−ρ_t)N개의 시각 토큰을 원래 순서대로 LLM 백본에 넣고 action head를 실행합니다. 학습·미세조정·캐시 복원 과정은 없으며 각 단계에서 다시 점수화합니다.",
+            "io": "Top-K patches + task → frozen VLA → action"
+          }
+        ],
+        "mechanisms": [
+          {
+            "title": "Task-conditioned attention과 단순 salient patch의 차이",
+            "body": "비전 모델이 밝거나 큰 물체를 눈에 띈다고 평가해도 현재 명령과 관계없을 수 있습니다. 논문은 언어 토큰이 시각 토큰에 주는 attention을 사용해 임무와의 연관을 반영합니다. 이러한 attention 자체가 새로운 기술이라는 주장은 하지 않습니다 (§3.2, Fig.2).",
+            "watch": "상위 토큰에 실제 안전 임계 물체가 남는지 분리 평가가 필요합니다."
+          },
+          {
+            "title": "Inverse Simpson과 온라인 상대 보정",
+            "body": "K개의 점수가 모두 같으면 U≈1, 한 점수에 집중되면 U≈1/K입니다. 이 절대값을 곧바로 정해진 압축률에 매핑하지 않고 최근 윈도의 최소·최대에 정규화해 시점별 변화를 추적합니다. 과거 분포 변화가 심하면 보정이 민감할 수 있습니다 (§3.3).",
+            "watch": "고정-rate 대비 이득을 보려면 실제 유지 토큰 수를 맞춰야 합니다."
+          },
+          {
+            "title": "학습 없는 통합의 조건",
+            "body": "RMSNorm 및 시각-언어 임베딩 접근이 가능한 백본에서 프루닝합니다. VLA-Cache는 이전 단계의 중간 상태를 재사용하는 다른 접근이며, LightVLA는 별도 재학습으로 다른 비용–성능 경계를 가집니다 (§2, §4.3).",
+            "watch": "추론 전처리/메모리 복사와 GPU 커널 overhead가 실제 지연을 좌우합니다."
+          },
+          {
+            "title": "3가지 혼동을 피하는 방법",
+            "body": "실측 latency는 해당 제어 스택의 per-step action prediction이며 제어 주파수는 action chunk 길이에 따라 정의가 달라집니다. OpenVLA-OFT는 H=8, OpenVLA/CogACT는 H=1입니다. 학습된 모델이 서로 다르면 수평 비교 시 성공률 지표와 하드웨어 조건을 적어야 합니다 (§4.1, Table1).",
+            "watch": "FLOPs, p50 action inference, 실제 로봇 작업시간은 서로 다른 지표입니다."
+          }
+        ],
+        "evidence": [
+          {
+            "metric": "Table 1 · OpenVLA / LIBERO",
+            "value": "76.4% → 75.8±0.2%",
+            "context": "4 suites 평균 성공률; FLOPs 1.86→1.20T, 지연 186.64→161.53ms, 저자 RTX4090"
+          },
+          {
+            "metric": "Table 1 · OpenVLA-OFT / LIBERO",
+            "value": "97.0% → 96.5±0.3%",
+            "context": "4 suites 평균; FLOPs 3.98→1.65T, 지연 118.52→81.17ms; 성공률 0.5%p 하락"
+          },
+          {
+            "metric": "Table 2 · SIMPLER Visual Matching",
+            "value": "77.5% → 77.1±0.8%",
+            "context": "CogACT-base, 4가지 작업; 지연 174.48→159.59ms; 3 random seeds"
+          },
+          {
+            "metric": "Table 2 · SIMPLER Variant Aggregation",
+            "value": "60.9% → 61.9±0.6%",
+            "context": "CogACT-base, 분포 변화 평가; 지연 174.94→157.06ms"
+          },
+          {
+            "metric": "Table 3 · 실물 Franka Pick",
+            "value": "84% → 80%",
+            "context": "OpenVLA-OFT / FastVLA; 50 rollouts/condition, 지연 121.13→96.90ms"
+          },
+          {
+            "metric": "Table 3 · 실물 Pick-and-place",
+            "value": "68% → 66%",
+            "context": "동일 50 rollouts/condition, 지연 120.01→97.77ms"
+          },
+          {
+            "metric": "Table 4 · Goal 같은 토큰 예산",
+            "value": "95.7±0.3 → 97.0±0.5%",
+            "context": "budget-matched fixed 132 vs adaptive 131.9 tokens; 적응성 단독 비교"
+          },
+          {
+            "metric": "Table 4 · LIBERO-Long 같은 예산",
+            "value": "92.0±0.3 → 93.1±0.5%",
+            "context": "budget-matched fixed 207 vs adaptive 206.8 tokens"
+          },
+          {
+            "metric": "Table 6 · 분포 지표 제거",
+            "value": "Shannon 94.0 / Gini 95.3 / inverse-Simpson 97.0%",
+            "context": "LIBERO-Goal, 동일 중요도/유사 예산의 다양성 지표 ablation"
+          }
+        ],
+        "evidence_note": "모든 성공률은 논문 저자의 특정 정책·실험 구성에서 측정한 비율입니다. ±는 해당 표의 3 random seeds에 대한 standard error이며 실물 50 rollout에는 같은 오차 막대를 임의로 붙이지 않았습니다. Some baselines cited from original sources are not rerun on the same host.",
+        "comparison": "Fixed-ratio pruning은 전 과정을 같은 비용으로 처리해 배경이 단순한 단계와 다수 물체를 동시에 살펴야 하는 단계를 구분하지 않습니다. VLA-Cache는 단계 간 재사용을 선택하지만 stale feature 또는 캐시 관리가 필요할 수 있습니다. FastVLA는 각 단계에서 독립적으로 token score를 계산하며, 적응형은 사용한 토큰 총량을 맞춘 fixed budget과 비교했을 때도 개선이 관찰됩니다. 그러나 FastVLA보다 LightVLA가 계산량/지연 측면에서 앞선 비교도 논문에 있으며 재학습 비용이 서로 다르므로 우열을 단순화하지 않습니다.",
+        "reading_guide": [
+          "PDF Figure 1에서 중요도 점수와 압축률 추정에 각각 어떤 입력이 쓰이는지 화살표를 따라가십시오.",
+          "PDF Algorithm 1의 첫 두 단계·에피소드 초기화·ρ±τ 절단 조건을 찾아 실제 제어 코드를 작성하십시오.",
+          "Table 1에서 OpenVLA-OFT를 baseline으로 삼을 때도 성공률이 97.0→96.5로 떨어졌다는 점을 표시하십시오.",
+          "Table 4에서 fixed @ nominal과 fixed budget-matched를 구별하고 동일 평균 토큰 수를 사용한 행만 적응성 근거로 인용하십시오.",
+          "Supplement A–C에서 FLOPs와 latency 불일치, CogACT 전이, window T 및 τ sensitivity를 확인하십시오."
+        ],
+        "replication": {
+          "hypothesis": "같은 실제 유지 시각토큰 예산에서 inverse-Simpson 시간 적응은 고정 압축보다 성공률과 제어 안정성을 높일 수 있지만, attention이 잘못된 패치에 몰린 안전 임계 상황에서는 실패할 수 있습니다.",
+          "setup": "OpenVLA-OFT + LIBERO 4-suite에서 seed 3개 이상, 동일 시나리오/시각 입력/ρ 및 T=10·τ=0.1, per-step 유효 토큰 수 로그를 수집합니다. FR3 실물에서는 성공률에 더해 충돌 직전 중단 횟수와 물체 낙하율을 별도 계측합니다.",
+          "baselines": "Uncompressed, fixed at nominal ρ, fixed matched to realized mean token count, adaptive inverse-Simpson, adaptive Shannon, adaptive Gini, task-agnostic attention, LightVLA retrained reference.",
+          "metrics": "whole-task strict success and Wilson 95% CI, retained tokens, GPU event latency vs wall-clock action prediction, p50/p95 loop latency, real elapsed task time, unexpected object contact.",
+          "risks": "원래 저자 표의 50회 실물 실험은 통계적 불확실성이 크고, OOD 장애물/텍스트 변형에 대한 안전 보증이 아닙니다. 과제별 ρ 튜닝을 새 테스트 데이터에 무단 사용하지 않습니다."
+        },
+        "related": [
+          "2406.09246",
+          "2611.05093",
+          "2410.24164"
+        ]
+      },
+      "code_url": "https://github.com/jiuyixu25/FastVLA"
     }
   ]
 }

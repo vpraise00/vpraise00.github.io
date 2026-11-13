@@ -3851,5 +3851,449 @@
         "2611.05080"
       ]
     }
+  },
+  "2610.22146": {
+    "summary_ko": "FastVLA는 기존 VLA의 가중치를 다시 학습하지 않고, 매 제어 단계마다 언어 명령에 중요한 시각 토큰을 골라 후단 LLM 입력을 줄입니다. OpenVLA·OpenVLA-OFT·CogACT, LIBERO·SIMPLER 및 Franka Research 3 실험에서 성공률 변화와 지연 감소를 같은 표에 놓고 검토합니다.",
+    "reading_minutes": 32,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-13",
+    "editorial_published_at": "2026-11-13",
+    "primary_category": "vla",
+    "source_scope_ko": "arXiv:2610.22146v2 공식 PDF 전편 12쪽, §3 Method·Algorithm 1, §4 Experiments·Tables 1–6, Supplement A–C·Tables 7–8, Figure 1·2 원본 대조. Figures는 arXiv HTML 제공 원본에 직접 링크하며 외부 호스팅에 의존합니다. 수치는 저자 보고치입니다.",
+    "abstract": "기존 VLA에 학습 없이 적용하는 FastVLA는 task-to-vision attention을 통해 중요도를 구하고 inverse-Simpson 기반의 최근 시간창 보정으로 단계별 시각 토큰 압축률을 변경합니다. 이 글은 속도와 성공률을 교환하는 실제 결과, 고정 예산 대조 실험, 실물 로봇 성능 저하 가능성까지 확인하는 편집 요약입니다.",
+    "code_url": "https://github.com/jiuyixu25/FastVLA",
+    "review": {
+      "one_line": "**핵심은 토큰을 많이 버리는 것이 아니라, 조작 중 어느 시점에 얼마만큼 버릴지 결정하는 것입니다.** 주어진 언어 명령과 관찰 장면에 따라 남겨야 할 시각 증거의 양이 달라진다는 가설을 온라인으로 구현합니다. (원문 §3)",
+      "problem": "한 로봇이 '검은 그릇을 집어 왼쪽에 놓으세요'를 수행할 때, 손이 그릇에 접근하는 단계와 이미 들어 옮기는 단계에서 필요한 영상 정보는 다릅니다. 그러나 VLA는 보통 매 순간 카메라의 수백 개 토큰을 LLM 백본에 그대로 입력합니다. 많은 토큰을 처리하느라 제어 지연이 커지면 한 번의 예측이 완료되기 전에 환경이 달라질 수 있습니다. 학습용 정지 이미지의 품질과 달리, 실제 문제는 **반복되는 폐루프 제어의 응답시간**입니다. (원문 §1, Figure 1)",
+      "idea": "FastVLA는 세 가지 제약을 동시에 택합니다. 첫째, '그릇'처럼 **언어 목표에 관계있는 영상 위치**를 task-to-vision attention으로 점수화합니다. 둘째, 점수가 소수 패치에 집중됐다면 과감히 줄이고 넓게 퍼져 있다면 더 남겨야 하므로, 중요도 분포의 집중도를 inverse-Simpson 지표로 계산합니다. 셋째, 절대 척도가 다른 시간 구간에서도 작동하도록 직전 T개 단계의 최솟값·최댓값에 현재 지표를 대응해 압축률을 조절합니다. 기존 모델 파라미터를 변경하는 추가 학습은 요구하지 않습니다. (원문 §3.2–3.3)",
+      "method": "매 제어 단계에서 모델의 시각 입력 V와 명령 토큰 T를 가져오고, RMSNorm 후 두 집합 간 dot-product와 softmax로 중요도 s_i를 구합니다. 상위 K개의 점수를 합 1로 정규화한 q_i에 대해 U=(1/Σq_i²)/K를 계산합니다. U가 작으면 일부 토큰에 주의가 모였으므로 압축률을 높일 근거가 됩니다. 윈도 W의 U_min, U_max로 상대 위치 α를 정하고, 목표 압축률 ρ와 편차 τ 범위에서 현재 ρ_t=clip(ρ+τ(1-2α),ρ-τ,ρ+τ)를 정합니다. 점수가 큰 round((1-ρ_t)N)개의 토큰만 원래 순서대로 LLM 백본에 통과시킵니다. 첫 두 단계는 기록 부족으로 보수적으로 시작하며 에피소드마다 윈도를 초기화합니다. 공통 τ=0.1, T=10; ρ는 벤치마크/백본에 따라 지정합니다. Fig.1과 Algorithm 1의 순서를 서로 비교해야 합니다. (원문 §3, Algorithm 1)",
+      "findings": "LIBERO Table 1에서 OpenVLA는 원본 평균 76.4%, FastVLA 75.8±0.2%로 0.6%p 떨어지지만 1.86→1.20T FLOPs, 186.64→161.53ms 지연을 보고합니다. OpenVLA-OFT는 97.0→96.5±0.3%로 0.5%p 감소하고 3.98→1.65T, 118.52→81.17ms입니다. 실물 Franka Table 3에서는 Pick 84→80%, Pick-and-place 68→66%로 성공률이 낮아졌습니다. 따라서 '성공률 무손실'이라고 표현하면 안 됩니다. Table 4의 **실제 유지 토큰 수를 맞춘 고정 압축률 대조군**에서 적응형이 Goal 97.0 vs 95.7%, Long 93.1 vs 92.0%로 앞섭니다. (원문 §4.3–4.4)",
+      "limitations": "토큰 중요도의 attention은 인과적 설명이나 장애물 회피 안전을 보증하지 않습니다. 목표 압축률 ρ는 모델·평가 세트별로 선택했고, 단일 RTX 4090 환경에서 추론 속도를 측정했으므로 다른 GPU에서 같은 비율을 보장할 수 없습니다. LightVLA는 추가 학습이 필요하지만 동등한 성공률에서 더 저렴한 계산량과 더 낮은 지연을 보고합니다. 논문의 일부 타 기법은 저자 환경에서 재현하지 못해 보고된 수치를 인용한 비교이며, 실물 과제는 두 가지와 단일 로봇뿐입니다. Supplement A는 FLOPs 감소와 wall-clock 지연 감소가 선형 관계가 아니라고 설명합니다. (원문 §4, §5, Supplement A–C)",
+      "questions": [
+        "명령이 모호하거나 두 대상이 겹치는 장면에서 task-to-vision 점수는 어느 패치를 버리는가?",
+        "동일한 실제 토큰 수에서 적응형 정책의 이득은 모든 로봇·조도·과제 길이에서 유지되는가?",
+        "정책 정확도 손실 2~4%p와 지연 감소가 실제 단위 시간 작업 처리량에서 어떤 교환을 만드는가?",
+        "드문 충돌 위험 패치에 낮은 attention이 할당되는 상황을 안전하게 탐지할 수 있는가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**독해 목표:** (1) Figure 1의 토큰 점수화와 시간 적응을 분리하고, (2) Table 1과 3의 '비슷한 성공률'이 정확히 얼마의 성공률 감소인지 확인하고, (3) Table 4와 Supplement A를 읽어 FLOPs 감소와 실측 속도 향상의 차이를 이해합니다. 본문은 공식 PDF v2와 원본 Figure 1·2를 대조했으며, 독립 재현은 하지 않았습니다.",
+      "pipeline": [
+        {
+          "title": "관찰과 과제 명령 획득",
+          "detail": "각 action prediction step마다 카메라 영상을 비전 토큰으로 만들고 텍스트 명령 토큰을 확보합니다. 저자는 OpenVLA, OpenVLA-OFT, CogACT 세 백본에 동일 원리를 적용합니다. 영상 인코더의 계산량까지 없애는 구조는 아닙니다.",
+          "io": "RGB → visual tokens V; instruction → task tokens T"
+        },
+        {
+          "title": "명령 기반 토큰 중요도 계산",
+          "detail": "텍스트 토큰이 시각 토큰에 주는 task-to-vision attention을 추출해 패치별 점수를 만듭니다. vision-to-vision이나 all-to-vision보다 제어 성공률이 강건했음을 Figure 2의 토큰 제거 곡선에서 확인합니다.",
+          "io": "s_i = mean(task→vision attention)"
+        },
+        {
+          "title": "중요도 분포의 유효 토큰 수 추정",
+          "detail": "상위 K개의 점수를 확률 q로 정규화하고 inverse Simpson 1/Σq_i²를 구한 뒤 K로 나눕니다. 편향된 분포는 작은 U, 넓게 퍼진 분포는 큰 U를 냅니다. 이는 모델 확률의 정확도 보증이 아니라 예산 선택용 휴리스틱입니다.",
+          "io": "U = 1/(K·Σ q_i²)"
+        },
+        {
+          "title": "시간창에서 압축률 조절",
+          "detail": "과거 최대 10단계 U의 최소·최대와 현재 U를 비교해 상대 위치 α를 정합니다. 집중도가 높으면 ρ+τ 가까이, 낮으면 ρ-τ 가까이 이동시키며 최초 단계에는 보수적 설정을 씁니다. τ=0.1입니다.",
+          "io": "ρ_t = clip(ρ+τ(1-2α), ρ-τ, ρ+τ)"
+        },
+        {
+          "title": "선택 토큰으로 기존 행동 생성",
+          "detail": "중요도 상위 (1−ρ_t)N개의 시각 토큰을 원래 순서대로 LLM 백본에 넣고 action head를 실행합니다. 학습·미세조정·캐시 복원 과정은 없으며 각 단계에서 다시 점수화합니다.",
+          "io": "Top-K patches + task → frozen VLA → action"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "Task-conditioned attention과 단순 salient patch의 차이",
+          "body": "비전 모델이 밝거나 큰 물체를 눈에 띈다고 평가해도 현재 명령과 관계없을 수 있습니다. 논문은 언어 토큰이 시각 토큰에 주는 attention을 사용해 임무와의 연관을 반영합니다. 이러한 attention 자체가 새로운 기술이라는 주장은 하지 않습니다 (§3.2, Fig.2).",
+          "watch": "상위 토큰에 실제 안전 임계 물체가 남는지 분리 평가가 필요합니다."
+        },
+        {
+          "title": "Inverse Simpson과 온라인 상대 보정",
+          "body": "K개의 점수가 모두 같으면 U≈1, 한 점수에 집중되면 U≈1/K입니다. 이 절대값을 곧바로 정해진 압축률에 매핑하지 않고 최근 윈도의 최소·최대에 정규화해 시점별 변화를 추적합니다. 과거 분포 변화가 심하면 보정이 민감할 수 있습니다 (§3.3).",
+          "watch": "고정-rate 대비 이득을 보려면 실제 유지 토큰 수를 맞춰야 합니다."
+        },
+        {
+          "title": "학습 없는 통합의 조건",
+          "body": "RMSNorm 및 시각-언어 임베딩 접근이 가능한 백본에서 프루닝합니다. VLA-Cache는 이전 단계의 중간 상태를 재사용하는 다른 접근이며, LightVLA는 별도 재학습으로 다른 비용–성능 경계를 가집니다 (§2, §4.3).",
+          "watch": "추론 전처리/메모리 복사와 GPU 커널 overhead가 실제 지연을 좌우합니다."
+        },
+        {
+          "title": "3가지 혼동을 피하는 방법",
+          "body": "실측 latency는 해당 제어 스택의 per-step action prediction이며 제어 주파수는 action chunk 길이에 따라 정의가 달라집니다. OpenVLA-OFT는 H=8, OpenVLA/CogACT는 H=1입니다. 학습된 모델이 서로 다르면 수평 비교 시 성공률 지표와 하드웨어 조건을 적어야 합니다 (§4.1, Table1).",
+          "watch": "FLOPs, p50 action inference, 실제 로봇 작업시간은 서로 다른 지표입니다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "Table 1 · OpenVLA / LIBERO",
+          "value": "76.4% → 75.8±0.2%",
+          "context": "4 suites 평균 성공률; FLOPs 1.86→1.20T, 지연 186.64→161.53ms, 저자 RTX4090"
+        },
+        {
+          "metric": "Table 1 · OpenVLA-OFT / LIBERO",
+          "value": "97.0% → 96.5±0.3%",
+          "context": "4 suites 평균; FLOPs 3.98→1.65T, 지연 118.52→81.17ms; 성공률 0.5%p 하락"
+        },
+        {
+          "metric": "Table 2 · SIMPLER Visual Matching",
+          "value": "77.5% → 77.1±0.8%",
+          "context": "CogACT-base, 4가지 작업; 지연 174.48→159.59ms; 3 random seeds"
+        },
+        {
+          "metric": "Table 2 · SIMPLER Variant Aggregation",
+          "value": "60.9% → 61.9±0.6%",
+          "context": "CogACT-base, 분포 변화 평가; 지연 174.94→157.06ms"
+        },
+        {
+          "metric": "Table 3 · 실물 Franka Pick",
+          "value": "84% → 80%",
+          "context": "OpenVLA-OFT / FastVLA; 50 rollouts/condition, 지연 121.13→96.90ms"
+        },
+        {
+          "metric": "Table 3 · 실물 Pick-and-place",
+          "value": "68% → 66%",
+          "context": "동일 50 rollouts/condition, 지연 120.01→97.77ms"
+        },
+        {
+          "metric": "Table 4 · Goal 같은 토큰 예산",
+          "value": "95.7±0.3 → 97.0±0.5%",
+          "context": "budget-matched fixed 132 vs adaptive 131.9 tokens; 적응성 단독 비교"
+        },
+        {
+          "metric": "Table 4 · LIBERO-Long 같은 예산",
+          "value": "92.0±0.3 → 93.1±0.5%",
+          "context": "budget-matched fixed 207 vs adaptive 206.8 tokens"
+        },
+        {
+          "metric": "Table 6 · 분포 지표 제거",
+          "value": "Shannon 94.0 / Gini 95.3 / inverse-Simpson 97.0%",
+          "context": "LIBERO-Goal, 동일 중요도/유사 예산의 다양성 지표 ablation"
+        }
+      ],
+      "evidence_note": "모든 성공률은 논문 저자의 특정 정책·실험 구성에서 측정한 비율입니다. ±는 해당 표의 3 random seeds에 대한 standard error이며 실물 50 rollout에는 같은 오차 막대를 임의로 붙이지 않았습니다. Some baselines cited from original sources are not rerun on the same host.",
+      "comparison": "Fixed-ratio pruning은 전 과정을 같은 비용으로 처리해 배경이 단순한 단계와 다수 물체를 동시에 살펴야 하는 단계를 구분하지 않습니다. VLA-Cache는 단계 간 재사용을 선택하지만 stale feature 또는 캐시 관리가 필요할 수 있습니다. FastVLA는 각 단계에서 독립적으로 token score를 계산하며, 적응형은 사용한 토큰 총량을 맞춘 fixed budget과 비교했을 때도 개선이 관찰됩니다. 그러나 FastVLA보다 LightVLA가 계산량/지연 측면에서 앞선 비교도 논문에 있으며 재학습 비용이 서로 다르므로 우열을 단순화하지 않습니다.",
+      "reading_guide": [
+        "PDF Figure 1에서 중요도 점수와 압축률 추정에 각각 어떤 입력이 쓰이는지 화살표를 따라가십시오.",
+        "PDF Algorithm 1의 첫 두 단계·에피소드 초기화·ρ±τ 절단 조건을 찾아 실제 제어 코드를 작성하십시오.",
+        "Table 1에서 OpenVLA-OFT를 baseline으로 삼을 때도 성공률이 97.0→96.5로 떨어졌다는 점을 표시하십시오.",
+        "Table 4에서 fixed @ nominal과 fixed budget-matched를 구별하고 동일 평균 토큰 수를 사용한 행만 적응성 근거로 인용하십시오.",
+        "Supplement A–C에서 FLOPs와 latency 불일치, CogACT 전이, window T 및 τ sensitivity를 확인하십시오."
+      ],
+      "replication": {
+        "hypothesis": "같은 실제 유지 시각토큰 예산에서 inverse-Simpson 시간 적응은 고정 압축보다 성공률과 제어 안정성을 높일 수 있지만, attention이 잘못된 패치에 몰린 안전 임계 상황에서는 실패할 수 있습니다.",
+        "setup": "OpenVLA-OFT + LIBERO 4-suite에서 seed 3개 이상, 동일 시나리오/시각 입력/ρ 및 T=10·τ=0.1, per-step 유효 토큰 수 로그를 수집합니다. FR3 실물에서는 성공률에 더해 충돌 직전 중단 횟수와 물체 낙하율을 별도 계측합니다.",
+        "baselines": "Uncompressed, fixed at nominal ρ, fixed matched to realized mean token count, adaptive inverse-Simpson, adaptive Shannon, adaptive Gini, task-agnostic attention, LightVLA retrained reference.",
+        "metrics": "whole-task strict success and Wilson 95% CI, retained tokens, GPU event latency vs wall-clock action prediction, p50/p95 loop latency, real elapsed task time, unexpected object contact.",
+        "risks": "원래 저자 표의 50회 실물 실험은 통계적 불확실성이 크고, OOD 장애물/텍스트 변형에 대한 안전 보증이 아닙니다. 과제별 ρ 튜닝을 새 테스트 데이터에 무단 사용하지 않습니다."
+      },
+      "related": [
+        "2406.09246",
+        "2611.05093",
+        "2410.24164"
+      ]
+    }
+  },
+  "2608.01397": {
+    "summary_ko": "SG-WAM은 미래 영상을 복원하는 대신, 행동 정책이 사용하는 잠재표현 자체에서 미래 상태를 예측하고 얼어 있는 VGGT의 기하 정보를 주입합니다. LIBERO·LIBERO-Plus 및 실제 UR5e 3과제에서 원논문 Figure와 ablation을 근거로 검증합니다.",
+    "reading_minutes": 35,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-13",
+    "editorial_published_at": "2026-11-13",
+    "primary_category": "wam",
+    "source_scope_ko": "arXiv:2608.01397v2 공식 PDF 22쪽, §3 Method·§4 Experiments, Table 1–5·Figure 1–4 및 Appendix G의 null-action ablation 검증. 원본 HTML Figure 1·2 캡션과 arXiv 제공 이미지 대조.",
+    "abstract": "정책이 직접 사용하는 표현 공간과 world-model 예측 대상 공간이 다르면 미래 예측은 행동에 필요한 정보보다 픽셀·배경 재구성에 지나친 용량을 쓸 수 있습니다. SG-WAM은 동역학 토큰, EMA policy target, frozen VGGT 기하 지도 및 action-conditioned self-guided prediction을 공동학습해 이를 줄입니다. 이 글의 수치는 저자 실험을 재현한 것이 아니라 원문 표를 설명합니다.",
+    "project_url": "https://sg-wam.github.io/",
+    "review": {
+      "one_line": "**SG-WAM은 '미래 화면을 잘 그리는 모델'보다 '행동 정책이 사용할 수 있는 기하학적으로 정돈된 미래 상태'를 학습하는 모델입니다.** Future prediction과 action generation의 표현 공간을 연결하는 설계가 핵심입니다. (§1–3, Figure 1·2)",
+      "problem": "식탁에서 그릇을 들어 옆 선반에 두는 작업을 생각해 보십시오. 미래 RGB 화면은 조명·카메라 변화까지 다뤄야 하지만, 조작 성공에 결정적인 것은 **집게가 어디로 이동하고 대상이 어떻게 움직이는가**입니다. 과거 WAM은 영상·깊이를 직접 예측하거나, 현재 정책의 행동표현과 분리된 외부 잠재표현을 예측합니다. 전자는 외형 재구성 부담이 크고 후자는 실제 행동에 쓸 만한 신호와 어긋날 위험이 있습니다. (원문 Figure 1, §1–2)",
+      "idea": "SG-WAM은 VLM의 관측·언어 입력에 학습 가능한 dynamics tokens를 추가해 정책 내부에서 변화 가능한 상태를 나타냅니다. Self-Guided World Predictor(SGWP)는 현재 dynamics tokens와 중간 행동을 보고 T후의 dynamics tokens를 예측하고, 같은 정책의 EMA 복제본이 미래 관측에서 만든 목표 표현을 제공합니다. Frozen VGGT teacher는 주 시야 이미지 패치에 기하학적 구조를 주어 이 표상이 물체·그리퍼와 함께 위치적으로 의미를 갖도록 합니다. (원문 §3.2–3.4, Figure 2)",
+      "method": "학습은 세 신호를 함께 사용합니다. 첫째, 관측·명령·상태를 VLM으로 전달하고 action expert가 flow matching으로 연속 행동 chunk를 예측합니다. 둘째, 학습 가능한 dynamics tokens의 현재 표현에 intervening robot actions를 조건으로 넣어 미래 토큰을 예측하는 SGWP를 학습합니다. 목표는 EMA policy encoder가 실제 미래 프레임을 보고 출력한 토큰의 stop-gradient 표현입니다. 셋째, frozen VGGT에서 나온 장면 구조를 주 시야 visual tokens에 cosine 계열 정렬 손실로 주입합니다. 추론에는 행동 생성 경로만 남기고 geometry teacher/SGWP/EMA target branch를 제거하므로, 미래 영상을 직접 생성해 기다리지 않습니다. Figure 2는 3가지 branch를 색상으로 구분합니다. (원문 §3, Appendix)",
+      "findings": "LIBERO 네 suite 평균 성공률은 98.5%(Table 1), LIBERO-Plus zero-shot 평균은 73.0%(Table 2)입니다. 두 벤치마크는 분포 변화와 난이도가 달라 평균을 직접 비교하면 안 됩니다. Table 4에서 geometry/WM 모두 없을 때 95.3%, geometry만 96.6%, WM만 97.6%, 둘 다 98.5%이며, LIBERO-Long은 91.0/92.2/94.4/96.2%입니다. Table 5의 dynamics token 수는 1개=96.1%, 4개=97.5%, 8개=98.5%, 16개=97.2%로 단조 증가하지 않습니다. 실물 UR5e에서 집기·수건 접기·공구상자 정리 3과제를 다루며, Table 3의 Pick-and-Place ID 성공률은 SG-WAM 75%, VLA-JEPA 35%, VPP 30%입니다. (원문 §4.2–4.5)",
+      "limitations": "0.9B 정책과 사전학습 조건은 유사 규모의 모든 최신 WAM와 동일하지 않습니다. LIBERO의 98.5%와 LIBERO-Plus 73%는 서로 다른 분포·지표입니다. 실제 로봇은 UR5e 한 기종, 세 과제이며 Pick/Place·Towel은 조건당 20회, 긴 Toolbox는 10회 실험에 그칩니다. 미래 예측 개선 자체가 안전이나 힘 제어까지 자동 보증하지 않고, geometry teacher를 바꾸면 성능이 달라질 수 있습니다. 후속 연구로 교차 embodiment 및 다양한 센서 설정이 필요합니다. (원문 §4, §5)",
+      "questions": [
+        "VGGT 기하 지도는 카메라 calibration 오류와 반사면에서 어떤 토큰을 잘못 정렬할까요?",
+        "EMA target과 SGWP가 없을 때 장기 과제 오류의 어느 부분이 증가하나요?",
+        "동작 조건을 null-action으로 바꾼 Appendix G 실험은 정지 장면 모델링만으로 얻을 수 있는 성능을 얼마나 보이나요?",
+        "8 dynamics tokens의 최적값이 다른 로봇 기종과 장기 단계 수에서도 유지될까요?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**읽기 순서:** Figure 1의 observation-heavy / auxiliary-latent 접근을 비교한 후 Figure 2에서 세 학습 신호(geometry, future alignment, flow action)를 분리합니다. 마지막으로 Table 4의 2×2 ablation과 Table 3의 실물 표본 수를 확인합니다. 모든 수치는 저자 보고이며 실험을 재현했다고 주장하지 않습니다.",
+      "pipeline": [
+        {
+          "title": "관찰·명령·상태의 공동 인코딩",
+          "detail": "정책 백본 VLM에 여러 카메라 시야, 자연어 명령, 로봇 proprioception 및 learnable dynamics tokens를 함께 입력합니다. 일반적인 이미지 단서와 동역학 상태를 같은 정책 맥락으로 연결합니다.",
+          "io": "o_t, instruction, q_t → VLM + dynamics tokens"
+        },
+        {
+          "title": "기하학적 시각 지도 학습",
+          "detail": "학습시에만 frozen VGGT가 중심 시야의 이미지에 대한 geometry-rich teacher feature를 제공합니다. 정책의 image-token 표현을 이에 정렬해 손·물체 관계를 포착하도록 돕습니다. 추론 시에는 teacher를 호출하지 않습니다.",
+          "io": "VGGT frozen → geometry alignment"
+        },
+        {
+          "title": "EMA 자기지도 미래 목표 생성",
+          "detail": "현재 정책 파라미터의 exponential-moving-average 복제본에 실제 미래 관측을 입력해 미래 dynamics-token target을 만듭니다. 이는 별도 완전히 다른 표현 모델을 목표로 하는 방식의 간극을 줄이고 target drift를 완화합니다.",
+          "io": "EMA policy(o_t+T) → stopped-gradient dynamics target"
+        },
+        {
+          "title": "중간 행동으로 조건화된 미래 예측",
+          "detail": "Self-Guided World Predictor는 현재 dynamics tokens와 t부터 t+T까지의 action을 조건으로 미래 표현을 예측합니다. 즉 아무 일도 안 하는 미래가 아니라 실제로 취한 행동이 바꾼 상태를 배우게 합니다.",
+          "io": "SGWP(d_t, a_t:t+T) → predicted d_t+T"
+        },
+        {
+          "title": "Flow matching 행동 생성과 추론 단순화",
+          "detail": "정책의 action expert에서 현재 관측·동역학 정보를 근거로 연속 동작을 생성합니다. 학습 때의 geometry branch, SGWP, EMA 목표 계산은 추론에서 제거하고 실제 제어는 policy forward만 사용합니다.",
+          "io": "policy tokens → flow-matching action expert → action chunk"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "'미래 이미지'와 '정책의 미래표현'의 차이",
+          "body": "픽셀 예측은 조명과 질감까지 맞춰야 합니다. SG-WAM은 policy-derived latent target의 일관성과 그 표상의 공간정보를 동시에 감독하므로 세계예측과 행동 생성의 표현 간 불일치를 줄이고자 합니다. Figure1의 그림은 개념적 대비이지 동일 예산에서 모든 선행 WAM보다 우월하다는 증명이 아닙니다.",
+          "watch": "정책이 갖춘 기하학적 감각이 실제 접촉 역학까지 충분히 설명하는지는 별도 과제입니다."
+        },
+        {
+          "title": "Intervening action의 중요성",
+          "body": "동일한 관측이라도 오른쪽으로 밀면 물체가 이동하고 정지하면 그대로 남습니다. SGWP를 중간 행동에 조건화하는 이유는 현재 화면만으로 미래를 예측하는 shortcut을 피하기 위함입니다. Appendix G는 올바른 action vs null-action 대조에서 성능 차이를 보고합니다.",
+          "watch": "null-action 실험의 성능 하락과 strict 제어 성공률을 동일한 개념으로 표현하지 않습니다."
+        },
+        {
+          "title": "Geometry teacher와 미래 predictor의 상보성",
+          "body": "Table4는 아무 추가 감독 없는 경우, geometry만 있는 경우, WM만 있는 경우, 둘 다 있는 경우를 비교합니다. WM만의 평균 97.6과 양쪽의 98.5 차이는 작지만 LIBERO-Long의 94.4 vs 96.2로 작업 길이에 따른 차이가 보입니다.",
+          "watch": "이 결과가 순수 causal 효과라는 결론에는 학습 데이터·seed·architecture 대조가 더 필요합니다."
+        },
+        {
+          "title": "Dynamics token 용량과 추론 비용",
+          "body": "Table5에서 토큰 수 8개일 때 평균 98.5%이고 16개일 때 97.2%입니다. 표현용량이 많아질수록 효과가 반드시 좋아지지 않으며 추가 attention 비용과 최적화 난도를 함께 봐야 합니다. 보조 predictor는 추론 시 불필요합니다.",
+          "watch": "총 param count 0.9B와 학습에 쓰인 frozen teacher 연산 비용을 분리하여 평가합니다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "Table 1 · LIBERO 전체 평균",
+          "value": "98.5%",
+          "context": "4 suites 평균; 0.9B 모델, 별도의 대규모 embodied pretraining 없음"
+        },
+        {
+          "metric": "Table 2 · LIBERO-Plus",
+          "value": "73.0%",
+          "context": "카메라/로봇/조명/배경/객체·언어 변화 포함 zero-shot 평가; 표준 LIBERO와 섞어 평균 내지 않음"
+        },
+        {
+          "metric": "Table 4 · Geo X / WM X",
+          "value": "95.3% (Long 91.0%)",
+          "context": "기하 감독·자기지도 미래예측 모두 제거"
+        },
+        {
+          "metric": "Table 4 · Geo O / WM X",
+          "value": "96.6% (Long 92.2%)",
+          "context": "기하 감독만 사용한 ablation"
+        },
+        {
+          "metric": "Table 4 · Geo X / WM O",
+          "value": "97.6% (Long 94.4%)",
+          "context": "미래예측만 사용한 ablation"
+        },
+        {
+          "metric": "Table 4 · Geo O / WM O",
+          "value": "98.5% (Long 96.2%)",
+          "context": "두 신호를 결합한 최종 모델"
+        },
+        {
+          "metric": "Table 5 · dynamics tokens",
+          "value": "1:96.1 / 4:97.5 / 8:98.5 / 16:97.2%",
+          "context": "동일 평가 4 suites 평균, 최적값 단조 증가하지 않음"
+        },
+        {
+          "metric": "Table 3 · 실물 Pick-and-Place ID",
+          "value": "SG-WAM 75% / VLA-JEPA 35% / VPP 30%",
+          "context": "UR5e, 20 trials/method; 100 demonstrations/task, 저자 로컬 setup"
+        },
+        {
+          "metric": "Table 3 · 실물 Toolbox ID",
+          "value": "SG-WAM 50% / VLA-JEPA 20% / VPP 30%",
+          "context": "장기 3단계 과제, 단 10 trials/method"
+        }
+      ],
+      "evidence_note": "Table3의 실제 로봇 20회/10회 성공률은 독립 실험 반복에 의한 CI가 보고되지 않은 한 점 추정치입니다. Table4의 이득은 모델 구성 제거 실험이며 기하학적 causal 안정성의 보증은 아닙니다.",
+      "comparison": "VLA-JEPA는 미래 representation을 예측하지만 teacher 공간과 policy 공간의 정렬이 약할 수 있고, VPP는 미래 시각 관측을 영상으로 명시적으로 예측해 perception 비용이 더 큽니다. SG-WAM은 행동정책이 직접 쓰는 dynamics tokens로 target을 두며 frozen geometry teacher로 공간 구조를 보강합니다. 실물 세 과제 비교는 같은 UR5e 배치에서의 제한된 표본으로 읽어야 하며 원시 논문들의 벤치마크 평균을 혼합한 단일 순위를 만들지 않습니다.",
+      "reading_guide": [
+        "Figure 1에서 explicit observation targets와 policy-derived latent targets의 장단점을 적으십시오.",
+        "Figure 2에서 EMA teacher가 실제 미래 프레임을 학습 때만 읽는 경로와 추론 경로를 서로 다른 색으로 표시하십시오.",
+        "Table 4의 2×2 ablation을 그대로 복사해 LIBERO-Long에서 얻은 두 요소의 상보성을 확인하십시오.",
+        "Table 3의 20회와 10회 시행을 섞지 말고 ID/OOD 교란 조건을 별도 칸에 기록하십시오.",
+        "Appendix G의 null-action baseline에서 '행동 조건'을 실제로 빼면 어떤 정보가 남는지 확인하십시오."
+      ],
+      "replication": {
+        "hypothesis": "동일 정책·학습 step·데이터에서 geometry alignment와 EMA-guided SGWP의 조합은 ID보다 긴 horizon/OOD 장면에서 더 큰 개선을 제공할 수 있습니다.",
+        "setup": "LIBERO 네 suite와 LIBERO-Plus 교란을 같은 observation interface에서 3 seeds 이상 재학습하고, frozen VGGT/SGWP/EMA branch의 학습시 FLOPs와 inference latency를 따로 기록합니다. 실물 UR5e 세 과제는 저자 100 demos/task 및 20/10 trials의 초기조건을 추적한 뒤 trial 수를 확대합니다.",
+        "baselines": "Plain flow-matching VLA, +geometry only, +SGWP only, both SG-WAM, SGWP null-action, frozen external latent teacher, video-prediction auxiliary head with matched params/compute.",
+        "metrics": "strict success per task and OOD shift, action prediction calibration, future-latent error, failure recovery, GPU-hours training incl frozen teacher, p95 real action-loop latency.",
+        "risks": "Camera VGGT feature may be brittle with reflective/transparent objects; teacher cost and seed variability must not be hidden. Counts of original real trials are small."
+      },
+      "related": [
+        "2610.07922",
+        "2611.05062",
+        "2611.04527"
+      ]
+    }
+  },
+  "2610.40026": {
+    "summary_ko": "RoboSeed는 새로운 VLA의 성공률 경쟁이 아니라 정책 선택의 재현 가능한 평가 체계를 제안합니다. 작업 성공률, 학습비, 배포비, 연구 근거, 재현성을 다섯 축으로 나누고 RoboTwin 실측 및 Appendix Table의 조건·빈 측정치를 검토합니다.",
+    "reading_minutes": 36,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-13",
+    "editorial_published_at": "2026-11-13",
+    "primary_category": "robotics",
+    "source_scope_ko": "arXiv:2610.40026v1 공식 PDF 41쪽, §3 Empirical Evaluation·§4 Evidence Pipeline·§5 Scoring, Table 4·26 및 Appendix의 학습·평가 configuration/Table 32–33 대조. PDF crop Figure 1·2는 원문에서 추출했으나 저장소상 추가 수동 크롭 검수가 필요한 상태입니다.",
+    "abstract": "RoboSeed는 성능만으로 VLA/WAM을 순위화하면 GPU 예산, 제어 인터페이스, 서비스 지연, 근거 공개 수준을 놓친다고 지적합니다. ABot-M0 백본의 고정된 RoboTwin 평가와 다양한 모델의 원시 측정치를 분리하고, 결측값을 보간하지 않은 5차원 평가 프로파일과 조건부 의사결정을 제안합니다.",
+    "code_url": "https://github.com/PrimitiveX/RoboSeed",
+    "review": {
+      "one_line": "**RoboSeed는 '가장 좋은 VLA'를 뽑은 논문이 아닙니다.** 작업 성공률이 높아도 학습비와 서빙비, 평가 프로토콜, 공개 증거가 부족하면 모델 선택에 필요한 결론을 보류해야 한다고 주장합니다. (PDF §1, §5, Table26)",
+      "problem": "로봇 연구실에 GPU 200시간밖에 없다면 성공률 85.5%짜리 4B 모델과 80.6%짜리 0.8B 모델 중 무엇을 선택해야 할까요? 더 큰 모델이 좋아 보이지만 downstream 적응 학습 비용, 실제 로봇에서의 p95 응답, 프롬프트 형태, benchmark 일치 여부가 빠져 있으면 선택이 불가능합니다. 기존 VLA 논문들의 성공률 표는 서로 다른 학습 시연·액션 정규화·언어 지시·평가 에피소드 수를 혼합하기 쉽습니다. (원문 §1–3)",
+      "idea": "RoboSeed는 모델을 다섯 축으로 표현합니다. P=capability(폐루프 결과), T=training affordability(학습 자원), D=deployment affordability(서빙 비용), V=locally verified research value(검증된 연구상 가치), R=reproduction evidence(재현 근거). 축별로 정해진 anchor를 사용해 0~100 프로파일로 변환하고, balanced·training-constrained·deployment-constrained의 3가지 preference weight를 제공합니다. 그러나 필요한 원시 측정이 빠지면 축 값을 만들지 않으며, 종합 점수도 '-'로 남깁니다. (원문 §5, Table26)",
+      "method": "먼저 연구자가 평가할 태스크와 언어·visual goal 계약을 정합니다. 데이터/액션 state dimension과 normalization, 평가 seed, 성공 판정 방식을 맞춰 비교 가능성을 확인합니다. ABot-M0 실험은 RoboTwin의 50 tasks × 각 Clean/Randomized 100 episodes로, 같은 training recipe(150k updates, global batch64, seed42, 4 H200 GPU)를 사용하며 VLM 백본 6개를 교체합니다. 얻은 성공률과 GPU-hours는 같은 구성의 비교에 한정합니다. 이후 별도 실험 및 공개 문서에서 연구 증거를 수집해 다섯 축에 매핑하고, 입력이 부족한 모델의 aggregate는 계산하지 않습니다. (PDF §3–5, Table4, Appendix)",
+      "findings": "Table4에서 Qwen3.5-0.8B 기반 ABot-M0는 Clean 80.76%, Randomized 80.50%, 동일 가중 평균 80.63%에 174.1 H200 GPU-hours입니다. Qwen3-VL-2B는 83.78%·214.0시간, Qwen3-VL-4B는 85.52%·288.1시간입니다. Qwen3.5-2B는 84.12%·212.9시간, Qwen3.5-4B 85.50%·394.4시간, Qwen3.5-9B 83.83%·509.2시간으로 크기가 결과를 단조 증가시키지는 않습니다. Table26에서는 ABot의 balanced 84%, training-constrained 92%, deployment-constrained 72% 등의 입력 커버리지만 보고하고 최종 aggregate 값은 미완료 '-'입니다. (원문 §3.2, §5.3)",
+      "limitations": "RoboSeed는 동일 backbone family/recipe의 탐색과 서로 다른 native interface를 가진 타 모델의 연구가치 평가를 구별합니다. 공개 Leaderboard의 다른 GPU·예산·action normalization을 억지로 같은 조건이라고 가정할 수 없습니다. 일부 서빙 trace/p95 latency가 빠져 5차원 합산 점수를 생성하지 않았고, Table26은 오히려 **비교를 미룬 근거**입니다. 백본별 1회 학습 seed42의 점 추정과 Clean/Randomized 장면은 무작위 OOD 세계 전체에 대한 일반화 보증이 아닙니다. (원문 §3–5, §6, Appendix)",
+      "questions": [
+        "동일한 RoboTwin 평균 성공률을 갖는 두 checkpoint의 serving p95 latency를 측정하면 선호가 어떻게 변할까요?",
+        "Clean/Randomized가 같은 학습 distribution에서 제공된 시연을 사용했을 때 이를 순수 OOD generalization으로 부르면 안 되는 이유는?",
+        "ABot vs OpenWAM의 visual instruction·state/action interface를 강제로 맞추면 어떤 정보 손실이 생기나요?",
+        "Table26의 missing aggregate를 억지로 중간 점수 50으로 메우면 의사결정이 얼마나 왜곡되나요?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**이 논문을 읽는 기준:** RoboSeed는 단일 신경망 아키텍처가 아닌 model-choice 방법론입니다. Figure1의 5차원 평가 흐름, Figure2의 로컬 ABot-M0 기술구성을 분리해 읽고, Table4의 실제 성공/비용과 Table26의 미완료 aggregate를 함께 봅니다. PDF 원본 크롭의 공간 범위는 아직 수동 검수 대기라고 명시합니다.",
+      "pipeline": [
+        {
+          "title": "결정 문제와 적용 인터페이스 정의",
+          "detail": "제어 지시가 언어 텍스트인지, 시각 목표인지, action state dimension이 무엇인지 먼저 명시합니다. 이는 두 모델이 같은 LIBERO나 RoboTwin 점수를 보고했어도 직접 대조할 수 있는지 판정하는 선행 조건입니다.",
+          "io": "task + sensor/action contract + constraint"
+        },
+        {
+          "title": "동일 레시피에서 백본 비용–성공률 측정",
+          "detail": "ABot-M0의 action expert와 geometric pathway를 고정하고 다양한 Qwen 백본을 사용합니다. RoboTwin의 50개 과제, clean/randomized 각각 100 episodes로 총 각 장면 유형 5000회 결과를 수집하고, 150k updates와 글로벌 batch64를 유지합니다.",
+          "io": "checkpoint → 2×5000 rollouts + GPU-hour trace"
+        },
+        {
+          "title": "모델별 증거와 출처 감사",
+          "detail": "성공률 외에 training GPU-hours, model/peak VRAM, action-prediction p95, 코드·seed·레시피 공개 여부, 재현 가능한 실패 조건을 검토합니다. native instruction의 차이가 있는 타 계열 정책은 결과를 하나의 실험으로 합산하지 않습니다.",
+          "io": "native measurements + provenance → evidence matrix"
+        },
+        {
+          "title": "5차원 점수와 선호 프로파일 적용",
+          "detail": "P/T/D/V/R 각 차원의 측정에 anchor를 적용합니다. balanced, training constrained, deployment constrained preference weights는 가치를 정하는 입력일 뿐 저자가 훈련된 ranker나 정확한 미래 성능 예측기를 제안한 것은 아닙니다.",
+          "io": "supported dimensions × anchored 0–100 scores"
+        },
+        {
+          "title": "누락된 측정값은 빈칸 유지",
+          "detail": "배포 95번째 백분위 지연 등이 누락되면 필수 차원으로 합산할 근거가 없으므로 aggregate '-'를 남기고 관찰된 가중 입력 커버리지를 보여줍니다. 이후 어떤 측정을 해야 의사결정할 수 있는지도 기록합니다.",
+          "io": "score only with complete inputs; else coverage report"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "Benchmark 비교 가능성 게이트",
+          "body": "원시 스코어가 같아도 task list, visual prompt contract, action de-normalization, episode cap, evaluator commit 등이 다르면 비교는 엄격히 제한됩니다. 저자는 RoboTwin 내 공통 recipe 학습과 타 모델의 native setup 평가를 분리합니다. 단위가 맞지 않는 외부 성능은 조건을 남긴 참고치입니다.",
+          "watch": "시드 42로 학습한 로컬 체크포인트와 공식 발표 체크포인트는 동일 모델군이어도 같은 결과가 아닙니다."
+        },
+        {
+          "title": "성공률 대 비용의 파레토 관계",
+          "body": "Table4에서 Qwen3-VL-4B(85.52%,288.1 GPU-hours)와 Qwen3.5-2B(84.12%,212.9 GPU-hours)는 비용 대비 선택이 달라질 수 있습니다. Qwen3.5-9B 509.2 GPU-hours는 평가 성공률 83.83%로 백본 크기만 늘리는 전략이 충분조건이 아닙니다.",
+          "watch": "GPU-hour는 특정 H200 환경의 비용지표로 cloud dollar나 에너지 소비가 아닙니다."
+        },
+        {
+          "title": "규칙 기반 5차원 평가와 중간값 대치 금지",
+          "body": "일반 보고서처럼 빠진 serving latency에 평균값을 넣어 1등을 정하지 않습니다. §5의 weight를 바꾸면 같은 원시 결과라도 다른 선택이 가능하며, Table26에서 aggregate '-'는 오류가 아니라 증거 부족의 명시적 신호입니다.",
+          "watch": "coverage 84%는 성공률이나 모델점수 84점이 아닙니다."
+        },
+        {
+          "title": "ABot-M0의 실제 모듈은 별도",
+          "body": "PDF Figure2는 다섯 평가 축의 가중치 그림이 아니라, ABot-M0에서 VLM에 VGGT geometry stream을 결합하고 action expert로 흐르는 기술적 module 관계를 설명합니다. 이 사실을 Figure1의 RoboSeed 전체 평가 프로그램과 구분해 잘못된 캡션을 방지했습니다.",
+          "watch": "Figure2는 PDF 자동 crop이므로 패널 범위의 수동 검수가 필요합니다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "Table 4 · Qwen3.5-0.8B",
+          "value": "80.63% / 174.1 H200 GPU-h",
+          "context": "Clean 4038/5000=80.76%; Randomized 4025/5000=80.50%; 2 장면 동등가중 평균"
+        },
+        {
+          "metric": "Table 4 · Qwen3-VL-2B",
+          "value": "83.78% / 214.0 GPU-h",
+          "context": "Clean 83.66%; Randomized 83.90%"
+        },
+        {
+          "metric": "Table 4 · Qwen3-VL-4B",
+          "value": "85.52% / 288.1 GPU-h",
+          "context": "Clean 85.70%; Randomized 85.34%"
+        },
+        {
+          "metric": "Table 4 · Qwen3.5-2B",
+          "value": "84.12% / 212.9 GPU-h",
+          "context": "Clean 84.30%; Randomized 83.94%; 특정 예산에서는 대안"
+        },
+        {
+          "metric": "Table 4 · Qwen3.5-4B",
+          "value": "85.50% / 394.4 GPU-h",
+          "context": "Clean 85.88%; Randomized 85.12%; 동일 종류의 비용 정의"
+        },
+        {
+          "metric": "Table 4 · Qwen3.5-9B",
+          "value": "83.83% / 509.2 GPU-h",
+          "context": "더 큰 백본도 동일 recipe에서 최고 성공률을 보장하지 않음"
+        },
+        {
+          "metric": "Protocol / §3.2",
+          "value": "50 tasks × 100 episodes × 2 scenes",
+          "context": "각 checkpoint 5000 clean + 5000 randomized rollouts; 150k steps, batch 64, seed42, 4 H200"
+        },
+        {
+          "metric": "Table 26 · ABot input coverage",
+          "value": "balanced 84% / training 92% / deployment 72%",
+          "context": "각 프로파일의 가중 측정 커버리지; **aggregate '-'**, 점수 아님"
+        },
+        {
+          "metric": "Table 26 · OpenWAM coverage",
+          "value": "64% / 57% / 62% (official)",
+          "context": "선호 설정별 커버리지; aggregate 생략, native interface·서빙 trace 결측"
+        }
+      ],
+      "evidence_note": "Table 4의 수치는 ABot-M0 평가 조건의 성공률과 H200 GPU-hour의 점 추정입니다. Table26의 백분율은 측정값이 채워진 비중이며 성능 점수가 아닙니다. 결측 aggregate를 임의로 보간하지 않았습니다.",
+      "comparison": "일반적인 공개 leaderboard는 한 벤치마크의 최고 성공률을 제시하지만, RoboSeed는 정책 선택에 쓸 수 있는 실험 증거의 질과 비용을 모델별로 남깁니다. 리더보드 지표를 대체하는 새 통합 벤치마크라기보다 프로토콜 일치 여부와 미측정 영역을 공개하는 decision framework입니다. RoboTwin의 동일 ABot 레시피 비교가 다른 native-policy 인터페이스로 전이된다는 주장에는 근거가 없으며, 저자도 종합 등수 제시를 보류합니다.",
+      "reading_guide": [
+        "PDF Figure1의 (a) 모델·벤치마크, (b) evidence collection, (c) 5차원 평가를 추적하십시오.",
+        "Figure2가 다섯 점수축이 아닌 ABot-M0 VLM/VGGT/action expert 모듈을 보여준다는 것을 캡션으로 확인하십시오.",
+        "Table4에서 Clean count가 5000을 분모로 하며 Randomized count와 따로 기록된 것을 확인하십시오.",
+        "Table26에서 dash와 input coverage를 구별하고 어떤 차원 데이터가 비어 있는지 §5를 찾아 적으십시오.",
+        "Appendix Table32–33에서 state/action dim, action horizon, seed, LIBERO·RoboCasa의 별도 학습 recipe를 확인하십시오."
+      ],
+      "replication": {
+        "hypothesis": "성공률 1–2%p 손실을 허용할 때 저예산 사용자에게 적합한 checkpoint는 다른 조건에서의 최대 성공률 모델과 달라질 수 있으나 serving p95가 누락되면 최종 선택이 바뀔 수 있습니다.",
+        "setup": "ABot-M0 backbone 6개를 동일 RoboTwin 50 tasks × 100 episodes × clean/randomized에서 반복 재훈련(각 3 seeds), 동일 evaluator commit 13c3c47과 150k updates/global batch64를 사용합니다. H200 GPU-hour, p95 latency, VRAM 및 실물 로봇 제어 loop 지연을 독립 계측합니다.",
+        "baselines": "Qwen3.5-0.8B, Qwen3-VL-2B/4B, Qwen3.5-2B/4B/9B within ABot; OpenWAM/LiLa only with explicitly harmonized interface; balanced/training-constrained/deployment-constrained rank sensitivity.",
+        "metrics": "strict task success/clean/randomized, GPU-hours and energy kWh, p50/p95 serving latency, memory, evidence-completeness coverage, seed variance, rank stability under score anchors.",
+        "risks": "다른 행동 인터페이스를 강제로 통일하면 원래 정책의 장점을 훼손할 수 있습니다. 빈 latency/VRAM 값을 0이나 중간 점수로 채워 최종 1등을 만들면 안 됩니다."
+      },
+      "related": [
+        "2610.07922",
+        "2611.05080",
+        "2611.05093"
+      ]
+    }
   }
 }

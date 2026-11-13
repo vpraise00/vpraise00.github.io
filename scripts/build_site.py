@@ -114,7 +114,8 @@ FIGURE_PLACEMENTS = {
     '2609.23578': {1:'idea',2:'findings'},    # AR-WAM
     '2609.19600': {1:'idea',2:'method'},     # WorldContact
     '2609.16074': {1:'idea',2:'comparison'}, # survey
-    '2608.01397': {1:'idea',2:'method'},     # SG-WAM
+    '2608.01397': {1:'idea',2:'method'},
+    '2610.22146': {1:'method',2:'findings'},     # SG-WAM
     '2605.00080': {1:'idea',2:'comparison'}, # survey
     '2504.16054': {2:'findings',3:'method'}, # pi0.5: deployment example; training recipe
     '2503.14734': {1:'idea',2:'method'},     # GR00T
@@ -144,18 +145,27 @@ def render_visual_figures(p: dict) -> dict[str, str]:
         # Source-reviewed author-project figures can be linked directly; never trust
         # arbitrary remote URLs from metadata as executable/embedded markup.
         remote=str(record.get('remote_url') or '')
-        author_remote=bool(pid == '2611.04527'
-          and record.get('method') == 'author_project_exact_figure'
-          and remote in {
-            'https://harryjo97.github.io/dreamfree/assets/figures/method_v2.png?v=20261103',
-            'https://harryjo97.github.io/dreamfree/assets/figures/droid_real_two_row.png'
-          })
+        author_remote=bool(
+          (pid == '2611.04527'
+           and record.get('method') == 'author_project_exact_figure'
+           and remote in {
+             'https://harryjo97.github.io/dreamfree/assets/figures/method_v2.png?v=20261103',
+             'https://harryjo97.github.io/dreamfree/assets/figures/droid_real_two_row.png'
+           })
+          or
+          (pid == '2610.22146'
+           and record.get('method') == 'arxiv_html_exact_figure'
+           and remote in {
+             'https://arxiv.org/html/2610.22146v2/sec/imgs/method.jpg',
+             'https://arxiv.org/html/2610.22146v2/importance_metric.svg'
+           })
+        )
         image_exists=bool((path and (ROOT/path).exists()) or author_remote)
         if image_exists:
             img=(remote if author_remote else '../'+path)
             img=h(img,quote=True)
             method=record.get('method','')
-            kind=('저자 공식 프로젝트 원본 (외부 링크)' if author_remote else ('arXiv HTML 저자 원본' if method=='arxiv_html_exact_figure' else '원논문 PDF 자동 추출 (크롭 검수 필요)'))
+            kind=(('arXiv HTML 저자 원본 (외부 링크)' if pid=='2610.22146' else '저자 공식 프로젝트 원본 (외부 링크)') if author_remote else ('arXiv HTML 저자 원본' if method=='arxiv_html_exact_figure' else '원논문 PDF 자동 추출 (크롭 검수 필요)'))
             source_link=h(record.get('source',source),quote=True)
             image='<div class="original-figure-stage"><a href="'+img+'" target="_blank" rel="noopener noreferrer" title="원문 그림 크게 보기"><img src="'+img+'" alt="'+h(p['title']+f' Figure {display_n} 원본',quote=True)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer"/></a></div>'
             clip=clip_original_caption(fig.get('verified_caption') or record.get('caption',''))

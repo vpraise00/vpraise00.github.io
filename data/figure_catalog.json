@@ -55,28 +55,30 @@
     ]
   },
   "2610.40026": {
-    "heading": "좋은 정책을 고르는 기준은 성공률 하나가 아니다",
-    "intro": "이 글은 RoboSeed: Multidimensional Evaluation of Vision-Language-Action and World-Action Models의 원본 Figure를 보며 읽는 가이드입니다. 각 그림은 저자 논문에서만 추출합니다. **캡션은 원문을 기준으로**, 아래 설명은 한국어 독해를 위해 별도로 작성했습니다.",
+    "heading": "RoboSeed의 다섯 가지 모델 선택 기준과 실제 ABot-M0 구조",
+    "intro": "Figure 1은 RoboSeed 전체 평가 프로그램의 흐름입니다. Figure 2는 그와 별개로 **ABot-M0 로컬 정책의 VLM·VGGT·action-expert 구현**을 그린 원본입니다. 원논문 PDF p.6/p.9 추출 크롭은 추가 수동 검수 대상이며 이미지 구성 요소를 새로 그리거나 대체하지 않았습니다.",
     "figures": [
       {
         "number": 1,
-        "reading_title": "RoboSeed의 비교 체계",
-        "context": "성능·추가학습 비용·배포 비용·현지 검증 연구가치·재현 근거라는 다섯 축을 독립적으로 평가한다.",
+        "placement": "idea",
+        "reading_title": "RoboSeed: 측정–인터페이스 검증–다섯 축 프로파일",
+        "context": "Figure 1의 (a) 후보 모델과 원래 벤치마크, (b) 인터페이스/프로토콜 점검, (c) 5차원 평가의 순서가 핵심입니다. 다섯 축의 종합 순위를 이미 완성했다는 뜻은 아닙니다.",
         "steps": [
-          "원시 지표를 0~100으로 정규화할 때 사용하는 기준점과 정보 부족 항목의 처리를 확인한다.",
-          "자료가 빠진 항목을 임의의 중간 점수로 채우지 않는 것이 핵심이다."
-        ],
-        "locator": "원문 Figure 1 / arXiv:2610.40026"
+          "훈련비·배포비·연구 가치·재현근거를 작업성공과 분리하십시오.",
+          "Table26의 aggregate '-'와 weighted coverage 수치를 비교하십시오.",
+          "PDF 자동 crop의 일부 누락 가능성을 고려해 원문 PDF에서 패널을 확인하십시오."
+        ]
       },
       {
         "number": 2,
-        "reading_title": "예산별 의사결정과 증거 공백",
-        "context": "학습 자원이 부족한 경우와 서빙 자원이 부족한 경우는 서로 다른 모델을 선택할 수 있다.",
+        "placement": "method",
+        "reading_title": "ABot-M0 사례 모델: VLM + VGGT + Action Expert",
+        "context": "Figure 2는 입력 비전·언어를 처리하는 VLM과 VGGT 기하 스트림을 교차 어텐션으로 융합한 뒤 action expert가 제어를 예측하는 구현 관계를 보여줍니다. RoboSeed의 평가모델 그 자체를 학습하는 메타신경망이라고 오해하면 안 됩니다.",
         "steps": [
-          "수치가 서로 다른 벤치마크·언어 인터페이스를 섞은 것인지 먼저 검사한다.",
-          "논문은 데이터가 불완전한 총괄 순위를 확정하지 않는다. 등수를 임의로 추가하면 안 된다."
-        ],
-        "locator": "원문 Figure 2 / arXiv:2610.40026"
+          "VGGT의 추가 입력과 action expert의 조건을 구분하십시오.",
+          "평가 프레임워크는 이 네트워크 외의 OpenWAM/LiLa 등도 다룹니다.",
+          "PDF crop은 추가 수동 검수가 필요하므로 원문 PDF p.9 Figure 2를 함께 참고하십시오."
+        ]
       }
     ]
   },
@@ -916,6 +918,34 @@
           "SpatialVLA T320·T2560 조건의 rollout 성공 추세를 따로 읽습니다.",
           "곡선 기반 성능 개선폭은 약 +25%p 및 +10%p이며 정밀 표값으로 인용하지 않습니다.",
           "Figure 7 HSR의 scene-reset heuristic와 다른 개입입니다."
+        ]
+      }
+    ]
+  },
+  "2610.22146": {
+    "heading": "언어 목표에 따라 바뀌는 시각 토큰 계산 예산",
+    "intro": "원저자 공식 arXiv HTML Figure 1·2를 PDF의 정확한 번호·캡션과 대조해 인용했습니다. Figure 1은 방법론의 각 단계, Figure 2는 어떤 attention 신호를 선택하는지 실험 근거입니다. 이미지는 arXiv 공식 호스트에서 직접 제공하며 외부 접속이 필요합니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "method",
+        "reading_title": "FastVLA: task-to-vision 중요도와 시간창 기반 토큰 압축",
+        "context": "Figure 1은 비전 토큰 중요도 맵, inverse-Simpson 집중도, sliding-window, token prune, 기존 LLM+action head 흐름을 보여줍니다. 새 학습을 하지 않고 정책 입력을 줄인다는 점이 중요합니다.",
+        "steps": [
+          "명령 토큰의 attention이 이미지 패치 점수를 만드는 부분과 분포 집중도를 계산하는 부분을 나눠 보십시오.",
+          "ρ±τ 범위가 제어 시점별로 실제 유지 패치 개수를 어떻게 바꾸는지 확인하십시오.",
+          "오른쪽 출력의 7D 동작은 도식의 예시이며 모든 로봇의 동일 액션 공간이라는 주장이 아닙니다."
+        ]
+      },
+      {
+        "number": 2,
+        "placement": "findings",
+        "reading_title": "어떤 attention 신호가 토큰 제거에도 성공률을 보존하는가?",
+        "context": "Figure 2는 LIBERO에서 pruning 비율이 커질 때 task-to-vision, all-to-vision, vision-to-vision 신호를 비교한 곡선입니다. 저자는 세 대안 중 명령 조건의 중요도가 상대적으로 강건하다고 보고합니다.",
+        "steps": [
+          "이 비교는 token importance signal 선택의 ablation이며 adaptive-rate 자체의 증거는 Table 4에서 확인해야 합니다.",
+          "곡선의 성공률은 평가 로봇·백본·프루닝 비율에 종속되며 다른 태스크 성공률과 혼합하면 안 됩니다.",
+          "원본 Figure 2는 arXiv HTML의 SVG 저자 파일을 그대로 표시합니다."
         ]
       }
     ]

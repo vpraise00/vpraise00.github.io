@@ -885,5 +885,25 @@
       "method": "author_project_exact_figure",
       "review": "paper_caption_and_author_figure_crosschecked"
     }
+  },
+  "2610.22146": {
+    "1": {
+      "remote_url": "https://arxiv.org/html/2610.22146v2/sec/imgs/method.jpg",
+      "source": "https://arxiv.org/html/2610.22146v2/sec/imgs/method.jpg",
+      "paper_source": "https://arxiv.org/pdf/2610.22146v2",
+      "caption": "Figure 1: Overview of FastVLA. At each action-prediction step, FastVLA scores visual tokens with task-conditioned attention, measures the uniformity of the top-scoring importance distribution, and sets the step’s compression rate through an online sliding-window calibration, reducing LLM-backbone computation while preserving action performance.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "hosting_note": "Original author image linked from arXiv; external availability required."
+    },
+    "2": {
+      "remote_url": "https://arxiv.org/html/2610.22146v2/importance_metric.svg",
+      "source": "https://arxiv.org/html/2610.22146v2/importance_metric.svg",
+      "paper_source": "https://arxiv.org/pdf/2610.22146v2",
+      "caption": "Figure 2: Average success rate on LIBERO under increasing visual token pruning rates for the three attention-based importance signals.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched",
+      "hosting_note": "Original author SVG linked from arXiv; external availability required."
+    }
   }
 }
