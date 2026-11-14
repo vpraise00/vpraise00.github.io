@@ -153,6 +153,13 @@ def render_visual_figures(p: dict) -> dict[str, str]:
              'https://harryjo97.github.io/dreamfree/assets/figures/droid_real_two_row.png'
            })
           or
+          (pid == '2611.04839'
+           and record.get('method') == 'arxiv_html_exact_figure'
+           and remote in {
+             'https://arxiv.org/html/2611.04839v1/fig01_teaser.png',
+             'https://arxiv.org/html/2611.04839v1/fig02_network.png'
+           })
+          or
           (pid == '2610.22146'
            and record.get('method') == 'arxiv_html_exact_figure'
            and remote in {
@@ -165,7 +172,7 @@ def render_visual_figures(p: dict) -> dict[str, str]:
             img=(remote if author_remote else '../'+path)
             img=h(img,quote=True)
             method=record.get('method','')
-            kind=(('arXiv HTML 저자 원본 (외부 링크)' if pid=='2610.22146' else '저자 공식 프로젝트 원본 (외부 링크)') if author_remote else ('arXiv HTML 저자 원본' if method=='arxiv_html_exact_figure' else '원논문 PDF 자동 추출 (크롭 검수 필요)'))
+            kind=(('arXiv HTML 저자 원본 (외부 링크)' if pid in ('2610.22146','2611.04839') else '저자 공식 프로젝트 원본 (외부 링크)') if author_remote else ('arXiv HTML 저자 원본' if method=='arxiv_html_exact_figure' else '원논문 PDF 자동 추출 (크롭 검수 필요)'))
             source_link=h(record.get('source',source),quote=True)
             image='<div class="original-figure-stage"><a href="'+img+'" target="_blank" rel="noopener noreferrer" title="원문 그림 크게 보기"><img src="'+img+'" alt="'+h(p['title']+f' Figure {display_n} 원본',quote=True)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer"/></a></div>'
             clip=clip_original_caption(fig.get('verified_caption') or record.get('caption',''))

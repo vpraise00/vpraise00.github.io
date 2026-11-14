@@ -765,29 +765,21 @@
     }
   },
   "2611.04839": {
-    "2": {
-      "local": "assets/paper-figures/2611.04839-fig2.png",
-      "source": "https://arxiv.org/html/2611.04839v1/fig02_network.png",
-      "paper_source": "https://arxiv.org/html/2611.04839",
-      "caption": "Fig. 2: Architecture. 𝐟 \\mathbf{f} denotes V-JEPA features. Each prefix B t ( i ) B_{t}^{(i)} receives visual progress V i V_{i} toward the active subgoal g t g_{t} (front of the stack) and temporal-consistency energy E i E_{i} . In training, the demonstrated prefix B t B_{t} replaces sampled prefixes, and its first command a t , 0 a_{t,0} is reconstructed as a ^ t , 0 \\hat{a}_{t,0} from Δ ​ z \\Delta z and from Δ ​ z ^ \\Delta\\hat{z} . Score bars are schematic; snowflakes: frozen weights.",
+    "1": {
+      "remote_url": "https://arxiv.org/html/2611.04839v1/fig01_teaser.png",
+      "source": "https://arxiv.org/html/2611.04839v1/fig01_teaser.png",
+      "paper_source": "https://arxiv.org/html/2611.04839v1",
+      "caption": "Fig. 1: Left: two independent Place Basket on Table recordings with GR00T N1.7 and our method. Right: each sampled sequence is scored by visual progress and temporal-consistency energy; the first K commands of the selected candidate are executed.",
       "method": "arxiv_html_exact_figure",
-      "review": "caption_matched",
-      "dimensions": [
-        860,
-        375
-      ]
+      "review": "caption_matched"
     },
-    "3": {
-      "local": "assets/paper-figures/2611.04839-fig3.png",
-      "source": "https://arxiv.org/html/2611.04839v1/fig_task_gallery.png",
-      "paper_source": "https://arxiv.org/html/2611.04839",
-      "caption": "Fig. 3: Representative task scenes: the other six real-robot tasks and the ten SIMPLE simulation tasks. Place Basket on Table is shown in Fig. 1 .",
+    "2": {
+      "remote_url": "https://arxiv.org/html/2611.04839v1/fig02_network.png",
+      "source": "https://arxiv.org/html/2611.04839v1/fig02_network.png",
+      "paper_source": "https://arxiv.org/html/2611.04839v1",
+      "caption": "Fig. 2: Architecture. V-JEPA features, visual progress and temporal consistency score action prefixes; action consistency regularization reconstructs demonstrated commands during training.",
       "method": "arxiv_html_exact_figure",
-      "review": "caption_matched",
-      "dimensions": [
-        860,
-        201
-      ]
+      "review": "caption_matched"
     }
   },
   "2611.04711": {

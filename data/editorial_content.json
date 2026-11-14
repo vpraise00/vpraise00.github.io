@@ -4295,5 +4295,419 @@
         "2611.05093"
       ]
     }
+  },
+  "2502.05855": {
+    "source_scope_ko": "저자 공식 arXiv HTML v3 §3–4 및 Appendix A–D, Figure 1·2와 Table 1·3·5·6의 숫자를 대조했습니다. 독립적인 재현 실험은 수행하지 않았습니다.",
+    "summary_ko": "DexVLA는 10억 파라미터급 diffusion 행동 전문가를 별도로 사전학습한 다음 VLM과 결합하는 3단계 커리큘럼을 제안한다. Shirt folding 0.92와 Laundry folding 0.40은 성공률이 아닌 단계별 부분점수라는 점까지 원문을 검증한다.",
+    "reading_minutes": 24,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-14",
+    "review": {
+      "one_line": "언어를 이해하는 거대 VLM만 확장할 것이 아니라, 실제 움직임을 생성하는 1B diffusion expert를 먼저 다양한 로봇에서 사전학습하고 목표 로봇에 정렬하자는 제안입니다. (arXiv v3 §3, Figure 2)",
+      "problem": "로봇이 ‘셔츠를 접고 빨래통을 정리해’라는 언어 명령을 받아도, 시각·언어 이해만으로는 젖은 천의 변형이나 양팔 동기화를 제어하기 어렵습니다. OpenVLA 등의 언어 중심 VLA는 VLM 규모가 커도 실제 연속 관절 궤적을 학습하는 부분이 상대적으로 제한될 수 있습니다. 또 하나의 정책으로 그리퍼, 양팔, 다지손의 제어 공간을 섞으면 출력 차원과 운동 습관이 달라 충돌합니다. DexVLA는 표현 학습과 운동 전문성 사이의 불균형, 이종 로봇 시연을 재사용하기 어려운 문제, 2분 이상 과제에서 단계 누락이 잦은 문제를 함께 해결하려 합니다. (§1–3)",
+      "idea": "Qwen2-VL 기반 VLM은 영상·지시와 현재 과제 단계에서 생성할 reasoning/action 토큰을 담당하고, 실제 연속 행동은 별도 ScaleDP 계열 diffusion transformer가 생성합니다. 여러 embodiment의 행동 출력에는 별도 head를 두어 공유 모터 능력과 물리 제어 공간의 차이를 분리합니다. 먼저 행동 전문가만 이종 데이터로 훈련(Stage 1)하고, 특정 로봇의 데이터에서 VLM–전문가 연결을 정렬(Stage 2), 긴 작업은 substep 언어 감독을 포함한 맞춤 후속학습(Stage 3)으로 적응합니다. 이 ‘plug-in’ 구성과 3단계 학습이 기여의 핵심입니다. (§3.1–3.2, Figure 2)",
+      "method": "입력은 다중 카메라 영상과 언어 명령입니다. VLM 시각 토큰은 이어 붙여 처리하고 reasoning 토큰과 action 토큰을 생성합니다. action 토큰은 LayerNorm과 두 선형층으로 diffusion expert 조건에 사상하고, reasoning 토큰은 FiLM 층으로 행동 정책의 내부 특징을 조절합니다. expert는 ScaleDP transformer 계열이며 embodiment별 head를 선택해 액션 청크를 생성합니다. Stage 1에서는 VLM을 제외하고 image/language encoder를 포함한 expert를 이종 로봇 시연으로 사전학습합니다. Stage 2에서는 expert의 독립 시각·언어 구성 요소를 제거하고 VLM과 연결하여 대상 embodiment 데이터로 정렬합니다. Stage 3는 어려운 후속 과제의 데모로 정교화합니다. 약 5초 간격의 substep 문구는 단순 입력 메모가 아니라 모델이 중간 출력으로 생성하도록 학습합니다. (§3, Appendix D)",
+      "findings": "원문 Table 1의 10회 시험에 기초한 부분점수에서 Stage 1+2는 shirt folding 0.92지만 Stage 2만 사용하면 0.00입니다. Laundry folding은 Stage 3 전 0.00, Stage 3 후 0.40입니다. 이는 완료 성공률 92%·40%가 아니라 단계별 점수를 정규화한 값입니다. Figure 11의 expert 규모 변경 비교는 UNet 93M 0.17, 410M 0.63, 1B 0.92입니다. Appendix Table 3의 LIBERO 3개 suite 평균은 DexVLA 97.3, π0 97.1, OpenVLA 84.1이며 LIBERO-Long은 포함하지 않습니다. Appendix Table 5에서는 substep 감독을 두 단계 모두 사용하면 0.92, Stage 2에만 쓰면 0.07, Stage 1에만 쓰면 0.00입니다. Table 6의 hard table bussing은 SayCan 0.58, 내재적 substep 0.70입니다. (Figure 10–11, Table 1, Appendix A–C)",
+      "limitations": "핵심 수치는 단순 binary success가 아니라 과제별 10회 수행에서 부분완수 점수입니다. 실물 대상 과제, 훈련 시연 수, 로봇 형태와 사전학습 데이터가 달라 모든 수치를 다른 논문의 성공률과 직접 비교하면 안 됩니다. 빨래 접기는 ‘언어 지시만으로 평가’하지만 실제로는 해당 과제 Stage 3 후속학습을 수행했으므로 무학습 zero-shot이 아닙니다. Appendix A.5의 다지손 전이는 1 DoF로 제약한 시험이며 전 손가락 자유도 일반화 증거가 아닙니다. expert 규모를 키우는 효과와 3단계 curriculum 효과를 완전히 분리한 동등 계산량 대조도 필요합니다. 원문 수치가 표본 수가 작은 실물 실험이라는 점을 유의해야 합니다. (§4, Appendix A–D)",
+      "questions": [
+        "Figure 2의 VLM output을 전문 모델에 투입할 때 FiLM reasoning을 제거하면 어떤 복잡 과제에서 먼저 실패하는가?",
+        "Table 1의 Stage 2-only 0.00과 Stage 1+2 0.92는 동일 데이터량·학습 FLOPs를 맞춘 비교인가?",
+        "Appendix Table 5에서 0.07 대 0.92 차이가 substep 라벨 자체 때문인지 감독 분포 변화 때문인지 검증할 수 있는가?",
+        "LIBERO Table 3의 세 suite 점수를 LIBERO-Long까지 포함한 평균으로 혼동하지 않는가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**독해 핵심:** 이 논문은 ‘셔츠를 접었다’는 시연 홍보가 아니라, 행동 전문가 규모와 훈련 순서가 왜 중요한지를 원문 Figure 2·Table 1·Appendix A–D를 통해 비교할 수 있는 실험입니다. 그림은 저자 Figure 1(작업 사례)과 Figure 2(3단계 학습 구조)를 설명 위치에 두었습니다. 평가 점수와 strict success를 구분합니다.",
+      "pipeline": [
+        {
+          "title": "01 · 관측과 명령의 결합",
+          "detail": "카메라 다중 뷰와 자연어 명령을 Qwen2-VL에 넣어 공통 표현을 만듭니다. 영상 토큰은 카메라별 추출 후 연결되며 reasoning/action 두 종류의 출력 감독이 존재합니다.",
+          "io": "입력: RGB×다중 시점 + language"
+        },
+        {
+          "title": "02 · 1B diffusion expert 독립 사전학습",
+          "detail": "Stage 1은 대규모 이종 embodiment 시연을 모터 expert로 학습시키며 VLM을 같이 학습하지 않습니다. 이 단계에서는 expert용 독립 시각·언어 encoder를 사용하고 로봇 형태별 action head로 다른 차원의 제어를 처리합니다.",
+          "io": "훈련: cross-embodiment demonstrations → motor prior"
+        },
+        {
+          "title": "03 · Stage 2의 VLM–expert 정렬",
+          "detail": "대상 로봇 데이터를 사용해 Qwen2-VL의 action 토큰을 projection→diffusion expert의 조건으로 연결합니다. expert 자체 encoder의 중복 영상·언어 부분을 제거하고 reasoning 토큰을 FiLM으로 주입합니다.",
+          "io": "VLM tokens → connector + FiLM → action expert"
+        },
+        {
+          "title": "04 · Stage 3의 long-horizon 후속학습",
+          "detail": "세탁물 접기와 까다로운 상 차리기처럼 수 분에 걸친 작업은 각 시연의 중간 단계 설명을 모델이 스스로 출력하도록 supervised training합니다. 원문은 약 5초 주기의 substep 라벨을 설명합니다.",
+          "io": "출력: learned substep descriptions + continuous action chunks"
+        },
+        {
+          "title": "05 · 실물 평가의 점수 해석",
+          "detail": "각 과제 10회 반복에서 미리 정한 중간 완료 기준으로 부분점수를 산정합니다. 모델이 한 단계만 수행한 경우도 일부 점수를 받을 수 있으므로 0.92를 92% 완전성공으로 바꿔 말하지 않습니다.",
+          "io": "평가: 10 trials, task-specific partial-credit rubric"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "FiLM으로 reasoning이 행동을 조절",
+          "body": "VLM의 reasoning 토큰은 컨텍스트 문장을 생성하는 데 그치지 않고 FiLM(feature-wise linear modulation)을 통해 전문가의 입력/특징을 scale·shift합니다. ‘지금 접는 중인지 펴는 중인지’에 따라 같은 손목 위치에서도 다음 액션을 다르게 조건화하는 인터페이스입니다. (§3.1)",
+          "watch": "FiLM 제거 ablation과 모터 expert 규모 ablation은 서로 다른 질문입니다."
+        },
+        {
+          "title": "Embodiment head와 공유 transformer",
+          "body": "트랜스포머 모터 backbone은 이종 시연의 운동 규칙을 공유하지만 서로 다른 로봇의 출력 head는 분리합니다. Franka 그리퍼와 양팔 AgileX의 실제 action vector 차이를 한 출력 차원에 억지로 결합하지 않는 설계입니다. (Figure 2)",
+          "watch": "head 공유가 곧 테스트 시 미학습 로봇에 대한 완전 zero-shot을 보장하지 않습니다."
+        },
+        {
+          "title": "명시적 외부 계획과 내부 substep의 차이",
+          "body": "DexVLA는 학습 과정에서 substep language를 예측하여 행동 expert에 주입합니다. Appendix B의 hard table bussing 비교에서 SayCan 외부 substep(0.58)보다 통합 reasoning(0.70)이 높지만, 외부 계획 전체의 우열을 일반화할 근거는 아닙니다.",
+          "watch": "SayCan 업데이트 간격과 학습 데이터가 통제되는지도 재현해야 합니다."
+        },
+        {
+          "title": "Billion-scale action head 가설",
+          "body": "셔츠 접기 정규화 점수는 93M UNet 0.17→410M 0.63→1B 0.92로 증가합니다. 이는 저자 설정에서 용량 증가와 성능의 동반 변화를 보여주지만 각 모델의 데이터량·추론비용·하이퍼파라미터를 통제한 인과 추정과는 구분해야 합니다.",
+          "watch": "서로 다른 action expert의 크기뿐 아니라 네트워크 유형도 다릅니다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "Stage 1+2 / 셔츠 접기",
+          "value": "0.92",
+          "context": "Table 1, 실물 10회 평균 정규화 부분점수. strict completion success 아님"
+        },
+        {
+          "metric": "Stage 2-only / 셔츠 접기",
+          "value": "0.00",
+          "context": "Table 1, motor expert 독립 사전학습 제외 조건"
+        },
+        {
+          "metric": "Stage 3 필요성 / 빨래 접기",
+          "value": "0.00 → 0.40",
+          "context": "Table 1, Stage 1+2 대비 Stage 1+2+3; 동일 partial-credit rubric"
+        },
+        {
+          "metric": "Diffusion expert 크기",
+          "value": "93M: 0.17 / 410M: 0.63 / 1B: 0.92",
+          "context": "Figure 11, 셔츠 접기 평균 정규화 점수"
+        },
+        {
+          "metric": "LIBERO 3-suite 평균",
+          "value": "DexVLA 97.3 / π0 97.1 / OpenVLA 84.1",
+          "context": "Appendix Table 3, Spatial·Object·Goal 세 suite; Long 포함 아님"
+        },
+        {
+          "metric": "단계별 추론 감독",
+          "value": "0.00 / 0.07 / 0.92",
+          "context": "Appendix Table 5, Stage1만 / Stage2만 / 양 단계 substep 학습"
+        },
+        {
+          "metric": "Bussing Table (Hard)",
+          "value": "SayCan 0.58 / 내부 substep 0.70",
+          "context": "Appendix Table 6, 두 계획 인터페이스의 저자 비교"
+        },
+        {
+          "metric": "새 로봇 적응",
+          "value": "100 demonstrations / 각 신규 형태",
+          "context": "§4.2, Franka dexterous hand·bimanual UR5; zero-shot 아님"
+        },
+        {
+          "metric": "초기 단계 학습 처리량",
+          "value": "expert only 0.89 vs entire VLA 0.32 epoch/h",
+          "context": "Appendix Table 4, 같은 배치 크기에서 epoch/h 비교. 총 비용은 별도"
+        }
+      ],
+      "evidence_note": "모든 수치는 원문 저자 보고값입니다. 실물 10회 점수와 시뮬레이션 LIBERO success를 섞지 않습니다. 0.92는 92% strict task success가 아닙니다.",
+      "comparison": "OpenVLA의 tokenized action prediction, π0의 flow-matching policy와 달리 DexVLA의 실험 핵심은 **1B diffusion policy 자체의 독립 사전학습과 단계적 정렬**입니다. π0와 달리 모델 내부에서 substep language를 생성해 motor expert에 전달하는 설정을 비교하되, 선행 연구의 추가 고수준 정책 여부와 세부 학습 예산이 다름을 인정해야 합니다.",
+      "reading_guide": [
+        "Figure 1은 다양한 실시 예시이지 샘플별 성공률 분포가 아닙니다. Figure 2는 세 단계별 encoder/모듈 유지 여부를 확인합니다.",
+        "Table 1의 0.92와 0.40을 성공률로 읽지 말고 Appendix C의 세부 과제별 부분점수 규칙을 따라갑니다.",
+        "Appendix Table 3은 LIBERO Spatial/Object/Goal만 열거합니다. 일반적인 4-suite 평균과 비교하지 않습니다.",
+        "Appendix A.5의 dexterous hand ‘zero-shot’은 1-DoF로 제약한 gripper→hand 교체이며 완전 손 조작 일반화가 아닙니다."
+      ],
+      "replication": {
+        "hypothesis": "Cross-embodiment expert Stage 1이 모델 크기 증가 자체보다 적은 target-robot demos에서 중요한 성능 개선을 제공할 것입니다.",
+        "setup": "Franka gripper와 bimanual UR5에 대해 각각 25/50/100회의 target 시연을 고정하고, 동일한 이미지 인코더 및 행동 출력 빈도 조건에서 93M/410M/1B expert를 훈련합니다. 10회보다 충분히 많은 seed×task×trial을 확보하고 rubric 항목별 누락을 기록합니다.",
+        "baselines": "(a) Stage2 from scratch, (b) Stage1+Stage2, (c) Stage1+Stage2+Stage3, (d) substep 제거, (e) FiLM 제거, (f) 동일 FLOPs 작은 expert.",
+        "metrics": "Strict full success와 partial score를 별도 보고; stage-level completion, unseen-object success, action jerk, p50/p95 end-to-end latency, GPU-hour 및 collision 횟수.",
+        "risks": "학습 시연 수·expert 크기·고수준 substep 주석 비용을 통제하지 않으면 커리큘럼의 기여를 과대평가할 수 있습니다."
+      }
+    }
+  },
+  "2610.40373": {
+    "source_scope_ko": "공식 arXiv HTML v1 §3–4, Figure 1–2, Table 1–3 및 실물 평가 설명을 직접 대조했습니다. 현재 HTML에는 독립 Appendix 항목이 제공되지 않아 없는 부록을 확인했다고 주장하지 않습니다.",
+    "summary_ko": "HiFOR는 단기·중간·최종 미래를 계층적으로 예측하고 행동 denoising 순간 필요한 미래만 골라 조회합니다. LIBERO 98.3%, RoboTwin 2.0 Hard 49.40%, 실물 6과제 81.7%의 조건과 ablation을 검증합니다.",
+    "reading_minutes": 24,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-14",
+    "review": {
+      "one_line": "미래를 단순히 더 많이 예측하는 대신 ‘지금 생성할 행동에 어느 미래의 정보가 필요한가’를 결정하는 action-guided retrieval이 HiFOR의 핵심입니다. (arXiv v1 §3)",
+      "problem": "로봇에게 ‘컵을 집어 접시 위에 놓아라’라고 지시하면 손을 컵으로 접근시키는 짧은 동역학, 컵을 잡았는지라는 중간 사건, 접시 위에 놓인 최종 상태를 모두 고려해야 합니다. 기존 foresight VLA가 하나의 짧은 horizon만 상상하거나 미래 latent 전체를 action generator에 덧붙이면, 현재는 필요하지 않은 목표 장면에 주의를 빼앗기거나 장기 계획과 국소 접촉 제어가 분리될 수 있습니다. HiFOR는 이 간극을 모델링할 뿐 아니라 미래 정보 사용 정책 자체를 학습 대상으로 만듭니다. (§1–3.2)",
+      "idea": "HDM(Hierarchical Dependency Mask)으로 short-term→milestone→goal 미래 예측의 계층적 의존성을 두고, 예측 latent를 horizon×camera view×spatial patch의 구조화된 세계 표현으로 보존합니다. action expert가 노이즈를 제거하며 행동을 생성하는 각 순간, 현재 action hidden state가 미래 토큰의 시간·시점·공간 중요도를 조회하는 AWR(Action-Guided World Retrieval)을 사용합니다. Figure 1은 단일 horizon 방식의 한계를, Figure 2는 전체 모델의 세계 예측/조회/행동 생성을 보여줍니다. (§3.4–3.6)",
+      "method": "입력은 언어·다중 RGB 카메라·로봇 상태이며 출력은 연속 7차원 말단부 이동·회전·그리퍼 제어의 action chunk입니다. 이미 성공한 데모에서 planning agent로 의미적 milestone을 얻고 event evidence와 일관성을 통해 실제 프레임에 정렬합니다. short/milestone/goal query 그룹을 HDM으로 연결해 미래 DINOv2 특징을 예측하며 short-term에는 미래 로봇 상태 감독도 추가합니다. 예측한 미래 특징에 horizon/view/spatial 위치 임베딩을 넣어 구조화한 뒤 action expert의 현재 denoising hidden state에서 세 축별 attention으로 조회합니다. 훈련은 flow-matching action loss와 foresight loss를 더해 수행하며 추론은 예측 미래를 실제 관측과 구분한 채 사용합니다. (§3.3–3.6)",
+      "findings": "LIBERO는 Spatial·Object·Goal·Long 각 10과제로 평가하며 원문 §4.1은 suite별 500 rollouts를 명시합니다. Table 2에서 HiFOR 평균 98.3%, π0.5 96.9%, OpenVLA-OFT 97.1%, Long은 95.8%입니다. RoboTwin 2.0 Hard는 20 random tasks, 과제당 100 rollouts로 Table 1의 평균 HiFOR 49.40%, 재현 π0.5 40.35%입니다. 두 벤치마크 수치를 같은 난이도의 성공률로 비교할 수 없습니다. 실물은 AgileX Piper 단일 팔·2대 카메라, 일반화 과제 100 demos/과제, 장기 과제 200 demos/과제, 과제당 50 rollouts에서 6과제 평균 81.7%(π0.5 대비 +11.0 pp)입니다. Table 3의 RoboTwin ablation은 baseline 40.35→short 44.15→milestone 45.60→goal 46.95→AWR 49.40입니다. (§4.1–4.3)",
+      "limitations": "RoboTwin과 LIBERO는 로봇 형태·초기화·난이도·평가 횟수가 다르며 서로 다른 숫자의 직접 순위 비교는 무의미합니다. ablation은 단계적으로 모듈을 더하므로 AWR의 순수 기여는 46.95→49.40(+2.45 pp)이고 전체 9.05 pp를 AWR만의 성과로 돌릴 수 없습니다. 의미적 milestone은 성공 시연에 기반한 planning agent와 이벤트 정렬이 필요하여 완전히 자율적인 미지 작업에 같은 감독을 얻을 수 있는지는 별도 문제입니다. 실물은 6과제 단일 팔로, 전신 휴머노이드나 새로운 질감·장기 분포 전이에 대한 보증은 아닙니다. arXiv v1 HTML에는 Appendix 항목이 없어 보지 못한 부록 수치를 인용하지 않았습니다. (§3–4)",
+      "questions": [
+        "HDM에서 short→milestone→goal 접근을 제거하고 같은 파라미터로 flat attention을 두면 실패 지점이 어디로 이동하는가?",
+        "Table 3에서 goal 추가 +1.35 pp와 AWR +2.45 pp는 시드 간 신뢰구간을 견디는가?",
+        "학습 시 정렬한 milestone이 틀린 경우 다른 horizon이 스스로 교정할 수 있는가?",
+        "AWR의 horizon×view×space 검색이 action chunk 생성 p95 지연에 미치는 비용은?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**원문 읽기:** Figure 1은 문제 설정, Figure 2는 미래 예측과 행동 조회를 한눈에 보여줍니다. §3.3–3.6의 감독 구성과 Table 1–3의 각기 다른 프로토콜을 따라 읽으면, ‘상상한 미래가 곧 예측 성공’이라는 혼동 없이 실험이 주장하는 범위를 확인할 수 있습니다.",
+      "pipeline": [
+        {
+          "title": "01 · 성공 시연에서 의미적 단계 생성",
+          "detail": "학습에는 성공 demonstration이 필요합니다. Planning agent가 명령을 ordered subgoals로 분해하고 event evidence 및 temporal consistency로 각 subgoal의 완료 시점을 찾습니다. 단순히 일정 간격마다 미래 영상을 고르는 것과 다릅니다.",
+          "io": "instruction + demonstrations → semantic milestones"
+        },
+        {
+          "title": "02 · 세 horizon을 함께 예측",
+          "detail": "Short·milestone·goal query를 공통 예측 네트워크에 넣되 HDM으로 앞 horizon의 정보를 뒤 horizon이 참고하도록 제한합니다. 각 horizon의 미래 표현을 DINOv2 특징에 사상하고 short-term에는 state sequence loss도 둡니다.",
+          "io": "short ≺ milestone ≺ goal"
+        },
+        {
+          "title": "03 · 세계 표현의 구조 보존",
+          "detail": "각 미래 특징에 horizon·camera view·patch 위치 임베딩을 더해 [3, V, S, d] 텐서로 구성합니다. 모든 토큰을 단순 concat하면 ‘어느 시점·어느 카메라’가 사라지지만 이 설계는 조회 경로를 명시합니다.",
+          "io": "world tokens W ∈ R^(3 × V × S × d)"
+        },
+        {
+          "title": "04 · Action-guided factorized retrieval",
+          "detail": "현재 action expert의 denoising hidden state를 query로 바꾸고 horizon, view, spatial의 세 단계 attention을 수행해 필요한 세계 단서를 가져옵니다. 관측된 실제 미래가 아니라 예측 latent를 읽는 것이 핵심 가정입니다.",
+          "io": "action state → temporal/view/spatial attention"
+        },
+        {
+          "title": "05 · 행동 chunk를 반복 정제",
+          "detail": "조회한 세계 특징을 residual 결합으로 action expert에 투입하고 flow-matching으로 연속 행동을 생성합니다. foresight loss와 action loss를 함께 최적화하므로 미래 예측 품질과 조작 성공률의 관계를 비교해야 합니다.",
+          "io": "L_total = L_ACT + L_HFP"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "HDM: 시간 계층의 편향",
+          "body": "단기 쿼리는 현재 상태 변화에 집중하고 milestone 쿼리는 단기 정보를 참고하며 goal 쿼리는 앞선 단계를 고려하도록 mask가 구성됩니다. 먼 목표만 빨리 보이는 편향을 줄이는 inductive prior이지만, 실제 인과관계를 보장하는 논리 엔진은 아닙니다. (Eq.4)",
+          "watch": "순서가 바뀌는 작업이나 milestone 검출 오류 시 성능을 따로 검증해야 합니다."
+        },
+        {
+          "title": "DINOv2 feature supervision과 상태 감독",
+          "body": "예측되는 것은 미래 RGB 영상 그 자체가 아니라 visual feature와 단기 로봇 상태이며, 목표 정보는 의미적 이정표로 정렬됩니다. RGB 예측 대비 실험에서 LIBERO Long 94.2→95.8, 평균 97.7→98.3으로 개선됩니다. (§4.3)",
+          "watch": "픽셀 품질이 좋아도 제어에 적합한 특징이라는 보장은 없습니다."
+        },
+        {
+          "title": "요구된 미래만 단계별 조회",
+          "body": "Action query는 반복 denoising 단계별로 달라지고, 조회 attention 역시 horizon→view→space로 나뉩니다. 예를 들어 접근 단계에선 short wrist, 마지막 배치 단계에선 goal third-person이 중요해질 수 있습니다. Figure 7은 이 경향을 관찰한 사례입니다.",
+          "watch": "attention 시각화는 인과적 기여량을 직접 증명하지 않습니다."
+        },
+        {
+          "title": "현실 평가와 학습 비용",
+          "body": "8대 H200에서 30,000 optimization steps, batch 512, warmup 5,000 steps의 설정이 §4.1에 적혀 있습니다. 실물은 6-DoF Piper 단일 팔과 2개 D435i 카메라, 배포 4090에서 수행됩니다.",
+          "watch": "비교 모델 간 데이터/학습 연산량이 완전히 동일한지 별도 검증해야 합니다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "LIBERO 평균",
+          "value": "98.3% (HiFOR) / 96.9% (π0.5)",
+          "context": "Table 2, Spatial/Object/Goal/Long 4개 suite; 각 suite 10 tasks"
+        },
+        {
+          "metric": "LIBERO-Long",
+          "value": "95.8% / 92.4% (π0.5)",
+          "context": "Table 2, task horizon이 긴 suite의 조건부 성공률"
+        },
+        {
+          "metric": "RoboTwin 2.0 Hard",
+          "value": "49.40% / 40.35% (π0.5 재현)",
+          "context": "Table 1, Hard randomizations, 20 tasks×100 rollouts"
+        },
+        {
+          "metric": "실물 6개 과제",
+          "value": "81.7% (π0.5 대비 +11.0 pp)",
+          "context": "§4.2, AgileX Piper, 각 과제 50 rollouts; Generalization 100 / Long 200 demos per task"
+        },
+        {
+          "metric": "Short 추가",
+          "value": "40.35% → 44.15%",
+          "context": "Table 3, RoboTwin ablation baseline + short prediction"
+        },
+        {
+          "metric": "Milestone·Goal 추가",
+          "value": "44.15% → 45.60% → 46.95%",
+          "context": "Table 3, 순차적인 component 추가; additive comparison"
+        },
+        {
+          "metric": "Action-guided retrieval 추가",
+          "value": "46.95% → 49.40%",
+          "context": "Table 3, AWR만의 증분 +2.45 percentage points"
+        },
+        {
+          "metric": "RGB 예측 vs 의미 특징",
+          "value": "LIBERO Long 94.2% vs 95.8%",
+          "context": "§4.3, future representation ablation"
+        },
+        {
+          "metric": "학습 조건",
+          "value": "8×H200 / batch 512 / 30k steps",
+          "context": "§4.1, LIBERO·RoboTwin 학습; 배포 GPU와 구분"
+        }
+      ],
+      "evidence_note": "원문 §4.1–4.3 Table 1–3 대조. Real 81.7%는 6개 실물 과제 평균이며 다른 벤치마크의 재현이나 전체 open-world task 성공을 뜻하지 않습니다.",
+      "comparison": "Foresight를 action policy에 고정적으로 이어 붙이는 모델과 달리 HiFOR는 예측 자체에 short→milestone→goal 계층을 두며, denoising 중 필요한 future token을 **선택적으로 조회**합니다. baseline π0.5, OpenVLA-OFT와 수치 비교하지만 학습 데이터와 계산량이 일치한다고 추정하지 않습니다.",
+      "reading_guide": [
+        "Figure 1의 기존 방법 표시는 개념 비교이며 저자 설명을 모든 선행연구의 보편적 성질로 일반화하지 않습니다.",
+        "Figure 2의 세 차원(horizon/view/spatial)이 action expert의 현재 hidden state로 조회된다는 경로를 추적합니다.",
+        "Table 1은 RoboTwin 20개 Hard 과제 평균이고 표시된 일부 과제 열만으로 전체 평균을 다시 계산하지 않습니다.",
+        "Table 3은 순차 ablation이므로 총 +9.05 pp를 AWR만의 효과로 해석하지 않습니다."
+      ],
+      "replication": {
+        "hypothesis": "동등한 예측 모듈/parameter 수에서 action-state-driven retrieval은 고정 concat보다 long-horizon closed-loop success를 높일 것입니다.",
+        "setup": "LIBERO-Long과 RoboTwin Hard 과제에 대해 3-seed×100+ rollouts를 고정하고 HDM on/off, horizon 1/3, AWR on/off를 직교 실험합니다. 시연의 milestone 교란률 0/10/30%를 추가해 감독 누락에 대한 민감도를 조사합니다.",
+        "baselines": "π0.5-style no foresight, future-RGB conditioning, flat latent concat, hierarchical foresight without AWR, full HiFOR.",
+        "metrics": "Full task success/partial subgoal completion, horizon-specific feature error, p50/p95 latency, memory, GPU-hours, robust OOD success; bootstrap confidence intervals.",
+        "risks": "계층적 query 수와 memory access가 달라지는 모델 간 compute budget을 통제하지 않으면 retrieval 효과를 과대평가할 수 있습니다."
+      }
+    }
+  },
+  "2611.04839": {
+    "source_scope_ko": "공식 arXiv HTML v1 §III–IV 및 Appendix A–B를 대조했습니다. Figure 1·2의 저자 원본 arXiv 이미지 URL을 확인했습니다. 실물 실패 분류와 Table I·IV·VI–VIII를 직접 읽었습니다.",
+    "summary_ko": "Unitree G1 휴머노이드가 생성한 몸통·손 액션 후보 8개를 실행 전에 미래 시각 진척과 시간 일관성으로 평가하는 latent WAM. SIMPLE 10과제 89.7%, 실물 7과제 표준 85.7%·미지 배치 65.7%의 조건과 실패를 분석합니다.",
+    "reading_minutes": 26,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-14",
+    "review": {
+      "one_line": "생성된 휴머노이드 행동을 바로 실행하지 않고 ‘목표 상태에 가까워지는가’와 ‘몸통·손 움직임이 시간적으로 일관적인가’를 함께 점수화한 뒤 첫 일부 구간만 실행하는 receding-horizon WAM입니다. (arXiv:2611.04839 §III)",
+      "problem": "로봇이 바구니를 들어 식탁 위에 올릴 때 팔을 치켜드는 모션 자체가 그럴듯해도 그립이 풀리면 바구니가 떨어집니다. 세탁물을 드럼 안에 넣을 때도 문을 열고 셔츠를 옮기는 일련의 동작이 동시에 맞아야 합니다. 영상에서 좋은 마지막 장면만 예측해도 중간 접촉이 불안정할 수 있고, 관절 변화량을 부드럽게 만드는 것만으로 목적 작업이 완성되지도 않습니다. 이 논문은 단순 VLA 생성기 위에 사전 검증기를 두어, 후보 명령 시퀀스가 진짜 목표에 접근하면서 운동·손동작이 연결되는지를 계산합니다. (§I–III)",
+      "idea": "행동 생성기는 Qwen3-VL 기반 관측/언어 경로와 action DiT로 여러 body+hand command chunk를 제안합니다. 동결된 V-JEPA 2.1 feature space의 action-conditioned endpoint predictor가 각 후보 h-step 후의 시각 특징을 예측하고 시연에서 추출한 현재 subgoal과의 거리가 얼마나 줄어드는지 V_i를 계산합니다. 별도 2층 GRU joint temporal prior는 몸통·손 명령의 시계열 이탈 정도 E_i를 평가합니다. 합성 점수 V_i−βE_i가 최대인 후보를 택하고 K개 명령만 실행 후 다시 관측합니다. Figure 1은 실패/성공 사례와 score 개념, Figure 2는 훈련·추론 파이프라인입니다. (§III, Fig.1–2)",
+      "method": "Unitree G1에서 시각 o_t, 언어 ℓ, 고유수용 상태 s_t로 N=8개 명령 chunk A∈R^{H×d_a}를 생성합니다. 실물 H=40, 시뮬 H=30, 평가 h=20, 실행 K=10, 30Hz로 설정합니다(Table I). 인코더 V-JEPA 2.1은 현재 및 예상 미래에서 특징을 뽑고, endpoint predictor는 로봇 상태와 후보 prefix를 조건으로 h-step 도착 특징을 예측합니다. 데모에서 추출한 시간 순서 subgoal 다섯 개 중 현재 목표를 선택합니다. predicted endpoint까지의 cosine distance 감소가 시각 진척이고, joint GRU prior가 body/hand 양측 history를 함께 보고 시간적 부조화 페널티를 냅니다. 학습에서는 demonstration prefix와 실제·예측 feature 변화에서 첫 command를 복원하는 action-consistency regularization(ACR)을 추가합니다. 이 복원 신호는 world predictor에 action 정보를 남기게 합니다. (§III, Table I)",
+      "findings": "SIMPLE 휴머노이드 조작 10과제×3 랜덤화 수준(L0 배경, L1 재질·조명, L2 초기자세)에서 평균 89.7%로 DiT4DiT 82.0%, Ψ0 73.7%와 비교합니다(원문 Table II–III). 실물 Unitree G1 7과제는 과제·조건당 10 trials이며 표준 85.7%(GR00T N1.7 70.0%)와 미지 물체 설정 65.7%(비교군 48.6%)입니다(Table IV). ACR 제거/추가는 같은 4과제 120 episodes에서 55.0→65.8%(Table VI), 시간 prior는 visual only 65.8%, factorized prior 71.7%, joint prior 80.8%(Table VII)입니다. GPU 실험 RTX 4090D에서 7.2GB·9.1 chunk/s이고 로봇 Jetson Orin NX 추가 시험은 12.84GB system memory·0.73Hz입니다(Table VIII). (§IV, Appendix A–B)",
+      "limitations": "SIMPLE은 10개 지정된 과제의 시뮬레이션이고 실물 7과제 역시 과제당 별도 정책을 학습합니다. 오픈월드 범용 모델이 아닙니다. 시각 subgoal은 성공 데모에서 추출한 이미지 다섯 장에 의존하며, 완전히 새로운 작업의 goal 이미지를 어떻게 얻는지는 해결되지 않았습니다. 표준 대비 unseen-object 설정은 실험 Appendix A에 지정된 물체·배치·색상 변형이지 새로운 모든 환경이 아닙니다. 실제 실패에는 수도꼭지를 끝까지 못 돌림, 페달식 쓰레기통 뚜껑 미개방, 장난감 파지 실패가 남았습니다. Jetson onboard 추론 0.73Hz는 4090D의 9.1Hz와 큰 차이가 있어 실시간 제약을 논해야 합니다. (§IV-E,G, Appendix A–B)",
+      "questions": [
+        "시각 progress만 높고 손이 미끄러지는 후보를 joint prior가 어떻게 거르는가?",
+        "h=20, K=10, H=40에서 candidate count N=8이 지연과 성공에 주는 영향은?",
+        "ACR 55.0→65.8% 증분이 미래 특징 예측 품질 개선 때문인지 action 구조 편향 때문인지 분리할 수 있는가?",
+        "subgoal을 모르는 새 작업에서 데모 기반 이미지 골을 온라인으로 업데이트할 수 있을까?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**읽기 목표:** Figure 1에서 ‘끝 상태가 좋아 보이는 명령’과 ‘떨어뜨리지 않는 시간적으로 맞는 명령’의 차이를 보고, Figure 2에서 action 생성→미래 특징 예측→prior scoring→부분 실행의 경로를 추적합니다. Table II–VIII와 Appendix A–B의 대상 로봇·시도 수·추론 하드웨어를 따로 확인합니다.",
+      "pipeline": [
+        {
+          "title": "01 · 후보 행동 시퀀스 생성",
+          "detail": "현재 1인칭 RGB, 언어 명령, 관절/몸 상태를 Qwen3-VL과 action DiT에 입력하여 몸통과 손의 명령 chunk를 N=8개 샘플링합니다. 각 candidate는 ‘전체 동작’이 아닌 h-step prefix로 평가됩니다.",
+          "io": "o_t, ℓ, s_t → {A_t^(1)…A_t^(8)}"
+        },
+        {
+          "title": "02 · 성공 시연에서 visual subgoal 선택",
+          "detail": "동결된 V-JEPA 2.1의 시각 특징 변화 누적량을 이용해 데모의 subgoal 이미지 다섯 개를 시간 순서대로 추출합니다. 현재 활성 목표를 기준으로 시각 거리 감소를 계산합니다.",
+          "io": "ordered G=(g1,…,g5) → active g_t"
+        },
+        {
+          "title": "03 · action-conditioned endpoint foresight",
+          "detail": "각 후보의 평가 prefix B=A[0:h]를 현재 시각 특징·상태와 함께 예측기에 넣어 h 이후 endpoint의 V-JEPA feature를 추론합니다. 미래 실제 영상 관측이 아니라 예상 latent이므로 예측 오류를 감안해야 합니다.",
+          "io": "B, s_t, z_t → ẑ_(t+h)"
+        },
+        {
+          "title": "04 · 시간 prior와 합성 스코어",
+          "detail": "GRU joint prior는 몸통과 손이 함께 이어지는 명령 연쇄를 평가합니다. 예측한 시각 진척 V_i에서 βE_i를 빼 최대 후보를 선택합니다. β=0.1, 평가 h=20, GRU 2층·512 hidden을 Table I에서 확인할 수 있습니다.",
+          "io": "i* = argmax_i(V_i − β E_i)"
+        },
+        {
+          "title": "05 · 짧게 실행하고 다시 계획",
+          "detail": "선택한 시퀀스의 첫 K=10개 명령만 30Hz로 실행한 뒤 새 RGB/robot state를 관측해 후보 생성과 평가를 반복합니다. 모델이 시뮬·실물에서 다른 H를 사용하며 p95 지연은 추론 하드웨어에 민감합니다.",
+          "io": "execute A_i*[0:10] → reobserve → replan"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "시각 진척: 목표까지 거리가 얼마나 줄었나",
+          "body": "현재 feature z_t와 목표 z_g의 cosine distance에서 후보 endpoint의 예측 feature ẑ와 z_g의 거리를 뺀 값이 V입니다. 사진상 바구니가 목표 방향으로 이동했는지의 proxy이지 실제 파지력이나 충돌 여부를 직접 계산하지 않습니다. (§III-A Eq.2)",
+          "watch": "단순 proximity와 올바른 접촉/타이밍을 혼동하지 마십시오."
+        },
+        {
+          "title": "Joint temporal prior: 몸통과 손의 연속성",
+          "body": "2층 GRU가 body-motion 및 hand-control의 joint history를 함께 참조하여 다음 명령 예측 오차 에너지를 계산합니다. 고정 smoothness penalty나 각 그룹을 따로 예측하는 factorized prior보다 특정 4개 과제에서 높은 성공률을 보였습니다. (§III-D, Table VII)",
+          "watch": "joint prior 효과의 9.2 pp는 같은 네 과제 subset의 결과입니다."
+        },
+        {
+          "title": "ACR: 행동 변화를 잠재 모델에 남기기",
+          "body": "현재와 미래의 V-JEPA feature 차이 및 예측 feature 차이로 demonstration의 첫 command를 다시 복원하는 보조 손실입니다. 이미지 latent이 조작에 무관한 시각 변화만 학습하는 문제를 완화하려 합니다. ACR 유무 실험은 55.0% vs 65.8%입니다. (§III-E, Table VI)",
+          "watch": "보조 손실을 추가해 분량이 늘어나는 효과와 메커니즘 효과는 구분해야 합니다."
+        },
+        {
+          "title": "실물과 온보드 시스템의 분리",
+          "body": "Table I의 정책 평가 RTX 4090D(48GB)와 onboard Jetson Orin NX(16GB)는 다른 환경입니다. RTX 4090D에서는 9.1 command chunks/s, Jetson에선 0.73Hz로 실시간 배포 병목이 생깁니다. (§IV-G)",
+          "watch": "‘9.1Hz’와 30Hz control command rate는 같은 측정량이 아닙니다."
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "SIMPLE 10개 과제 전체",
+          "value": "89.7% / DiT4DiT 82.0% / Ψ0 73.7%",
+          "context": "Table II–III, 각 과제 L0/L1/L2×10회 시험, 전체 평균"
+        },
+        {
+          "metric": "실물 표준 7과제",
+          "value": "85.7% / GR00T N1.7 70.0%",
+          "context": "Table IV(a), Unitree G1; 각 과제 10 trials"
+        },
+        {
+          "metric": "실물 미지 물체 배치",
+          "value": "65.7% / GR00T N1.7 48.6%",
+          "context": "Table IV(b), Appendix A에 정의된 unseen configurations"
+        },
+        {
+          "metric": "Load Washer 표준",
+          "value": "10/10 vs GR00T N1.7 2/10",
+          "context": "Table IV(a), 단계 누락·조기 손 놓기 등이 baseline 실패 사례"
+        },
+        {
+          "metric": "데이터 효율성 100 demos",
+          "value": "84.0% vs Ψ0 56.7%",
+          "context": "§IV-D Figure 5, SIMPLE 중 5-task subset; 10-task 전체 아님"
+        },
+        {
+          "metric": "ACR",
+          "value": "55.0% → 65.8%",
+          "context": "Table VI, 4 tasks×3 levels×10 trials = 120 episodes, visual-only scoring"
+        },
+        {
+          "metric": "Temporal prior",
+          "value": "65.8% visual / 71.7% factorized / 80.8% joint",
+          "context": "Table VII, 같은 4과제 120회"
+        },
+        {
+          "metric": "RTX 4090D inference",
+          "value": "7.2 GB GPU / 9.1 chunks per sec",
+          "context": "Table VIII, proposal + endpoint + prior scoring 포함"
+        },
+        {
+          "metric": "Jetson Orin NX 추가 시험",
+          "value": "12.84 GB system memory / 0.73 Hz",
+          "context": "§IV-G, onboard 실행; RTX 4090D와 동일 결과로 취급 불가"
+        }
+      ],
+      "evidence_note": "표준·unseen object 실물 시험 각각 70회(7 tasks×10회), ACR/temporal은 별도 120회 4-task subset입니다. 인과 효과를 다른 실험군에 무리하게 외삽하지 않습니다.",
+      "comparison": "직접 VLA 실행/예측 미래를 action 생성 조건에 넣는 방식 대신 이 모델은 **N개 후보를 실제 실행 전에 점수화**하고, 그중 첫 K개 명령만 집행하는 모델예측제어와 유사한 선택 과정을 둡니다. 시각 진척 단독보다 joint temporal prior가 특정 설정에서 유리하지만, 성공 시연 subgoal과 계산 예산을 요구합니다.",
+      "reading_guide": [
+        "Figure 1의 basket failure/success는 개별 정성 사례이고, 성능 분포는 Table II–IV에 있습니다.",
+        "Figure 2에서 V-JEPA 2.1 동결 경로와 action-consistency 학습 전용 아래 경로를 구분합니다.",
+        "Table IV의 표준·미지 물체 설정은 조건당 10회이며 Appendix A의 구체적 변화 목록을 확인합니다.",
+        "Table VIII의 RTX 4090D 9.1Hz와 온보드 Jetson 0.73Hz를 한 수치로 합치지 않습니다."
+      ],
+      "replication": {
+        "hypothesis": "동일 candidate generator에서 미래 시각 진척+joint body-hand temporal prior로 점수화하면 단순 smoothness나 visual-only보다 파지 유지 작업의 closed-loop success가 개선됩니다.",
+        "setup": "Unitree G1 또는 시뮬레이션 SIMPLE의 Basket·Washer·OpenFaucet에 대해 N∈{1,4,8}, K∈{5,10,20}, β∈{0,0.1,0.3} 조합을 세 시드로 비교합니다. 원문 Appendix A unseen configuration을 재현하고 조작 중 손 접촉 상태/드롭 이벤트를 기록합니다.",
+        "baselines": "Policy-first (no reranking), visual-only score, 1st/2nd-order smoothness, factorized prior, joint prior, with/without ACR.",
+        "metrics": "Task strict success and stage completion, dropped-object count, contact release timing, p95 latency on GPU and Jetson, rollout attempts and number of candidate reevaluations.",
+        "risks": "비교군의 후보 수, 고수준 데모 subgoal, inference budget, robot state calibration을 맞추지 않으면 scoring만의 효과를 판단하기 어렵습니다."
+      }
+    }
   }
 }

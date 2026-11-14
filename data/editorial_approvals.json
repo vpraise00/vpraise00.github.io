@@ -29,8 +29,11 @@
     "2403.12945",
     "2610.22146",
     "2608.01397",
-    "2610.40026"
+    "2610.40026",
+    "2502.05855",
+    "2610.40373",
+    "2611.04839"
   ],
-  "note_ko": "원문 Method/Experiments/Supplement/Appendix를 대조하고 원본 Figure 출처를 확인한 글만 승인합니다. 2026-11-13 신규 3편: FastVLA, SG-WAM, RoboSeed. 미확인 표·그림·미완료 점수는 보간하지 않습니다.",
-  "updated_at": "2026-11-13"
+  "note_ko": "2026-11-14 신규 심층 해설 3편: DexVLA, HiFOR, Action-Conditioned Latent Foresight. arXiv HTML 원문 Method·Experiments·제공된 Appendix 및 Figure·Table 수치를 직접 대조했습니다. 부분점수와 완전 성공률을 구분하고 미확인 데이터는 보간하지 않습니다.",
+  "updated_at": "2026-11-14"
 }
