@@ -981,5 +981,96 @@
         "locator": "arXiv:2611.04839v1 Fig.2"
       }
     ]
+  },
+  "2611.01729": {
+    "heading": "ODE Policy: Robot Learning via Action Dynamics, Not Actions — 원논문 Figure와 단계별 독해",
+    "intro": "arXiv 공식 PDF의 검증된 Figure가 실린 페이지를 원본 PDF 뷰어로 본문에 표시합니다. 크롭 추출 이미지를 확보한 것은 아니며 PDF 삽입이 차단될 경우 원문 페이지 열기 링크로 확인하십시오.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Figure 1 — 로봇 형태·정책 유형을 가로지르는 적용 범위",
+        "context": "PDF 첫 페이지의 여러 로봇 예시는 ODE Policy가 단일 로봇 팔 전용 구조가 아니라 visuomotor·VLA·WAM·RL actor에 공통으로 적용된다는 연구 설계를 보여 줍니다. 서로 다른 과제의 승률이 같다는 주장이 아닙니다.",
+        "steps": [
+          "A–E 패널의 단일 팔/양팔/손가락/보행/전신 조작을 분리합니다.",
+          "Visuomotor, VLA, WAM, RL actor 모두의 **출력 경로**를 바꾸는 연구임을 확인합니다.",
+          "실물 과제와 시뮬레이션 결과를 같은 분모로 합산하지 않습니다."
+        ],
+        "verified_caption": "Figure 1: ODE policy across embodiments and models. The same formulation serves as a visuomotor policy, as the action head of a VLA and a WAM, and as the actor of RL."
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 직접 행동 예측 vs 시간 적분 벡터장",
+        "context": "왼쪽은 매 chunk의 action target을 예측하며 경계에서 값이 튈 수 있고, 오른쪽은 현재 행동에서 fθ를 적분해 이어집니다. 원문 오른쪽 상단은 da/dt=fθ(a(t),s_t,z_t)와 시간 적분 화살표입니다.",
+        "steps": [
+          "왼쪽 encoder→Regression/Generative/RL actor→A_t를 봅니다.",
+          "오른쪽 encoder→fθ와 이전 action에서 출발하는 적분의 차이를 읽습니다.",
+          "chunk 연속성은 수치 적분 구조의 결과이지만 접촉 안전을 의미하지 않습니다."
+        ],
+        "verified_caption": "Figure 2: Direct-action policies and ODE policy. ODE policy learns the vector field and integrates it in physical time."
+      }
+    ]
+  },
+  "2611.14365": {
+    "heading": "From Video Frames to Robot Meta-Frames: A Unified Latent Interface for World Action Models — 원논문 Figure와 단계별 독해",
+    "intro": "arXiv HTML v1의 저자 실제 Figure 1·3 원본 이미지를 캡션과 대조해 해당 설명 위치에 연결했습니다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Figure 1 — 하나의 Meta-Frame과 Frozen-Denoiser 오류 측정",
+        "context": "원저자 Figure 1(a)는 action, 현재·미래 proprio와 value가 각자 고정 DCT band에 들어가 policy/world/value 경로로 가는 직관을 보여줍니다. (b)의 세 막대는 작업 성공률이 아니라 σ=1.0에서의 **상대 latent reconstruction error**입니다.",
+        "steps": [
+          "왼쪽 5종 signal→DCT→Unified Meta-Frame을 추적합니다.",
+          "Policy/World/Value의 input·target slot 표현을 비교합니다.",
+          "오른쪽 막대가 성능이 아닌 frozen-denoiser 상대 오차(↓)임을 확인합니다."
+        ],
+        "verified_caption": "Figure 1: MetaWAM packs robot signals into one distribution-aware meta-frame. (a) Disjoint DCT bands route signals as inputs or denoising targets. (b) Frozen-denoiser relative reconstruction error at sigma=1.0."
+      },
+      {
+        "number": 3,
+        "placement": "method",
+        "reading_title": "Figure 3 — Spectral lifting, clean/target slot masking, 수식 기반 readout",
+        "context": "왼쪽에서 Task·proprio의 주파수 계수를 고정 위치에 기록하고, 중앙 VDM의 current/future image와 연결하며, 오른쪽에서 action·future proprio·value 계수를 읽습니다. 실물 성공 영상이 아닌 **아키텍처 원본 도식**입니다.",
+        "steps": [
+          "왼쪽 Signal Injection의 계수 slot 및 2D iDCT를 찾습니다.",
+          "중간 Input/Output Meta-Frame과 동결된 pretrained Video Diffusion Model 경로를 구분합니다.",
+          "오른쪽 Action/Future Proprio/Value readout과 세 개의 supervision loss를 확인합니다.",
+          "Figure 상단 아이콘의 '1D DCT'라는 설명은 원문 §4.2의 **시간 DCT 미사용** 명세와 구분해야 합니다."
+        ],
+        "verified_caption": "Figure 3: Overview of MetaWAM. Normalized signals are packed into fixed coefficient slots and lifted by 2D inverse DCT. Slot-aware masks select clean inputs and prediction targets."
+      }
+    ]
+  },
+  "2611.02629": {
+    "heading": "DexArena: A Unified Benchmark for Long-Horizon Dexterous Manipulation — 원논문 Figure와 단계별 독해",
+    "intro": "arXiv 공식 PDF의 검증된 Figure가 실린 페이지를 원본 PDF 뷰어로 본문에 표시합니다. 크롭 추출 이미지를 확보한 것은 아니며 PDF 삽입이 차단될 경우 원문 페이지 열기 링크로 확인하십시오.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "problem",
+        "reading_title": "Figure 1 — 10개 복합과제·30개 단계와 서로 다른 로봇 손",
+        "context": "이 원저자 개요 그림에서는 Cabinet and pouring의 '열기→병 잡기→뚜껑 풀기→붓기' 연쇄를 직접 볼 수 있습니다. 왼쪽 skill groups와 오른쪽 embodiment은 비교 축이며 단일 딥러닝 architecture diagram은 아닙니다.",
+        "steps": [
+          "상단 Long-Horizon Tasks / Interactive Objects / Dexterous Embodiments를 구분합니다.",
+          "중간 10 tasks, 30 stage tasks, 6 skills, 3000 demos 숫자를 확인합니다.",
+          "하단 Cabinet and pouring의 4 stage 순서와 실제 hand 형태를 찾아봅니다."
+        ],
+        "verified_caption": "Figure 1: DexArena overview. A benchmark for long-horizon bimanual dexterous manipulation with multi-stage tasks, diverse scenarios, teleoperated demonstrations, and multiple embodiments."
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Figure 4 — 데이터셋 손가락 접촉·관절 운동량 통계",
+        "context": "원저자 Figure 4는 손 접촉 frame 비율, joint excursion, 동작 카테고리별 time-to-success 범위 등을 보여 줍니다. 정책 성공률은 Table 2·3에 별도 보고되므로 **데이터 통계 그림을 평가 결과 그림처럼 읽지 않습니다.**",
+        "steps": [
+          "Link contact와 contact ratio가 무엇을 세는지 캡션의 정의를 확인합니다.",
+          "손가락별 joint excursion 표시의 두 자유도 표시 방법을 확인합니다.",
+          "문 열기와 삽입의 성공 판정이 다른 이유를 Appendix Table 5와 연결합니다."
+        ],
+        "verified_caption": "Figure 4: Dataset Statistics Visualization. Contact ratio and joint excursion across task categories."
+      }
+    ]
   }
 }
