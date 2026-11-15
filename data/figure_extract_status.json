@@ -897,5 +897,65 @@
       "review": "caption_matched",
       "hosting_note": "Original author SVG linked from arXiv; external availability required."
     }
+  },
+  "2611.01729": {
+    "1": {
+      "source": "https://arxiv.org/pdf/2611.01729",
+      "paper_source": "https://arxiv.org/pdf/2611.01729",
+      "page": 1,
+      "caption": "Figure 1 ODE policy across embodiments and models.",
+      "method": "arxiv_pdf_page_embed",
+      "review": "pdf_page_caption_crosschecked",
+      "hosting_note": "공식 PDF 페이지 직접 임베딩이며 원본 Figure의 개별 이미지 크롭은 아닙니다."
+    },
+    "2": {
+      "source": "https://arxiv.org/pdf/2611.01729",
+      "paper_source": "https://arxiv.org/pdf/2611.01729",
+      "page": 2,
+      "caption": "Figure 2 Direct-action policies and ODE policy.",
+      "method": "arxiv_pdf_page_embed",
+      "review": "pdf_page_caption_crosschecked",
+      "hosting_note": "공식 PDF 페이지 직접 임베딩이며 원본 Figure의 개별 이미지 크롭은 아닙니다."
+    }
+  },
+  "2611.14365": {
+    "1": {
+      "remote_url": "https://arxiv.org/html/2611.14365v1/corl_teaser.png",
+      "source": "https://arxiv.org/html/2611.14365v1/corl_teaser.png",
+      "paper_source": "https://arxiv.org/html/2611.14365",
+      "caption": "Figure 1: MetaWAM packs robot signals into one distribution-aware meta-frame.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched_original_html",
+      "hosting_note": "arXiv 원본 이미지 직접 링크(외부 호스팅)."
+    },
+    "3": {
+      "remote_url": "https://arxiv.org/html/2611.14365v1/corl_framework.png",
+      "source": "https://arxiv.org/html/2611.14365v1/corl_framework.png",
+      "paper_source": "https://arxiv.org/html/2611.14365",
+      "caption": "Figure 3: Overview of MetaWAM. Normalized signals are packed into fixed coefficient slots and lifted by 2D inverse DCT.",
+      "method": "arxiv_html_exact_figure",
+      "review": "caption_matched_original_html",
+      "hosting_note": "arXiv 원본 이미지 직접 링크(외부 호스팅)."
+    }
+  },
+  "2611.02629": {
+    "1": {
+      "source": "https://arxiv.org/pdf/2611.02629",
+      "paper_source": "https://arxiv.org/pdf/2611.02629",
+      "page": 2,
+      "caption": "Figure 1. DexArena overview. A benchmark for long-horizon bimanual dexterous manipulation.",
+      "method": "arxiv_pdf_page_embed",
+      "review": "pdf_page_caption_crosschecked",
+      "hosting_note": "공식 PDF 페이지 직접 임베딩이며 원본 Figure의 개별 이미지 크롭은 아닙니다."
+    },
+    "4": {
+      "source": "https://arxiv.org/pdf/2611.02629",
+      "paper_source": "https://arxiv.org/pdf/2611.02629",
+      "page": 9,
+      "caption": "Figure 4. Dataset Statistics Visualization.",
+      "method": "arxiv_pdf_page_embed",
+      "review": "pdf_page_caption_crosschecked",
+      "hosting_note": "공식 PDF 페이지 직접 임베딩이며 원본 Figure의 개별 이미지 크롭은 아닙니다."
+    }
   }
 }
