@@ -166,6 +166,13 @@ def render_visual_figures(p: dict) -> dict[str, str]:
              'https://arxiv.org/html/2610.22146v2/sec/imgs/method.jpg',
              'https://arxiv.org/html/2610.22146v2/importance_metric.svg'
            })
+          or
+          (pid == '2611.14365'
+           and record.get('method') == 'arxiv_html_exact_figure'
+           and remote in {
+             'https://arxiv.org/html/2611.14365v1/corl_teaser.png',
+             'https://arxiv.org/html/2611.14365v1/corl_framework.png'
+           })
         )
         image_exists=bool((path and (ROOT/path).exists()) or author_remote)
         if image_exists:
@@ -178,6 +185,27 @@ def render_visual_figures(p: dict) -> dict[str, str]:
             clip=clip_original_caption(fig.get('verified_caption') or record.get('caption',''))
             capt='<p class="original-caption"><strong>'+('편집 캡션 요약' if fig.get('verified_caption') else '원문 캡션 일부')+'</strong> '+h(clip)+'</p>' if clip else ''
             page=record.get('page');page_str=' · PDF p.'+str(page) if page else ''
+        elif (record.get('method') == 'arxiv_pdf_page_embed'
+              and record.get('source') == 'https://arxiv.org/pdf/'+pid
+              and isinstance(record.get('page'),int)
+              and 1 <= record['page'] <= 100):
+            # Render an unmodified, author-sourced PDF PAGE at the verified Figure
+            # location. This is not a cropped Figure asset; always disclose that.
+            page=record['page']
+            pdf_url='https://arxiv.org/pdf/'+pid
+            source_link=h(pdf_url,quote=True)
+            embed=h(pdf_url+'#page='+str(page)+'&view=FitH',quote=True)
+            kind='arXiv 공식 PDF 원본 페이지 (개별 Figure 크롭 아님)'
+            image=('<div class="original-figure-stage">'
+                   '<object type="application/pdf" data="'+embed+'" '
+                   'aria-label="원저자 PDF Figure '+str(display_n)+'이 있는 '+str(page)+'페이지" '
+                   'style="display:block;width:100%;height:600px;border:1px solid #ddd;border-radius:10px">'
+                   '<p>PDF 내장 뷰어가 지원되지 않는 환경입니다. 아래 원문 링크에서 해당 Figure를 확인하세요.</p>'
+                   '</object><p><a href="'+source_link+'#page='+str(page)+'" target="_blank" rel="noopener noreferrer">'
+                   '원문 PDF '+str(page)+'페이지에서 원본 Figure 직접 열기 ↗</a></p></div>')
+            clip=clip_original_caption(fig.get('verified_caption') or record.get('caption',''))
+            capt='<p class="original-caption"><strong>원문 캡션 일부</strong> '+h(clip)+'</p>' if clip else ''
+            page_str=' · PDF p.'+str(page)
         else:
             kind='원본 이미지 확인 대기 · 다른 이미지로 대체하지 않음'
             source_link=h(source,quote=True)
