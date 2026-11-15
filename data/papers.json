@@ -3261,6 +3261,115 @@
         ]
       },
       "code_url": "https://github.com/jiuyixu25/FastVLA"
+    },
+    {
+      "id": "2611.01729",
+      "title": "ODE Policy: Robot Learning via Action Dynamics, Not Actions",
+      "authors": [
+        "Jindou Jia",
+        "Jingliang Li",
+        "Kuangji Zuo",
+        "Tuo An",
+        "Yuxuan Hu",
+        "Jianfei Yang"
+      ],
+      "published": "2026-11-01",
+      "updated": "2026-11-01",
+      "source_url": "https://arxiv.org/abs/2611.01729",
+      "pdf_url": "https://arxiv.org/pdf/2611.01729",
+      "primary_category": "vla",
+      "categories": [
+        "vla",
+        "robotics"
+      ],
+      "tags": [
+        "ODE policy",
+        "action dynamics",
+        "VLA action expert",
+        "LIBERO",
+        "GR00T",
+        "robot learning"
+      ],
+      "curated": true,
+      "featured": true,
+      "reading_minutes": 29,
+      "summary_ko": "이산 액션 값이 아니라 시간에 따른 행동 명령의 변화율을 적분하는 ODE Policy. π0.5 VLA의 action expert와 ImageWAM, SuperMimic의 actor를 바꿔 가며 학습 속도, 명령 연속성, 실제 로봇 성공률을 검증합니다.",
+      "abstract": "ODE Policy는 현재 관측·로봇 상태로 조건화한 neural ODE의 벡터장을 학습합니다. 매 시점의 절대 행동을 직접 출력하는 대신 이전 명령에서 시작해 시간 적분으로 다음 chunk를 생성하므로 chunk 경계의 급격한 변화를 억제합니다. 이 글은 π0.5·ImageWAM·LIBERO·실물 GR00T 실험의 비교 초기화, 에피소드 수, 부록 조건을 분리해 해설합니다.",
+      "project_url": "https://ntumars.github.io/ODE/",
+      "code_url": "https://github.com/NTUMARS/ODE-POLICY",
+      "origin": "editorial_verified_official_source"
+    },
+    {
+      "id": "2611.14365",
+      "title": "From Video Frames to Robot Meta-Frames: A Unified Latent Interface for World Action Models",
+      "authors": [
+        "Guoqiang Liang",
+        "Yiqi Lin",
+        "Yanzhe Chen",
+        "Kevin Yuchen Ma",
+        "Mike Zheng Shou"
+      ],
+      "published": "2026-11-10",
+      "updated": "2026-11-10",
+      "source_url": "https://arxiv.org/abs/2611.14365",
+      "pdf_url": "https://arxiv.org/pdf/2611.14365",
+      "primary_category": "wam",
+      "categories": [
+        "wam",
+        "robotics"
+      ],
+      "tags": [
+        "World Action Models",
+        "MetaWAM",
+        "Cosmos-Predict2",
+        "DCT",
+        "RoboCasa",
+        "LIBERO-Plus"
+      ],
+      "curated": true,
+      "featured": true,
+      "reading_minutes": 29,
+      "summary_ko": "MetaWAM은 action, proprioception, value를 비디오 프레임마다 따로 쓰지 않고 DCT 계수의 분리된 대역에 모아 하나의 출력 meta-frame에 저장합니다. RoboCasa 성공률·실물 Franka 결과와 동일 지연 ablation을 원문 표로 비교합니다.",
+      "abstract": "Video Diffusion Model을 World-Action Model에 재사용할 때 로봇 신호를 잠재공간의 어느 위치에 넣을지가 성능과 속도를 좌우합니다. MetaWAM은 사전학습 Cosmos-Predict2의 분포에 더 가까운 주파수 패킹과 수식 기반 readout, slot-aware conditioning mask로 policy/world/value를 한 모델에서 수행합니다. 공식 HTML의 Appendix A–C까지 읽고 단순 시퀀스 압축 효과와 표현 선택 효과를 분리했습니다.",
+      "project_url": "https://github.com/showlab/MetaWAM",
+      "code_url": "https://github.com/showlab/MetaWAM",
+      "origin": "editorial_verified_official_source"
+    },
+    {
+      "id": "2611.02629",
+      "title": "DexArena: A Unified Benchmark for Long-Horizon Dexterous Manipulation",
+      "authors": [
+        "Haonan Ping",
+        "Jianshu Hu",
+        "Yimin Wang",
+        "Yi Zhu",
+        "Pai Liang",
+        "Yutong Ban"
+      ],
+      "published": "2026-11-03",
+      "updated": "2026-11-03",
+      "source_url": "https://arxiv.org/abs/2611.02629",
+      "pdf_url": "https://arxiv.org/pdf/2611.02629",
+      "primary_category": "robotics",
+      "categories": [
+        "robotics"
+      ],
+      "tags": [
+        "DexArena",
+        "bimanual manipulation",
+        "dexterous hands",
+        "benchmark",
+        "SAPIEN",
+        "long-horizon"
+      ],
+      "curated": true,
+      "featured": true,
+      "reading_minutes": 29,
+      "summary_ko": "10개 장기 복합과제와 30개 stage, 4종 말단장치 및 3,000건의 원격조작 시연을 묶은 DexArena. PPO·RLPD·ACT·Diffusion Policy·GR00T·π0.5를 동일 stage에서 평가하되 연쇄 실행 시 비교군 구성 차이를 명확히 짚습니다.",
+      "abstract": "DexArena는 새 VLA 네트워크가 아니라 다단계 정밀 파지·회전·조립에서 로봇 정책을 비교하기 위한 SAPIEN 기반 벤치마크입니다. 물리 성공 조건, demonstration replay 검증, stage/long-horizon 및 시각 장면 변경 평가를 분리합니다. 정확한 Table 2·3의 시도 수와 Appendix의 stage 조건을 검증하고 인용하지 못하는 end-to-end 숫자는 채우지 않았습니다.",
+      "project_url": "https://sipair-elastic.github.io/DexArena-website/",
+      "code_url": "https://github.com/sipair-elastic/DexArena",
+      "origin": "editorial_verified_official_source"
     }
   ]
 }
