@@ -146,6 +146,24 @@ def render_visual_figures(p: dict) -> dict[str, str]:
         # arbitrary remote URLs from metadata as executable/embedded markup.
         remote=str(record.get('remote_url') or '')
         author_remote=bool(
+          (pid == '2506.01844'
+           and record.get('method') == 'author_project_exact_figure'
+           and remote in {
+             'https://cdn-uploads.huggingface.co/production/uploads/640e21ef3c82bd463ee5a76d/aooU0a3DMtYmy_1IWMaIM.png',
+             'https://cdn-uploads.huggingface.co/production/uploads/640e21ef3c82bd463ee5a76d/IV6vxVHCxUuYMEc7otXtv.png'
+           })
+          or
+          (pid == '2602.15922'
+           and record.get('method') == 'author_project_exact_figure'
+           and remote == 'https://dreamzero0.github.io/images/project_overview.png')
+          or
+          (pid == '2606.08278'
+           and record.get('method') == 'author_project_exact_figure'
+           and remote in {
+             'https://psi-lab.ai/SIMPLE/assets/pipeline.png',
+             'https://psi-lab.ai/SIMPLE/assets/mp_pipeline.png'
+           })
+          or
           (pid == '2611.04527'
            and record.get('method') == 'author_project_exact_figure'
            and remote in {

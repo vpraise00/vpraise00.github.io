@@ -1072,5 +1072,97 @@
         "verified_caption": "Figure 4: Dataset Statistics Visualization. Contact ratio and joint excursion across task categories."
       }
     ]
+  },
+  "2506.01844": {
+    "heading": "SmolVLA 원저자의 비전·행동 아키텍처 및 비동기 큐",
+    "intro": "arXiv:2506.01844v1 Figure 1·2와 저자 공식 Hugging Face 블로그에 게시된 동일 Figure 이미지. 순서대로 아키텍처 설명과 비동기 추론 설명 위치에 배치한다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "method",
+        "reading_title": "Figure 1 — 초기 VLM 특징 + interleaved action expert",
+        "context": "원본 Figure 1은 VLM의 뒤쪽 L−N개 층을 버리는 경로, RGB·언어·로봇 상태 조건과 action expert의 cross/self-attention을 하나로 보여준다. 학습·추론을 설명하는 바로 이 위치에서 확인한다.",
+        "steps": [
+          "가위 아이콘이 모델의 어느 층을 제거하는지 확인",
+          "시각 토큰과 상태 projection의 입력 경로 구분",
+          "CA가 시각·언어 특징을 읽고 SA가 action 토큰을 처리하는 부분 확인",
+          "최종 n개 연속 동작이 flow matching으로 만들어짐을 확인"
+        ],
+        "verified_caption": "Figure 1: SmolVLA. SmolVLA consists of a compact pretrained vision-language model, discarding the last L−N layers."
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — RobotClient·PolicyServer의 비동기 동작 큐",
+        "context": "원본 Figure 2는 로봇이 남아 있는 동작을 실행할 때 정책 서버가 새 chunk를 생성하는 비동기 경로를 보여준다. 아래 Figure 5의 처리량 수치와 연결하되 속도가 안전을 의미하지는 않는다.",
+        "steps": [
+          "클라이언트의 관측 전송과 서버의 action chunk 응답 구분",
+          "대기 없이 이전 chunk를 실행한다는 시간 겹침 파악",
+          "Algorithm 1의 g 임계값과 중복 관측 필터 함께 읽기"
+        ],
+        "verified_caption": "Figure 2: Asynchronous inference. Illustration of the asynchronous inference stack."
+      }
+    ]
+  },
+  "2602.15922": {
+    "heading": "DreamZero 공동 영상·행동 생성의 원본 자료",
+    "intro": "arXiv:2602.15922v1 Figure 1과 공식 DreamZero 프로젝트 원본 image, Figure 4의 원문 PDF 6페이지. 후자는 별도 png가 아니라 공식 PDF 페이지 전체를 삽입하며 크롭 Figure라고 가장하지 않는다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Figure 1 — 다양한 실제 시연에서 World Action Model로",
+        "context": "저자 공식 사이트의 원본 개요도는 다양한 AgiBot/DROID 행동, 미학습 물리 동작, 인간·다른 로봇 영상 전이와 새로운 embodiment 적응이라는 서로 다른 주장을 배치한다. 이것 자체는 숫자 성능의 증거가 아니다.",
+        "steps": [
+          "상단 Diverse, Non-repetitive Pretraining Data 확인",
+          "중앙 Video+Action 공동 출력과 액션 라벨 없는 영상 전이 구분",
+          "하단의 zero-shot 동작 사례와 우측 few-shot adaptation을 서로 다른 평가로 읽기"
+        ],
+        "verified_caption": "Figure 1: Overview. By jointly predicting video and action, World Action Models inherit world physics priors."
+      },
+      {
+        "number": 4,
+        "placement": "method",
+        "reading_title": "Figure 4 — Joint Video–Action DiT 학습·추론 구조",
+        "context": "공식 arXiv PDF 6쪽의 Figure 4 원본 페이지다. 좌측 teacher-forcing flow matching과 우측 causal autoregressive KV-cache + real observation update를 읽는다. 개별 PNG 원본은 확보되지 않아 PDF 전체 페이지를 직접 삽입한다.",
+        "steps": [
+          "왼쪽 video VAE와 action encoder 두 잠재 입력 확인",
+          "중앙 공유 causal DiT의 joint denoising 구분",
+          "오른쪽 비디오/액션 decoder가 달라도 내부 모델이 공유됨을 확인",
+          "실제 관측으로 KV cache를 대체하는 화살표 추적"
+        ],
+        "verified_caption": "Figure 4: Model Architecture of DreamZero. The model takes visual context, language and proprioceptive state."
+      }
+    ]
+  },
+  "2606.08278": {
+    "heading": "SIMPLE의 공식 시스템 파이프라인과 자동 시연 데이터 생성",
+    "intro": "arXiv:2606.08278v2 Figure 2/4와 USC PSI Lab 공식 프로젝트 페이지에 실제 게시된 동일 원저자 PNG를 대조한 자료.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — MuJoCo 수집·Isaac Sim 렌더링·정책 평가",
+        "context": "저자 Figure 2의 세 칼럼은 각각 시연 생성, offline replay+randomization, domain level별 평가를 나타낸다. 물리 계산과 렌더링을 동일 엔진으로 혼동하면 결과를 재현하기 어렵다.",
+        "steps": [
+          "왼쪽 motion planning과 PICO teleoperation 두 데이터 경로 구분",
+          "중앙 물리 궤적을 Isaac Sim에서 다시 렌더링하는 필터 단계 확인",
+          "오른쪽 Level0 배경, Level1 재질/조명, Level2 물체 pose 이동 확인"
+        ],
+        "verified_caption": "Figure 2: System Pipeline. Three stages: data generation in MuJoCo; replay and rendering in Isaac Sim; policy evaluation."
+      },
+      {
+        "number": 4,
+        "placement": "method",
+        "reading_title": "Figure 4 — Upper-body cuRobo와 Lower-body locomotion 결합",
+        "context": "상체 조작 경로와 하체 이동 목표를 연결하는 원본 Figure 4를 데이터 생성 설명에 배치했다. 실물 성공률 그림으로 오해하지 말고 자동 시연 알고리즘 구조로 읽는다.",
+        "steps": [
+          "Task Decomposition에서 그리퍼와 이동을 분리하는 기준 확인",
+          "cuRobo가 담당하는 grasp pose와 arm path 확인",
+          "스크립트 이동 명령이 생성 경로에 합쳐지는 시점 확인"
+        ],
+        "verified_caption": "Figure 4: Automated Motion Planning. Scripted policies coordinate upper-body manipulation and lower-body movement."
+      }
+    ]
   }
 }

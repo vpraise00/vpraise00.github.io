@@ -3370,6 +3370,101 @@
       "project_url": "https://sipair-elastic.github.io/DexArena-website/",
       "code_url": "https://github.com/sipair-elastic/DexArena",
       "origin": "editorial_verified_official_source"
+    },
+    {
+      "id": "2506.01844",
+      "slug": "2506.01844",
+      "title": "SmolVLA: A Vision-Language-Action Model for Affordable and Efficient Robotics",
+      "authors": [
+        "Mustafa Shukor",
+        "Dana Aubakirova",
+        "Francesco Capuano",
+        "Pepijn Kooijmans",
+        "Steven Palma",
+        "Remi Cadene"
+      ],
+      "published": "2025-06-02",
+      "updated": "2025-06-02",
+      "source_url": "https://arxiv.org/abs/2506.01844",
+      "pdf_url": "https://arxiv.org/pdf/2506.01844",
+      "project_url": "https://huggingface.co/blog/smolvla",
+      "code_url": "https://github.com/huggingface/lerobot",
+      "primary_category": "vla",
+      "categories": [
+        "vla",
+        "robotics"
+      ],
+      "tags": [
+        "VLA",
+        "Flow Matching",
+        "Asynchronous Inference"
+      ],
+      "origin": "editorial-source-verified"
+    },
+    {
+      "id": "2602.15922",
+      "slug": "2602.15922",
+      "title": "World Action Models are Zero-shot Policies",
+      "authors": [
+        "Seonghyeon Ye",
+        "Yunhao Ge",
+        "Kaiyuan Zheng",
+        "Shenyuan Gao",
+        "Sihyun Yu",
+        "Yuke Zhu",
+        "Linxi Fan",
+        "Joel Jang"
+      ],
+      "published": "2026-02-17",
+      "updated": "2026-02-17",
+      "source_url": "https://arxiv.org/abs/2602.15922",
+      "pdf_url": "https://arxiv.org/pdf/2602.15922",
+      "project_url": "https://dreamzero0.github.io/",
+      "code_url": "https://github.com/dreamzero0/dreamzero",
+      "primary_category": "wam",
+      "categories": [
+        "wam",
+        "vla",
+        "robotics"
+      ],
+      "tags": [
+        "World Action Model",
+        "Video Diffusion",
+        "DreamZero"
+      ],
+      "origin": "editorial-source-verified"
+    },
+    {
+      "id": "2606.08278",
+      "slug": "2606.08278",
+      "title": "SIMPLE: Simulation-Based Policy Learning and Evaluation for Humanoid Loco-manipulation",
+      "authors": [
+        "Songlin Wei",
+        "Zhenhao Ni",
+        "Jie Liu",
+        "Zhenyu Zhao",
+        "Junjie Ye",
+        "Hongyi Jing",
+        "Yue Wang"
+      ],
+      "published": "2026-06-06",
+      "updated": "2026-10-12",
+      "source_url": "https://arxiv.org/abs/2606.08278",
+      "pdf_url": "https://arxiv.org/pdf/2606.08278",
+      "project_url": "https://psi-lab.ai/SIMPLE/index.html",
+      "code_url": "https://github.com/physical-superintelligence-lab/SIMPLE",
+      "primary_category": "robotics",
+      "categories": [
+        "robotics",
+        "vla",
+        "wam"
+      ],
+      "tags": [
+        "Humanoid",
+        "Benchmark",
+        "Sim-to-Real"
+      ],
+      "origin": "editorial-source-verified"
     }
   ]
 }

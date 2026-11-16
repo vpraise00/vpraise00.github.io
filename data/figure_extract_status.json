@@ -957,5 +957,64 @@
       "review": "pdf_page_caption_crosschecked",
       "hosting_note": "공식 PDF 페이지 직접 임베딩이며 원본 Figure의 개별 이미지 크롭은 아닙니다."
     }
+  },
+  "2506.01844": {
+    "1": {
+      "remote_url": "https://cdn-uploads.huggingface.co/production/uploads/640e21ef3c82bd463ee5a76d/aooU0a3DMtYmy_1IWMaIM.png",
+      "source": "https://cdn-uploads.huggingface.co/production/uploads/640e21ef3c82bd463ee5a76d/aooU0a3DMtYmy_1IWMaIM.png",
+      "paper_source": "https://arxiv.org/html/2506.01844",
+      "caption": "Figure 1: SmolVLA. Compact VLM, early-layer truncation, interleaved cross/self-attention action expert.",
+      "method": "author_project_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "실제 저자 원본 이미지이며 사이트 외부 호스팅에 의존함."
+    },
+    "2": {
+      "remote_url": "https://cdn-uploads.huggingface.co/production/uploads/640e21ef3c82bd463ee5a76d/IV6vxVHCxUuYMEc7otXtv.png",
+      "source": "https://cdn-uploads.huggingface.co/production/uploads/640e21ef3c82bd463ee5a76d/IV6vxVHCxUuYMEc7otXtv.png",
+      "paper_source": "https://arxiv.org/html/2506.01844",
+      "caption": "Figure 2: Asynchronous inference. RobotClient / PolicyServer asynchronous chunk queue.",
+      "method": "author_project_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "실제 저자 원본 이미지이며 사이트 외부 호스팅에 의존함."
+    }
+  },
+  "2602.15922": {
+    "1": {
+      "remote_url": "https://dreamzero0.github.io/images/project_overview.png",
+      "source": "https://dreamzero0.github.io/images/project_overview.png",
+      "paper_source": "https://arxiv.org/html/2602.15922",
+      "caption": "Figure 1: Overview. World Action Models jointly predict video and action for zero-shot generalization and transfer.",
+      "method": "author_project_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "실제 저자 원본 이미지이며 사이트 외부 호스팅에 의존함."
+    },
+    "4": {
+      "method": "arxiv_pdf_page_embed",
+      "source": "https://arxiv.org/pdf/2602.15922",
+      "page": 6,
+      "caption": "Figure 4: Model Architecture of DreamZero. Training joint video-action flow matching; inference causal DiT and real-observation KV-cache update.",
+      "review": "figure4_caption_pdf_page_verified",
+      "hosting_note": "공식 PDF p.6 전체 페이지. 개별 크롭 이미지가 아닌 원저자 PDF 원본임을 페이지 내 명시."
+    }
+  },
+  "2606.08278": {
+    "2": {
+      "remote_url": "https://psi-lab.ai/SIMPLE/assets/pipeline.png",
+      "source": "https://psi-lab.ai/SIMPLE/assets/pipeline.png",
+      "paper_source": "https://psi-lab.ai/SIMPLE/index.html",
+      "caption": "Figure 2: System Pipeline. Data generation in MuJoCo, offline replay/render in Isaac Sim and evaluation across levels.",
+      "method": "author_project_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "실제 저자 원본 이미지이며 사이트 외부 호스팅에 의존함."
+    },
+    "4": {
+      "remote_url": "https://psi-lab.ai/SIMPLE/assets/mp_pipeline.png",
+      "source": "https://psi-lab.ai/SIMPLE/assets/mp_pipeline.png",
+      "paper_source": "https://psi-lab.ai/SIMPLE/index.html",
+      "caption": "Figure 4: Automated Motion Planning. Task decomposition, upper-body manipulation via CuRobo and lower-body locomotion.",
+      "method": "author_project_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "실제 저자 원본 이미지이며 사이트 외부 호스팅에 의존함."
+    }
   }
 }

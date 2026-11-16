@@ -5155,5 +5155,469 @@
         "2610.40026"
       ]
     }
+  },
+  "2506.01844": {
+    "summary_ko": "SmolVLA는 작은 VLM을 단순 축소하는 대신 영상 토큰·Transformer 층·action expert의 계산량을 분리해 0.45B VLA로 실제 SO100/101 조작까지 실험한다. 특히 비동기 실행의 처리량 개선과 성공률 감소를 함께 읽어야 한다.",
+    "abstract": "저자 논문의 Method §3, Experiments §4, Appendix A와 저자 Hugging Face 공식 블로그의 원본 Figure 1·2를 교차 확인했다. 2025년 공개된 연구를 2026년 11월 블로그에 신규 해설하는 것이며 오늘 발표된 논문이라는 뜻은 아니다.",
+    "review": {
+      "one_line": "시각 토큰을 줄이고 VLM 상위 층을 버리며 별도 flow-matching 행동 전문가를 붙인 경량 VLA; action queue를 비동기화하면 처리량은 커지지만 모든 성공률이 높아지는 것은 아니다. (Figure 1·2, Table 2–9)",
+      "problem": "실제 저가형 SO100/SO101은 몇 초짜리 pick-and-place에도 시야가 계속 변한다. 수십억 파라미터의 VLA가 매 관측마다 큰 VLM을 호출하면 로봇이 행동을 멈추거나 GPU가 부족해진다. 반대로 단일 과제 imitation policy는 새로운 물체와 언어 지시를 충분히 전이하지 못한다. 논문은 '모델 용량을 작게 유지하면서 로봇 행동을 어느 수준까지 재사용할 수 있으며, 모델이 다음 행동 묶음을 계산하는 동안 로봇을 멈추지 않을 수 있는가?'를 묻는다. (원문 §1, §3)",
+      "idea": "핵심 직관은 '무엇을 보고 있는가'와 '모터가 어떻게 움직이는가'의 계산을 분리하는 것이다. 영상 해석용 SmolVLM2의 후반 Transformer를 제거해 초기 특징만 행동 전문가에 전달하고, 미래 n개 동작은 조건부 flow matching으로 생성한다. 카메라 프레임을 64개 비주얼 토큰으로 줄여 시퀀스 길이를 억제한다. 현장에서 큐에 남은 동작이 충분할 때 다음 관측을 보내 새 chunk를 미리 받아두는 방식은 '설거지 접시를 옮기는 동안 다음 접시를 미리 보는 조수'에 비유할 수 있다. 이 설계는 상위 언어 추론을 전부 유지하는 범용 로봇 추론기와 다르다. (Figure 1·2, §3.1–3.3)",
+      "method": "입력은 다중 RGB 영상, 자연어, 로봇 proprioception이다. SigLIP 시각 인코더와 SmolLM2 언어 경로를 가진 SmolVLM2의 일부 층을 이용하며 image tiling 생략과 pixel shuffle로 각 영상의 시각 토큰 수를 낮춘다. 로봇 상태는 projection을 통해 조건 토큰으로 넣고, action expert는 VLM 토큰을 향한 cross-attention과 액션 내부 causal self-attention을 교차 적용한다. 학습은 실제 action chunk에 노이즈를 섞고 연속시간 velocity를 회귀하는 conditional flow-matching 목적이다. 추론은 노이즈 action을 적분해 chunk를 만들고, RobotClient가 앞선 chunk를 실행하는 동안 PolicyServer가 새 chunk를 비동기로 계산한다. 남은 액션 비율 임계값과 관측 중복 제거는 Algorithm 1에 명시돼 있다. (Figure 1·2, §3)",
+      "findings": "원문 Table 2의 LIBERO 0.45B SmolVLA 평균 87.3%는 단순히 OpenVLA를 이겼다는 뜻보다 조건을 구분해야 한다. SmolVLA의 VLM 초기화와 기존 로봇 데이터 사전학습 여부, 평가 환경이 비교군과 다르다. SO100 Table 3의 평균 78.3%는 pick-place 75%, stacking 90%, sorting 70%로 평균했고, ACT 단일과제 48.3%, π0 다중과제 61.7%와 비교한다. Table 5의 SmolVLA 전용 감독 통제에서는 커뮤니티 사전학습을 추가할 때 51.7→78.3%이다. 반면 Figure 5에서 async는 13.75→9.70초, 60초 큐브 9→19개로 빨라져도 세 과제 평균 성공률은 78.3→73.3%로 5%p 떨어진다. 단순 '비동기라 성공률 상승'이 아니다. (Table 2–5, Figure 5)",
+      "limitations": "Table 3의 저가 팔 실험을 다른 자유도·로봇 보행에 그대로 확장할 수 없다. 본 논문의 community pretraining은 주로 SO100 단일 embodiment의 22.9K 정도 시연이므로 진정한 기구학적 zero-shot 이식 근거가 약하다(§5.1). 비동기 모드에서는 이전 관측 기반 동작을 잠시 더 실행하므로 접촉 위험·충돌률·네트워크 꼬리 지연을 추가 측정해야 한다. 논문의 실물 SO100 성공 판정은 단계별 부분 점수를 포함할 수 있어 일괄적인 완전 성공과 구분한다. Ablation Table 6–9는 별도 VLM 동결/처음부터 학습 설정이어서 사전학습 완료한 최종 Table 2 수치와 직접 비교할 수 없다. (원문 §4.7, §5 및 Appendix A)",
+      "questions": [
+        "Table 2 LIBERO 87.3%와 Table 6 ablation 85.5%의 사전학습·VLM freezing 차이는?",
+        "Figure 1에서 visual token 64개로 줄어드는 경로와 누락될 수 있는 미세 물체 정보를 설명하라.",
+        "Figure 2 Algorithm 1의 queue threshold g가 클 때 비동기 갱신과 stale observation의 관계는?",
+        "Figure 5의 성공률 −5%p와 속도 30% 개선을 임무 위험도로 가중하면 선택이 달라지는가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**원문 대조**: arXiv:2506.01844v1 Figure 1(모델 전체), Figure 2(서버–로봇 큐), §3 Method, §4 Experiments 및 Appendix A의 데이터 출처를 확인했다. 숫자는 저자의 실험 성적이지 독립 재현 결과가 아니다. 특히 작은 모델·적은 데이터·짧은 지연이라는 서로 다른 효율 개념을 혼동하지 말자.",
+      "pipeline": [
+        {
+          "title": "입력 표준화: 영상·언어·상태",
+          "detail": "여러 RGB 카메라 관측을 image encoder에, 명령을 text tokenizer에, 관절·그리퍼 등의 수치 상태를 state projector에 넣는다. 고정 길이 작업 목표가 아니라 현재 시점 관측과 행동 구간을 짝지어 학습한다.",
+          "io": "o_t=(RGB, language, robot state)"
+        },
+        {
+          "title": "시각 토큰 압축",
+          "detail": "SmolVLM2의 SigLIP 비전 특징을 쓰되 image tiling을 제거하고 pixel shuffle로 영상 한 장당 토큰을 64개로 줄인다. 계산량을 크게 낮추지만 작은 물체 인식과 부분 가림에서 손해를 볼 수 있어 별도 평가가 필요하다.",
+          "io": "image → 64 visual tokens"
+        },
+        {
+          "title": "상위 VLM 블록 자르기",
+          "detail": "SmolLM2 기반 VLM의 깊이 L 중 초기 N층만 남긴다. 질문응답용 최종 decoder 층 전체가 필요한지보다 행동 조건을 만들 만큼의 공간·의미 특징이 있는지에 집중한다. 원문 Table 8은 N 변화와 성능을 별도로 테스트한다.",
+          "io": "VLM early-layer representation"
+        },
+        {
+          "title": "Flow Matching 행동 전문가 학습",
+          "detail": "정답 action chunk와 가우시안 노이즈를 중간 시간점에서 섞고 목표 velocity를 회귀한다. Action Expert는 VLM 특징을 참고하는 cross-attention과 토큰 순서를 보존하는 causal self-attention을 교차 사용한다.",
+          "io": "(noise action, VLM context, t) → velocity"
+        },
+        {
+          "title": "한 번의 정책 호출로 행동 묶음 생성",
+          "detail": "추론에서 velocity field를 적분해 미래 n개 저수준 동작을 내고 action queue에 넣는다. 이는 언어 토큰을 1개씩 출력하는 VLA와 달리 연속 제어 묶음의 생성이다.",
+          "io": "π(o_t) → [a_t,…,a_t+n]"
+        },
+        {
+          "title": "RobotClient–PolicyServer 비동기 제어",
+          "detail": "클라이언트가 기존 행동을 소비하다 남은 비율이 g 이하이면 새 관측을 서버로 보낸다. 유사한 상태를 걸러 중복 호출을 줄이고 새 chunk를 수신하면 겹침을 조정한다; 응답이 늦으면 기존 큐를 계속 소비한다. (Figure 2, Algorithm 1)",
+          "io": "queue depth, observation age, server latency"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "VLM과 action expert의 서로 다른 역할",
+          "body": "VLM의 초기 블록에서 RGB·텍스트·상태를 합쳐 조건 특징을 만들고, action expert는 시계열 행동 자체의 생성에 집중한다. 범용 VLM 전체를 거대 action generator와 끝까지 공동 계산하지 않아도 된다는 점이 경량화의 핵심이다.",
+          "watch": "Figure 1의 가위 아이콘·cross-attention 연결을 실제 저자 이미지로 확인"
+        },
+        {
+          "title": "Causal SA와 CA를 왜 섞는가?",
+          "body": "CA-only는 행동 후보끼리 충분히 상호작용하지 않고, SA-only는 언어·영상 맥락 사용이 제한된다. Table 6에서 CA79.0, SA74.5, CA+SA85.5; Table 7에서 causal74.5가 bidirectional67.5를 웃돈다. 이는 별도 통제 ablation의 LIBERO 평균이다.",
+          "watch": "Table 6의 85.5를 최종 Table 2의 87.3과 혼합하지 말기"
+        },
+        {
+          "title": "비동기 큐는 '동작의 공백'을 줄인다",
+          "body": "서버 추론이 끝날 때까지 정지하는 sync 방식과 달리, async 방식은 직전 chunk의 남은 액션을 쓰는 동안 새 영상을 계산한다. queue threshold g, joint-space similarity filter, 네트워크 지연이 안정성 변수다. (Algorithm 1)",
+          "watch": "관측의 freshness를 희생하지 않고 throughput만 얻는다고 가정하지 말 것"
+        },
+        {
+          "title": "커뮤니티 데이터의 감독 품질",
+          "body": "Appendix A는 공개 데이터셋 481개를 묶고, 명령·카메라 시점 표준화를 거친다. Table 1은 22.9K episodes 및 10.6M frames로 정의한다. 언어 라벨과 카메라 간 변이를 다루는 비용을 무시하면 재현이 어렵다.",
+          "watch": "데이터셋 수와 시연 수를 혼동하지 말 것"
+        },
+        {
+          "title": "Ablation과 최종 정책의 경계",
+          "body": "Table 6–9에서는 VLM을 동결한 별도 조건에서 attention, depth, expert width 등을 비교한다. Table 5에서 단일과제/다중과제/사전학습 세 조건도 서로 다른 학습량과 데이터 분포의 영향을 함께 포함할 수 있다.",
+          "watch": "같은 리소스·seed에서 재실험 필요"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "커뮤니티 데이터 · Table 1",
+          "value": "481 datasets / 22.9K episodes / 10.6M frames",
+          "context": "공개 SO100 중심 데이터; episode와 frame 수를 구분. Appendix A에 데이터셋·annotation 정리"
+        },
+        {
+          "metric": "LIBERO · Table 2",
+          "value": "SmolVLA 0.45B 87.3%; OpenVLA 7B 76.5%",
+          "context": "LIBERO Spatial/Object/Goal/Long 4묶음 평균; SmolVLA는 VLM 초기화·로봇 사전학습 없음으로 표기. baseline 초기화와 학습조건 동일하다고 주장하지 않음"
+        },
+        {
+          "metric": "Meta-World · Table 2",
+          "value": "SmolVLA 0.45B 57.3%",
+          "context": "50과제 난도별 평균, 10 rollout/task; π0 VLM 초기화 50.5% 및 robotics pretrain 47.9% 등과 조건 구분"
+        },
+        {
+          "metric": "SO100 실물 · Table 3",
+          "value": "SmolVLA 78.3%; π0 61.7%; ACT 48.3%",
+          "context": "3과제 평균. SmolVLA·π0 multi-task, ACT single-task로 학습 설정이 다름; 부분 성공 채점 주의"
+        },
+        {
+          "metric": "SO101 ID/OOD · Table 4",
+          "value": "90% / 50% (SmolVLA); 70% / 40% (ACT)",
+          "context": "Pick-Place-Lego 단일과제; OOD는 훈련보다 새로운 물체 위치, 완전히 새로운 작업이 아님"
+        },
+        {
+          "metric": "커뮤니티 사전학습 · Table 5",
+          "value": "78.3% vs 51.7% vs 40.0%",
+          "context": "SO100: multi-task pretrained / multi-task from scratch / single-task from scratch, 동일 정책 계열"
+        },
+        {
+          "metric": "Attention ablation · Table 6",
+          "value": "CA+SA 85.5%; CA 79.0%; SA 74.5%",
+          "context": "LIBERO의 별도 from-scratch action expert + frozen VLM 조건, 최종 본표와 직접 비교 금지"
+        },
+        {
+          "metric": "Async 성공률 · Figure 5a",
+          "value": "sync 78.3% / async 73.3%",
+          "context": "SO100 3과제 평균: 비동기가 순수 성공률은 5%p 낮음, sorting은 70→50"
+        },
+        {
+          "metric": "Async 지연·처리량 · Figure 5b,c",
+          "value": "13.75s → 9.70s; 9 → 19 cubes",
+          "context": "Pick-Place 10 trials 시간, 고정 60초 큐브 개수 별도 실험. 빠르지만 성공률 악화와 함께 판단"
+        }
+      ],
+      "evidence_note": "원문 §4와 Tables 1–9·Figure 5 기반. 모든 수치는 저자가 보고한 평가치; 실물의 부분 점수, LIBERO 성공률, 처리량의 분모가 서로 다르다.",
+      "comparison": "OpenVLA와 π0가 큰 VLM의 행동 예측 능력을 늘렸다면 SmolVLA는 초기에 충분한 특징만 읽는 경량화와 별도 행동 전문가를 택한다. ACT가 저가 팔에서 좋은 단일 작업 기준점인 반면 이 모델은 공개 커뮤니티 데이터로 pretrain한 후 multitask fine-tune을 검증한다. 다만 Table 3의 ACT single-task vs SmolVLA multi-task 결과를 구조만의 인과효과로 해석하면 안 된다. Figure 5는 과업 성공률뿐 아니라 로봇이 멈춰 있는 시간과 정해진 시간 내 완료 횟수를 보고하도록 평가 관점을 확장한다.",
+      "reading_guide": [
+        "원문 Figure 1에서 영상 64토큰 압축과 N<L 조기 종료 VLM이 다른 최적화임을 화살표로 추적하기.",
+        "Figure 2 Algorithm 1의 g threshold와 joint-state similarity filter를 각각 어떤 이유로 넣었는지 기록하기.",
+        "Table 2–5에서 robotics pretraining 여부, SO100/SO101 로봇, multi/single-task 설정 구분하기.",
+        "Figure 5a의 async 성공률 하락과 5b·5c의 시간·처리량 개선을 반드시 함께 읽기."
+      ],
+      "replication": {
+        "hypothesis": "에지 GPU에서 이미지 토큰 압축과 비동기 action queue는 평균 latency를 낮추지만 작은 대상 물체·갑작스러운 가림에는 제어 위험을 증가시킬 수 있다.",
+        "setup": "SO100 또는 SO101에서 픽앤플레이스·정렬 각 50시연을 고정하고, 같은 데이터 split·초기 무게·평가 조명·카메라를 쓴다. 시간 동기화가 가능한 로깅으로 관측 캡처→네트워크 전송→모델 추론→모터 커맨드 적용의 타임스탬프를 저장한다.",
+        "baselines": "Full VLM vs half-depth, 64 vs 더 많은 visual tokens, CA-only vs CA+SA, sync vs async, queue threshold g=0.25/0.5/0.75. 각 조합은 동일 데이터·3개 seed와 동일 안전 timeout으로 실행한다.",
+        "metrics": "10–20개 물체별 strict 완료율과 단계별 부분점수, p50/p95 end-to-end 지연, 평균 관측 나이, 60초 완료개수, contact interruption, actuator jerk, GPU VRAM 및 joule/episode.",
+        "risks": "더 빨리 움직여서 60초 완료개수가 커져도 오동작·충돌이 늘 수 있다. 모델이 고속일수록 환경 리셋과 사람 감독을 동일하게 유지하고, 속도와 성공률을 단일 합성 점수로 감추지 않는다."
+      },
+      "related": [
+        "2406.09246",
+        "2410.24164"
+      ]
+    },
+    "reading_minutes": 28,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-16",
+    "source_scope_ko": "2025-06-02 최초 공개 / 2026-11-16 블로그 신규 등록. arXiv HTML·PDF Method §3, Experiments §4, Appendix A; Figure 1·2는 저자 Hugging Face 공식 블로그에 게시된 동일 원본 이미지."
+  },
+  "2602.15922": {
+    "summary_ko": "DreamZero는 14B 비디오 확산 backbone으로 미래 영상과 행동을 공동 예측하는 World Action Model이다. 다양한 로봇 활동 500시간에서 학습한 뒤 새 동작·환경·기종으로 일반화하며, Figure 4의 causal DiT·KV cache와 Table 2의 성공률이 아닌 진행률을 정밀 구분한다.",
+    "abstract": "arXiv:2602.15922 공식 HTML §3–5 및 Appendix A–H, 공식 PDF Figure 1·4와 Tables 1–4를 읽고 작성했다. DreamZero의 7Hz는 2×GB200 고사양 구성의 저자 보고치다.",
+    "review": {
+      "one_line": "WAM의 핵심을 '미래를 생성해 사람이 눈으로 확인한다'가 아니라 비디오 예측을 행동 예측의 물리적 감독으로 사용하고, 실제 관측으로 KV를 갱신하는 14B 폐루프 정책으로 파악한다. (§3, Figure 4)",
+      "problem": "'레몬을 접시에 놓아라'처럼 학습 시연이 많은 조작은 VLA가 잘할 수 있지만, 훈련 데이터에서 거의 보지 못한 신발끈 풀기·햄버거 부채질·도구 다루기 같은 동작은 언어 이해만으로 구현할 수 없다. VLA의 텍스트-이미지 사전학습은 '어떤 물체인가'에 강하지만 물체가 시간에 따라 어떤 힘·접촉으로 변하는지는 약하게 감독한다. 반면 기존 world model과 액션 모델을 따로 돌리면 비디오와 모터 시퀀스가 불일치하고 추론시간도 폭증한다. (§1–3)",
+      "idea": "DreamZero는 웹 비디오로 사전학습된 Wan 계열 14B 이미지-비디오 DiT를 직접 '행동을 수행하는 세계모델'로 바꾼다. 주어진 장면에서 '다음 몇 프레임이 이렇게 바뀐다'와 '그 변화를 만드는 모터 동작은 이것이다'를 **한 번의 공동 noise-prediction 목표**로 학습한다. 예컨대 컵을 집어 쟁반에 놓는다면 '컵이 공중으로 이동해 놓이는 미래'를 그리는 잠재공간과 팔의 동작이 같은 네트워크에서 정렬된다. 다만 생성된 영상이 반드시 물리적으로 옳다는 보장은 없고, 실패가 잘못된 비디오 예측에서 시작할 수 있다. (Figure 1·4, §3)",
+      "method": "영상은 VAE latent, 명령은 text encoder, 관절상태는 state encoder로 들어간다. 행동은 encoder/decoder를 거쳐 미래 비디오 latent와 함께 autoregressive causal diffusion transformer에서 flow matching으로 공동 denoise한다. 학습에서는 과거 clean video chunk를 문맥으로 두고 다음 비디오·action chunk에는 노이즈를 준 채 teacher forcing한다. 추론 때는 매 chunk 후 실행된 실제 카메라 프레임으로 KV cache의 예측 과거를 교체하는 feedback 구조를 쓴다(Figure 4). 느린 비디오 denoising 문제에는 DreamZero-Flash의 video/action 독립 시간 스케줄, 캐싱, 정밀도 및 GPU 병렬화, 비동기 action 실행으로 대응한다(§3.2, Appendix C·D).",
+      "findings": "저자는 AgiBot G1 다양 작업 약 500시간, 7,193 episodes를 활용해 미학습 동작 10과제의 task progress를 비교했다. 미학습 AgiBot 과제 DreamZero 평균 39.5% vs pretrained VLA 최고 16.3%는 전체 동작 완료율이 아니라 *과제 단계 진행률*이다(Figure 9). DROID의 새 동작 평가에서는 49% progress와 22.5% strict success가 분리되어 있다. Table 2의 38.3±7.6% → 54.3±10.4% (사람 12분 비디오) / 55.4±9.5% (다른 로봇 20분 비디오) 역시 9개 미학습 과제의 진행률, 오차 표기는 standard error이다. 1-step Flash Table 3에서 74±10.1%/150ms는 무작정 4step 83±6.1%/350ms보다 정확하다는 뜻이 아니라 속도·성능 절충이다. (§4–5)",
+      "limitations": "'제로샷'은 해당 AgiBot/DROID 평가 집합의 작업과 환경에 대한 미학습 조건이며 임의의 로봇·현실세계 보장과 다르다. 전체 모델 14B는 데이터센터 GPU 두 대(GB200)를 필요로 하며 저가 에지 장치에 즉시 이식되는 7Hz가 아니다. 아울러 모델은 수초 단위 반응형 System 1이며 6초 정도의 짧은 visual memory, 밀리미터 수준 조립의 부정확성, 영상 환각 전이 문제를 논문 §6이 지적한다. Table 4 AR vs BD는 둘 다 progress 50%지만 AR의 유연한 캐싱·동작 매끄러움을 별도로 보고한다; 'BD보다 성공률 우월'은 성립하지 않는다.",
+      "questions": [
+        "Figure 4에서 학습용 clean context와 noisy future chunk를 구분하고 실제 관측으로 cache를 대체하는 이유를 설명하기.",
+        "Table 2의 progress 55.4%를 strict success로 바꾸어 인용하면 왜 오류인가?",
+        "Table 3 4step83%→Flash1step74%의 품질 비용과 350→150ms 지연 절감을 비교하기.",
+        "Table 4가 BD/AR에서 동일 progress를 보일 때 왜 속도·모션 smoothness 실험이 추가로 필요한가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**원문 대조:** 2026-02-17 arXiv v1 Figure 1(정성 개요)과 Figure 4(훈련·추론 구조), §3 DreamZero, §4 평가 설정, §5 실험/ablation, Appendix A–H(마스크, 시간 최적화, 평가 프로토콜)를 구분했다. 아래의 수치는 '성공률'과 'task progress'를 표마다 별도 명시한다.",
+      "pipeline": [
+        {
+          "title": "초기화: 물리 시간축이 있는 사전학습 모델",
+          "detail": "텍스트 이미지 VLM이 아니라 Wan 이미지→비디오 확산 14B DiT를 초기화한다. 비디오로 학습한 시간적 물리 변화 선험을 이용한다.",
+          "io": "pretrained Wan I2V 14B"
+        },
+        {
+          "title": "세 종류의 조건부 입력",
+          "detail": "과거 카메라 영상은 VAE에, 명령은 text encoder에, 자기수용 센서는 state encoder에 연결한다. 로봇 action은 별도 encoder/decoder를 거쳐 비디오 토큰과 정렬한다.",
+          "io": "visual context + instruction + proprio"
+        },
+        {
+          "title": "Teacher-forced chunk 공동 학습",
+          "detail": "한 chunk의 미래 영상 latent와 행동 latent에 서로 다른 노이즈를 주고 공유 DiT에서 시간별 velocity를 맞춘다. 과거 비디오 chunk의 깨끗한 문맥은 현재 noisy chunk의 정보 흐름을 지원한다.",
+          "io": "joint flow-matching: future video & actions"
+        },
+        {
+          "title": "자기회귀 예측과 환경 실행",
+          "detail": "미래 video latent와 action chunk를 함께 denoise해 비디오/행동 decoder로 보낸다. 로봇은 action chunk를 실행하며, 실제 카메라 관측이 들어오면 cache의 생성 문맥을 덮어쓴다. 장기 rollout의 영상 drift를 줄이기 위한 핵심 폐루프이다.",
+          "io": "predictions → execute → real observations"
+        },
+        {
+          "title": "Flash의 비디오·행동 noise schedule 분리",
+          "detail": "액션 채널과 비디오 채널이 동일 횟수로 denoise해야 한다는 가정을 버리고 독립된 noise-time 분포를 준다. 적은 추론 스텝의 품질 저하를 완화한다. (Table 3, Appendix D)",
+          "io": "1-step Flash: 150 ms/chunk"
+        },
+        {
+          "title": "고속 제어의 하드웨어·시스템 경로",
+          "detail": "CFG 병렬화, cache, 연산 kernel 최적화와 양자화, async chunk execution을 결합한다. 보고된 최대 38배 향상 및 7Hz는 2×GB200 고사양 하드웨어 조건에서 측정한 시스템 수준 결과다.",
+          "io": "2×GB200 / ~7 Hz"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "왜 미래 영상이 액션 감독으로 작용하나?",
+          "body": "영상 공간의 시각적 변화는 언어보다 접촉·모션의 결과를 직접 반영한다. 예측된 다음 장면을 만드는 action의 inverse-dynamics 관계를 함께 학습하면 VLA의 '물체를 가리키기만 하는' 실패를 일부 보완할 수 있다. 단, 이 논문에서 비디오는 미래를 보장하는 시뮬레이터가 아니다.",
+          "watch": "원문 §3와 Figure 4의 비디오·행동 공동 denoise 헤드를 따라갈 것"
+        },
+        {
+          "title": "Teacher forcing과 KV cache의 충돌 방지",
+          "body": "훈련에서 clean 과거에 조건화하는 동안 추론에서는 과거 예측이 누적될 수 있다. 현실에서 다음 관측을 얻을 수 있는 로봇의 장점을 활용해 그 관측으로 autoregressive cache를 갱신한다. (Appendix C, Figure 4)",
+          "watch": "생성 영상과 실제 관측이 다를 때 행동이 어떻게 달라지는지 추적"
+        },
+        {
+          "title": "다양한 데이터가 반복 데이터보다 중요한가?",
+          "body": "Table 4는 500시간을 맞춘 PnP Easy ablation이다. 동일 14B AR, 50K steps, batch32에서 반복 데이터 진행률 33±4.2, 다양한 데이터 50±6.3%이다. 데이터 총량과 분포를 분리하려는 설계이지 모든 작업에서 17%p 향상을 뜻하지 않는다.",
+          "watch": "Ablation에는 AgiBot 전체 평균이 아니라 PnP Easy를 사용"
+        },
+        {
+          "title": "모델 스케일과 AR/BD 비교",
+          "body": "Table 4 같은 학습예산에서 다양한 데이터 5B21±4.2 vs 14B50±6.3% progress다. 반면 14B bidirectional·autoregressive는 둘 다 50%로 반올림되지만, AR은 KV cache로 속도 및 모션 매끄러움에 이점이 있다고 보고한다.",
+          "watch": "'AR은 BD보다 성공률이 높다'로 왜곡하지 않기"
+        },
+        {
+          "title": "비디오-only 전이 실험은 행동 라벨이 없다",
+          "body": "YAM 로봇 20분 또는 인간 헤드카메라 12분, 각 9개 미학습 task마다 8개 영상(총 72)만 추가한다. 원래 AgiBot의 행동 라벨과 직접 일치시키지 않으며, 두 로봇의 유사한 병렬 gripper가 전이에 유리할 수 있다.",
+          "watch": "9과제의 평균 progress ±SE; strict completion이 아님"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "AgiBot 원시 데이터",
+          "value": "약 500h / 7,193 episodes",
+          "context": "서로 다른 수백 작업의 다중 하위과제; Appendix E의 반복 과제 퇴출/시연 정책 확인"
+        },
+        {
+          "metric": "AgiBot 미학습 작업 · Figure 9",
+          "value": "39.5% progress vs pretrained VLA 16.3%",
+          "context": "10 미학습 과제 평가. strict success 아님; 미학습 동작/새 환경에서의 진행도"
+        },
+        {
+          "metric": "DROID 새 동작 · §5.1",
+          "value": "49% progress / 22.5% strict success",
+          "context": "DROID Franka; 20개의 unseen-verb tasks 각 2회, GR00T N1.6은 31%/12.5%, π0.5는 33%/7.5%"
+        },
+        {
+          "metric": "교차 embodiment · Table 2",
+          "value": "38.3±7.6 → 54.3±10.4%",
+          "context": "9개 unseen tasks task progress ±SE, AgiBot 대상 12분 인간 비디오 추가"
+        },
+        {
+          "metric": "다른 로봇 영상 · Table 2",
+          "value": "38.3±7.6 → 55.4±9.5%",
+          "context": "9과제 progress ±SE, YAM 20분 비디오(각 과제 8건, 72 demos), target action label 없음"
+        },
+        {
+          "metric": "데이터 다양성 · Table 4",
+          "value": "33±4.2 vs 50±6.3%",
+          "context": "반복 vs 다양한 500h, 같은 14B AR 50K steps batch32, PnP Easy progress ablation"
+        },
+        {
+          "metric": "모델 크기 · Table 4",
+          "value": "5B 21±4.2% vs 14B 50±6.3%",
+          "context": "동일 diverse data + AR; 동일 PnP Easy progress ablation"
+        },
+        {
+          "metric": "Flash denoising · Table 3",
+          "value": "4-step 83%/350ms; 1-step 52%/150ms; Flash1-step 74%/150ms",
+          "context": "테이블 정리 과제의 progress ±SE (4step6.1, naive1step10.2, Flash1step10.1)"
+        },
+        {
+          "metric": "시스템 처리율 · §3.2, Appendix D",
+          "value": "최대 38× / 약 7Hz",
+          "context": "연산·시스템 통합 최적화 후 2×GB200 하드웨어, 엔드투엔드 150ms 수준; 에지 GPU 주장이 아님"
+        }
+      ],
+      "evidence_note": "AgiBot·DROID·Flash·PnP Easy는 서로 다른 설정. '진행률'은 과제 중 어느 단계까지 수행했는지를 가중한 점수이며 DROID의 strict success와 동일하지 않다.",
+      "comparison": "SmolVLA/π0 같은 VLM→action 방식과 다르게 DreamZero는 비디오 DiT에서 출발해 시간적 세계 변화를 직접 조건화한다. 이 차이를 단순하게 14B와 3B의 크기 차이로 환원할 수는 없다. Table 4에서 같은 크기의 VLA 비교와 5B/14B 비교를 수행하지만 하드웨어·데이터·architecture 변경을 완벽하게 매칭한 보편적 인과 증거는 아니다. WAM의 진짜 검증 주제는 비디오 예측 품질이 실패 회복과 새로운 모션을 얼마만큼 개선하는지, 그리고 이를 20Hz 저가 제어기까지 확장할 수 있는지다.",
+      "reading_guide": [
+        "Figure 1의 네 주장(다양성, zero-shot, 비디오-only 전이, 새 기종 적응)을 네 개의 서로 다른 실험과 대응시키기.",
+        "Figure 4의 '학습 clean context'와 '추론 real-observation KV 업데이트'를 분리해 도해하기.",
+        "Table 2의 ±SE와 strict success를 구분하기. 54.3을 '54.3% 성공'으로 인용하지 말 것.",
+        "Table 3의 1-step Flash 절충과 Table 4의 AR/BD 동일 progress를 한계와 함께 읽기."
+      ],
+      "replication": {
+        "hypothesis": "미학습 물리 동작의 개선은 액션 디코더만 키우는 것보다 비디오 예측의 물리적 정확도와 다양한 상태–행동 대응을 학습할 때 커진다.",
+        "setup": "DROID subset에서 seen/unseen verbs를 분리한 10–20개의 평가 과제를 고정하고, 500h 같은 큰 규모의 재현이 어려우면 공개된 로봇 영상으로 데이터 다양성(물체·표면·관찰 각도)과 반복 횟수를 통제한다. 녹화된 실제 rollout의 action·영상 동기화를 공통 프로토콜로 보존한다.",
+        "baselines": "공개 DreamZero checkpoint/action readout, video-loss 제거, AR vs BD, 5B vs 14B, repetitive vs diverse hours-matched, Flash1-step vs standard4-step. 동일 시간/steps과 hardware cost를 따로 명시한다.",
+        "metrics": "strict full completion, partial progress, dynamic object contact error, predicted future vs real frame warping error, action jerk, p95 chunk latency, 배포 GPU-hour, 성공당 비용.",
+        "risks": "비디오 생성이 보기에는 그럴듯해도 물리적으로 틀릴 수 있다. 미학습 과제 10개만으로 범용성을 일반화하지 말고 장기 기억(6초 이후), 모터 안전, 센서 dropout 및 sub-centimeter 조립을 별도 실패 범주로 기록한다."
+      },
+      "related": [
+        "2611.04839",
+        "2611.04527"
+      ]
+    },
+    "reading_minutes": 28,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-16",
+    "source_scope_ko": "2026-02-17 공개된 기존 핵심 연구의 신규 해설. 공식 arXiv HTML/PDF §3–5 및 Appendix A–H, Figure 1은 저자 프로젝트에서 원본으로 확보; Figure 4는 원문 PDF p.6 전체 페이지(개별 이미지 크롭이 아님)를 표시."
+  },
+  "2606.08278": {
+    "summary_ko": "SIMPLE은 휴머노이드 전신 보행·조작을 MuJoCo 접촉 물리와 Isaac Sim 렌더링으로 분리해 평가하는 벤치마크다. 60 설계 과제·50 실내 장면·1,000+ 물체, 9가지 정책의 과제별 10회 성공 횟수, 데이터 생성 ablation과 sim-to-real을 구분해 해설한다.",
+    "abstract": "2026-06-06 초판·2026-10-12 v2 기준 arXiv 공식 HTML/PDF의 Method §3, Experiments §4–5, Appendix, Figure 2/4와 Tables 1–5 및 USC PSI Lab 저자 공식 사이트 그림을 비교했다.",
+    "review": {
+      "one_line": "SIMPLE의 가치는 모델 승률 하나가 아니라 동일 humanoid dynamics와 시각 randomization을 공유하는 평가 조건, 자동 planning/VR teleop 데이터 수집, sim-to-real gap을 함께 표준화하려는 데 있다. (Figure 2·4, Table 1–5)",
+      "problem": "탁자 위 한 개 팔 조작은 LIBERO나 RoboTwin으로 비교하기 쉽지만 휴머노이드는 물건에 손을 뻗는 순간 균형을 잡아야 하고, 보행·회전·양팔 접촉까지 합쳐야 한다. 다른 연구가 실제 로봇에서 제각각 촬영 조건·작업·리셋 기준으로 성공률을 보고하면 Ψ0와 DreamZero 중 어떤 정책이 강한지 재현하기 어렵다. 순수 보행 benchmark는 손의 조작을, tabletop benchmark는 전신 균형과 이동을 놓친다. 따라서 '하나의 시뮬레이터에서 광학적 다양성과 접촉 dynamics를 모두 확보하고 실물 성적을 어느 정도 예측할 수 있는가?'가 문제다. (§1–2)",
+      "idea": "핵심은 물리와 영상의 '역할 분리'다. MuJoCo는 접촉·기구학·전체 균형의 정답 상태를 계산하고 Isaac Sim은 같은 상태로 사실적인 카메라 관측을 만들어낸다. 사람은 PICO XR에서 시연하거나 motion planning으로 trajectories를 대량 생산한다. 로봇 정책은 동일 Gym 인터페이스에서 난도별 세 조건(표 L0/L1/L2)의 영상·상태를 보고 액션을 출력한다. 예컨대 탁자 밑으로 몸을 굽혀 상자를 집는 작업은 단순 집기보다 보행 안정·허리 굽힘·두 손의 역할을 동시에 요구한다. (Figure 2, Figure 4)",
+      "method": "Data generation에서는 (A) 물체를 MuJoCo에 떨어뜨려 안정 pose를 얻고 BoDex로 grasp를 고르고 cuRobo로 양팔 경로를 만든 뒤 하체 motion controller가 이동을 맡거나, (B) PICO VR의 손동작을 IK로 옮겨 operator가 원격 조종한다. 검증된 trajectory는 Isaac Sim에서 장면·재질·조명·카메라·물체 pose를 바꾸며 재생하여 photorealistic image와 상태가 함께 있는 dataset으로 보존한다. 테스트에서는 MuJoCo step마다 robot state를 Isaac Sim에 동기화하고 이미지·proprioception을 정책에 넣어 whole-body tracker로 행동을 실행한다. (Figure 2,4,7; §3 및 부록)",
+      "findings": "공식 Table 1은 9개 정책 × 6과제 × L0/L1/L2 각 **10회 rollout 성공 횟수**다. Ψ0는 XMovePick 10/10/6, DreamZero 10/10/10; 복잡한 XMoveBendPick은 Ψ0 10/9/9인데 DreamZero 0/0/1로 순위가 완전히 바뀐다. 성능 차이가 과제 정의에 종속적이라는 증거다. Table 2에서 whole-body pick-place 시연 수집은 MP 시뮬 58.9 demos/h, 실제 VR teleop 206.8, 시뮬 VR teleop 310.3으로, motion planning이 항상 더 빠르지는 않다. Table 3의 Ψ0 2000-step ablation에서 BendHandover 테스트 Set2는 L0시연만 10개 0.50 vs L0·L1 각5개 0.80; XMoveBendPick L2 10 trajectory 0.30 vs 100 trajectory 0.90으로 데이터 다양성/수량의 효과를 보여준다. Table 5는 sim에서 9/10인 pick-and-place가 실물에서는 8/10으로 저하되는 등 완전한 sim-real 일치가 아님을 보인다.",
+      "limitations": "60 tasks와 '논문 실험에서 공개된 6개 대표 작업의 표'를 혼동하면 안 된다. 전체 60과제를 각 정책이 모두 평가한 것은 아니다. 본문의 randomization 설명(Level 1–3)과 그림/표의 L0–L2 표기에는 명명 차이가 있어 실험값은 실제 Table1 L0/L1/L2로 기록한다. 평가 성공은 시뮬 리셋·자산·추적 정책·물리 설정에 의존하며 현실 오차가 남는다. Appendix에서는 일부 joint tuning과 16 task subset을 별도 평가한다. 원문은 photorealistic Isaac Sim rendering의 속도 한계 및 rigid-object 중심의 실험을 인정하므로 deformable cloth, 계단 이동, 센서 지연·고장까지 실물 보증을 주지 않는다.",
+      "questions": [
+        "Figure 2의 물리( MuJoCo )·시각( Isaac Sim ) 역할이 뒤바뀌면 어떤 재현성 문제가 생기는가?",
+        "Table 1의 10/9/9가 99% 성공률이 아니라 조건당 10회 중 성공 횟수인 이유는?",
+        "Table 2에서 VR simulation 시연 수집이 motion planning보다 빠르게 나온 조건을 분석하라.",
+        "Table 3의 같은 10시연에서 L0만 vs L0+L1 혼합하는 ablation이 통제하는 변인을 적어보자."
+      ]
+    },
+    "deep_dive": {
+      "lead": "**원문 대조:** arXiv:2606.08278v2 Figure 2(시스템 단계) 및 Figure 4(motion planning)는 USC PSI Lab 공식 사이트의 완전한 저자 원본 파일과 일치한다. Table 1의 과제별 10회 성공 횟수, Table 2 수집 속도, Table 3/4 ablation, Table 5 sim-to-real 조건, Appendix의 구현·확장 실험을 따로 확인한다.",
+      "pipeline": [
+        {
+          "title": "작업·객체 구성",
+          "detail": "60가지 설계 whole-body 과제를 50개 실내 장면과 1,000개 이상의 asset에서 조합한다. 단순 grasp, 허리 굽힘, 이동 pick-place, handover 등 과제 난도가 제각각이다.",
+          "io": "task + scene + initial object states"
+        },
+        {
+          "title": "MuJoCo에서 접촉 dynamics 계산",
+          "detail": "중심 동역학 시뮬레이터는 MuJoCo다. 손·물체 접촉과 보행 균형을 같은 state에서 다루고 정책의 joint target 및 whole-body tracking으로 한 스텝 전진한다.",
+          "io": "physics state s_t → s_t+1"
+        },
+        {
+          "title": "데이터 생성 경로 A: 자동 motion planning",
+          "detail": "안정 pose로 놓인 물체에 대해 BoDex grasp를 생성·필터링하고 cuRobo dual-arm 경로를 구성한다. 이동은 scripted lower-body 경로가 맡아 upper-body 계획과 동기화한다. (Figure 4·7)",
+          "io": "grasp DB → arm path + base locomotion"
+        },
+        {
+          "title": "데이터 생성 경로 B: VR teleoperation",
+          "detail": "PICO에서 받은 양손 동작은 inverse kinematics로 로봇 목표가 되고, 실시간 whole-body tracking policy가 동작 중 균형과 이동 제어를 보완한다. 로봇 본체에 직접 사람이 올라타는 방식이 아니다.",
+          "io": "operator hand pose → IK → whole body action"
+        },
+        {
+          "title": "Isaac Sim의 Offline replay/render",
+          "detail": "물리 시연 궤적을 Isaac Sim에서 재생하고 카메라 각도·재질·조명·배경·물체 위치를 randomize한다. 시각의 변화를 과제 성공 physics와 분리하여 다중 조건 이미지를 얻는다. (Figure 2)",
+          "io": "MuJoCo trajectory → photoreal RGB"
+        },
+        {
+          "title": "정책 평가: 동일 Gym loop",
+          "detail": "각 step에서 MuJoCo state를 Isaac Sim에 동기화, 렌더링 관측을 생성해 VLA/WAM/ACT/DP 등에 공급하고 실행한다. 테이블 성공 수는 L0/L1/L2 **각 10 rollout**의 성공 횟수다.",
+          "io": "obs → policy → action → physics → render"
+        },
+        {
+          "title": "Sim-to-real 전이 검증",
+          "detail": "SIMPLE 데이터만으로 미세조정한 Ψ0 정책을 실물 humanoid에서 추가 real fine-tuning 없이 실행한다. 시뮬레이션과 실제의 동작 분포가 비슷한 제한된 태스크에서 비교한다.",
+          "io": "paired sim and real rollouts"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "두 개의 시뮬레이터, 하나의 물리적 정답",
+          "body": "MuJoCo를 고주파 제어의 단일 physics source로 사용하고 Isaac Sim은 렌더링을 제공한다. 렌더링 장면을 바꿔도 dynamics 통제가 유지되는 대신, 광학과 실제 접촉의 domain gap은 별도로 남는다.",
+          "watch": "Figure 2의 MuJoCo/IsaacSim 데이터 이동 방향 확인"
+        },
+        {
+          "title": "Motion planning만으로 모든 데이터가 만들어지는가?",
+          "body": "아니다. 자동 경로는 object grasp/kinematic clearance에 강하지만 복잡한 휴머노이드 행동의 텔레오퍼레이션 시연은 다른 운동 다양성을 포함한다. Table 4에서 MP-only 평균 성공 횟수 5.00과 teleop-only 7.56 차이는 그 학습 분포의 중요성을 드러낸다.",
+          "watch": "Table 4 평균은 성공률 %가 아닌 10회 중 성공 개수 단위"
+        },
+        {
+          "title": "난도 L0/L1/L2의 평가 의미",
+          "body": "저자 Figure 2는 L0 background/distractors, L1 material/lighting, L2 spatial poses를 순차적으로 제시한다. 평가 표의 각 셀 a/b/c는 L0,L1,L2에서 각각 10번 실험해 성공한 개수다. 한 셀의 10/10/6은 하나의 26/30 퍼센트로만 요약하면 distribution shift 정보를 버린다.",
+          "watch": "본문의 Level1–3 표현과 표의 L0–L2 매핑을 별도로 주석"
+        },
+        {
+          "title": "Data scale vs domain randomization ablation",
+          "body": "Table 3 Ψ0 2K steps 실험에서 Set2 BendHandover 10×L0은 .50, 5×L0+5×L1은 .80. 한편 XMoveBendPick은 teleop 시연 10→100개에서 L2 .30→.90. 수량과 다양성을 각기 비교해야 한다.",
+          "watch": "적은 표본의 통계적 변동성 및 다른 랜덤 시드 평가 필요"
+        },
+        {
+          "title": "평가 벤치마크가 실물 성과를 보장하진 않는다",
+          "body": "Table 5 Ψ0 sim-only fine-tuning 후 pick-place 9/10→8/10 real, handover 10/10→8/10, XMoveBendCarryBox 7/10→5/10이다. sim/real 상관 주장은 이런 제한적 matched 작업에만 근거한다.",
+          "watch": "물체 재질·토크 제한·센서 노이즈/제어기 mismatch를 따로 측정"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "벤치마크 스펙 · §3",
+          "value": "60 tasks / 50 scenes / >1,000 assets",
+          "context": "설계된 전체 환경 범위; Table 1의 실측 비교는 대표 6과제만"
+        },
+        {
+          "metric": "정책 비교 · Table 1",
+          "value": "9 policies × 6 tasks × 3 levels",
+          "context": "L0/L1/L2 각각 10 rollout 결과, 동일 셀의 값은 성공 횟수/10"
+        },
+        {
+          "metric": "XMovePick · Table 1",
+          "value": "Ψ0 10/10/6; DreamZero 10/10/10",
+          "context": "L0/L1/L2 순서, 10 trials씩; Ψ0가 모든 과제 우수하다는 의미는 아님"
+        },
+        {
+          "metric": "XMoveBendPick · Table 1",
+          "value": "Ψ0 10/9/9; DreamZero 0/0/1",
+          "context": "서로 다른 과제에서 정책 상대 순위 반전, 10 trials per level"
+        },
+        {
+          "metric": "whole-body P&P 수집 · Table 2",
+          "value": "58.9 / 206.8 / 310.3 demos/hr",
+          "context": "MP(sim) / teleop(real) / teleop(sim); 각각 평균 61.1 /17.4/11.6s; 사람 숙련자 조건"
+        },
+        {
+          "metric": "DR ablation · Table 3",
+          "value": "BendHandover Set2 0.50 → 0.80",
+          "context": "Ψ0 2,000 steps, 10×L0 vs 5×L0+5×L1 시연, test Set2 strict success"
+        },
+        {
+          "metric": "시연 수량 ablation · Table 3",
+          "value": "XMoveBendPick Set2 0.30 → 0.90",
+          "context": "10 vs100 teleop trajectories, Ψ0 2k steps, same harder evaluation setting"
+        },
+        {
+          "metric": "데이터 경로 ablation · Table 4",
+          "value": "MP-only 5.00 vs Teleop-only 7.56",
+          "context": "3 tasks×3 levels의 평균 10회 중 성공 횟수, 퍼센트 아님"
+        },
+        {
+          "metric": "Zero-shot sim-to-real · Table 5",
+          "value": "P&P 9/10→8/10; Handover 10/10→8/10",
+          "context": "sim-only fine-tuned Ψ0, 실환경 추가 fine-tuning 없음, 유사 장면 조건; 다른 작업에서는 격차가 더 커짐"
+        }
+      ],
+      "evidence_note": "60 설계 과제 ≠ Table 1의 6개 대표 과제. 표의 '10/9/9'는 각 domain level에서 10회 중 성공한 개수이며, 평균 5.00은 5%가 아니다. v2 논문·저자 사이트 동시 대조.",
+      "comparison": "LIBERO·RoboTwin은 주로 고정형 조작 팔 정책의 학습·평가를 위해 만들어졌다. HumanoidBench 등 보행/전신 실험은 있더라도 복잡한 물체·시각적 domain randomization·실물 행동 시연 처리의 표준 인터페이스가 균일하지 않았다. SIMPLE은 MuJoCo dynamics와 Isaac Sim rendering을 결합해 동일한 실험 난이도를 제공한다. Ψ0, π0.5, GR00T N1.6, DreamZero를 비롯해 DP·ACT를 공통 프로토콜에서 비교하는 데 연구 가치가 있다. 특정 모델이 전체 과제에서 압도적이라는 결론이 아니라, 어떤 제어/접촉 패턴에서 어느 모델이 실패하는지 더 공정하게 드러내는 벤치마크다.",
+      "reading_guide": [
+        "Figure 2에서 MuJoCo physics → offline Isaac Sim RGB → policy 평가라는 세 단계와 각 데이터 종류를 분리하기.",
+        "Figure 4 upper-body cuRobo와 lower-body locomotion을 어떻게 결합하는지 읽기.",
+        "Table 1의 각 값 a/b/c가 3개 level × 10 trials임을 재확인하기.",
+        "Table 3의 domain mixing과 data scaling을 구별하고 Table 5에서 시뮬–실물 격차를 찾아보기."
+      ],
+      "replication": {
+        "hypothesis": "SIMPLE의 난도별 domain randomization은 단순한 배경 변화보다 접촉 위치 및 보행–팔 협응이 필요할 때 성능에 큰 영향을 미친다.",
+        "setup": "GitHub SIMPLE 공식 코드를 고정 commit/Isaac Sim/MuJoCo 버전으로 재현해 XMovePick, BendPick, XMoveBendPick 세 과제부터 실행한다. 같은 초기 위치 10개 seed를 각 L0/L1/L2에 고정한다. 전체 60 task 배포가 준비되지 않으면 그 사실을 명시한다.",
+        "baselines": "Ψ0 vs ACT vs DP vs DreamZero (가용 checkpoint 조건에서만); teleop-only vs MP-only, 같은 총 10시연에서 10×L0 vs 5×L0+5×L1, teleop 10 vs100 시연. training steps 2k 고정한 실험과 다른 조건은 별도 표로 분리한다.",
+        "metrics": "과제별·level별 strict success count/10 및 Wilson CI, 접촉 실패 유형, 중심질량 균형 이탈, 충돌 및 grasp slip, 양팔 경로 길이, GPU FPS, 시연/h, sim-real gap.",
+        "risks": "Isaac Sim 라이선스·고성능 렌더링 장치와 humanoid whole-body controller에 따라 재현 비용이 크다. 공개 자산/질량·마찰·실물 센서 alignment가 불일치할 수 있으므로 논문의 60×50 설정을 전부 검증했다고 주장하지 않는다."
+      },
+      "related": [
+        "2602.15922",
+        "2504.16054"
+      ]
+    },
+    "reading_minutes": 28,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-16",
+    "source_scope_ko": "2026-06-06 최초 공개, 2026-10-12 arXiv v2 확인. 원문 Method·Experiments·Appendix, Figure 2·4는 USC PSI Lab 저자 공식 사이트의 동일 Figure 이미지(외부 호스팅) 직접 표시."
   }
 }

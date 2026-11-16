@@ -35,8 +35,11 @@
     "2611.04839",
     "2611.01729",
     "2611.14365",
-    "2611.02629"
+    "2611.02629",
+    "2506.01844",
+    "2602.15922",
+    "2606.08278"
   ],
-  "note_ko": "2026-11-15 신규 심층 해설 3편: ODE Policy (VLA action expert), MetaWAM (World-Action Model), DexArena (Robotics benchmark). 공식 arXiv 원문 Method·Experiments·Appendix 및 실제 Figure·Table·평가조건 확인. MetaWAM 원본 이미지 사용; 다른 두 편은 원문 PDF 페이지 표시(개별 그림 크롭 미확보).",
-  "updated_at": "2026-11-15"
+  "note_ko": "2026-11-16 원문 심층 검증 신규 3편: SmolVLA(2506.01844)·DreamZero(2602.15922)·SIMPLE(2606.08278). arXiv HTML/PDF의 Method·Experiments·Appendix 및 Figure/Table 조건 대조; SmolVLA Figs 1,2 / DreamZero Fig1 직접 이미지와 Fig4 원문 PDF page / SIMPLE Figs 2,4 공식 이미지. 기존 34편과 비중복.",
+  "updated_at": "2026-11-16"
 }
