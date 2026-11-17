@@ -38,8 +38,11 @@
     "2611.02629",
     "2506.01844",
     "2602.15922",
-    "2606.08278"
+    "2606.08278",
+    "2611.06447",
+    "2611.17626",
+    "2611.03103"
   ],
-  "note_ko": "2026-11-16 원문 심층 검증 신규 3편: SmolVLA(2506.01844)·DreamZero(2602.15922)·SIMPLE(2606.08278). arXiv HTML/PDF의 Method·Experiments·Appendix 및 Figure/Table 조건 대조; SmolVLA Figs 1,2 / DreamZero Fig1 직접 이미지와 Fig4 원문 PDF page / SIMPLE Figs 2,4 공식 이미지. 기존 34편과 비중복.",
-  "updated_at": "2026-11-16"
+  "note_ko": "2026-11-17 공식 원문 HTML/PDF Method·Experiments·Appendix·Figure/Table 대조 후 신규 3편 승인: A³-VLA(2611.06447), WATO(2611.17626), VLALagBench(2611.03103). 기존 37편과 비중복. WATO Figure1은 PDF 원본 페이지(개별 크롭 아님). A³-VLA는 공식 HTML 전체+Appendix 검증, PDF 직접 접근 제한.",
+  "updated_at": "2026-11-17"
 }

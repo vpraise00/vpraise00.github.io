@@ -5619,5 +5619,452 @@
     "editorial_status": "source_crosschecked",
     "reviewed_at": "2026-11-16",
     "source_scope_ko": "2026-06-06 최초 공개, 2026-10-12 arXiv v2 확인. 원문 Method·Experiments·Appendix, Figure 2·4는 USC PSI Lab 저자 공식 사이트의 동일 Figure 이미지(외부 호스팅) 직접 표시."
+  },
+  "2611.06447": {
+    "summary_ko": "A³-VLA는 접촉 전후 영상 변화와 SAM2로 학습용 목표물·로봇 마스크를 만들고 언어/상태→영상 attention 및 대조학습에 활용한다. VLABench의 π0.5 0.41→0.67, π0 0.47→0.64는 추론 중 분할 없이 얻은 결과지만, 작은·가려진 물체와 잘못된 상호작용 추출에 약하다.",
+    "abstract": "공식 원문 arXiv:2611.06447v1 (2026-11-04)의 §3 Method, §4 Experiments, Appendix A.5–A.7 및 Figure 1·2와 Table 1–5를 대조한 한국어 연구 해설. 수치는 저자 보고치이며 재현 실험을 대신하지 않는다.",
+    "review": {
+      "one_line": "VLA가 물체 대신 배경에 주목하는 문제를 행동 데이터 자체의 상호작용 순간과 영상 변화로 찾아낸 지도 신호로 해결한다. 추론 때 segmentation model을 추가하지 않고도, 학습 중 attention과 지역별 표현을 교정한다. (§3, Figure 2)",
+      "problem": "‘포커 카드 중 빨간 카드를 골라’라고 했는데 로봇이 카드를 보지 않고 탁자의 질감이나 손의 위치에 주의력을 쏟는다면, action head만 개선해도 엉뚱한 목표를 향해 정밀하게 움직일 수 있다. Figure 1은 π0와 OpenVLA-OFT에서 instruction token이 영상 patch를 조회하는 attention이 목표 영역과 어긋난 사례를 보여준다. 일반적인 imitation의 flow-matching 손실은 행동 오차를 줄일 뿐 ‘무슨 물체를 봐야 하는가’를 직접 감독하지 못한다. 사람의 bounding box 라벨을 대량 추가하면 비용이 커진다. (§1–3.1, Figure 1)",
+      "idea": "로봇이 실제로 물체와 상호작용한 순간을 데이터 안에서 찾아 시각적 변화에서 대상과 로봇의 가짜 마스크(pseudo-mask)를 만든다. 예컨대 그리퍼가 카드를 집은 전후, 카드가 움직인 지역은 목표 후보이고 계속 움직이는 로봇의 팔 부분은 제외 대상이다. SAM2는 이 힌트를 시간적으로 정제하며, 그 결과는 모델의 입력으로 넣지 않고 학습 손실에만 사용한다. 언어가 영상에 질의할 때 목표물에 충분한 attention을 주도록 하는 손실, 로봇 상태가 로봇 본체 패치에 질의하도록 하는 손실, 목표 지역과 명령을 가깝게 만드는 대조 손실을 결합한다. (§3.2–3.5)",
+      "method": "§3.2에서 상태 또는 접촉 이벤트로 상호작용 시간 t_k를 찾아 인접 프레임의 변화량으로 목표/로봇 후보를 뽑는다. 이 후보를 SAM2에 제공해 시간축으로 물체 영역을 추적하고 비전 인코더 패치로 사상한다(Appendix A.6, mask-patch overlap ρ=0.25). §3.3의 L_l2i는 언어 쿼리→목표 영상 패치, L_s2i는 proprioception 쿼리→로봇 영상 패치 attention의 하한을 부여한다. §3.4의 L_cl은 명령-목표 패치를 양성쌍, 비목표 지역을 음성쌍으로 구분하며 상호작용 전 프레임에 한정한다. §3.5 Eq.(10)은 L_total=L_FM+λ₁(L_l2i+L_s2i)+λ₂L_cl로 행동 학습과 함께 최적화한다. 추론 과정은 현재 영상·상태·명령→미세조정 VLA→행동 chunk로 유지하며 SAM2/차분 마스크를 실행하지 않는다. 이는 추가 **추론 지연**이 없다는 뜻이지 라벨 전처리·훈련비가 0이라는 뜻은 아니다.",
+      "findings": "VLABench 5개 과제(Chemistry Tube/Fruit/Poker/Toy/Mahjong)에서 과제당 500 시연으로 학습하고 각 50 episode로 평가한다(Table 1). π0는 0.47→0.64, OpenVLA-OFT는 0.16→0.40, π0.5는 0.41→0.67이다. RoboTwin 2.0 4과제에서는 과제당 100 demonstration, 100 evaluation episode로 π0 0.42→0.52, π0.5 0.58→0.65(Table 2). 실물 Songling arm의 5과제는 과제당 80 시연과 20 시행으로, π0 대비 A³(π0)의 엄격 성공률 평균 0.55→0.76, 부분 진척도 0.67→0.87이다(Table 3). Table 4에서 π0 기반 전체 0.64, 언어→영상 loss 제외 0.52, 상태→영상 제외 0.60, 대조 손실 제외 0.61: 핵심 성능 향상의 대부분이 한 종류 loss에서만 오지는 않지만 언어 지도 제거가 가장 크다.",
+      "limitations": "시연 중 명확한 상호작용 이벤트가 보이지 않거나 목표가 작은·반투명·가림 물체면 차분/분할이 잘못될 수 있다(Appendix A.7). 물체 외 조명 변화나 움직이는 방해물이 대상 후보를 오염시킬 수 있으며, mask의 품질을 감독하는 별도 진짜 마스크 학습과는 다르다. 실물은 Songling 팔 5과제와 고정된 시연 수에 제한되고, fractional progress 0.87은 strict success 0.76과 다르다. 비슷한 benchmark 안에서 backbone별 학습 레시피가 달라 일반적 모델 순위로 확대할 수 없다. 런타임 SAM2 제거와 offline 라벨 생성 비용은 별도 보고해야 한다.",
+      "questions": [
+        "상호작용을 찾지 못한 시연에 대한 mask 미생성 비율이 모델 성능에 어떤 선택 편향을 유도하는가?",
+        "Table 4에서 L_l2i만 제거했을 때 왜 포커/튜브 과제 하락이 커지는가?",
+        "실물 20회/과제의 추정 신뢰구간과 물체 교체 OOD는 얼마나 다른가?",
+        "SAM2 오류를 합성으로 주입하면 attention 지도는 어느 정도까지 견디는가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**원문 정독:** arXiv:2611.06447v1의 Figure 1(실패 attention), Figure 2(훈련 모식도), §3.2–3.5의 손실 정의, §4의 Tables 1–5와 Appendix A.5–A.7을 확인했다. 숫자는 저자 결과이며 여기서 별도로 로봇 실험을 수행한 것은 아니다.",
+      "pipeline": [
+        {
+          "title": "01 | 실패 원인: 언어가 목표물이 아닌 패치를 본다",
+          "detail": "VLM 내부 언어 토큰이 image patches에 줄 attention을 그려보고 과제 대상과 맞는지 확인한다. Figure 1의 사례는 action loss가 낮아도 시각적 grounding이 틀릴 수 있음을 보여준다.",
+          "io": "관측 영상 + 언어 + proprioception → VLA의 attention"
+        },
+        {
+          "title": "02 | 시연에서 상호작용 순간 검출",
+          "detail": "로봇 상태·그리퍼 접촉과 영상 전후 차이를 이용하여 집기/놓기 등 목표와 상호작용한 시간 t_k를 잡는다. 변화가 나타난 지역을 무조건 목표라 하기보다 지속적으로 변하는 로봇 패치와 나누어 후보를 제안한다.",
+          "io": "오프라인 demonstrations → t_k, target/robot candidates"
+        },
+        {
+          "title": "03 | SAM2로 시간적 마스크 정제",
+          "detail": "interaction 근방 후보를 segmentation seed로 이용해 전후 프레임에 일관된 mask를 전파한다. 마스크를 vision encoder patch에 투영하며 Appendix A.6의 겹침 임계값 ρ=0.25를 쓴다. 여기서 오염된 가짜 라벨은 별도 경계 조건이다.",
+          "io": "candidate regions → SAM2 masks → patch masks"
+        },
+        {
+          "title": "04 | 세 가지 perception guidance 손실",
+          "detail": "마지막 VLM layer의 attention heads를 평균해 언어→타깃 패치 L_l2i, 상태→로봇 패치 L_s2i를 제약하고, 명령과 target region이 비대상보다 가까워지도록 L_cl을 학습한다. contrastive는 상호작용 전 구간에 적용한다.",
+          "io": "L_l2i + L_s2i + L_cl"
+        },
+        {
+          "title": "05 | 행동 loss와 공동 미세조정",
+          "detail": "기존 flow matching 행동 loss를 제거하지 않고 perceptual supervision을 보조로 더한다. 세부 계수는 §3.5 Eq.(10)을 따른다. π0·π0.5·OpenVLA-OFT에 같은 인지 정렬 원리를 적용하되 개별 backbone 학습조건은 동일하지 않다.",
+          "io": "L_total = L_FM + λ1(L_l2i+L_s2i) + λ2 L_cl"
+        },
+        {
+          "title": "06 | 추론: 원래 VLA만 구동",
+          "detail": "새 영상과 언어를 받고 action chunk를 산출한다. SAM2는 이 시점에 호출하지 않으므로 학습용 마스크를 추론 필수 입력으로 착각하면 안 된다. 목표가 가려지면 학습한 정렬도 실패할 수 있다.",
+          "io": "(image,state,language) → fine-tuned VLA → continuous action"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "왜 attention 최소량을 제약하는가",
+          "body": "시연이 동일한 움직임을 여러 물체와 환경에서 보여줘도 행동 회귀는 배경 shortcut으로 해결될 수 있다. 관심 patch를 높은 attention으로만 강제하면 과잉 집중이 될 수 있으므로 저자는 task-critical 영역에 충분한 질의 비중을 보장하는 형태로 지도한다. attention 자체가 인과적 설명이라는 주장과 구분해야 한다.",
+          "watch": "§3.3 language-to-image / state-to-image attention definitions"
+        },
+        {
+          "title": "타깃과 로봇을 왜 분리하는가",
+          "body": "명령이 ‘카드를 고르라’고 할 때는 카드에 관한 semantic grounding이 중요하지만, 상태 토큰은 자기 몸체의 위치와 맞닿는 부분에 주의를 둬야 한다. 하나의 object mask만 주면 팔·그리퍼의 좌표와 목표 물체의 시각 특징을 뒤섞기 쉽다.",
+          "watch": "Figure 2 target/robot regions, Eq.(10) 두 attention항"
+        },
+        {
+          "title": "훈련/배포 계산량의 비대칭",
+          "body": "SAM2는 시연 전처리에서만 작동해 런타임 추가 비용을 억제한다. 반대로 offline 생성 실패, 마스크 보관, 추가 supervision loss 및 backbone fine-tuning 비용은 시스템 운영상 실재한다.",
+          "watch": "§3.2와 Appendix A.5–A.7 비용·실패 경계"
+        },
+        {
+          "title": "불변성은 얼마나 얻었나",
+          "body": "Table 5의 texture perturbation에서 π0.5 0.18, A³(π0.5) 0.42; Gaussian noise에서 0.33, 0.57이다. clean에서의 차이와 perturbation에서의 차이를 각각 기록해야 ‘배경에 무관하다’고 과장하지 않는다.",
+          "watch": "§4.4, Table 5 texture(TP)/noise(NP)"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "VLABench π0",
+          "value": "0.47 → 0.64",
+          "context": "Table 1, 5과제 평균; 과제당 500 demos, 50 evaluation episodes"
+        },
+        {
+          "metric": "VLABench OpenVLA-OFT",
+          "value": "0.16 → 0.40",
+          "context": "Table 1, 동일 과제 묶음, baseline/backbone별 레시피 차이 고려"
+        },
+        {
+          "metric": "VLABench π0.5",
+          "value": "0.41 → 0.67",
+          "context": "Table 1, A³(π0.5), +0.26p는 반올림된 표 수치 차이"
+        },
+        {
+          "metric": "RoboTwin 2.0 π0",
+          "value": "0.42 → 0.52",
+          "context": "Table 2, 4과제, 각 100 시연·100 평가 에피소드"
+        },
+        {
+          "metric": "RoboTwin 2.0 π0.5",
+          "value": "0.58 → 0.65",
+          "context": "Table 2; VLABench와 난이도·작업·데이터가 다름"
+        },
+        {
+          "metric": "실물 엄격 성공률",
+          "value": "π0 0.55 → A³(π0) 0.76",
+          "context": "Table 3, Songling 5과제 각 80 demos/20 trials, strict success"
+        },
+        {
+          "metric": "실물 task progress",
+          "value": "0.67 → 0.87",
+          "context": "Table 3, 부분 진행 점수 0/0.5/1, 엄격 성공률과 구별"
+        },
+        {
+          "metric": "어블레이션, π0 기반",
+          "value": "full 0.64 / −L_l2i 0.52 / −L_s2i 0.60 / −L_cl 0.61",
+          "context": "Table 4, 동일 VLABench 평균; 독립적 구성요소 제거"
+        },
+        {
+          "metric": "외란 강건성, π0.5",
+          "value": "Texture 0.18→0.42, Noise 0.33→0.57",
+          "context": "Table 5, clean 0.41→0.67과 다른 평가 조건"
+        }
+      ],
+      "evidence_note": "성공률 표기(0–1)는 과제별 에피소드 평균이며 Table 3의 SR과 TP는 서로 다른 지표다. 발표된 소수 둘째 자리 반올림 수치를 일괄 퍼센트포인트 개선량이라고 혼동하지 않는다.",
+      "comparison": "기존 π0·π0.5 flow-matching VLA가 행동 궤적 모사에 초점을 두었다면, A³는 동작 시연에서 시각 목표를 자동 생성해 perception grounding의 학습 목표 자체를 보강한다. 사람 라벨을 전량 제작하는 방식보다 비용을 줄이지만 heuristic+SAM2의 오차를 새로 들여온다. 저자 Table 4의 제거 실험이 주요 근거이며, SAM2를 추론 때 호출하는 파이프라인과는 다르다.",
+      "reading_guide": [
+        "§3.2 Figure 2의 지역 후보 생성이 물체 변화와 로봇의 지속 움직임을 어떻게 구분하는지 확인.",
+        "§3.3–3.5 Eq.(10)의 학습 항과 적용 토큰 유형을 원문에서 따로 표시.",
+        "§4.1–4.2 Table 1/2/3에서 각 과제 demo 수·evaluation episodes·SR/TP 정의 구분.",
+        "§4.3 Table 4: 구성요소 제거를 backbone 변경과 섞지 않고 비교.",
+        "Appendix A.5–A.7: 배치·학습 단계·patch mask ρ와 segmentation 실패 사례 확인."
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] 목표 물체가 배경과 유사할수록 language→image attention supervision이 VLA 외삽 성공에 기여하고 mask 오염이 그 이득을 제한한다.",
+        "setup": "[편집 제안] 단일 정책 π0의 동일 시연/optimizer/step budget을 유지하고 ‘가시 타깃/가린 타깃/새 질감/이동 distractor’를 층화한 5과제×50 이상 평가 trial을 수행한다. SAM2 mask의 실제 IoU를 표본 100프레임 수동 주석과 비교한다.",
+        "baselines": "[편집 제안] 원래 π0, A³ full, −L_l2i, −L_s2i, −L_cl, 잡음 마스크 10/30/50%, 전문가 GT mask upper bound를 비교한다.",
+        "metrics": "[편집 제안] strict SR, fractional progress, 시각 mask IoU, 목표/배경 attention 점수, 데이터 전처리 GPU-hours와 실행 지연을 분리한다.",
+        "risks": "[편집 제안] interaction 검출 성공 시연만 채택할 때 선택 편향, 작은 물체에서 patch 단위 오차, 시뮬레이션과 실물 카메라 기하 차이가 주요 교란변수다."
+      },
+      "related": [
+        "2410.24164",
+        "2504.16054"
+      ]
+    },
+    "reading_minutes": 26,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-17",
+    "source_scope_ko": "arXiv:2611.06447v1 공식 HTML §3–4 및 Appendix A.5–A.7, Figures 1–2·Tables 1–5 교차 검토; PDF 별도 직접 확인은 접근 제약. 원저자 HTML 이미지 주소 검증, 독립 실험 재현 아님."
+  },
+  "2611.17626": {
+    "summary_ko": "WATO는 행동과 미래 상태를 공동 생성하는 WAM의 학습 단계에서만 세계모델 제약 궤적 최적화와 암시적 미분을 사용해 더 나은 행동 생성기를 만든다. 7개 오프라인 시각 목표 제어 과제 평균 성공률 79.9%→91.7%; 배포 때는 최적화 없이 후보를 생성·평가한다.",
+    "abstract": "arXiv:2611.17626v1 공식 HTML과 PDF(29쪽) §3, §5, Appendix C–H, Figure 1/5 및 Tables 1–3, 6–7, 11 대조. 행동·상태 공동생성과 학습 시 궤적 최적화의 차이를 해설한다.",
+    "review": {
+      "one_line": "WATO는 joint WAM의 출력인 ‘미래 상태’도 제어 참조로 쓰고, world model 제약 하에서 더 좋은 계획으로 고친 다음 그 최적화 과정을 역전파해 생성기 자체에 새겨 넣는다. 실행 때 매번 비싼 solver를 돌리지 않는 학습 시 비용 선투자 방식이다. (§3.3–3.6, Figure 1)",
+      "problem": "정해진 시간에 상자를 밀어 정위치에 놓는 일을 생각하자. 데이터에서 자주 나타난 움직임과 미래 장면을 그대로 모사하면 ‘그럴듯한’ 영상은 생성되지만 접촉 dynamics를 따라 실제 목표 위치에 도달할 보장은 없다. 행동만 생성하면 시각적으로 어떤 미래를 의도했는지 제어와 연결하기 어렵고, 반대로 online MPC/CEM을 매 순간 돌리면 세계모델 반복 평가 비용이 크다. 이 논문은 state/action을 함께 그리는 joint WAM이 실제 목적 함수와 물리적 일관성을 학습 과정에서 획득하도록 하는 방법을 묻는다. (§1, §3.1)",
+      "idea": "joint world-action flow가 먼저 행동 후보 Ã와 잠재 미래 상태 Ẑ를 같이 그린다. 학습할 때만 실제 pretrained world model이 그 행동을 실행하면 생길 Z(A)를 rollout하고, 목표 g에 가까워지면서 원래 행동·미래 상태 참조와 지나치게 멀어지지 않는 최적 A*를 찾는다. 여기서 향상된 결과를 단순 정답 라벨로 distill하는 게 아니라 ‘왜 최적값이 달라졌는지’ implicit differentiation으로 생성기에 gradient를 돌린다. 물체를 밀 때 행동만 반영하면 충돌 뒤의 영상 진척이 잘못될 수 있고, 상태만 반영하면 실제 관절/끝단 동작이 무리할 수 있기에 두 참조를 함께 쓴다. (§3.3–3.5)",
+      "method": "먼저 고정된 시각 encoder Eθ와 잠재 dynamics Rθ(z_t,A)로 세계모델을 준비한다. 데이터의 z_t, 목표 g와 행동·미래 상태 시퀀스를 이용해 joint flow generator qφ(A,Z|z_t,g)를 모방학습한다(§2, §3.1, L_WAF). WATO 단계의 inner problem Eq.(5)는 A*=argmin_A [J(Z(A),g)+λ_A d_A(A,Ã)+λ_Z d_Z(Z(A),Ẑ)]이며 Z(A)=Rθ(z_t,A)라는 world-model rollout 제약을 둔다. J는 마지막 잠재 상태의 ||z_H−g||²로 정의된다. reduced-space solver가 action trajectory를 최적화하고 §3.4 Eq.(10), Appendix D의 implicit differentiation으로 outer generator에 목적값 gradient를 전파한다. 외부 손실은 Eq.(9)의 L_WAF+λ_task J(Z*,g)이고, 세계모델은 frozen이다. 실제 실행 시 action/state 생성 K=8 후보를 만들어 world model predicted goal error로 선택하며, **온라인 inner solver는 호출하지 않는다**(§3.6). 이 때문에 목적과 원천 모델 오차를 분리해 이해해야 한다.",
+      "findings": "Table 1은 **7개** visual offline goal-conditioned 제어 환경(TwoRooms/Reacher/PushT/OGBench visual-v0의 cube-single/cube-double/scene-play/puzzle-3x3)에서 seed 4개, seed당 100 평가 episode의 평균±표준편차다. joint WAF 79.9%→WATO 91.7%(+11.8pp), Flow Policy 69.3%, GPC 70.7%, CEM 65.0%, Grad MPC 76.7%. 다만 Reacher에서는 GPC 91%, WATO 85%로 WATO 전승은 아니다. Figure 3 ablation은 imitation 79.9%, 직접 rollout loss 85.7%, +consistency 87.4%, detached target distillation 88.0%, implicit-gradient WATO 91.7%; 양쪽 참조를 제거하면 action-only85.7%, future state-only85.0% (§5.4/5.6). Appendix G.3 Table 11에서 원래 joint WAF에 online optimization을 더하면 79.9→90.3(+10.4pp), WATO 뒤에 더하면 91.7→93.0(+1.3pp): 개선된 생성기가 최적화 이익을 내재화했음을 뒷받침한다. Table 3의 CEM 대비 속도 11.5×, 세계모델 평가 횟수 600.5× 감소는 geometric mean 비율이며 직접 측정 절대시간이 아니다.",
+      "limitations": "원문 평가는 시각 목표를 가진 **시뮬레이션 기반 offline control** 7과제이고, 실물 로봇, 긴 접촉 복구, OOD 시각 배경과 신호 지연에서의 안정성을 입증하지 않는다. 모델을 따라 최적화하므로 학습된 world dynamics가 틀리면 목적 함수가 모델 오류를 이용할 수 있다(Appendix C.4/ H). online solver를 제거한 대신 **훈련비**가 증가한다: Appendix E.4 Table 7 PushT에서 imitation pretrain 1.76h, WATO 추가 5.82h, 비슷한 continuation 0.65h; deployment 11.5×는 training efficiency가 아니다. action-space constraint도 로봇 실물 충돌 안전 보증이 아니다.",
+      "questions": [
+        "Generated state reference를 rollout-derived reference로 바꾸면 왜 성능이 다른가(Appendix G.1)?",
+        "세트에서 약한 Reacher와 상대적 우세가 있는 PushT의 오차 구조는 어떻게 다른가?",
+        "세계모델 예측에 작은 편향을 넣으면 implicit-gradient 학습은 그 편향을 얼마나 증폭하는가?",
+        "같은 총 GPU-hours로 더 오래 WAF만 학습했을 때에도 WATO 우위가 유지되는가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**검증 범위:** 2026-11-13 공개 arXiv:2611.17626v1 공식 PDF(29쪽)·HTML의 §3/§5와 Appendix C–H, Figure 1/3/5, Table 1/2/3/6/7/11을 확인했다. Figure 1은 크롭 이미지가 아닌 원문 PDF 1페이지, Figure 5는 arXiv HTML 원저자 이미지로 배치한다.",
+      "pipeline": [
+        {
+          "title": "01 | 동결된 encoder·world model 준비",
+          "detail": "현재 시각 관측을 잠재 z_t로 압축하고 관찰되는 목표 이미지를 g로 임베딩한다. LeWM 계열 세계모델 Rθ는 행동 시퀀스 A를 받아 다음 잠재 상태 궤적 Z(A)를 rollout한다. 학습 뒤 안정적 기하·동역학 판별용으로 고정한다.",
+          "io": "o_t, goal image → Eθ → z_t,g; Rθ(z_t,A)"
+        },
+        {
+          "title": "02 | joint WAF로 행동과 잠재 미래 동시 모사",
+          "detail": "실제 데이터의 action trajectory와 시각 잠재 trajectory를 함께 flow matching으로 모델링한다. 모사 단계 출력은 Ã(실행 제안)과 Ẑ(의도한 미래 상태)로 구분된다. joint generation 자체는 목표 성공을 보장하지 않는다.",
+          "io": "qφ(Ã,Ẑ | z_t,g), L_WAF"
+        },
+        {
+          "title": "03 | 학습에서만 참조 유도 궤적 투영",
+          "detail": "최종 목표 잠재 거리 J를 줄이되, action Ã와 predicted future Ẑ에서 크게 벗어나지 않는 A*를 구한다. 미래 상태는 독립 자유변수가 아니라 Rθ의 A에 의해 결정되므로 reduced-space solver는 action을 최적화한다.",
+          "io": "Eq.(5): argmin_A J(Z(A),g)+λA dA(A,Ã)+λZ dZ(Z(A),Ẑ)"
+        },
+        {
+          "title": "04 | 최적화 결과에 대해 implicit differentiation",
+          "detail": "solver가 계산한 A*를 고정 정답으로만 대하지 않고 최적화 조건을 미분해 원래 생성기의 파라미터 φ로 task gradient를 전달한다. world model은 동결되고 J(Z*,g)와 imitation loss가 결합된다. 이 과정이 핵심 WATO 알고리즘이다.",
+          "io": "§3.4 Eq.(10), L_WATO Eq.(9)"
+        },
+        {
+          "title": "05 | 반복 학습으로 online solver의 이익 내재화",
+          "detail": "pretrain WAF 50k updates 이후 WATO 단계 10k updates가 추가되고, 내재된 goal/dynamics 제약을 빠른 생성기에 저장한다. Appendix E는 training에서 적은 NFE를 사용하고 후보 생성 횟수·optimizer 비용을 구분한다.",
+          "io": "Appendix E: WAF 50k → WATO 10k"
+        },
+        {
+          "title": "06 | 배포: 생성 → world model로 평가 → 행동 실행",
+          "detail": "매 제어시점 K=8 joint 후보를 생성하고, 생성된 Z 자체가 아니라 해당 A를 world model에 rollout한 목표 오차를 비교해 행동을 선택한다. iterative trajectory projection은 수행하지 않는다. 실물 폐루프에서 지연/안전은 별도 검증이 필요하다.",
+          "io": "K=8, inference NFE=8 → score by Rθ → execute"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "joint reference는 왜 action과 state 모두여야 하는가",
+          "body": "잘못된 행동만 가까이 잡으면 목표에 도달하지 못한 latent future를 방치할 수 있고, 상태만 고집하면 물리적으로 불가능한 action을 만들 수 있다. §5.6에서는 action-only 85.7%, future-only 85.0%, 둘 다 91.7%로 비교한다. 성능 차이는 저자 과제에서 관찰된 평균이지 두 요소의 일반적 필수성 증명이 아니다.",
+          "watch": "§3.3 dA/dZ, §5.6 Table/Figure ablation"
+        },
+        {
+          "title": "일반적인 distillation과 어떻게 다른가",
+          "body": "최적 A*를 label로 저장하고 generator가 직접 흉내 내면 최적화가 만들어낸 지역적 민감도/참조 제약의 효과를 잃을 수 있다. WATO는 최적화 KKT/1차 조건에 대한 미분을 사용하며 detached distillation(88.0)보다 높다.",
+          "watch": "§3.4 Eq.(10), Figure 3, Appendix D"
+        },
+        {
+          "title": "왜 CEM 대비 빠르지만 공짜는 아닌가",
+          "body": "CEM은 배포 중 많은 후보를 반복하여 세계모델에 물어보지만 WATO는 학습에서 반복한 최적화를 생성기에 amortize한다. 비교표 11.5×와 600.5×는 평균적인 배포 계산량 비율이며, training 비용과 모델 학습비를 포함하지 않는다.",
+          "watch": "Table 3, Appendix H와 Appendix E.4 Table 7"
+        },
+        {
+          "title": "latent goal distance의 함정",
+          "body": "출력 목표가 잠재공간의 L2 거리일 뿐, 사람의 물리적 안전·접촉 힘·미끄러짐·충돌을 직접 보장하지 않는다. 점수가 높아도 world model이 틀리면 실물로 전이되지 않을 수 있다.",
+          "watch": "§3.3/§6, Appendix C.4 model error and candidate selection"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "Table 1: 7환경 macro-average",
+          "value": "Joint WAF 79.9% → WATO 91.7%",
+          "context": "4 random seeds, seed당 100 평가 episodes, 평균 성공률"
+        },
+        {
+          "metric": "Flow Policy / GPC",
+          "value": "69.3% / 70.7%",
+          "context": "Table 1, action only / model-based control 비교"
+        },
+        {
+          "metric": "CEM / Grad MPC",
+          "value": "65.0% / 76.7%",
+          "context": "Table 1, 배포 시 반복 최적화 baseline"
+        },
+        {
+          "metric": "Reacher 예외",
+          "value": "GPC 91%, WATO 85%",
+          "context": "Table 1, WATO가 모든 환경에서 최고는 아님"
+        },
+        {
+          "metric": "PushT / scene-play",
+          "value": "WATO 100±0 / 94±1%",
+          "context": "Table 1, joint WAF 84±4 / 78±3%와 동일 평가"
+        },
+        {
+          "metric": "경로 학습 어블레이션",
+          "value": "79.9 / 85.7 / 87.4 / 88.0 / 91.7%",
+          "context": "Figure 3: WAF→direct→+consistency→distill→WATO"
+        },
+        {
+          "metric": "참조 구성",
+          "value": "A only 85.7%, Z only 85.0%, both 91.7%",
+          "context": "§5.6; 동일 7과제 평균"
+        },
+        {
+          "metric": "추가 online solver 이득",
+          "value": "학습 전 +10.4pp, 후 +1.3pp",
+          "context": "Table 2, Appendix G.3 Table 11: 79.9→90.3 / 91.7→93.0"
+        },
+        {
+          "metric": "배포 비용 / 훈련 비용",
+          "value": "CEM 대비 11.5× speed, 600.5× fewer WM evaluations; PushT WATO 추가 5.82h",
+          "context": "Table 3 geometric ratio; Appendix E.4 Table 7에서 pretrain 1.76h 별도"
+        }
+      ],
+      "evidence_note": "성공률은 서로 다른 7개 시각 과제의 macro-average이고 표의 ±는 seed간 변동이다. 배포 속도 비율은 절대 실행 시간·전체 GPU-hours가 아니며 추가 training optimization time을 포함하지 않는다.",
+      "comparison": "action-only Flow Policy는 빠르지만 미래 scene이 의도대로 이루어질지 별도 reference가 없고, imitation joint WAF는 미래 scene까지 모사해도 목표 달성 최적화가 없다. CEM/MPC는 deployment에서 세계모델 평가를 반복해 지연을 늘린다. WATO는 inner solver를 training에 넣고 outer generator에 미분으로 반영하여 성능과 배포 계산량 사이를 재배치한다. 높은 훈련 연산 비용을 지불해야 한다는 점이 핵심 tradeoff다.",
+      "reading_guide": [
+        "§3.1–3.3: 모사되는 Ã,Ẑ와 rollout Z(A)가 같지 않을 수 있음을 구분.",
+        "Eq.(5), Eq.(9), Eq.(10): inner action optimization, outer task loss, implicit gradient를 서로 다르게 표시.",
+        "Table 1에서 Reacher의 GPC 우세와 7개 과제 macro-average를 함께 확인.",
+        "Figure 3 및 §5.6: distillation vs differentiation, single-reference vs dual-reference의 통제 대조 확인.",
+        "Appendix E.4/F/G/H: WATO training cost, 4 seeds×100 trials, optimization amortization, latency 단위를 대조."
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] 계산량을 맞춰도 implicit-differentiation WATO가 detached distillation보다 오차가 작은 목표 정책을 만든다.",
+        "setup": "[편집 제안] PushT와 Reacher의 동일 오프라인 trajectories/goal/LeWM checkpoint로 시작해 rollout horizon·train updates·wall-clock GPU-hours를 3개 budget으로 제한한다. 4 seed×100 episodes 및 25/50/100 step goal horizon을 교차한다.",
+        "baselines": "[편집 제안] imitation joint WAF, direct goal loss, +consistency, detached A* distill, implicit WATO, CEM, Grad MPC; action reference만/latent reference만도 실험한다.",
+        "metrics": "[편집 제안] strict success, latent terminal error, 실제 solver iterations, generation+world-model latency p50/p95, train GPU-hours, predicted-vs-real rollout error를 동시 공개한다.",
+        "risks": "[편집 제안] world model checkpoint의 정확도, solver warm start, horizon mismatch, seed별 goal difficulty, total training cost가 주요 교란변수다."
+      },
+      "related": [
+        "2610.07922",
+        "2602.15922"
+      ]
+    },
+    "reading_minutes": 28,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-17",
+    "source_scope_ko": "arXiv:2611.17626v1 공식 HTML+29쪽 PDF §3·§5·Appendix C–H, Figures 1/3/5 및 Tables 1–3/7/11 검토. Figure 1은 크롭 아닌 PDF 1페이지 원본, Figure 5는 HTML 원저자 이미지. 독립 재현 아님."
+  },
+  "2611.03103": {
+    "summary_ko": "VLALagBench는 움직이는 목표물에서 VLA 추론 지연의 피해가 작업 정밀도와 실행 모드에 따라 달라지는 이유를 분석한다. 0.1m/s에서 100ms 지연은 set-down 71.5%→40.5%였으나 grasp는 86.5%→74.0%였고, 비동기 모드 역시 정책별로 이득이 다르다.",
+    "abstract": "arXiv:2611.03103v1(2026-11-02) 공식 HTML+31쪽 PDF Method §3, Experiments §4–5 및 Appendix B–F, Figure 1/4/6/9, Tables 1–2의 조건과 수치를 대조한 로봇 시스템-정책 공동설계 해설.",
+    "review": {
+      "one_line": "VLA ‘한 번의 추론이 몇 ms 걸리는가’보다 중요한 것은 그 시간에 물체가 얼마나 이동하며 로봇이 어떤 이전 action을 실행하고 있는가이다. VLALagBench는 동적 목표물, 정책, sync/lazy async/continuous async 모드를 교차해 작업별 성공률 민감도와 실용적인 배포 모드를 분석한다. (§3–5)",
+      "problem": "정지한 컵 위로 그리퍼를 내리는 경우와 컨베이어 위를 움직이는 작은 접시에 그릇을 내려놓는 경우에 모두 ‘100ms는 느리다’라는 기준을 적용하는 것은 부정확하다. 시각 관측 이후 100ms가 흐르면 0.1m/s 목표는 1cm 이동하고, placement tolerance가 3cm라면 오차 예산의 1/3이 사라질 수 있다. 모션이 거의 없는 기존 LIBERO 성능과 서버의 tokens/s만으로 실제 동적 조작 신뢰성을 예측하기 어렵다. 논문은 task·speed·latency·policy·execution mode를 분해한다. (§1–2, Figure 1)",
+      "idea": "‘지연’은 추론시간이라는 단일 숫자가 아니라 (a) 정책이 보고 있는 장면의 오래됨(observation staleness)과 (b) 새 action을 기다리며 로봇이 멈춰 있는 시간(idle)을 만든다. sync는 추론 중 마지막 pose를 유지해 지연에 취약하나 action sequence는 정렬된다. lazy async는 현재 chunk를 실행하는 사이 새 추론을 시작하므로 대기시간을 줄이지만 오래된 관측으로 만든 action의 앞부분을 버릴 수 있다. continuous async는 더 자주 관측/생성을 요청해 최신성을 올릴 수 있으나 계산 부담과 chunk 교체의 위험을 낳는다. 단일 최선 모드는 없고 tasks마다 장단이 다르다. (§3.5, Figure 1)",
+      "method": "§3.2의 4개 primary tasks는 release(움직이는 바구니), set-down(움직이는 판 위 그릇), grasp(움직이는 물체), articulated(움직이는 서랍 손잡이)이며 Figure 4는 실제 타깃 이동 경로를 표시한다. MuJoCo를 기반으로 target speed, latency 0–250ms/50ms간격을 주입하고 3 policies(π0.5, GR00T N1.7, MolmoAct2)를 비교한다. 기본 제어주기 20Hz=50ms, 실행 horizon H=5, chunk size K=10(π0.5/MolmoAct2) 또는 K=16(GR00T)이다. Sync는 추론 중 마지막 팔 pose/그리퍼 유지, lazy는 구 chunk를 이어 실행하며 도착한 새 chunk의 앞 L개 action을 건너뛰고, continuous는 최대한 겹쳐 요청한다. 동일 조건 200 rollout, 성공 전 최대 600 executed steps의 예산과 stall 보정 규칙을 쓴다(§4.1, Appendix B/C). §5는 학습 목표가 아니라 (staleness, idle)의 경험적 sensitivity 계수를 소량 calibration 성공률로 맞춰 unseen latency의 성공률/모드를 예측한다. 궤적 예측 모델의 성공 보장이나 이론적 안전 증명은 아니다.",
+      "findings": "동적 목표 speed=0.1m/s에서 latency 100ms로 바뀌면 set-down strict success 71.5→40.5%, grasp 86.5→74.0%(§4.2/Figure 6)로 동일 모델 지연의 영향이 과제마다 다르다. speed=0.1m/s, 200ms, release에서 sync→lazy async 전환 시 π0.5 48.5→81.5%, MolmoAct2 57.0→92.0%이나 GR00T N1.7은 30→32%만 개선되고, set-down에서는 GR00T의 비동기 모드가 불리할 수 있다(§4.3/Figure 9). Table 1의 거의 정적인 speed=0.001m/s 환경에서 π0.5는 release 93.0, set-down 93.5, grasp 98.5, articulated 94.5%다; 단순한 원 LIBERO checkpoint 성공률로 둔갑시켜서는 안 된다. §5/Appendix D의 제한된 calibration으로 예측한 π0.5의 보간 지연 성공률 RMS 오차 약 5.7 percentage points. 이는 학습한 수식이 보편적 물리법칙이라는 뜻이 아니라 해당 benchmark, policies 및 calibration 범위에서 확인한 경험값이다.",
+      "limitations": "실험 주력은 MuJoCo에서 목표 경로를 인위적으로 움직이고 latency를 주입한 시뮬레이션이므로 실제 GPU 큐잉·카메라 지연·패킷 손실·동작 controller drift를 완전 재현하지 않는다. 600-step budget과 stall 보정은 기존 LIBERO의 220–300-step 평가와 다르다. 200 rollouts/condition이라도 시뮬레이터 초기 상태와 탐색 경로에 결과가 의존한다. Appendix E의 Isaac Sim DynamicVLA는 별도 정책·컨트롤 설정이고, Appendix F의 SO-101 실물은 MolmoAct2 중심이라 전체 3모델의 실물 일반화로 읽으면 안 된다. 회귀 계수가 정책·작업에 따라 음수가 되는 경우가 있어 fitted model에 인과적 보편성을 부여할 수 없다.",
+      "questions": [
+        "지연 자체와 target tracking 오류를 분리하려면 동일 timestamp로 재생한 offline 관측을 어떻게 통제해야 하나?",
+        "lazy mode에서 chunk 앞 L개를 버리는 것과 action interpolation을 비교할 수 있나?",
+        "Table 2의 음수 staleness coefficient를 해석하는 올바른 방법은?",
+        "실물 카메라 수집 지연과 추론 p95 tail latency가 있는 조건에서 5.7pp 모델 오차는 어떻게 변할까?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**원문 대조:** arXiv:2611.03103v1의 공식 HTML·31쪽 PDF, §3–5와 Appendix B–F의 평가 규칙, Figure 1/4/6/9, Table 1–2를 확인했다. Figure 1과 Figure 4는 원문 HTML의 저자 원본 PNG를 해설 위치에 연결한다.",
+      "pipeline": [
+        {
+          "title": "01 | 로봇 제어시간과 VLA 응답을 분리",
+          "detail": "20Hz 제어에서 매 tick은 50ms다. 이때 정책의 영상 관측과 action chunk가 생성되는 사이 L개의 tick이 지나면 관측 기준 환경이 이동한다. 명목상 모델 추론속도와 task success를 구분한다.",
+          "io": "20Hz; injected latency 0,50,100,150,200,250ms"
+        },
+        {
+          "title": "02 | 4가지 접촉 상황을 동일 규칙으로 설계",
+          "detail": "정적 물체를 움직이는 용기에 놓기(release), 움직이는 판에 내려놓기(set-down), 움직이는 물체 집기(grasp), 움직이는 서랍 손잡이 조작(articulated)을 설계하고 표적 속도/경로를 통제한다. 성공 조건의 공간적 허용오차가 민감도를 결정한다.",
+          "io": "task × target speed × checkpoint"
+        },
+        {
+          "title": "03 | 세 execution modes의 요청·실행 시간선 정의",
+          "detail": "sync는 새 추론 동안 마지막 로봇 명령 유지; lazy async는 이전 chunk를 이어 실행하고 stale된 새 chunk prefix를 건너뜀; continuous async는 가능한 자주 새 관측으로 inference를 시작해 새 chunk로 교체한다. 비동기라고 항상 빠르거나 더 신선한 것은 아니다.",
+          "io": "sync / lazy async / continuous async"
+        },
+        {
+          "title": "04 | latency를 주입하고 조건별 시행 수를 고정",
+          "detail": "§4.1과 Appendix B의 200 evaluation rollouts/condition, 600 executed steps budget, inference stall 처리 규칙을 지켜 strict success를 기록한다. 기존 LIBERO 정적 과제의 episode 길이와 구분한다.",
+          "io": "task×latency×mode×policy, 200 trials/condition"
+        },
+        {
+          "title": "05 | 성공률을 staleness·idle에 대응",
+          "detail": "모드마다 관측이 낡아지는 tick 수와 기다림을 analytic proxy로 나타낸다. sync/lazy의 평균 staleness는 (H−1)/2+L, continuous의 proxy는 (3L−1)/2. 이 관계를 이용해 task/policy별 empirical sensitivity 계수를 소수 지연 조건에서 fit한다.",
+          "io": "staleness & idle time → fitted success prediction"
+        },
+        {
+          "title": "06 | 보지 않은 지연에서 모드 고르기",
+          "detail": "zero/100/200ms 등 제한 calibration에서 학습된 모델로 50/150/250ms의 성공률을 예측하고 선택한다. 지연이 고정돼 있지 않은 실제 시스템에 적용하려면 p95 latency, queue contention, 재초기화 정책까지 따로 보정해야 한다.",
+          "io": "small calibration → predicted SR(mode,L) → deployment configuration"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "빠른 손과 ‘오래된 눈’의 절충",
+          "body": "움직이는 타깃을 추적할 때 추론 중 멈춤을 없애면 idle은 줄지만 현재 action이 이전 영상의 target position을 추종할 수 있다. 목표 위치 오차 tolerance가 작은 set-down은 중단 없이 움직여도 stale action이 충돌하거나 놓치게 한다.",
+          "watch": "§3.5 mode timing, §4.2 Figure 6"
+        },
+        {
+          "title": "왜 policies 사이에 비동기 개선 폭이 다른가",
+          "body": "π0.5/MolmoAct2/GR00T은 chunk 길이와 정책의 폐루프 반응성, 외란에 대한 보정 능력이 다르다. 200ms release 사례에서 lazy async는 π0.5 +33pp, MolmoAct2 +35pp지만 GR00T +2pp다. 모든 VLA가 async에 적합하다는 결론은 실험으로 지지되지 않는다.",
+          "watch": "§4.3 Figure 9 and §3.4 model configurations"
+        },
+        {
+          "title": "RMS 예측 오차를 어떻게 읽어야 하는가",
+          "body": "정해진 latency grid에서 관측한 성공률에 경험적 모형을 맞춘 뒤 생략한 지연을 예측한다. 5.7pp는 성공 확률의 절대오차를 집계한 값이지 신규 로봇군이나 임의 delay distribution에 대한 상한 보장이 아니다.",
+          "watch": "§5.1–5.2, Appendix D"
+        },
+        {
+          "title": "실물 부록의 경계",
+          "body": "Appendix E는 Isaac Sim DynamicVLA라는 다른 시뮬레이터/컨트롤 설정, Appendix F는 SO-101·MolmoAct2 중심 real experiment다. sim→real 재확인은 의미 있지만 세 backbone × 4과제 × 모든 latency의 실물 재현과는 다르다.",
+          "watch": "Appendix E/F and Table 1 provenance"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "조건·정책",
+          "value": "4 primary tasks × 3 policies × 3 execution modes",
+          "context": "§3.2–3.5, π0.5/GR00T N1.7/MolmoAct2"
+        },
+        {
+          "metric": "지연·제어 주기",
+          "value": "0–250ms, 50ms steps; control 20Hz",
+          "context": "§3.6, 50ms tick; chunk K=10/10/16"
+        },
+        {
+          "metric": "시행·길이",
+          "value": "200 rollouts/condition, 최대 600 executed steps",
+          "context": "§4.1 Appendix B/C, static LIBERO 일반 길이와 다름"
+        },
+        {
+          "metric": "100ms 지연, set-down",
+          "value": "71.5% → 40.5%",
+          "context": "§4.2 Figure 6, moving target 0.1m/s"
+        },
+        {
+          "metric": "100ms 지연, grasp",
+          "value": "86.5% → 74.0%",
+          "context": "§4.2 Figure 6, moving target 0.1m/s"
+        },
+        {
+          "metric": "200ms sync→lazy, release π0.5",
+          "value": "48.5% → 81.5%",
+          "context": "§4.3 Figure 9, 0.1m/s target"
+        },
+        {
+          "metric": "200ms sync→lazy, MolmoAct2 / GR00T",
+          "value": "57%→92% / 30%→32%",
+          "context": "§4.3 Figure 9, mode gain은 checkpoint에 종속"
+        },
+        {
+          "metric": "거의 정적 목표 π0.5",
+          "value": "93.0 / 93.5 / 98.5 / 94.5%",
+          "context": "Table 1, release/set-down/grasp/articulated at 0.001m/s"
+        },
+        {
+          "metric": "예측 모델 보간 RMSE",
+          "value": "약 5.7 percentage points (π0.5)",
+          "context": "§5/Appendix D, 0·100·200ms 보정 후 미관측 지연 50·150·250ms 예측"
+        }
+      ],
+      "evidence_note": "Figure 6/9의 수치는 특정 작업·정책·속도·실행 모드의 성공률이며 전체 평균으로 일반화하면 안 된다. Table 1은 움직임이 거의 없는 설정, §5의 prediction error는 calibration 범위를 벗어난 실물 일반화 보증이 아니다.",
+      "comparison": "기존 LIBERO/RoboCasa는 시연 학습·일반화에 집중하며 환경이 거의 정적이다. 로봇 inference 최적화 연구는 ms/Hz 또는 throughput을 측정하지만 그 수치가 동적 task success로 어떻게 연결되는지 명확하지 않다. VLALagBench는 그 사이를 policy-level success로 연결하고, async 실행을 실제 조작 행동시간선의 문제로 평가한다. 정책을 개선한 신모델이라기보다 시스템 선택 기준의 논문으로 읽는 것이 정확하다.",
+      "reading_guide": [
+        "Figure 1에서 task/speed/latency/mode/policy 5요인 및 관측 staleness를 구분.",
+        "§3.5의 sync, lazy async, continuous async timing과 chunk prefix skip 확인.",
+        "§4.1 및 Appendix B에서 20Hz, K/H, 600 steps, 200 trials 평가조건 대조.",
+        "§4.2 Figure 6과 §4.3 Figure 9의 다른 task·mode·model 조건 혼동 금지.",
+        "§5 Table 2와 Appendix D/E/F에서 fitted coefficients, Isaac Sim, SO-101 실물의 각기 다른 검증 범위 확인."
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] 바닥 지연시간보다 95퍼센타일 지연과 target tolerance, action chunk 교체 정책이 dynamic task success를 더 잘 설명한다.",
+        "setup": "[편집 제안] 실제 SO-101과 시뮬레이터 양쪽에서 이동 표적의 speed=0/0.05/0.1/0.2m/s, injected mean latency=50/100/200ms, tail jitter 0/100ms를 교차한다. 100회 이상 동일 초기 조건을 로깅하고 카메라 timestamp·GPU enqueue/dequeue·actuator executed action을 동기화한다.",
+        "baselines": "[편집 제안] sync, lazy async, continuous async, lazy+time-stamp compensation, action interpolation의 동일 checkpoint 구현을 비교한다.",
+        "metrics": "[편집 제안] strict SR, target-distance at release, sample-to-actuate staleness p50/p95, idle duty-cycle, inference throughput, policy restart failures 및 재시도율을 보고한다.",
+        "risks": "[편집 제안] 카메라와 모터 클럭 차이, latency injection 시 실제 큐잉 동작, online async 요청 과부하 및 object-speed calibration이 교란변수다."
+      },
+      "related": [
+        "2611.05155",
+        "2506.01844"
+      ]
+    },
+    "reading_minutes": 27,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-17",
+    "source_scope_ko": "arXiv:2611.03103v1 공식 HTML·31쪽 PDF §3–5, Appendix B–F, Figures 1/4/6/9·Tables 1–2 검증. 저자 원본 PNG 2개를 본문에 연결. 실물 결과 일반화 및 독립 재현은 별도."
   }
 }

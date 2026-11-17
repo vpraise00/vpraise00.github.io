@@ -1016,5 +1016,64 @@
       "review": "paper_figure_number_caption_author_file_crosschecked",
       "hosting_note": "실제 저자 원본 이미지이며 사이트 외부 호스팅에 의존함."
     }
+  },
+  "2611.06447": {
+    "1": {
+      "remote_url": "https://arxiv.org/html/2611.06447v1/intro.png",
+      "source": "https://arxiv.org/html/2611.06447v1/intro.png",
+      "paper_source": "https://arxiv.org/html/2611.06447v1",
+      "caption": "Figure 1: A failure case of the attention maps of language instruction querying visual observations in π0 and OpenVLA-OFT on a Select Poker task from VLABench, visualized across layers from shallow (left) to deep (right).",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 저자 원본 외부 이미지."
+    },
+    "2": {
+      "remote_url": "https://arxiv.org/html/2611.06447v1/model.png",
+      "source": "https://arxiv.org/html/2611.06447v1/model.png",
+      "paper_source": "https://arxiv.org/html/2611.06447v1",
+      "caption": "Figure 2: Overview of the A³-VLA framework.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 저자 원본 외부 이미지."
+    }
+  },
+  "2611.17626": {
+    "1": {
+      "source": "https://arxiv.org/pdf/2611.17626",
+      "page": 1,
+      "caption": "Figure 1: WATO overview. Joint world-action trajectories are optimized during training and amortized into the generator, enabling deployment with generation and world model evaluation only.",
+      "method": "arxiv_pdf_page_embed",
+      "review": "author_original_pdf_page_verified_no_crop",
+      "hosting_note": "전체 PDF 1페이지 삽입. 개별 Figure 이미지 아님."
+    },
+    "5": {
+      "remote_url": "https://arxiv.org/html/2611.17626v1/environment_examples.png",
+      "source": "https://arxiv.org/html/2611.17626v1/environment_examples.png",
+      "paper_source": "https://arxiv.org/html/2611.17626v1",
+      "caption": "Figure 5: Environments for WATO experiments.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 저자 원본 외부 이미지."
+    }
+  },
+  "2611.03103": {
+    "1": {
+      "remote_url": "https://arxiv.org/html/2611.03103v1/overview.png",
+      "source": "https://arxiv.org/html/2611.03103v1/overview.png",
+      "paper_source": "https://arxiv.org/html/2611.03103v1",
+      "caption": "Figure 1: VLALagBench links VLA inference latency to task success through observation staleness and idle time, enabling a compact model to predict success at unseen latencies and choose the execution mode for a given deployment. The benchmark varies five factors—task type, target speed, inference latency, execution mode, and policy—to answer Q1–Q4.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 저자 원본 외부 이미지."
+    },
+    "4": {
+      "remote_url": "https://arxiv.org/html/2611.03103v1/task-overview.png",
+      "source": "https://arxiv.org/html/2611.03103v1/task-overview.png",
+      "paper_source": "https://arxiv.org/html/2611.03103v1",
+      "caption": "Figure 4: The four primary tasks in VLALagBench cover releasing, setting down, grasping, and articulated-object manipulation. Each target, highlighted by a cyan box, moves continuously along the closed path shown in pink without colliding with background objects.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 저자 원본 외부 이미지."
+    }
   }
 }

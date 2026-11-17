@@ -1164,5 +1164,98 @@
         "verified_caption": "Figure 4: Automated Motion Planning. Scripted policies coordinate upper-body manipulation and lower-body movement."
       }
     ]
+  },
+  "2611.06447": {
+    "heading": "A³-VLA의 attention 실패와 interaction-driven 학습",
+    "intro": "원문 arXiv:2611.06447v1의 Figure 1/2와 공개한 실제 PNG 경로를 확인. 그림 해설은 원문 맥락에만 사용.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "problem",
+        "reading_title": "Figure 1 — 카드 대신 배경을 보는 언어→시각 attention",
+        "context": "π0와 OpenVLA-OFT가 Select Poker에 실패한 사례의 언어-query visual attention을 층 깊이별로 표시한다. 밝은 attention이 목표 카드를 가리키는지 실제 그림과 대조한다.",
+        "steps": [
+          "왼쪽 샘플과 지시문이 특정 카드 선택을 요구하는지 확인",
+          "shallow→deep layer로 가면서 attention이 어디로 이동하는지 살피기",
+          "이 그림은 정량 성공률이 아니라 실패 예시임을 분명히 하기"
+        ],
+        "verified_caption": "Figure 1: A failure case of the attention maps of language instruction querying visual observations in π0 and OpenVLA-OFT on a Select Poker task from VLABench, visualized across layers from shallow (left) to deep (right)."
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 오프라인 목표/로봇 mask와 세 학습 신호",
+        "context": "상호작용 탐지→프레임 변화→SAM2 mask→언어/상태 attention 손실 및 contrastive loss가 action 학습에 합쳐지는 흐름이다. 분할은 추론에 포함되지 않는다.",
+        "steps": [
+          "원본 시연에서 interaction keyframe을 검출하는 위치",
+          "타깃 영역과 robot 영역을 구별하는 mask 경로",
+          "L_l2i, L_s2i, L_cl과 Flow Matching loss를 구분",
+          "최종 배포는 fine-tuned VLA 단독임을 확인"
+        ],
+        "verified_caption": "Figure 2: Overview of the A³-VLA framework."
+      }
+    ]
+  },
+  "2611.17626": {
+    "heading": "WATO의 학습 최적화와 평가 환경",
+    "intro": "PDF 1페이지 Figure 1은 논문 공식 원본 페이지로, Figure 5는 arXiv HTML 저자 원본 개별 이미지를 확인했다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "method",
+        "reading_title": "Figure 1 — 생성된 행동·상태를 world model 제약 계획으로 최적화하고 다시 학습",
+        "context": "훈련 중 inner trajectory optimization과 generator 업데이트, 배포 중 단순 candidate generation/world-model scoring을 나누어 보여준다. PDF 페이지 전체가 삽입되며 별도 크롭이 아니다.",
+        "steps": [
+          "정지한 world model이 행동에 따른 미래 잠재상태를 rollout",
+          "action reference Ã와 future-state reference Ẑ가 모두 제약에 쓰임",
+          "implicit gradient가 생성기를 재학습시키는 경로",
+          "inference에는 inner solver가 사라진다는 차이를 확인"
+        ],
+        "verified_caption": "Figure 1: WATO overview. Joint world-action trajectories are optimized during training and amortized into the generator, enabling deployment with generation and world model evaluation only."
+      },
+      {
+        "number": 5,
+        "placement": "findings",
+        "reading_title": "Figure 5 — 7개 시각 제어 과제의 상태·목표 정의",
+        "context": "TwoRooms, Reacher, PushT와 OGBench visual-v0 4개 조작 과제를 한 그림에서 비교한다. 성공률 평균을 구성하는 별도 7환경이며 실제 로봇 사진으로 해석하면 안 된다.",
+        "steps": [
+          "TwoRooms·Reacher·PushT의 시각 목표 관측 확인",
+          "cube-single/cube-double/scene-play/puzzle-3x3 분할 확인",
+          "Table 1이 이 일곱 개 조건의 macro-average라는 점 주의"
+        ],
+        "verified_caption": "Figure 5: Environments for WATO experiments."
+      }
+    ]
+  },
+  "2611.03103": {
+    "heading": "VLALagBench: 다섯 가지 지연 민감도 요인과 네 가지 이동 목표",
+    "intro": "arXiv:2611.03103v1 Figure 1/4의 정확한 PNG와 캡션을 원문 HTML에서 확인했다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Figure 1 — 지연을 성공률 저하로 바꾸는 staleness·idle",
+        "context": "task, target speed, inference latency, execution mode, policy를 순서대로 통제하며 단순 모델 latency와 task completion의 차이를 명시한다.",
+        "steps": [
+          "VLA action이 생성될 때 관측이 얼마나 낡았는지 확인",
+          "동기/비동기의 대기 시간과 관측 stale time을 별도 추적",
+          "한 가지 ms 기준을 모든 작업에 적용하지 않는 이유"
+        ],
+        "verified_caption": "Figure 1: VLALagBench links VLA inference latency to task success through observation staleness and idle time, enabling a compact model to predict success at unseen latencies and choose the execution mode for a given deployment. The benchmark varies five factors—task type, target speed, inference latency, execution mode, and policy—to answer Q1–Q4."
+      },
+      {
+        "number": 4,
+        "placement": "method",
+        "reading_title": "Figure 4 — release, set-down, grasp, articulated 네 동적 조작",
+        "context": "청록색으로 표시한 목표 물체가 분홍색 궤적을 따라 움직이는 실제 benchmark 장면이다. 각 과제 성공 조건과 공간 tolerances가 지연 민감도 차이를 만든다.",
+        "steps": [
+          "움직이는 container에 stationary object 넣는 release",
+          "이동판에 그릇을 내려놓는 set-down",
+          "moving bowl grasp와 drawer articulated target의 차이",
+          "0.1m/s 등 속도 통제가 성공률 수치에 미치는 영향"
+        ],
+        "verified_caption": "Figure 4: The four primary tasks in VLALagBench cover releasing, setting down, grasping, and articulated-object manipulation. Each target, highlighted by a cyan box, moves continuously along the closed path shown in pink without colliding with background objects."
+      }
+    ]
   }
 }
