@@ -1075,5 +1075,65 @@
       "review": "paper_figure_number_caption_author_file_crosschecked",
       "hosting_note": "공식 arXiv HTML 저자 원본 외부 이미지."
     }
+  },
+  "2611.21607": {
+    "2": {
+      "remote_url": "https://arxiv.org/html/2611.21607v1/architecture.png",
+      "source": "https://arxiv.org/html/2611.21607v1/architecture.png",
+      "paper_source": "https://arxiv.org/html/2611.21607v1",
+      "caption": "Figure 2: ScaleVLA architecture. The VLM encodes the images and the instruction, and the action head reads the output of its causal encoder. The action DiT alternates cross-attention and self-attention and generates an action chunk in four flow steps.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 저자 원본 PNG를 외부 링크로 표시; GitHub 자체 복사본 아님."
+    },
+    "5": {
+      "remote_url": "https://arxiv.org/html/2611.21607v1/real_robot.png",
+      "source": "https://arxiv.org/html/2611.21607v1/real_robot.png",
+      "paper_source": "https://arxiv.org/html/2611.21607v1",
+      "caption": "Figure 5: Plug In Charger on a real robot. Left: all three policies grasp and hand over the charger from in-domain layouts. ScaleVLA aligns and inserts the plug; the other two policies reach the socket but fail to insert the plug. Right: success rates in the in-domain and OOD settings.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 저자 원본 PNG를 외부 링크로 표시; GitHub 자체 복사본 아님."
+    }
+  },
+  "2611.15368": {
+    "2": {
+      "remote_url": "https://arxiv.org/html/2611.15368v1/bind_wam_method.png",
+      "source": "https://arxiv.org/html/2611.15368v1/bind_wam_method.png",
+      "paper_source": "https://arxiv.org/html/2611.15368v1",
+      "caption": "Fig. 2: Overview of Bind-WAM. Offline binding labels capture reference mismatch, invisibility, and identity drift and supervise a lightweight predictor. At inference, the predictor estimates binding uncertainty U_t from the current observation and instruction. The router selects direct action prediction when uncertainty is low and stable, or joint future-action denoising when U_t or its change exceeds a threshold.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 저자 원본 PNG를 외부 링크로 표시; GitHub 자체 복사본 아님."
+    },
+    "3": {
+      "remote_url": "https://arxiv.org/html/2611.15368v1/binding_annotation_pipeline_example_labeled.png",
+      "source": "https://arxiv.org/html/2611.15368v1/binding_annotation_pipeline_example_labeled.png",
+      "paper_source": "https://arxiv.org/html/2611.15368v1",
+      "caption": "Fig. 3: Offline binding-label construction pipeline for a typical LIBERO front-view image. The RGB observation is passed to Qwen3-VL-32B grounding, SAM 3.1 tracked instance masks, DINOv3 cosine consistency, and Qwen verification; both roles are visible and the frame label is y_t=0.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 저자 원본 PNG를 외부 링크로 표시; GitHub 자체 복사본 아님."
+    }
+  },
+  "2611.09293": {
+    "1": {
+      "remote_url": "https://arxiv.org/html/2611.09293v1/pull_fig.png",
+      "source": "https://arxiv.org/html/2611.09293v1/pull_fig.png",
+      "paper_source": "https://arxiv.org/html/2611.09293v1",
+      "caption": "Figure 1: Existing WAMs typically predict future observations encoded by a frozen pretrained encoder optimized for visual generation or semantic understanding, which may be suboptimal for robot manipulation. MDF++ learns task-aware representations end-to-end with cross-modality prediction.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 저자 원본 PNG를 외부 링크로 표시; GitHub 자체 복사본 아님."
+    },
+    "2": {
+      "remote_url": "https://arxiv.org/html/2611.09293v1/sys_figure.png",
+      "source": "https://arxiv.org/html/2611.09293v1/sys_figure.png",
+      "paper_source": "https://arxiv.org/html/2611.09293v1",
+      "caption": "Figure 2: MDF++ training overview. Each iteration samples structured 2D noise patterns for policy learning, world-action modeling, forward/inverse dynamics, and random masking. Each modality’s denoising loss is blocked from updating its own encoder, while losses of other modalities train it.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 저자 원본 PNG를 외부 링크로 표시; GitHub 자체 복사본 아님."
+    }
   }
 }

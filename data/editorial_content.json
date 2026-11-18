@@ -6066,5 +6066,457 @@
     "editorial_status": "source_crosschecked",
     "reviewed_at": "2026-11-17",
     "source_scope_ko": "arXiv:2611.03103v1 공식 HTML·31쪽 PDF §3–5, Appendix B–F, Figures 1/4/6/9·Tables 1–2 검증. 저자 원본 PNG 2개를 본문에 연결. 실물 결과 일반화 및 독립 재현은 별도."
+  },
+  "2611.21607": {
+    "summary_ko": "552B MoE 기반 VLM의 일부 표현만 추출해 행동 DiT에 연결하는 ScaleVLA를 분석한다. 같은 행동 학습 조건에서 LIBERO 96.1%, LIBERO-PRO 45.1%를 보고했지만, 추론에는 H200 4장이 필요하며 실물 충전기 삽입 시험은 제한된 횟수다.",
+    "abstract": "원문 검증 메모: arXiv:2611.21607v1, Method §3, Experiments §4, Appendix A–D, Figure 2·5, Table 2·3·6·7·8을 대조. 원문 초록과 본문은 공식 arXiv 링크를 확인할 것.",
+    "review": {
+      "one_line": "**연구 질문은 '더 큰 언어모델이 로봇에 얼마나 유용한가'가 아니라 같은 행동 전문가·데이터·학습 예산으로 VLM 표현만 크게 바꾸면, 적은 시연과 분포 이동 및 정밀 접촉에서 무엇이 달라지는가**이다. ScaleVLA의 장점은 단순 백본 크기보다 얼어 있는 552B MoE의 인코더 특징을 짧은 행동 생성 루프로 재사용하는 인터페이스에 있다.",
+      "problem": "종래의 많은 VLA는 2B–32B급 시각언어모델과 학습 가능한 행동 헤드를 결합한다. 평범한 컵 집기에서는 작은 모델도 높은 성공률을 내므로, 더 큰 모델을 채택할 이유가 불분명하다. 그러나 '충전기 플러그를 소켓 구멍에 맞춰 끼우기'에서는 대상의 의미를 아는 것과 작은 자세 오차를 피하며 손을 움직이는 것이 다르다. 저자들은 규모만 변경한 비교군으로 시연 5–50개인 저자원 학습, 교란된 LIBERO-PRO, 실제 양팔 충전기 삽입을 평가한다. 이것은 552B 모델이 새로 로봇 동작을 학습했다는 의미가 아니다(§1–2).",
+      "idea": "전체 552B를 로봇 제어용으로 미세조정하거나 매 tick 텍스트 추론을 생성하지 않는다. 동결된 DeepSeek-V4.1-Flash-1017의 시각·지시 조건 인코더가 만든 특징을 별도 adapter와 trainable action diffusion transformer(DiT)에 넣고, 연속 행동 청크의 속도장을 예측한다. 비유하면 전문가가 쓴 복잡한 환경 해석을 '행동 지시용 특징'으로 읽고, 손을 움직이는 소규모 전용 제어기를 따로 학습한다. 여러 작은 백본에 같은 action-side 설계를 적용해 표현 규모의 효과를 비교한다(Figure 2).",
+      "method": "§3와 Appendix A의 입력은 외부 카메라 이미지·언어 지시·로봇 상태다. DeepSeek VLM은 동결돼 있고 디코더를 통한 자기회귀 답변 생성 없이 20층 causal encoder의 표현을 사용한다. 5120차원 특징을 2048차원으로 사상하는 adapter(4층 transformer)를 거친다. 로봇별 상태/행동 인코더와 32층 action DiT가 비디오 및 비비디오 토큰의 자기·교차 attention을 교대로 처리한다. 행동 A와 Gaussian 잡음 ε를 섞은 중간 상태 Aτ=(1−τ)ε+τA에서 목표 속도 A−ε를 회귀하는 flow matching을 학습하며, 배포 시 4단계 적분으로 행동 청크를 만든다. LIBERO는 16-step 출력 가운데 8-step을 실행하는 식으로 재계획하고, 특징 계산을 청크 단위로 캐시한다. 백본 파라미터 전체가 업데이트되는 end-to-end VLA라고 부르면 오류다.",
+      "findings": "동일 저자 재학습 조건의 LIBERO 4-suite 평균은 ScaleVLA 96.1%, Cosmos-Reason2 2B 90.7%, Cosmos 32B 94.0%(Table 2). 훈련 장면의 환경·물체를 교란한 LIBERO-PRO 평균은 45.1%로 더 어렵고, 비교군 최고 31.3%보다 높지만 여전히 절반 이하가 실패한다(Table 3). LIBERO Goal의 10 demonstrations/task는 87.8%, 2B의 50 demos/task는 85.6%지만 Appendix D의 저데이터 실험은 full-set normalization 통계를 사용한다. 실물 양팔 Plug In Charger 성공은 in-domain 9/10, OOD 8/15회이며, 이는 같은 데모와 행동 head 조건의 2B 모델 4/10, 5/15보다 높다(Table 8). RoboCasa 청크 지연 215.8ms는 H200 네 장, Cosmos2B 114.7ms는 H200 한 장이므로 동일 하드웨어 지연 비교로 해석하면 안 된다(Table 6).",
+      "limitations": "MoE 전체 552B 규모는 활성 파라미터/메모리/분산 추론 비용과 동일하지 않다. 4×H200 배치와 1×H200 배치의 지연 및 총비용 비교는 별개이고, 청크당 중앙값은 실제 모터 closed-loop 95백분위 지연을 보증하지 않는다. 실물 실험은 단일 plug 과제 10+15회/정책 및 훈련 seed 제약이 있어 광범위한 양팔 일반화 증거가 아니다. LIBERO 만점에 가까운 점수는 ceiling effect가 크고 LIBERO-PRO는 45.1%로 아직 취약하다. 저시연 수 비교에서 전체 데이터의 정규화 통계를 활용하는 Appendix 단서는 완전 무정보 10-shot 설정과 다르다. Figure 5는 저자 선택 사례이며 전체 실패 분포를 대체하지 않는다.",
+      "questions": [
+        "행동-head를 동결하지 않은 조건에서 표현 규모에 따른 개선을 인과적으로 분리할 수 있는가?",
+        "4×H200 비용을 1×H200에 맞춘 뒤에도 552B의 실제 작업당 성공당 비용 이득이 남는가?",
+        "저데모 학습 정규화 통계를 subset-only로 다시 계산하면 10-shot 수치는 어떻게 되는가?",
+        "Plug insertion에서 힘 피드백이나 안전 정지 빈도를 추가 로깅하면 문제의 핵심이 시각 정렬인지 접촉 제어인지 구분될까?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**원문 검증 범위:** arXiv:2611.21607v1의 §3 Method, §4 Experiments, Appendix A(구현)·B(실행/지연)·C(평가)·D(저데모), Figure 2(구조)·5(실물 삽입), Tables 2·3·6·7·8을 직접 교차 확인했다. 원본 arXiv HTML 그림 2개는 해설 위치에 배치했다. 수치는 저자 보고이며 독립 재현은 아니다.",
+      "pipeline": [
+        {
+          "title": "01 | 영상·언어 지시와 로봇 상태 분리",
+          "detail": "카메라 관측/텍스트 지시를 동결된 VLM으로 보내고, 관절·그리퍼 등 embodiment-specific state는 별도 인코더로 통과시킨다. 언어모델에게 '다음 행동'에 대한 긴 텍스트를 쓰라고 하지 않는다.",
+          "io": "RGB + instruction → VLM features; state → state embedding"
+        },
+        {
+          "title": "02 | 거대한 MoE의 부분 연산만 호출",
+          "detail": "DeepSeek-V4.1-Flash-1017 전체 모델은 552B 파라미터지만 sparse expert를 활성화하며, 동결된 causal encoder 20층의 출력을 읽고 언어 디코더 생성은 생략한다. 스케일 자체와 실 실행 compute를 구분해야 한다.",
+          "io": "frozen causal features, dimension 5120"
+        },
+        {
+          "title": "03 | 행동 조건 adapter 압축",
+          "detail": "VLM 5120차원 표현을 2048차원으로 바꾸고 4-layer adapter transformer가 행동 생성기에 적합한 조건 시퀀스를 만든다. 로봇별 state/action projector가 형태가 다른 기구의 joint 벡터를 매개한다.",
+          "io": "5120 → 2048, 4-layer adapter"
+        },
+        {
+          "title": "04 | 32층 행동 DiT의 교차 정보 교환",
+          "detail": "행동 노이즈 token은 상태와 VLM 조건의 주의를 받으면서 32층 action DiT에서 갱신된다. 이미지·텍스트 특징을 그대로 motor command로 쓰는 구조가 아니라 시간적 action chunk를 생성한다.",
+          "io": "conditional action DiT, 32 layers"
+        },
+        {
+          "title": "05 | flow matching으로 미래 행동 생성",
+          "detail": "정답 시연 청크 A와 가우시안 ε로 Aτ=(1−τ)ε+τA를 만들고 모델이 A−ε라는 이동 속도장을 맞히게 한다. 추론에는 네 번의 수치적 흐름 적분으로 노이즈를 행동으로 변환한다.",
+          "io": "velocity regression → 4 flow steps"
+        },
+        {
+          "title": "06 | 청크 실행·평가 프로토콜",
+          "detail": "LIBERO는 16-step prediction 중 8-step을 적용하는 폐루프이며, RoboCasa는 720-step 한도/24 테스트 task/50 episodes, 실제 양팔은 plug-in 성공과 완료 시간도 기록한다. 이미지 특징 캐싱과 action chunk별 지연을 분리한다.",
+          "io": "action chunk → execute/re-observe; 4×H200 latency setting"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "훈련에서 실제로 바뀌는 파라미터",
+          "body": "동결된 552B 백본은 외부 지식 저장소처럼 동작한다. 학습은 주로 adapter·state/action projector·행동 DiT에 집중한다. pretrained control head를 가져온 결과와 혼동하지 않으려는 비교 설계다.",
+          "watch": "§3.1–3.2 및 Appendix A의 frozen/trainable 구분"
+        },
+        {
+          "title": "4-step 생성이 autoregressive reasoning과 다른 이유",
+          "body": "텍스트 추론을 여러 토큰 생성하지 않고, 잡음에서 행동 궤적을 ODE-like flow로 단번에 갱신한다. 출력은 설명문이 아니라 실제 동작 벡터의 청크이고 관측 후 다시 계산한다.",
+          "watch": "Figure 2, §3.2 Flow matching / Action chunk generation"
+        },
+        {
+          "title": "데이터 효율 비교의 숨은 전제",
+          "body": "Goal 10 demos 87.8%와 2B의 50 demos 85.6%는 서로 다른 데이터 양과 동일 시연 일부를 사용하는 특정 설정이다. Appendix D는 작은 subset의 행동 정규화에 전체 학습셋 통계가 사용됐음을 밝힌다.",
+          "watch": "§4.4 Table 7, Appendix D"
+        },
+        {
+          "title": "지연/성공시간을 동시에 읽기",
+          "body": "H200 네 장에 분산한 552B는 청크당 215.8ms, 한 장의 2B는 114.7ms다. 그런데 실물 성공 에피소드에서 552B 중앙 완료시간 114.4초가 더 짧다. 시스템 지연과 제어 경로의 효율을 다른 축으로 분석해야 한다.",
+          "watch": "§4.3 Table 6, §4.5 Table 8"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "LIBERO full-set 평균",
+          "value": "96.1% (ScaleVLA) / 90.7% (Cosmos-2B) / 94.0% (Cosmos-32B)",
+          "context": "Table 2, 동일 저자 구현 행동 head·훈련조건, 4 suites"
+        },
+        {
+          "metric": "LIBERO Long / Goal",
+          "value": "90.2% / 96.8%",
+          "context": "Table 2, 전체 시연 학습; Spatial/Object는 고성능 포화"
+        },
+        {
+          "metric": "LIBERO-PRO perturbation 평균",
+          "value": "45.1% vs 작은 백본 최고 31.3%",
+          "context": "Table 3, 기존 LIBERO 정책 재학습 없이 OOD 평가"
+        },
+        {
+          "metric": "LIBERO-PRO Object 환경 교란",
+          "value": "31.2% vs Cosmos-32B 32.4%",
+          "context": "Table 3, 모든 subcondition에서 Scale 최고가 아님"
+        },
+        {
+          "metric": "RoboCasa OOD Gen-30 / Gen-100",
+          "value": "30.7% / 54.9%",
+          "context": "§4.2, 24 test tasks × 50 episodes, 720-step 한도"
+        },
+        {
+          "metric": "LIBERO Goal 10 demos",
+          "value": "87.8% vs 2B 50 demos 85.6%",
+          "context": "Table 7 + Appendix D, full-set action normalization 사용 주의"
+        },
+        {
+          "metric": "RoboCasa 모델 청크 지연 중앙값",
+          "value": "215.8ms (4×H200) vs 114.7ms (1×H200)",
+          "context": "Table 6, 하드웨어 수와 visual-token 수가 다름"
+        },
+        {
+          "metric": "실물 Plug In Charger 성공",
+          "value": "9/10 in-domain · 8/15 OOD",
+          "context": "Table 8, 동일 task·limited trials; Cosmos2B 4/10 · 5/15"
+        },
+        {
+          "metric": "실물 성공 episode 완료시간 중앙값",
+          "value": "114.4초 (ScaleVLA) vs 132.0초 (π0.5+head)",
+          "context": "Table 8, 성공 에피소드만의 시간이며 causal latency 비교 아님"
+        }
+      ],
+      "evidence_note": "저자 보고 결과. Table 2와 Table 3은 분포가 다르며 백본 스케일 이외에는 고정한 설계를 중시한다. 552B 추론에는 4장의 H200이 필요했고, 소규모 실물 시험을 광범위한 실환경 성공률로 해석하지 않는다.",
+      "comparison": "π0/GR00T류 VLA가 다중 모달 인식기와 행동 생성기를 붙인다는 점은 새롭지 않다. 여기서 핵심 통제변수는 가능한 동일한 행동 헤드·데이터·학습 예산을 유지한 채 VLM 표현 크기를 2B–552B로 바꾸는 것이다. 단순 LIBERO 평균만 보면 96.1% 대 94.0% 차이로 작아 보여도, Goal 10-shot과 LIBERO-PRO 같은 데이터 부족/분포 이동에서 격차가 커진다. 하지만 비교에서는 MoE sparse execution, 서로 다른 GPU 장수, 로봇 작업 데이터와 사전학습 정보가 서로 얽혀 있어 '파라미터 수만의 인과 효과'로 단정할 수 없다.",
+      "reading_guide": [
+        "Figure 2에서 VLM causal encoder와 action DiT 사이의 경계, 동결 여부와 flow-4-step 추론 확인.",
+        "§3/Appendix A에서 5120→2048 adapter, 32 DiT layers, chunk 길이와 업데이트 대상 기록.",
+        "Table 2의 full-set LIBERO와 Table 3의 LIBERO-PRO 교란 평가를 명시적으로 분리.",
+        "Table 7의 10-shot 주장과 Appendix D의 정규화 통계, 데이터 subset 생성 조건 함께 읽기.",
+        "Figure 5·Table 8의 real charger 실패 단계, 10회·15회 분모, 성공 회차 시간 통계 확인.",
+        "Table 6과 Appendix B에서 4×H200 대 1×H200, prefill/caching/timing 조건 비교."
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] 적은 시연에서의 이득은 backbone 규모뿐 아니라 사전학습 표현과 spatial/contact 단계의 관측 정밀도에 의존한다.",
+        "setup": "[편집 제안] 동일 VLA action DiT와 시연 5/10/25/50개에 대해 2B·8B·32B·552B 특징을 freeze. 동일 3 seeds·50 initial states/task로 LIBERO Goal, LIBERO-PRO 환경·물체 교란, mm-level 삽입을 교차하고 full-set normalization vs subset-only normalization을 나눈다.",
+        "baselines": "[편집 제안] 동일 parameter-budget action head, fixed representation caching, 2B MoE/sparse 대비, image-only/vision+language/feature-projection ablation, 4×H200 이하에서 throughput-matched condition.",
+        "metrics": "[편집 제안] strict success ± bootstrap 95% CI, first-failure stage, force/contact margin, latency p50/p95, GPU-hours/success, normalized demonstration count.",
+        "risks": "[편집 제안] 552B 배치 병렬화·MoE capacity·visual tokens와 훈련 데이터의 물체 누출, 재시도 횟수 및 성공 에피소드만의 시간 조건이 성능 비교를 왜곡할 수 있다."
+      },
+      "related": [
+        "2503.14734",
+        "2506.01844",
+        "2611.06447"
+      ]
+    },
+    "reading_minutes": 27,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-18",
+    "source_scope_ko": "arXiv:2611.21607v1 공식 HTML §3·§4·Appendix A–D, Figures 2/5, Tables 2/3/6/7/8 원문 대조 · 4×H200 조건 및 실물 분모 표시 · 독립 재현 아님"
+  },
+  "2611.15368": {
+    "summary_ko": "Bind-WAM은 언어가 가리키는 물체가 불분명할 때만 미래 영상·행동을 함께 생성한다. LIBERO 98.6%/미래 상상 40.58%, 실물 3과제 평균 66.6%를 보고하지만, 의사라벨은 고비용 오프라인 모델과 조건별 임계값에 의존한다.",
+    "abstract": "원문 검증 메모: arXiv:2611.15368v1 공식 HTML Method III, Experiments IV, Figures 2·3, Tables I–V 검증. 공식 HTML에는 독립 Appendix가 없어 본문 실험 조건을 사용.",
+    "review": {
+      "one_line": "**미래를 항상 상상하는 WAM과 미래 예측을 아예 끄는 WAM 사이의 중요한 중간 지점**이다. '그릇을 접시 위에 놓아'에서 두 후보 그릇 중 무엇을 가리키는지 애매해지는 시점에만 joint video–action denoising을 호출한다. 미래 생성의 비율을 '무작위로 40% 실행'하는 것과 의도적으로 구분한 논문이다.",
+      "problem": "World-Action Model은 미래 영상과 행동을 함께 예측하면 실행 맥락에 도움을 줄 수 있지만, 물체가 잘 보이고 지시가 명확한 모든 step에서 장면을 새로 생성하면 지연과 계산비가 증가한다. 기존 Fast-WAM은 배포 시 미래 생성을 생략하고, joint WAM은 상시 생성한다. 예컨대 비슷한 컵 둘 사이에서 '왼쪽 컵'의 정체가 잠시 가려질 때만 미래 정보를 더 쓰고, 확실히 집은 뒤 테이블 위로 옮길 때에는 행동만 빠르게 생성할 방법이 필요한 것이다. 논문은 언어-객체 역할(binding)의 가시성·참조 불일치·정체성 변화를 라우팅 지표로 만든다.",
+      "idea": "훈련 과정에서 강한 시각/언어 모델이 전체 시연을 훑어 어떤 관측이 언어 지시의 target/reference 물체를 안정적으로 추적하지 못하는지 의사라벨을 만든다. 배포에는 이 무거운 모델 대신 6.65M 경량 불확실성 예측기만 올린다. 점수 U_t 자체나 이전 점수와의 차이가 threshold를 넘으면 미래 비디오+action을 공동 생성하고 그렇지 않으면 action-only 경로로 전환한다. 따라서 중요한 기여는 새 물리 예측 모델을 크게 만드는 게 아니라 **언제 상상할지 결정하는 통제 신호**다(Figure 2).",
+      "method": "§III-B offline pipeline: 시연의 역할 물체를 Qwen3-VL-32B로 추론하고 SAM 3.1 인스턴스 마스크·DINOv3 ViT-L/16 외형 추적으로 IoU·보임 여부·정체성 안정성을 기록한다. 역할 참조 IoU<0.3, 가림, 임베딩 cosine<0.9인 경우 불확실 라벨로 집계하며 32 frames/trajectory로 생성한다(Figure 3). §III-C에서 224² RGB와 명령을 받는 작은 ViT router(4 attention blocks/hidden256/6.65M)를 70/15/15 episode-level split, BCE+Brier 목적, 15 epochs로 학습한다. §III-D–F에서 Wan2.2-5B 기반 공유 WAM은 direct 시 action이 현재 프레임에만 attention, joint 시 미래 시각 token도 조건으로 사용한다. LIBERO 임계 U>=0.9976 또는 |ΔU|>=0.25면 joint, 매 10 환경 step마다 재계획한다. 무거운 Qwen/SAM/DINO는 배포에 사용하지 않는다.",
+      "findings": "LIBERO 총 40과제(4 suites×10, 각 task 50 trials) 저자 재현 기준 Bind-WAM 98.6%, Fast-WAM 97.1%, ALWAYS-joint 98.4%; 공동 미래 생성은 40.58%에만 수행됐고 성공 에피소드 평균 완료시간은 11.71초 대 always-joint 15.7초(Table II). 7-task RoboTwin2에서는 clean 88.3%, randomized 87.0%로 joint 87.7/86.1보다 높지만 clean에서 AdaWAM 88.4%보다 0.1pp 낮다(Table III). 실물 HEXFELLOW 세 과제, **과제당 11회** 실험 평균 66.6% 대 always-joint 57.6%, action-only 42.4%, 28.4% 미래 생성(Table IV). 같은 40% 안팎 미래 생성량을 가진 random 97.35%, uniform 97.50%보다 uncertainty router 98.60%로 높은 것은 발생 위치가 중요함을 시사한다(Table V).",
+      "limitations": "오프라인 의사라벨 단계는 Qwen3-VL-32B·SAM3.1·DINOv3와 전체 시연을 요구하므로 학습 데이터/비용이 사라지지 않는다. 보이는 물체와 동일성 점수는 올바른 조작 목표나 동역학적 안전을 직접 증명하지 않고, router 오류나 threshold 이동에 취약하다. LIBERO 최적 임계값 0.9976은 다른 카메라·언어·물체에 무조건 이식할 수 없다. LIBERO가 거의 포화(98%대)라 1.2pp 차이는 실험 표준오차와 checkpoint 선택 효과를 고려해야 하며, Table II에 발표된 타 논문 baseline과 저자 재현 † baseline을 동일 훈련 조건으로 혼합 비교하지 않는다. Table IV는 11 trials/task만 있고 시간은 성공 에피소드만을 평균한 선택 편향이 있다. 공식 논문에는 별도 Appendix가 없으므로 본문 이상 세부 조건을 상상해 보완하지 않았다.",
+      "questions": [
+        "가림이 발생해도 미래 video가 도움되지 않는 경우를 분리할 수 있는가?",
+        "동일 40.58% 상상 예산에서 confidence calibration 방법을 바꾸면 성공률은 어떻게 변하는가?",
+        "고비용 pseudo-label 전체 계산량까지 포함한 total GPU-hours/성공 비교는?",
+        "불확실성 score가 높을 때 더 자주 관측하거나 멈추는 안전 전략과 joint video 경로는 어떤 차이가 있는가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**원문 검증:** arXiv:2611.15368v1 공식 HTML의 Method III-A–F, Experiments IV-A–C, Figure 2·3 및 Tables I–V를 확인했다. HTML 목차는 결론 다음 참고문헌으로 이어지고 별도 Appendix가 없다. Figure 2·3 저자 PNG를 방법론/정량 라벨 설명 직후에 배치한다.",
+      "pipeline": [
+        {
+          "title": "01 | 언어가 지정한 객체의 역할을 정의",
+          "detail": "'moka pot을 stove 위에 놓아'처럼 target과 reference 객체를 구분한다. 현재 영상만 보고 물체 식별이 불가능한 순간에는 행동을 선택해도 대상이 바뀌는 문제가 생긴다.",
+          "io": "instruction + RGB video → role-specific target/reference"
+        },
+        {
+          "title": "02 | 오프라인 시연에서 불확실성 의사라벨 생성",
+          "detail": "Qwen3-VL-32B로 role box를 생성하고 SAM3.1로 마스크를 추적하며 DINOv3 feature similarity로 identity drift를 추정한다. 가림·IoU<0.3·cos<0.9가 있으면 불확실하다고 표시한다. 32 프레임/trajectory 등 offline라벨 조건을 유지한다.",
+          "io": "full demo → pseudo binding-risk y_t∈{0,1}"
+        },
+        {
+          "title": "03 | 6.65M 라우터를 별도 학습",
+          "detail": "배포에서 Qwen/SAM/DINO 호출을 막기 위해 현재 224×224 RGB와 instruction을 입력으로 4-block lightweight predictor를 학습한다. 전체 episode를 기준으로 70/15/15로 나누고 weighted BCE+Brier로 보정을 유도한다.",
+          "io": "RGB+instruction → U_t binding uncertainty"
+        },
+        {
+          "title": "04 | 직접 경로와 미래 동시 생성 경로를 공유 모델에 둠",
+          "detail": "Wan2.2-5B 기반 shared video/action expert를 학습하면서 direct route는 현재 시각 token에만 attention, joint route는 생성된 미래 시각 token까지 교차-attention한다. 각각 따로 정책을 배포하는 ensemble이 아니라 공통 가중치의 두 추론 모드다.",
+          "io": "current visual context → direct action OR joint future+action"
+        },
+        {
+          "title": "05 | 점수 수준과 변화량 모두로 분기",
+          "detail": "LIBERO의 실험적 threshold는 U_t≥0.9976 또는 |U_t−U_t−1|≥0.25이다. 꾸준히 높은 불확실성과 갑자기 증가한 불확실성을 모두 감지하지만, 값은 benchmark 검증을 통해 선택된 하이퍼파라미터다.",
+          "io": "router threshold → 40.58% joint requests on LIBERO"
+        },
+        {
+          "title": "06 | 10 환경 step마다 관측·재계획",
+          "detail": "선택된 경로만 실행해 action chunk를 만들고 실제 관측으로 다시 돌아온다. 성공률 외에도 joint inference 비율 및 성공 에피소드 완료시간으로 '상상을 아낀 대가'를 측정한다.",
+          "io": "act → observe → replan every 10 environment steps"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "Figure 3 역할 라벨의 구체적 의미",
+          "body": "예시 moka pot/stove는 reference IoU 0.860/0.378, DINO cosine 1.0/1.0, Qwen votes 4/4라 양쪽 역할을 안정적으로 찾은 frame 라벨 0이다. 이 숫자는 라우터의 task success가 아니라 offline pseudo-label 산출 예시다.",
+          "watch": "Figure 3, §III-B"
+        },
+        {
+          "title": "점수 절댓값뿐 아니라 변화량을 쓰는 이유",
+          "body": "물체가 계속 불분명한 상태뿐 아니라, 손이 물체를 가리는 순간처럼 안정성이 갑자기 무너질 때도 추가 미래 예측을 호출하려는 설계다. threshold는 검증 분포에 맞추므로 OOD 과신 가능성을 따져야 한다.",
+          "watch": "§III-D Routing"
+        },
+        {
+          "title": "왜 조건을 맞춘 random baseline이 필수인가",
+          "body": "미래 생성을 줄이면 시간은 줄어드는 것이 당연할 수 있다. Table V는 동일 비율 40.58~40.89% 예산에서 시점을 랜덤/균등으로 골랐을 때 성공률과 성공시간이 악화됨을 보여준다. 무엇을 줄였느냐보다 언제 호출했는지를 비교하는 ablation이다.",
+          "watch": "Table V, §IV-C"
+        },
+        {
+          "title": "Success-only time의 함정",
+          "body": "실패한 에피소드를 완료시간 집계에서 제외하면 실패가 빠른 정책이 유리하게 보일 수 있다. 11.71s와 15.7s는 동일 과제의 성공 에피소드 평균이라는 조건을 반드시 붙여야 한다.",
+          "watch": "Table II/IV caption, §IV-B"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "라벨 라우터 parameter / split",
+          "value": "6.65M / episode 70:15:15",
+          "context": "§III-C, 224² RGB+instruction, 15 epochs, weighted BCE+Brier"
+        },
+        {
+          "metric": "라우터 balanced accuracy / AUROC",
+          "value": "LIBERO 87.59% / 0.9653",
+          "context": "Table I, offline pseudo-label 분류 지표. 정책 성공률 아님"
+        },
+        {
+          "metric": "LIBERO 저자 재현 비교",
+          "value": "98.6% / 97.1% / 98.4%",
+          "context": "Table II, Bind / Fast-WAM † / always-joint †, 4 suites×10 tasks×50 trials"
+        },
+        {
+          "metric": "LIBERO 미래 생성 비율·시간",
+          "value": "40.58% / 11.71s vs joint 15.7s",
+          "context": "Table II, 성공 episode 평균 완료시간; joint 100%"
+        },
+        {
+          "metric": "RoboTwin2 clean",
+          "value": "88.3% (Bind) vs 88.4% (AdaWAM)",
+          "context": "Table III, 7 tasks; Bind가 모든 비교군보다 우월하지 않음"
+        },
+        {
+          "metric": "RoboTwin2 randomized",
+          "value": "87.0% vs joint 86.1%",
+          "context": "Table III, 7 selected tasks, 100 eval trials/task"
+        },
+        {
+          "metric": "실물 세 과제 평균",
+          "value": "66.6% vs joint 57.6% vs direct 42.4%",
+          "context": "Table IV, HEXFELLOW bimanual, 11 trials/task"
+        },
+        {
+          "metric": "실물 imagination ratio",
+          "value": "28.4%",
+          "context": "§IV-B, real three-task setting"
+        },
+        {
+          "metric": "동일 계산량대 라우팅 ablation",
+          "value": "98.60 / 97.35 / 97.50%",
+          "context": "Table V, uncertainty/random/uniform; ratios 40.58/40.89/40.58%"
+        }
+      ],
+      "evidence_note": "†는 저자 재현 비교군이다. 발표된 타 저자 수치와 동등한 설정이라 가정하지 않는다. 라우터 classification accuracy·AUROC는 실제 조작 성공률이 아니다. 실물 과제당 11회, 완료시간은 성공 실행만 평균한다.",
+      "comparison": "Fast-WAM은 배포에서 미래 비디오를 끄고, joint WAM은 매번 예측한다. AdaWAM은 실행 단계 등을 바탕으로 동적 계산을 사용하지만 Bind-WAM은 명령이 특정 개체에 연결되는지(역할·가림·identity)를 명시적으로 신호화한다. 차별점을 확인하려면 '같은 평균 미래생성량'인 random/uniform router와 비교해야 한다. LIBERO 98%의 포화 상황에서 1pp 남짓의 차이보다 실물 소표본과 OOD 로봇의 calibration이 더 중요하다.",
+      "reading_guide": [
+        "§III-B와 Figure 3에서 Qwen3-VL-32B·SAM3.1·DINOv3의 **오프라인** 사용과 y_t가 만들어지는 세 오류 유형 확인.",
+        "§III-C에서 router의 6.65M, 입력 RGB+언어 및 에피소드 단위 split 확인.",
+        "Figure 2의 current-only attention과 future-conditioned attention을 구분하고 joint 실행 시점 점검.",
+        "§III-D–F의 U_t/ΔU_t threshold, 샘플링·flow 목적함수, 10-step replanning 확인.",
+        "Tables II–V의 † 저자 재현 표시, 성공 episode 시간, 11회 실물 분모와 random routing 대조."
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] 미래 생성의 경제성은 불확실성 측정 정확도보다 '실제 action 실패를 예측하는 calibration'에 달려 있다.",
+        "setup": "[편집 제안] 동일 checkpoint와 40% imagination budget으로 컵 유사도, 가림 지속시간, 카메라 간 이동, 조명, 새로운 지시 대명사를 factorial design으로 교차한다. 새 task별 100회 실험과 동일 실패 seed를 사용한다.",
+        "baselines": "[편집 제안] uncertainty/entropy threshold, random/periodic, always-direct, always-joint, action confidence, force/occlusion-triggered safety stop. 라우터 경량화와 heavy pseudo-label 비용 모두 별도 로그.",
+        "metrics": "[편집 제안] strict success(95% Wilson CI), failed reference identification, joint call count, wall time all episodes, p95 end-to-end latency, GPU-hours of offline labeling + training + deployment.",
+        "risks": "[편집 제안] Qwen label bias/false-negative, target-reference 역할 전환, threshold 보정 누락, 실패 episode에서의 완료시간 편향과 task-specific router overfitting."
+      },
+      "related": [
+        "2611.04711",
+        "2611.04527",
+        "2611.17626"
+      ]
+    },
+    "reading_minutes": 26,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-18",
+    "source_scope_ko": "arXiv:2611.15368v1 공식 HTML Method III / Experiments IV / Figures 2·3 / Tables I–V 검증 · 공식 HTML에 독립 Appendix 없음 · 성공시간은 성공 episode 평균"
+  },
+  "2611.09293": {
+    "summary_ko": "MDF++는 시각·촉각·힘·로봇 상태를 함께 예측하면서 자기 모달리티 복원 gradient는 encoder에 전달하지 않아 표현 붕괴를 막는다. 시뮬레이션 평균 86.9%, 실제 볼트 조임 16/20회·너트 맞춤 8/20회의 조건과 비교 한계를 분석한다.",
+    "abstract": "원문 검증 메모: arXiv:2611.09293v1 공식 HTML Method §4, Experiments §5, Appendix A·B, Figure 1·2, Tables 1·2와 물리 실험의 20회 평가 단위를 대조.",
+    "review": {
+      "one_line": "촉각을 보더라도 **만지는 느낌을 압축한 표현이 제어에 필요한 접촉 정보를 버리면 로봇은 못 끼운다.** MDF++는 단순 visuo-tactile 센서 융합이 아니라 diffusion world-action training 중 각 인코더를 어떤 손실로 학습시킬 것인지 설계하는 연구다. 평균 성공률과 실제 소규모 정밀조작을 분리해 읽어야 한다.",
+      "problem": "너트를 볼트에 돌려 끼울 때 카메라 영상은 홈이 맞물리는 순간을 정확히 알려주지 못한다. 손끝 촉각의 압력 무늬, 힘, 그리퍼 위치를 통합해야 한다. 기존 영상 중심 WAM은 대체로 이미지 복원/의미 이해용 pretrained frozen encoder 표현을 쓰기 때문에 접촉·미세 힘의 정보가 action predictor에 충분히 남지 않을 수 있다. 반대로 encoder를 diffusion reconstruction loss로 단순 공동 학습하면 encoder가 쉽게 스스로 복원되는 feature만 남기는 'representation collapse'가 생긴다는 것이 논문의 문제 제기다(§1–3).",
+      "idea": "각 모달리티 이미지 인코더도 WAM과 함께 학습하되, 그 모달리티 자신의 denoising 오류가 자기 encoder를 직접 갱신하게 하지 않는다. 예를 들어 촉각 feature encoder는 촉각 복원 자체보다 이미지/힘/행동의 예측을 돕는 정보에 대한 역전파로 업데이트된다. 이를 self-denoising gradient 차단(selective gradient flow)이라 부른다. 정책 생성·미래 공동예측·순/역동역학·랜덤 마스킹을 함께 학습해 일상적인 노이즈 복원 대신 **다른 센서와 행동을 예측하는 데 필요한 표상**을 만들려는 방식이다(Figure 1–2).",
+      "method": "§4.1–4.2에서는 RGB·GelSight 촉각 영상·force/proprioception·action의 시간×모달리티 격자에 목적별 구조적 2D 잡음 마스크를 부여한다. 학습 조건 5개(policy, joint WAM, forward dynamics, inverse dynamics, random masking)를 균등 샘플링해 관측에서 action, 현재 action에서 미래 관측, 인접 상태에서 action 등을 복원한다. ViT-Tiny/16 vision/tactile encoder를 end-to-end finetune하며 각 modality i의 encoder θ_i에는 자신의 denoise loss gradient를 막고 다른 modality j≠i loss gradient를 전달한다. Appendix A: feature 192-d, backbone transformer 12 layers / dim512 / 8 heads; weighting action4, force/proprio1, image/tactile0.01; AdamW, 200k steps, batch64, encoder1e-5 / backbone1e-4, 1000 diffusion train steps/10 DDIM inference steps. §4 설명은 노이즈 ε 예측 중심이나 Appendix A 구현은 clean x0 prediction을 기술하므로 같은 식이라고 임의 단정하면 안 된다.",
+      "findings": "5개 시뮬레이션 과제(Table 1)에서 MDF++ 평균 성공률 86.9%(PegInsert 85.3/GearMesh 78.7/NutThread 92.0/BallSorting 93.3/ObjectSearch 85.3), frozen MDF 변형 68.4%, naive joint encoder training 64.1%, UWM+tactile 74.2%, policy-only 78.9%. 다만 MDF 두 변형은 평가 seed/policy·collocation 조합 중 과제별 최대치를 집계했으며 균일 seed 평균과 동일하게 비교하지 말라는 원문 주석이 있다. Representation 진단 Table 2에서 tactile effective rank는 MDF++ 33.34 vs naive 5.99이고 RGB probe action MSE .043 vs naive .520, frozen ViT .163. 실제 Franka Research3 + GelSight Mini 테스트에서 20회 평가로 볼트 조임 16/20(80%), 너트 맞춤 8/20(40%)이며 UWM 각각 10/20(50%), 5/20(25%)를 기록했다. '80%'는 두 task 평균이나 다양한 물체 일반화가 아니다.",
+      "limitations": "시뮬레이션 5개 과제의 성능과 실제 2개 나사 작업은 데이터 수집·보상·성공 기준이 달라 절대값을 합칠 수 없다. 실제 Bolt Screwing 300 demos, Nut Mating 255 demos/과제와 20 trials/method/task의 분모가 작고 초기 자세/재료/센서에 의존한다. Table 1의 특정 MDF 변형은 per-task maxima라 평균 비교의 공정성을 재검토해야 한다. effective rank가 높다는 사실만으로 행동을 잘 예측한다는 보장은 없어서 frozen RGB linear probe MSE와 조작 성공률을 함께 보는 것이 의미 있다. 실제 로봇은 별도 WSG-50, GelSight, RealSense D405, staged start 조건이라 다양한 유연물체·충돌/안전성을 다룬다는 결론은 금물이다. Appendix A에서 diffusion prediction 대상 서술(ε vs x0)의 차이는 구현 재현 전 실제 코드 검토가 필요하다.",
+      "questions": [
+        "자기 모달리티 gradient만 막을 때 각 modality encoder가 고유 정보를 유지하는 이유를 추가 probe로 보일 수 있는가?",
+        "촉각 센서가 바뀌면 selective-gradient의 이득이 유지될까?",
+        "시뮬레이션 MDF variant per-task maximum이 아니라 seed-평균과 bootstrap CI를 내면 격차는?",
+        "실제 볼트 조임에서 토크 안전 제한/나사산 손상 위험이 성공률과 어떤 교환관계를 가지는가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**원문 검증:** arXiv:2611.09293v1 공식 HTML의 §4 Method·§5 Experiments·Appendix A(아키텍처/확산/추론)·B(실물 평가점수/상세 결과), 원본 Figure 1·2, Tables 1·2를 대조했다. 이 논문은 WAM 기반이지만 핵심 기여가 tactile contact-rich robotics라 Robotics 카테고리로 배치했다. 원저자 그림 2개는 해설 위치에 배치했다.",
+      "pipeline": [
+        {
+          "title": "01 | 서로 다른 센서 표상을 병렬 인코딩",
+          "detail": "RGB와 GelSight tactile frame은 각각 ViT-Tiny/16으로 192차원 CLS 특성을 만들고 로봇 자체 감각(힘·proprioception) 및 action을 time-indexed tokens에 배치한다. 촉각 영상도 RGB와 같은 시각 정보라고 가정하지 않는다.",
+          "io": "RGB + tactile + force/proprio + action → modality tokens"
+        },
+        {
+          "title": "02 | 시간×모달리티 2D noisy grid 구성",
+          "detail": "일부 시각·촉각/행동 토큰만 노이즈화하고 일부는 조건으로 남기면서 동일 diffusion backbone이 서로 다른 질의에 답하게 한다. 시간축과 modality축을 분리해 미래예측/역동역학을 같은 모델에 표현한다.",
+          "io": "2D structured noise mask"
+        },
+        {
+          "title": "03 | 5개 목적을 교차 샘플링",
+          "detail": "action을 예측하는 policy objective, 미래 관측·행동 동시 생성 joint WAM, given action의 forward dynamics, 두 관측에서 action을 추론하는 inverse dynamics, random missing channels 복원을 균등 확률로 섞는다.",
+          "io": "five training mask types, equal probability"
+        },
+        {
+          "title": "04 | selective gradient로 자기 복원 지름길 차단",
+          "detail": "RGB encoder는 RGB 자체 복원 loss 대신 tactile/action/force 예측에 도움된 gradient로, tactile encoder는 tactile 자체 복원 대신 다른 모달리티 손실로 업데이트한다. backbone은 통상 multi-loss를 받는다. 이것이 naive encoder joint-finetune과 결정적 차이다.",
+          "io": "∂L_self/∂θ_encoder = 0, cross-modal gradient retained"
+        },
+        {
+          "title": "05 | diffusion 학습의 구체 하이퍼파라미터",
+          "detail": "12층 512-d transformer, 8-head attention. Action loss weight 4, force/proprio 1, image/tactile 0.01; batch64, 총 200k steps, encoder 1e−5, backbone 1e−4. §4의 설명 목적과 Appendix A의 clean-x0 구현 표기를 구분한다.",
+          "io": "AdamW + weighted diffusion loss"
+        },
+        {
+          "title": "06 | 실물 폐루프에서 접촉 성공 판정",
+          "detail": "Real Franka Research3, GelSight Mini, WSG-50 및 D405로 볼트 돌리기/너트 맞추기를 평가한다. 300/255 시연 학습 후 task별 정책당 20회 시도를 기록한다. 성공 단계는 구멍 정렬·회전·나사산 결합·손놓기까지 구분해야 한다.",
+          "io": "10 DDIM inference steps → action → next sensor observation"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "왜 naive end-to-end가 오히려 성능을 떨어뜨리는가",
+          "body": "모달리티 표현과 diffusion decoder가 서로 쉬운 재구성 부호를 만들어 조절하면 이미지 자체는 복구되지만 다른 센서/행동을 설명하지 못할 수 있다. 자기 채널 denoising으로 encoder를 업데이트하지 못하게 해 조작 관련 상관을 학습시킨다.",
+          "watch": "§4.2 Figure 2, Table 2 variance/rank/probe"
+        },
+        {
+          "title": "다섯 질의가 하나의 WAM에 남기는 학습 신호",
+          "body": "policy-only와 달리 forward는 '이 방향으로 회전하면 촉각이 바뀌는가', inverse는 '촉각 무늬가 이렇게 바뀌었을 때 어떤 action이 있었나', random은 센서 누락 보완을 가르친다. 모든 목적을 하나의 model/representation으로 학습한다.",
+          "watch": "§4.1 training queries"
+        },
+        {
+          "title": "Effective rank와 action probe 구분",
+          "body": "Table 2에서 tactile effective rank는 33.34 vs 5.99로 feature collapse 정도를 시사한다. 하지만 control relevance는 RGB frozen-feature action probe MSE .043 vs .520로 별도 확인한다. 수치 하나로 제어 능력을 증명하지 않는다.",
+          "watch": "§5.2 Table 2"
+        },
+        {
+          "title": "실물 성공과 부분점수는 다른 척도",
+          "body": "Appendix B는 정렬(60), 180° 회전(75), 나사산 결합(95), 놓기(100) 같은 단계 점수를 정의한다. 이 과정별 score와 16/20 binary strict success는 같은 변수가 아니다.",
+          "watch": "§5.4 Appendix B.1/B.2"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "시뮬레이션 전체 평균 성공",
+          "value": "86.9% (MDF++) vs 68.4% (frozen MDF)",
+          "context": "Table 1, 다섯 접촉 풍부 로봇 task; 150 eval trials/method"
+        },
+        {
+          "metric": "naive gradient vs selective",
+          "value": "64.1% vs 86.9%",
+          "context": "Table 1, observation encoder에 self-denoising gradient 허용시 성능 하락"
+        },
+        {
+          "metric": "UWM+tactile vs MDF++",
+          "value": "74.2% vs 86.9%",
+          "context": "Table 1, 저자 구성의 vision-tactile WAM 비교"
+        },
+        {
+          "metric": "policy-only multi-task ablation",
+          "value": "78.9% vs 86.9%",
+          "context": "Table 1, 복합 world-action queries를 제거한 조건"
+        },
+        {
+          "metric": "self-loss 기여 λ=0/0.1/0.5/1",
+          "value": "86.9 / 80.0 / 74.9 / 64.1%",
+          "context": "§5.3, self-denoising gradient 가중치 ablation"
+        },
+        {
+          "metric": "tactile feature effective rank",
+          "value": "33.34 (MDF++) vs 5.99 (naive)",
+          "context": "Table 2, rank는 제어 성공률이 아닌 표현 진단"
+        },
+        {
+          "metric": "RGB action linear probe MSE",
+          "value": "0.043 (MDF++) vs 0.520 (naive)",
+          "context": "Table 2, feature dimension 192; 다른 지표"
+        },
+        {
+          "metric": "실물 Bolt Screwing",
+          "value": "16/20 = 80% vs UWM 10/20 = 50%",
+          "context": "§5.4 Appendix B, 300 training demos, 20 trials/method"
+        },
+        {
+          "metric": "실물 Nut Mating",
+          "value": "8/20 = 40% vs UWM 5/20 = 25%",
+          "context": "§5.4 Appendix B, 255 training demos, separate 20 trials/method"
+        }
+      ],
+      "evidence_note": "Table 1 MDF 관련 두 비교군의 과제별 값은 여러 평가 seed/모드의 **최댓값**이므로 seed 평균과 동등하게 쓰지 않는다. 실제 과제 20회 결과는 정밀 조작의 소표본이며 단계점수와 strict success를 혼합하지 않는다.",
+      "comparison": "기존 pretrained visual encoder를 동결한 WAM은 의미/화질에 유리한 feature를 로봇 접촉 작업에도 그대로 쓴다. 반대로 아무 제약 없이 encoder를 WAM과 jointly finetune하면 쉽게 복원되는 자기만의 코드로 도피할 수 있다. MDF++는 action-only나 오토인코딩도 아닌, 서로 다른 센서와 행동을 예측하도록 gradient가 흐를 통로를 조절한다. 기존 UWM+tactile/DP+tactile뿐 아니라 naive joint와 policy-only ablation이 개념을 검증한다. 다만 MDF의 seed-max baseline 주석과 실물 두 과제 소표본을 고려해야 한다.",
+      "reading_guide": [
+        "Figure 1의 frozen encoder 한계와 Figure 2의 noise mask와 gradient blocking 화살표를 구분.",
+        "§4.1 정책·공동예측·forward·inverse·random 5개 질의를 실제 입력/출력 관측으로 적어보기.",
+        "§4.2와 Appendix A의 encoder 업데이트 대상, λ_self, x0 vs ε 훈련 목적 서술 대조.",
+        "Table 1에서 5-task 평균, MDF baseline per-task maximum, 150 trials/method 주석 확인.",
+        "Table 2의 rank와 probe MSE는 다른 분석이며 하나만 선택해 주장하지 않기.",
+        "Appendix B에서 Bolt 300 demos/Nut 255 demos, task당 20 시도 및 단계점수 규칙 확인."
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] selective-gradient 효과는 센서 간 공통된 접촉 사건을 유지할 때 강하고, tactile sensor domain shift에서는 약해질 수 있다.",
+        "setup": "[편집 제안] Franka + GelSight Mini에서 나사 pitch/재질/조명/센서 위치를 독립 교란한다. 각 설정 100회 이상의 안전한 한도 내 반복과 세 학습 seed를 확보하고 훈련 데이터 255/300 데모를 동일하게 유지한다.",
+        "baselines": "[편집 제안] frozen visual+tactile, naive self-denoise, selective cross-only, detach-random, policy-only, force-blind, tactile-blind, cross-modal masking with balanced number of optimizer steps.",
+        "metrics": "[편집 제안] strict completion, failure-stage proportion, torque peak, over-rotation/safety stop, tactile-feature effective rank, probe MSE, success Wilson CI, evaluation p95 latency.",
+        "risks": "[편집 제안] 센서 마찰·해상도·교정, 성공 상태에 대한 심사자 판정, 물체 하드웨어 손상, 학습 seed 최대값 선별 관행을 명확히 기록한다."
+      },
+      "related": [
+        "2611.04493",
+        "2403.12945",
+        "2611.02629"
+      ]
+    },
+    "reading_minutes": 28,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-18",
+    "source_scope_ko": "arXiv:2611.09293v1 공식 HTML §4·§5·Appendix A/B, Figures 1/2 및 Tables 1/2 검증 · 실물 task별 20회 · 일부 baseline per-task maximum 주의"
   }
 }

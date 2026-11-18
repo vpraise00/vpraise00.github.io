@@ -41,8 +41,11 @@
     "2606.08278",
     "2611.06447",
     "2611.17626",
-    "2611.03103"
+    "2611.03103",
+    "2611.21607",
+    "2611.15368",
+    "2611.09293"
   ],
-  "note_ko": "2026-11-17 공식 원문 HTML/PDF Method·Experiments·Appendix·Figure/Table 대조 후 신규 3편 승인: A³-VLA(2611.06447), WATO(2611.17626), VLALagBench(2611.03103). 기존 37편과 비중복. WATO Figure1은 PDF 원본 페이지(개별 크롭 아님). A³-VLA는 공식 HTML 전체+Appendix 검증, PDF 직접 접근 제한.",
-  "updated_at": "2026-11-17"
+  "note_ko": "2026-11-18 신규 3편: ScaleVLA(2611.21607) / Bind-WAM(2611.15368) / MDF++(2611.09293). 각각 공식 arXiv HTML의 Method, Experiments, 존재하는 Appendix 및 Figure/Table 평가조건 대조. Bind-WAM은 공식 HTML 별도 Appendix 없음. 저자 원본 Figure 2개씩(총 6개) 링크. 이전 승인 40편과 중복 없음.",
+  "updated_at": "2026-11-18"
 }

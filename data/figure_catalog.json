@@ -1257,5 +1257,95 @@
         "verified_caption": "Figure 4: The four primary tasks in VLALagBench cover releasing, setting down, grasping, and articulated-object manipulation. Each target, highlighted by a cyan box, moves continuously along the closed path shown in pink without colliding with background objects."
       }
     ]
+  },
+  "2611.21607": {
+    "heading": "ScaleVLA — 동결 552B 표현과 행동 DiT, 실제 충전기 삽입",
+    "intro": "arXiv:2611.21607v1 공식 HTML Figure 2/5와 캡션·실험 프로토콜을 직접 대조했다.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 거대한 MoE가 곧바로 모터 토크를 출력하지 않는다",
+        "context": "VLM은 동결된 인코더 역할을 하며 adapter가 행동 DiT에 조건을 전달한다. 32층 DiT의 네 단계 flow가 action chunk를 만들고, 텍스트 생성 디코더는 실행하지 않는다.",
+        "steps": [
+          "이미지와 지시가 얼어 있는 causal VLM을 통과하는 경로 찾기",
+          "로봇 상태·노이즈 action이 VLM 표현과 만나는 attention 위치 확인",
+          "훈련에서 flow-matching velocity 회귀와 배포에서 4-step integration 구분"
+        ],
+        "verified_caption": "Figure 2: ScaleVLA architecture. The VLM encodes the images and the instruction, and the action head reads the output of its causal encoder. The action DiT alternates cross-attention and self-attention and generates an action chunk in four flow steps."
+      },
+      {
+        "number": 5,
+        "placement": "findings",
+        "reading_title": "Figure 5 — 플러그 삽입은 도달·잡기와 다르다",
+        "context": "같은 Plug In Charger 실물 평가에서 세 정책은 잡기/인계 단계까지 수행해도 미세 정렬·삽입에서 차이가 났다. Figure 사례의 실제 시행 분모는 Table 8의 in-domain 10회·OOD 15회로 확인한다.",
+        "steps": [
+          "좌측 연속 프레임의 grasp→handover→alignment→insertion 순서 추적",
+          "오른쪽 in-domain 9/10과 OOD 8/15를 별도 분모로 읽기",
+          "성공한 episode의 완료시간과 추론시간을 혼동하지 않기"
+        ],
+        "verified_caption": "Figure 5: Plug In Charger on a real robot. Left: all three policies grasp and hand over the charger from in-domain layouts. ScaleVLA aligns and inserts the plug; the other two policies reach the socket but fail to insert the plug. Right: success rates in the in-domain and OOD settings."
+      }
+    ]
+  },
+  "2611.15368": {
+    "heading": "Bind-WAM — 무엇을 보아야 하는지 불확실할 때만 미래 상상",
+    "intro": "arXiv:2611.15368v1 Figure 2 및 3의 논문-그림-캡션을 원본 HTML에서 일대일 대조했다.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — binding score로 direct와 joint 미래 생성 중 하나만 실행",
+        "context": "오프라인 Qwen/SAM/DINO 교사로 라벨을 만든 뒤 배포 시 경량 U_t로 분기하는 흐름과 attention mask 차이를 함께 설명한다. 하나의 공유 WAM이 두 경로를 실행한다.",
+        "steps": [
+          "교사 라벨링→경량 router→shared WAM 순서의 단계 확인",
+          "현재 시각만 보는 direct와 미래 token까지 보는 joint attention을 대조",
+          "무거운 라벨 생성기들이 온라인 추론에는 없음을 확인"
+        ],
+        "verified_caption": "Fig. 2: Overview of Bind-WAM. Offline binding labels capture reference mismatch, invisibility, and identity drift and supervise a lightweight predictor. At inference, the predictor estimates binding uncertainty U_t from the current observation and instruction. The router selects direct action prediction when uncertainty is low and stable, or joint future-action denoising when U_t or its change exceeds a threshold."
+      },
+      {
+        "number": 3,
+        "placement": "idea",
+        "reading_title": "Figure 3 — 'moka pot'과 'stove'가 확실한 예시의 라벨",
+        "context": "원논문의 Qwen box→SAM masks→DINO similarity→verification 사례에서 참조 IoU=0.860/0.378, cosine=1.0/1.0, 4/4 votes로 안정적 y_t=0을 부여한다. 0은 실패율이 아니라 frame label이다.",
+        "steps": [
+          "대상·기준 물체에 서로 다른 box/mask가 지정되는지 보기",
+          "IoU/코사인/가림의 세 판단 신호와 0.3·0.9 임계 구분",
+          "이 그림의 y_t=0과 policy task success를 혼동하지 않기"
+        ],
+        "verified_caption": "Fig. 3: Offline binding-label construction pipeline for a typical LIBERO front-view image. The RGB observation is passed to Qwen3-VL-32B grounding, SAM 3.1 tracked instance masks, DINOv3 cosine consistency, and Qwen verification; both roles are visible and the frame label is y_t=0."
+      }
+    ]
+  },
+  "2611.09293": {
+    "heading": "MDF++ — 촉각을 제어에 유용하게 만드는 cross-modal gradient",
+    "intro": "arXiv:2611.09293v1 Figure 1과 Figure 2의 원본/캡션을 대조했다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Figure 1 — frozen 시각 표현만으로는 접촉을 놓칠 수 있다",
+        "context": "기존 world-action 모델이 미리 학습한 표현을 고정하면 접촉상태에 민감하지 않을 수 있다는 문제를 보여준다. MDF++는 vision+tactile 인코더를 제어 관련 예측으로 함께 갱신한다.",
+        "steps": [
+          "기존 WAM의 frozen encoder가 무엇을 학습했는지 확인",
+          "시각·촉각·action 예측 사이 상호작용 위치 보기",
+          "그림이 성능 수치 증거가 아니라 구조적 동기임을 구분"
+        ],
+        "verified_caption": "Figure 1: Existing WAMs typically predict future observations encoded by a frozen pretrained encoder optimized for visual generation or semantic understanding, which may be suboptimal for robot manipulation. MDF++ learns task-aware representations end-to-end with cross-modality prediction."
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 자기 채널 복원을 막고 다른 센서 예측에서 gradient 받기",
+        "context": "여러 형태의 2D 노이즈 마스크가 policy/joint/forward/inverse/random 목적을 지정한다. 자신의 denoising 손실로 encoder가 바뀌는 shortcut을 막고 다른 modality 예측 손실로만 학습되는 흐름을 중점적으로 읽는다.",
+        "steps": [
+          "서로 다른 task-condition noise mask가 무엇을 가리는지 확인",
+          "RGB encoder↔RGB self-loss, tactile encoder↔tactile self-loss gradient 차단 기호 확인",
+          "backbone은 여러 채널 손실을 받으나 encoder별 역전파 경로는 제한됨을 확인"
+        ],
+        "verified_caption": "Figure 2: MDF++ training overview. Each iteration samples structured 2D noise patterns for policy learning, world-action modeling, forward/inverse dynamics, and random masking. Each modality’s denoising loss is blocked from updating its own encoder, while losses of other modalities train it."
+      }
+    ]
   }
 }
