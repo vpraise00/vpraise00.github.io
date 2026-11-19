@@ -44,8 +44,11 @@
     "2611.03103",
     "2611.21607",
     "2611.15368",
-    "2611.09293"
+    "2611.09293",
+    "2611.22584",
+    "2611.22592",
+    "2611.23143"
   ],
-  "note_ko": "2026-11-18 신규 3편: ScaleVLA(2611.21607) / Bind-WAM(2611.15368) / MDF++(2611.09293). 각각 공식 arXiv HTML의 Method, Experiments, 존재하는 Appendix 및 Figure/Table 평가조건 대조. Bind-WAM은 공식 HTML 별도 Appendix 없음. 저자 원본 Figure 2개씩(총 6개) 링크. 이전 승인 40편과 중복 없음.",
-  "updated_at": "2026-11-18"
+  "note_ko": "2026-11-19 신규 3편: InteractVLA(2611.22584), Anchored Path Matching(2611.22592), TCP4D(2611.23143). 공식 arXiv v1 HTML Method/Experiments와 존재하는 Appendix, Figure 2·3 / 1·2 / 2·7 및 Table 평가조건 대조. WAM·InteractVLA는 독립 Appendix 없음. 원본 arXiv Figure 총 6개를 해당 설명 위치에 링크. 이전 43편과 중복 없음.",
+  "updated_at": "2026-11-19"
 }
