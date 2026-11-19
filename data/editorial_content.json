@@ -6518,5 +6518,470 @@
     "editorial_status": "source_crosschecked",
     "reviewed_at": "2026-11-18",
     "source_scope_ko": "arXiv:2611.09293v1 공식 HTML §4·§5·Appendix A/B, Figures 1/2 및 Tables 1/2 검증 · 실물 task별 20회 · 일부 baseline per-task maximum 주의"
+  },
+  "2611.22584": {
+    "summary_ko": "기존 VLA를 언어로만 재호출하는 대신, 목표 말단 위치·회전·그리퍼 상태로 샘플링 중 행동을 유도하고 생성 궤적을 에이전트에 되돌린다. LIBERO-Plus 온라인 도구 사용 성공률 93.1→98.3%, RoboDojo 18.0→26.0%, soft-time·action feedback ablation과 실물 평가의 점수 단위를 구분했다.",
+    "reading_minutes": 29,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-19",
+    "source_scope_ko": "arXiv:2611.22584v1 공식 HTML §2 Method, §3 Experiments, Figure 2·3, Table 1–8 및 실물 실험 조건 교차검토. 별도 Appendix 제공되지 않음; 저자 주장에 대한 독립 재현 아님.",
+    "review": {
+      "one_line": "InteractVLA의 기여는 VLA를 재학습해 더 큰 정책으로 만드는 것이 아니라, **동결된 VLA의 행동 생성 중 기하 목표를 주입하고 그 생성 결과를 에이전트가 되읽을 수 있게 하는 것**이다. 소수의 위치 제약을 행동 전체에 강요하지 않는 soft-time 정렬이 중요한 설계다. (원문 §2, Figure 2·3)",
+      "problem": "로봇에게 '컵을 집어 오른쪽 상자에 놓아'라고 시키는 에이전트가 기존 VLA를 호출했다고 하자. 타깃 물체를 잘못 고른 VLA가 같은 접근 궤적을 반복하면 에이전트의 '다시 해'라는 언어 지시만으로는 손끝 경로를 정교하게 바꾸기 어렵다. 특히 집기에는 접근→접촉→그리퍼 닫기→들기의 순서가 있다. 목표 위치만 모든 시점에 강요하면 물체에 다가가기도 전에 손을 닫는다. 기존 언어 전용 VLA 도구 호출은 고수준 계획을 저수준 기하 제약으로 넘기는 인터페이스가 약하다. §1·Figure 2(a)는 이러한 실패를 문제로 삼는다.",
+      "idea": "에이전트는 장면을 보고 말단장치 목표 G=(3D 위치, 회전, 그리퍼 상태)를 선택하지만, 촘촘한 관절 경로까지 작성하지 않는다. InteractVLA는 flow 기반 정책의 각 denoising 단계에서 임시 완성 행동 chunk를 읽고 'chunk 중 어느 한 시점이 목표에 도달해야 하는가'를 soft하게 선택한 뒤 목표 포즈와의 미분 가능한 오차로 노이즈 상태를 조금 수정한다. 추론 후 생성된 action chunk를 카메라에 투영해 에이전트에 반환하므로, 에이전트는 목표를 변경하거나 국소 제어 오프셋만 수정할 수 있다. 본래 VLA가 학습한 접근·파지 동작 prior를 가능한 한 유지한다. (§2.1–2.3)",
+      "method": "§2.1의 test-time guidance는 에이전트가 선택한 목표 위치 p*, 자세 R*, 개폐 상태 w*와 frozen MR-0 flow action expert를 연결한다. 모델의 중간 노이즈 행동 x_t에서 한 단계 clean prediction을 계산하고, command-to-pose mapping을 통해 chunk 내 말단 포즈를 예측한다. 위치/회전/그리퍼 오차를 정규화한 목표 에너지의 미분을 x_t에 가해 생성 방향을 바꾼다. §2.2의 soft-time은 미리 '마지막 프레임에서 목표'라고 정하지 않는다. 시점별 오차 E_h에 시간에 따라 달라지는 softmax 가중치를 주어 도착 시점을 잠재변수로 두며, 후반 denoising에서 가장 적절한 시점을 분명히 한다. 너무 불일치하는 목표에는 confidence threshold를 적용해 조기 거절한다. §2.3에서는 실행 prefix와 남은 suffix, 카메라 reprojection을 에이전트가 검토하고 목표 재선택 혹은 local edit을 한다. 추가 학습 가중치 없이 test-time 조작하되 카메라 보정과 기하 정확도에 의존한다.",
+      "findings": "서로 다른 평가 목적을 섞지 않아야 한다. 원문 Table 1의 온라인 도구 호출 LIBERO-Plus 전체 평균은 GPT-6.1 Sol+MR-0 93.1%, 여기에 InteractVLA를 추가하면 98.3%이며 단독 MR-0의 88.5%는 에이전트를 배제한 별도 조건이다. RoboDojo(Table 2) 온라인 Sol+VLA 18.0→26.0%이지만 Precision 차원은 Sol 사용 시 9.7→8.3%로 하락한다. RSI 실험에서 LIBERO-Plus 99.4%, RoboDojo 48.62%, RoboCasa365 89.4%가 보고되지만 이는 반복 탐색·경험축적 조건의 성적이므로 한 번의 온라인 호출과 동등하지 않다. Dexmal 실물 4과제(Table 6)는 50시연/과제 fine-tune 및 30시도/과제 기반이며 Water Pouring 점수 38.5→79.2, Move Cube 86.7→97.6이지만 저자가 쓴 task score를 strict binary success로 재명명하면 안 된다. (§3.1–3.4)",
+      "limitations": "에이전트의 목표 포즈와 카메라-로봇 좌표 보정이 틀리면 guidance가 불합리한 행동을 강화할 수 있다. 논문은 초기 단계 불일치 목표를 조기 거절하는 규칙을 사용하지만 충돌 회피·접촉력 안전을 보증하지 않는다. RoboCasa365 비교 HexaShell은 다른 훈련/기억 프로토콜이며, RSI 비교는 에이전트 모델·탐색 정책이 완전히 통제되지 않는다. Table 7의 soft-time 이득은 실험 내부 ablation이지만 모든 VLA와 물체에 보편적임을 입증하지 않는다. 온라인 RoboDojo Precision 악화와 실물 trial 수의 제한을 함께 보고해야 한다. arXiv HTML에는 독립 Appendix가 없어 존재하지 않는 부록의 하이퍼파라미터를 만들어 쓰지 않았다.",
+      "questions": [
+        "§2.2의 soft-time에서 목표 도달 시점이 조기/지연 파지에 미치는 영향을 시간별 포즈 오차로 그리면?",
+        "Table 2의 Precision에서 guided policy가 오히려 낮은 이유는 지오메트리, 그리퍼 제어, 초기화 중 무엇인가?",
+        "§3.4의 action feedback과 reprojection 차이가 동일 탐색 예산에서 얼마나 남는가?",
+        "Dexmal의 task score를 strict binary success 및 시간/경로 효율과 동시에 측정하면 우위가 유지되는가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**핵심 질문:** 좋은 VLA가 물체는 제대로 집는데 새로운 목표 위치를 잘못 선택한다면, 언어 명령을 무작정 바꾸지 않고 그 동작 prior를 살려 방향만 바꿀 수 있을까? Figure 2는 목표 정렬의 시점 문제가 무엇인지 보여주고 Figure 3은 에이전트↔정책의 양방향 진단 루프를 시각화한다. 수치는 저자 Table 1·2·6–8의 평가 단위별로만 서술한다.",
+      "pipeline": [
+        {
+          "title": "에이전트가 작업과 장면에서 소수 기하 목표 결정",
+          "detail": "언어 목표를 임의의 새로운 관절 동작으로 번역하지 않는다. 현재 카메라 관측에서 접근할 공간 위치, 말단 회전, 그리퍼 열림/닫힘을 묶은 G_k를 고른다. 실패한 목표를 다음 호출에서 다른 후보로 교체할 수 있다.",
+          "io": "관측 o_k, 명령 ℓ → 목표 G_k=(p*,R*,w*)"
+        },
+        {
+          "title": "기존 flow VLA를 동결한 채 행동 생성 시작",
+          "detail": "MR-0 정책이 조건부 flow action expert로 짧은 행동 묶음을 점진적으로 생성한다. 인터페이스는 가중치를 미세조정하지 않고 그 중간 상태에서 완성 행동의 임시 예측을 읽는다.",
+          "io": "노이즈 x_t → 1-step clean action estimate m_t"
+        },
+        {
+          "title": "목표 에너지를 행동 좌표로 역전파",
+          "detail": "command-to-pose mapping으로 각 시점의 예상 말단 위치·자세·그리퍼 상태를 복원하고, 위치·회전·개폐 오차를 한 목표 에너지로 합친다. 미분된 gradient로 현재 노이즈 action chunk를 제한적으로 바꾼다. 과격한 perturbation은 제한한다.",
+          "io": "E_h(G_k, TCP_h) → ∂E/∂x_t → guided flow"
+        },
+        {
+          "title": "Soft-time으로 '언제' 목표에 도달할지 결정",
+          "detail": "고정 마지막 시점에만 정렬하면 접근 단계의 동작이 망가지고, 모든 프레임을 목표에 맞추면 손끝이 순간이동하듯 당겨진다. 시점별 오차의 softmax 분포를 노이즈가 정리될수록 날카롭게 해 하나의 적절한 도착 시점을 찾는다.",
+          "io": "softmax_h(−β_t E_h), β_t=t²/(1−t)²"
+        },
+        {
+          "title": "신뢰도 검사 후 행동 일부 실행",
+          "detail": "목표 오차가 너무 크면 초기 guidance 후 C_t<exp(−1) 같은 confidence rule로 거절하고 재계획한다. 유효한 동작에서는 chunk의 실행 prefix만 수행해 물체·접촉 상태를 갱신한다.",
+          "io": "정상 → 실행 prefix / 불일치 → reject"
+        },
+        {
+          "title": "생성 행동과 reprojection을 보고 타깃 수정",
+          "detail": "남은 행동 예측을 보정된 카메라 시점에 투영해 에이전트가 예상 접촉점과 실제 위치 차이를 진단한다. 타깃 자체가 틀리면 G를 수정해 재호출하고, 동작 전체가 맞으면 접근 높이나 그리퍼 열림 시점만 국소 수정한다.",
+          "io": "행동·카메라 잔차 → target revision / local refinement"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "Gradient guidance는 저수준 계획 전체를 대체하지 않는다",
+          "body": "논문 §2.1은 flow 기반 action expert의 one-step clean estimate에서 각 chunk 시점의 end-effector 추정값을 얻고 differentiable command-to-pose를 통과시킨다. guidance는 에이전트가 만든 단일 목표의 오차를 줄이는 경향을 주되, VLA가 학습한 접근·접촉 패턴에 의존한다. 따라서 명령-기하 대응이 틀리면 멀쩡한 동작 prior를 오히려 휘게 할 수 있다.",
+          "watch": "§2.1의 clean estimate, stop-gradient, guidance normalization, correction clipping"
+        },
+        {
+          "title": "Soft-time은 도달 시점을 추론할 뿐 목표 순서를 자동 발견하지 않는다",
+          "body": "한 목표에 대해 frame h마다 E_h를 계산하고 softmax를 쓰며 β_t=t²/(1−t)²으로 후반에 더 큰 차이를 준다. 고정 final-step이나 hard-min보다 연속적인 학습 없는 정렬을 만들지만, 여러 과제의 긴 인과 순서를 이 수식 하나로 학습하는 것은 아니다.",
+          "watch": "§2.2의 latent execution index와 Table 7 시간 정렬 ablation"
+        },
+        {
+          "title": "Agent의 반대 방향 인터페이스",
+          "body": "§2.3에서는 생성된 행동과 그 reprojection을 에이전트가 받는다. '실패' 이진 신호 대신 물체와 손 사이의 기하 불일치와 앞으로의 예상 궤적을 본다. 같은 목표로 매번 재호출하는 것과 새로운 목표를 고르는 것의 차이를 만든다.",
+          "watch": "Figure 3 우측과 Table 8 obs-only 40.3, +action44.8, +reprojection48.6 (RoboDojo)"
+        },
+        {
+          "title": "RSI에서 추가된 성능을 분해해야 한다",
+          "body": "Table 3–5의 RSI는 반복 시도와 성공 경험 축적을 허용한다. Table 1–2의 단회 온라인 도구 호출 결과와 직접 차감해 '기하 guidance의 순수 향상폭'으로 주장하지 않는다. 다른 agent 백본과 task memory의 영향을 가진 외부 비교군도 있다.",
+          "watch": "§3.1 온라인 vs §3.2 RSI; Table 5 HexaShell 별도 프로토콜"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "LIBERO-Plus 온라인 Agent+VLA",
+          "value": "93.1 → 98.3% (+5.2pp)",
+          "context": "Table 1, GPT-6.1 Sol + MR-0 동일 온라인 에이전트 구성에서 guidance 추가; standalone MR-0 88.5%는 별도"
+        },
+        {
+          "metric": "LIBERO-Plus Layout·Camera",
+          "value": "89.5→98.4 / 87.6→98.4%",
+          "context": "Table 1, 도메인 교란 유형별; 전체 평균과 중복 합산 금지"
+        },
+        {
+          "metric": "RoboDojo 온라인 Agent+VLA",
+          "value": "18.0 → 26.0%",
+          "context": "Table 2, GPT-6.1 Sol+VLA; Generalization 21.6→26.0, Precision 9.7→8.3%로 악화"
+        },
+        {
+          "metric": "LIBERO-Plus RSI",
+          "value": "99.4%",
+          "context": "Table 3, 반복 자기개선 RSI 조건; Table1 온라인 98.3%와 프로토콜 다름"
+        },
+        {
+          "metric": "RoboDojo / RoboCasa365 RSI",
+          "value": "48.62% / 89.4%",
+          "context": "Table 4·5, 아키텍처·에이전트·훈련/기억 프로토콜 차이가 있는 공개 비교 포함"
+        },
+        {
+          "metric": "Dexmal 실물 Tabletop Tidying",
+          "value": "Agent+VLA 65.5 → InteractVLA 92.5 (task score)",
+          "context": "Table 6, 50 demos/task fine-tuning, 각 30 trials, 점수이지 모든 단계 완수한 binary 성공률이 아님"
+        },
+        {
+          "metric": "Dexmal Water Pouring · Move Cube",
+          "value": "38.5→79.2 / 86.7→97.6 (task score)",
+          "context": "Table 6, 같은 로봇군 실물 과제; Move Cube 시간 165.2→67.5초"
+        },
+        {
+          "metric": "Soft-time vs fixed/uniform/hard-min",
+          "value": "RoboDojo 48.6 vs 39.1/34.7/44.2%",
+          "context": "Table 7, 같은 VLA·목표·RSI 예산의 목표-시점 ablation"
+        },
+        {
+          "metric": "행동 피드백·재투영 기여",
+          "value": "RoboDojo 40.3 → 44.8 → 48.6%",
+          "context": "Table 8, obs-only / +generated actions / +camera reprojection, 동일 RSI 예산"
+        }
+      ],
+      "evidence_note": "온라인 도구 사용, RSI, 실물 task score는 서로 다른 평가 체계다. Table 6 실물 점수를 strict binary success로 바꾸지 않는다. Table 2 Precision 악화와 외부 비교군의 다른 모델/학습 프로토콜도 포함한다.",
+      "comparison": "기존 agentic robotics는 VLA를 '문장을 받아 움직이는 불투명 함수'로 다뤄 실패하면 언어 재호출을 반복한다. InteractVLA는 모델 내부 flow trajectory를 test time에 geometric energy로 조절하고 역방향으로 action/reprojection을 보여준다. 강화학습 재학습이나 일반적인 trajectory optimization과 달리 pretrained VLA 가중치는 고정이다. 다만 목표 생성의 정확도와 카메라 보정이 새로운 시스템 병목이며, 이 연구는 모든 제약조건을 만족시키는 안전한 기하 제어기를 입증한 것은 아니다.",
+      "reading_guide": [
+        "Figure 2(a)의 조기 목표 정렬 실패를 물체 접근·접촉·파지 순서로 설명해보기.",
+        "§2.1에서 어떤 변수로부터 guidance gradient를 계산하고 모델 파라미터를 동결하는지 확인.",
+        "Figure 3 좌측 soft-time vs Table 7 fixed/uniform/hard-min 3개 설정을 1:1 대응.",
+        "Table 1·2의 online agent 조건과 Table 3–5 RSI 조건을 한 표에서 분리.",
+        "Table 2 Precision의 음의 변화와 Table 8 feedback ablation의 효과를 둘 다 기록.",
+        "Table 6의 task score/시간과 50 demonstrations, 30 trials 조건을 함께 인용."
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] soft-time target matching의 이점은 목표 도달 시간이 불명확한 파지에서 크고, 목표 위치 오차가 커질 때 guidance는 급격히 실패할 것이다.",
+        "setup": "[편집 제안] 로봇 팔+전방/손목 RGB·캘리브레이션 보드에서 물체 위치와 잡기 타이밍을 독립 교란한다. 동일 MR-0 checkpoint, 동일 agent, 동일 시작 3D 목표 후보를 고정하고 복제 가능한 각 조건 100 에피소드 이상을 기록한다.",
+        "baselines": "[편집 제안] 언어-only VLA, geometric fixed final, uniform step, hard-min, soft-time, soft-time+feedback, soft-time+reprojection; guidance/agent의 모델 수와 retry budget 일치.",
+        "metrics": "[편집 제안] strict task success, 접근-접촉-파지 단계별 완료, 목표 도달 시점 편차, collision/force threshold, guidance 거절률, 호출/토큰 수, p50/p95 추론·제어 지연, seed별 신뢰구간.",
+        "risks": "[편집 제안] 목표 pose 오차와 camera extrinsic calibration을 별도 기록하고, 위험한 guidance 동작은 제한된 속도·힘 하에서 자동 중지한다. RSI 성공을 순수 policy 성공으로 잘못 귀속하지 않는다."
+      },
+      "related": [
+        "2611.06447",
+        "2611.03103",
+        "2611.15368"
+      ]
+    }
+  },
+  "2611.22592": {
+    "summary_ko": "APM은 적은 생성 단계에서 teacher 경로 밖으로 벗어난 WAM student 상태를 그대로 감독의 출발점으로 쓴다. RoboTwin 2.0의 1/1-step Clean 82.3→84.3%, Random 76.1→77.5%, 4/4-step 평균 89.8→91.4%를 같은 계산 예산과 비교했으며, 2/2-step Random 악화와 실제 로봇의 지연·성공률도 함께 분석했다.",
+    "reading_minutes": 31,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-19",
+    "source_scope_ko": "arXiv:2611.22592v1 공식 HTML §3 Method·§4 Experiments·Figure 1·2·Table 1–3 확인. 별도 Appendix 없음; 계산 예산 일치한 Continued 비교와 외부 보고 결과 구분.",
+    "review": {
+      "one_line": "APM의 진짜 단위는 교사 trajectory 상의 예쁜 지점이 아니라, **거친 1–4 step student가 실제로 도달한 '어긋난 상태'**다. 동일 출발점에서 teacher가 제시하는 최종 endpoint와 당장 다음 local transition을 함께 가르치되 gradient 충돌 시 endpoint를 우선한다. (§3, Figures 1–2)",
+      "problem": "영상을 같이 생성하는 World-Action Model을 로봇에 넣으면 미래 영상과 행동을 여러 번 denoise해야 해 제어가 느려진다. 8번 혹은 수십 번의 teacher step을 1–4번으로 압축하면, 큰 한 걸음 때문에 student는 teacher가 거쳤던 경로에서 벗어난다. teacher의 원래 궤적 위 정답만 학습하면 새 상태에서 어떻게 복구할지 모른다. 예컨대 양팔이 천을 잡으려다 위치를 살짝 빗나간 학생 상태에서, 원래 teacher 경로의 다음 프레임만 따라가면 완성 동작과 충돌할 수 있다. 논문은 student-reached state에 맞춘 감독과 두 목표의 gradient 조정 문제를 다룬다.",
+      "idea": "학생이 예측한 중간 상태 z_r을 detach해 새로운 출발점으로 고정한다. 이곳부터 frozen teacher를 짧게 다시 적분하면 (1) 마지막 noise=0 완성 영상+행동 z_0^T와 (2) 첫 비영(非零) 시간 중간 상태 z_s^T를 얻는다. 학생은 같은 z_r에서 endpoint query와 local query를 각각 배우고, modality별 LoRA가 둘을 구분한다. 두 손실의 gradient 내적이 음수면 local 쪽에서 endpoint를 거스르는 성분만 지워 최종 상태의 일관성을 우선한다. 한 학생 checkpoint에서 1/2/4-step 예산을 배포 시 선택할 수 있다. (§3.2–3.4)",
+      "method": "Stage I에서는 LingBot-VA teacher를 AnyFlow 형태의 finite-interval distillation으로 학습한다. x_t=(1−t)x_0+tε에서 출발해 teacher-integrated target으로 영상·행동을 동시 예측하는 공유 학생을 만든다. Stage II에서는 Stage I 기반 가중치를 동결하고 적은 수의 modality-routed adapter만 갱신한다. z_r은 실제 student prefix rollout에서 샘플링하며 teacher restart continuation을 같은 z_r부터 실행해 endpoint anchor와 첫 local field target을 확보한다. 목표함수는 기본 distillation, endpoint anchor, local field를 포함하고 각 modality에서 endpoint gradient를 보존하도록 local gradient를 투영한다. 저자는 Stage I 약 4,000 steps, Stage II 5,000 steps, batch 32, 영상/행동 각 손실 가중치 1/0.1, 1·2·4 step 샘플링을 기술한다. 추론에서 teacher 호출은 없다. (원문 §3.1–3.4, §4.1)",
+      "findings": "RoboTwin 2.0의 Clean 50과제×50회, Random도 2,500회에서 Table 1은 Continued와 APM을 같은 모델 규모·추론 예산·추가 학습량으로 비교한다. 1/1-step Clean 82.3→84.3%, Random 76.1→77.5%; 4/4-step Clean 90.5→92.5, Random 89.1→90.3%. 그러나 2/2-step Random은 87.7→87.1%로 역전되며 1/1-step ablation에서도 Restart anchor만 쓰면 Clean 84.5%로 full APM 84.3%보다 높다. 영상 PSNR 30.169→32.317 dB는 생성 영상 품질 지표이지 로봇 성공률이 아니다. 실제 Astribot S1 두 과제에서 full teacher 8/8-step 4323.6 ms, APM 1/1-step 203.1 ms로 약 21.3배 단축했으나, 과제별 성공은 PenHolder에서 teacher보다 낮고 FoldTowel에서 높다. (§4.2–4.5)",
+      "limitations": "Stage I backbone이 LingBot-VA이고 Stage II 교사도 이 계열이므로 타 WAM이나 장기 지평에서 동일 이득은 검증되지 않았다. Table 1의 발표된 LingBot-VA 25/50과 Flash-WAM 1/1 수치는 현지 Continued와 정확히 같은 하드웨어·평가 근거가 아닌 참고값이 포함된다. 2/2-step Random은 성능이 감소하며, Table 2의 field+projection이 모든 조건에서 최고의 선택도 아니다. 실물은 단일 Astribot S1, PenHolder/FoldTowel 두 작업 및 각 24 trial로 제한된다. teacher 8-step 대비 속도 상승을 1-step undistilled teacher 대비라고 잘못 표현하면 안 된다. 별도 Appendix가 없으므로 그 내용을 만들지 않았다.",
+      "questions": [
+        "Student-reached state가 teacher 원래 경로에서 얼마나 떨어져 있고 어느 노이즈 구간이 위험한가?",
+        "1/1에서 Restart anchor only가 full APM보다 Clean에서 앞선 이유는 gradient conflict가 과도한가?",
+        "2/2의 Random 실패를 task category, 물체 흔들림, cloth contact로 분해할 수 있는가?",
+        "실물 FoldTowel의 75% 성공이 다른 팔·카메라·지연 하드웨어에서도 유지되는가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**읽는 핵심:** 생성 단계를 줄였다는 사실만으로 성공률이 오르는 것은 아니다. Figure 1에서 같은 초기 노이즈로 시작한 4-step 학생과 교사의 경로 분기를 확인하고, Figure 2에서 teacher가 실제 student 도착 상태부터 다시 출발하여 두 target을 만드는 것을 추적한다. 1·2·4 step당 Clean/Random 분리 숫자를 보는 것이 이 연구 평가의 핵심이다.",
+      "pipeline": [
+        {
+          "title": "LingBot-VA teacher와 영상·행동 결합 상태 정의",
+          "detail": "현재 비디오 관측·로봇 상태·언어를 조건 c로 두고, 미래 비디오 latent와 action latent를 함께 이루는 z를 denoising한다. 영상과 행동은 손실 가중치/샘플링 예산을 각각 가질 수 있다.",
+          "io": "teacher (video,action) flow, context c"
+        },
+        {
+          "title": "Stage I: 모든 구간을 맞추는 AnyFlow student",
+          "detail": "t와 r의 finite interval을 입력받아 teacher가 적분한 상태를 모사한다. 학습용 teacher는 조밀한 전이를 제공하고 student는 더 적은 평가 횟수로 같은 구간을 건너도록 최적화한다. 이때 이후 중간 경로의 오류가 누적되는 위험이 남는다.",
+          "io": "x_t→student F_(t→r)→x_r, teacher-integrated supervision"
+        },
+        {
+          "title": "Stage II: 실제 학생 궤적에서 z_r 샘플",
+          "detail": "학습 데이터 노이즈에서 1·2·4 step 조건으로 student prefix를 진행해 z_r을 얻는다. 그 지점을 stop-gradient로 고정하여 teacher 궤적상의 낯익은 지점이 아닌 student의 방문 분포를 대상으로 삼는다.",
+          "io": "rollout student → detach(z_r)"
+        },
+        {
+          "title": "하나의 restart teacher로 두 목표 수집",
+          "detail": "동일 z_r부터 teacher를 noise 0까지 적분해 완성 목표 y0를 얻는다. 그 과정에서 첫 비영시간 중간 상태 ys도 캐시한다. 새로운 teacher rollout을 별도로 한 번 더 수행하는 설계가 아니다.",
+          "io": "Φ_T(z_r): endpoint + short transition"
+        },
+        {
+          "title": "비디오/액션 adapter에 두 감독을 병렬 제공",
+          "detail": "동결된 Stage I backbone 위의 modality-routed adapter가 endpoint query와 local query를 학습한다. 텍스트와 관측 조건은 유지하고, 비디오/행동 loss를 나눠 각 행동 쪽의 충돌을 구분한다.",
+          "io": "base distill + L_anchor + L_field"
+        },
+        {
+          "title": "Gradient conflict를 endpoint 우선으로 정리한 후 배포",
+          "detail": "한 modality에서 local gradient가 anchor gradient와 반대 방향이면 local gradient의 그 반대 성분만 제거한다. 원래 loss는 유지하되 최종점 예측을 망치지 않게 하고, 추론에서는 1/2/4 step을 선택할 뿐 teacher는 없다.",
+          "io": "g_field⊥(g_anchor) on conflict → 1/2/4-step student"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "왜 처음의 teacher endpoint만 사용하면 부족한가",
+          "body": "원래 초기 노이즈 x1에서 얻은 teacher 완성 y0는 student가 시간 r에서 도달한 z_r과 조건부 전이 거리가 멀 수 있다. 논문 §3.2의 restart anchor는 teacher를 z_r에서 새로 시작해 현재 오차를 반영한다. Table 2는 Original/Restart anchor를 직접 ablate한다.",
+          "watch": "Figure 2(a) 회색 Original anchor와 student-reached Restart anchor 비교"
+        },
+        {
+          "title": "한 위치에서 local과 global target 모두",
+          "body": "teacher가 만든 짧은 이동 z_r→z_s만 모사하면 최종 영상/행동의 방향을 잃을 수 있고, endpoint만 학습하면 국소의 움직임이 부자연스러울 수 있다. APM은 두 지도의 출발점을 일치시킨다. local target z_s는 원문상 비영 noise 시점의 첫 중간 단계다.",
+          "watch": "§3.2 endpoint와 local fields의 동일 출발 상태·첫 intermediate step"
+        },
+        {
+          "title": "Anchor-priority gradient projection",
+          "body": "두 손실 gradient가 같은 modality 내에서 음의 내적을 보일 때 field gradient 중 endpoint gradient의 정반대 방향 성분을 빼고 더한다. endpoint 자체를 지우지 않으므로 완성 상태 정합성을 우선한다. 모든 gradient가 상충하면 field이 항상 유익하다는 의미는 아니다.",
+          "watch": "§3.3 per-modality correction과 Table 2 projection 제거"
+        },
+        {
+          "title": "학습비와 배포비의 구분",
+          "body": "Stage II에 5k 추가 optimization step과 teacher continuation이 필요하지만 추론에는 teacher가 없다. 203.1 ms 실물 주기는 학습 비용이 아니라 deployment latency다. 21.3×는 full 8/8 teacher 4323.6ms와 비교한 비율이다.",
+          "watch": "§4.1 training schedule, §4.5 Table 3"
+        },
+        {
+          "title": "생성 비디오 점수와 실제 폐루프 행동의 차이",
+          "body": "PSNR·SSIM·LPIPS는 500개 조건 등에 대한 예측 이미지 품질 측정이고, 로봇 조작 성공률은 여러 episode를 closed-loop 실행한 결과다. 화질 차이가 작동 성공을 항상 보증하지 않는다. 특히 2/2 Random에서 APM 성공률은 낮아졌다.",
+          "watch": "§4.4 video quality와 Table 1 Random 2/2"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "RoboTwin 1/1 Clean",
+          "value": "82.3→84.3% (+2.0pp)",
+          "context": "Table 1, Continued→APM, Clean 50과제×50 episode=2,500, 같은 추가학습/추론 예산"
+        },
+        {
+          "metric": "RoboTwin 1/1 Random",
+          "value": "76.1→77.5% (+1.4pp)",
+          "context": "Table 1, Clean에서만 학습한 후 50과제×50회 Random domain shift"
+        },
+        {
+          "metric": "RoboTwin 2/2 Clean · Random",
+          "value": "89.6→90.4% / 87.7→87.1%",
+          "context": "Table 1, Random -0.6pp로 악화; 평균 소폭 상승을 일괄 우월성으로 해석 금지"
+        },
+        {
+          "metric": "RoboTwin 4/4 Clean · Random",
+          "value": "90.5→92.5% / 89.1→90.3%",
+          "context": "Table 1, Continued와 matched 4 video/4 action steps; 평균 89.8→91.4%"
+        },
+        {
+          "metric": "Restart vs Original anchor",
+          "value": "1/1 Random 77.4 vs 76.2%",
+          "context": "Table 2, field/projection 비활성화한 anchor source 단독 비교"
+        },
+        {
+          "metric": "1/1 field·projection ablation",
+          "value": "Restart only 84.5/77.4 → full APM 84.3/77.5",
+          "context": "Table 2, Clean/Random; field 추가는 Clean -0.2pp, Random +0.1pp"
+        },
+        {
+          "metric": "Video PSNR (1/1)",
+          "value": "30.169→32.317 dB",
+          "context": "§4.4, continued→APM, video quality; closed-loop success와 다른 평가"
+        },
+        {
+          "metric": "실물 제어 주기 지연",
+          "value": "teacher 8/8 4323.6 ms → APM 1/1 203.1 ms",
+          "context": "Table 3, Astribot S1·NVIDIA A800 80GB, 21.3× full teacher 대비"
+        },
+        {
+          "metric": "실물 PenHolder / FoldTowel",
+          "value": "APM 62.5% / 75.0%",
+          "context": "Table 3, 각 24 trial; full teacher 83.3% / 70.8%, 작업별 승패 다름"
+        }
+      ],
+      "evidence_note": "RoboTwin의 공개 참고 기록(예: full LingBot-VA와 단일 단계 Flash-WAM)은 일부 외부 보고/다른 sampling budget이므로 가장 강한 인과 비교는 동일 Stage I, 동일 trainable params·training length의 Continued이다. Table 2는 full APM이 일률적으로 최고가 아니며 Random 2/2은 악화한다.",
+      "comparison": "표준 distillation은 원래 teacher 경로의 유한 구간을 효율적으로 모사하지만 학생이 실제 방문하는 상태 분포를 보정하기 어렵다. AnyStep류의 student rollout 감독과 endpoint supervision을 연결하되, APM은 **같은 z_r에서 재시작한 한 teacher continuation의 endpoint 및 intermediate**를 공동 감독하고 modality별 gradient 투영으로 양쪽 목적 충돌을 조정한다. 높은 sampling budget의 교사 결과와 단순 수치 비교하기보다 추가학습·추론 예산이 같은 Continued가 실제 새 아이디어의 필요성을 시험한다.",
+      "reading_guide": [
+        "Figure 1에서 학생과 교사가 같은 시작점인데 4회 이동 후 벌어지는 이유를 설명.",
+        "§3.1/3.2에서 Stage I AnyFlow supervision과 Stage II student-reached restart를 구분.",
+        "Figure 2의 Original gray anchor와 Restart endpoint, 첫 local state를 서로 혼동하지 않기.",
+        "Table 1 1/1·2/2·4/4 별로 Clean과 Random의 부호까지 기록하기.",
+        "Table 2에서 Restart only Clean 84.5 > full APM Clean84.3 확인.",
+        "Table 3의 8/8 teacher vs 1/1 APM과 각각 24회 실물 평가를 함께 기록."
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] endpoint 우선 gradient projection은 student trajectory drift가 큰 low-step에 효과적이며, 적은 drift에서는 local field 감독이 오히려 과한 정규화가 될 수 있다.",
+        "setup": "[편집 제안] 같은 LingBot-VA teacher에서 Clean 시연·optimizer steps·LoRA rank·seed 3개를 고정하고 1/2/4/8-step 초기 노이즈와 video/action latents의 teacher 대비 편차를 단계별 기록한다. RoboTwin 50 task×50 episode Clean/Random 외에 조도 및 마찰 축을 분리한다.",
+        "baselines": "[편집 제안] Stage I only, Continued, Original anchor, Restart anchor only, Restart+field without projection, Full APM, video-only/action-only gradient projection; 모두 동일 Stage II 5k steps 및 실행 budget.",
+        "metrics": "[편집 제안] strict success와 Wilson CI, episode-level failure phase, drift norm/endpoint error, PSNR·LPIPS, 추론 p50/p95 latency, teacher continuation 추가 학습 FLOPs, robot 안전 중단 횟수.",
+        "risks": "[편집 제안] teacher target 자체가 접촉이나 지각을 잘못 예측하면 restart anchor가 오류를 강화할 수 있다. 형평성 확보를 위해 비디오 샘플 수와 action denoise steps, batch/seed까지 공개한다."
+      },
+      "related": [
+        "2611.04711",
+        "2611.04527",
+        "2610.07922"
+      ]
+    }
+  },
+  "2611.23143": {
+    "summary_ko": "손가락 사이 빈 공간에 놓일 수 있는 TCP를 일반 3D 점 추적기로 처리하기 어려운 문제에서 출발한다. Tracker와 조건부 Flow DiT를 같은 4D 표현으로 묶고 RGB만 있는 다른 로봇 영상을 재표적화한다. RoboTwin Clean 69.19%·Random 10.94%, 실물 2과제 평균 78.33%, GT Sim(3) 정렬 ATE와 단일 seed의 제한을 분석했다.",
+    "reading_minutes": 32,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-19",
+    "source_scope_ko": "arXiv:2611.23143v1 공식 HTML §3–4·Appendix A–G, Figure 2·7, Table 1·3 및 부록 평가 프로토콜 확인. DROID ATE는 GT Sim(3) 정렬; 독립 재현 아님.",
+    "review": {
+      "one_line": "TCP4D는 관절값이 기록되지 않은 단안 RGB 영상도 '가상의 도구중심점(TCP)'의 6-DoF pose와 그리퍼 상태라는 행동 자료로 복원하고, **동일한 4D 장면 표현에서 미래 TCP 행동을 생성**한다. 추적 정확도·행동 성공률·합성 증강 데이터 성능은 서로 다른 증거다. (§3–4, Appendix)",
+      "problem": "서로 다른 로봇의 조작 영상을 모아도 카메라 RGB만 있고 모터/관절 로그가 없으면 VLA에 필요한 action label로 쓰기 어렵다. 손가락 두 개 사이의 가상 TCP는 실제 표면 위 점이 아니라 공중에 놓일 수 있어서 일반 3D point tracker가 배경 픽셀을 잡는다. 게다가 3D 위치만 추적해도 손목 회전과 gripper 개폐를 알아야 물체를 제대로 들어 올릴 수 있다. 예컨대 컵을 옮기는 영상에서 손이 컵 가까이 이동한 것만 알면 접촉 시점과 회전 방향을 재구성할 수 없다. 로봇별 관절공간 대신 6D TCP pose와 gripper를 공통 행동 공간으로 쓸 수 있는지가 문제다.",
+      "idea": "TCP4D Tracker가 단안 RGB와 초기 프레임의 TCP 2D query를 받아 4D 장면 geometry, camera, 시간에 따른 TCP SE(3) 위치·회전·그리퍼를 공동 예측한다. Generator는 그 TCP track 주변의 local visual tokens와 손목 카메라·언어·로봇 상태를 모아 앞으로 32 step의 TCP action chunk를 flow-based DiT로 생성한다. 이를 토대로 별도의 로봇 팔 관절로그 없이 RGB에서 복원한 원본 TCP 궤적을 다른 embodiment의 IK로 바꾸고 원래 로봇을 지운 화면에 새 로봇을 렌더링해 증강 시연을 만든다. 실행 때는 목적 로봇의 IK가 TCP 목표를 실제 관절로 변환해야 한다. (§3.2–3.5)",
+      "method": "Tracker는 DINOv2 계열 시공간 feature를 가진 4D backbone을 통해 frame/cross-frame attention 표현을 만들고, 기하 분기에서 depth·camera rays·camera parameter를 예측한다. 초기 TCP 좌표 주변 3×3과 여러 feature depth를 샘플하는 sparse query decoder가 시간별 TCP translation, 6D rotation representation(회전행렬로 사상), gripper 상태와 confidence를 낸다. Generator는 tracked TCP 근방 scene tokens, 손목 RGB frozen DINOv2-Large feature, frozen T5-base language feature, 로봇 state MLP를 합쳐 12-block·hidden 1280 DiT에서 conditional flow matching으로 32×20차원(양팔 각 3위치+6회전+1그리퍼) 미래 행동을 생성한다. 추론 적분은 4 Euler step. Stage I은 geometry, tracking SE(3), gripper, temporal velocity 등을 지도하고 Stage II는 future action loss를 추가해 공동학습하며 tracking의 일부 temporal consistency term을 제외한다. RGB 재표적화 파이프라인은 TCP 복원→SAM3 로봇 mask+ProPainter inpainting→새 로봇 URDF IK·기저 재배치→렌더링/DP 학습으로 구성된다. (본문 §3, Appendix A–C)",
+      "findings": "Tracker 평가 DROID는 33,966 episode, 두 카메라 관측을 이용한 PointWorld subset이고 RoboLab은 별도 현장 영상 100개다. Table 1의 DROID ATE 7.60mm, RoboLab 16.07mm는 Appendix D에서 **GT와 Sim(3) 정렬한 뒤** 산출한 trajectory error이므로 정렬 전 절대 위치 오차와 같지 않다. RoboTwin 2.0 Table 3: 48 task×100 trial, Clean 학습→Clean 성공 69.19%, Random 교란에서는 10.94%; EventVLA 65.71/14.50과 비교하면 Clean 우위가 Random 우위로 이어지지 않는다. Aloha 영상을 ARX-X5/UR5WSG로 재표적화한 데이터 실험에서는 ARX-X5의 augmented-only DP 평균 30.5%→source+augmented 72.0%(+41.5pp)인데 이는 데이터 구성 변화의 효과이지 TCP4D 생성기 자체의 ablation이 아니다. CoBoT Magic 실물 두 과제는 각 60개 데모 학습, 각 30회 평가; 83.33%(25/30)와 73.33%(22/30), 평균 78.33% strict success를 보고한다. (§4, Appendix D–F)",
+      "limitations": "핵심 수치의 프로토콜 차이를 잊기 쉽다. DROID·RoboLab ATE는 GT Sim(3) 정렬 후라 실제 metric 위치 추정의 모든 오차를 표현하지 않으며 unaligned MPE와 섞으면 안 된다. RoboTwin의 TCP4D third-person 카메라와 비교 모델 다수의 head camera는 입력 시점이 다르다. Clean 69.19%에서 Random 10.94%로 떨어지므로 시각 도메인 일반화는 아직 크나큰 한계다. 재표적화 자료를 더한 정책은 동일 epoch가 곧 동일 optimizer step이 아니며 Appendix E는 **단일 training seed**라고 명시한다. IK로 닿을 수 없는 자세·가림·세그멘테이션 실패·contact physics mismatch가 증강을 왜곡한다. 구성 요소(예: tracker 제거, geometry loss 제거)의 엄격한 동량 ablation 전체가 보고된 것은 아니다.",
+      "questions": [
+        "손가락 사이 공중 TCP의 2D 초기 query 오차 ±10 px가 SE(3) 전체 궤적에 얼마나 전파되는가?",
+        "Appendix D의 Sim(3) 정렬 ATE와 unaligned MPE를 같은 그래프에서 비교하면 실제 로봇 거리 오차가 얼마나 다른가?",
+        "RoboTwin Clean→Random 69.19→10.94% 붕괴를 조도·카메라·물체 형상으로 분해하면?",
+        "source+synthetic augmentation에서 데이터 수를 같게 한 공정한 추가 gradient budget에서도 +41.5pp가 남는가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**추적과 제어를 가르는 독해법:** Figure 2의 Tracker 경로에서 '이미 일어난 TCP 동작'을 추정하고 Generator 경로에서 '앞으로 할 동작'을 생성하는 두 출력을 구분한다. Figure 7은 real-world rollout에 다음 32 step trajectory가 어떻게 표시되는지 알려준다. Appendix A–G는 회전 표현·정렬 방식·단일 seed 등 본문의 높은 성공률 수치를 해석하는 데 꼭 필요하다.",
+      "pipeline": [
+        {
+          "title": "RGB 관측과 초기 TCP 2D 질의 입력",
+          "detail": "원본 영상에는 3D joint action이 없다고 가정한다. 그리퍼 중심의 초기 이미지 좌표를 주되 이 픽셀은 공중 TCP여서 배경에 위치할 수 있다. monocular 영상의 카메라 움직임도 별도 추정 대상으로 삼는다.",
+          "io": "RGB I_1:T + 최초 TCP image query q_1"
+        },
+        {
+          "title": "시공간 4D scene representation 구축",
+          "detail": "DINOv2 기반 frame-wise/cross-frame attention으로 전후 프레임의 장면을 통합한다. 기하 head가 depth 및 camera ray·카메라 관련 값을 추정하고 point-query decoder가 이 정보를 사용한다.",
+          "io": "4D scene tokens → geometry/depth/camera"
+        },
+        {
+          "title": "Sparse TCP query가 SE(3)+그리퍼 복원",
+          "detail": "초기 TCP 주변 3×3 visual tokens와 복수 feature level을 모아 시간축 attention을 적용한다. 좌표 3차원, 회전 6D representation, gripper 상태, confidence 등을 내고 위치·회전의 시간 변화를 학습한다.",
+          "io": "(x,y,z,R_t,g_t) for observed frames"
+        },
+        {
+          "title": "추적 지점 주변 feature로 행동 생성 입력 준비",
+          "detail": "현재 장면과 과거 TCP track의 영상 투영 지점에서 local visual feature를 뽑는다. 손목 RGB는 frozen DINOv2-Large, 언어는 frozen T5-base, 로봇 상태는 MLP를 거쳐 DiT conditioning으로 결합된다.",
+          "io": "scene+TCP local+wrist RGB+text+state"
+        },
+        {
+          "title": "Flow Matching DiT로 32-step 미래 TCP action 출력",
+          "detail": "12개의 transformer block, hidden width 1280 기반 행동 전문가가 한 팔 10차원×양팔=20차원의 32-step action chunk를 예측한다. 로봇 실행은 4회의 Euler integration 후 IK로 joint 명령을 변환한다.",
+          "io": "future h=32, action 32×20, flow ODE 4 steps"
+        },
+        {
+          "title": "행동 레이블 없는 영상의 교차 로봇 시연 증강",
+          "detail": "Tracker의 SE(3) 행동 라벨을 사용해 새 로봇의 IK로 retarget한다. 원 영상의 source 로봇을 segment/inpaint한 뒤 target 로봇을 렌더링한다. 원래 RGB의 행동 데이터를 다른 팔 정책의 시연으로 활용하지만 물리적인 충돌·마찰의 정확한 재현은 별도 문제다.",
+          "io": "RGB → TCP labels → target URDF IK → composited demonstrations"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "표면 점 추적과 공중 TCP 추적은 다르다",
+          "body": "Point tracker가 픽셀에 대응하는 표면 3D 좌표를 찾는다고 가정하면, 두 그리퍼 손가락 사이 허공에 있는 TCP 투영은 배경으로 매칭될 위험이 있다. TCP4D는 pose-aware sparse query를 직접 회귀해 회전까지 학습한다. 첫 2D query는 여전히 정확해야 한다.",
+          "watch": "§3.1–3.2와 Figure 2의 sparse query decoder"
+        },
+        {
+          "title": "SE(3) 위치+회전과 gripper 상태는 각기 별개 출력",
+          "body": "회전이 필요하면 3D 위치 오차가 작아도 컵의 입구 방향을 잃을 수 있다. 6D rotation representation은 SO(3) pose로 사상되며 gripper open/close는 별도 채널이다. Figure 7의 색상은 미래 단계의 시간 순서를 나타낼 뿐 예측 성공을 보증하지 않는다.",
+          "watch": "§3.2, Figure 7, Appendix A tracking objectives"
+        },
+        {
+          "title": "Generator의 로컬 scene context는 동작 경로에 맞춰 추출",
+          "body": "정적인 한 프레임 feature만 보는 대신 관측된 TCP가 지나는 위치의 4D 표현을 이용한다. 그 위에 wrist view·language·state 정보를 올려 flow diffusion의 행동 조건을 만든다. tracker와 generator를 공동 학습시켜 feature가 두 목적에 유용하도록 만든다.",
+          "watch": "§3.3–3.4, Appendix C DiT 12 blocks / 1280"
+        },
+        {
+          "title": "RGB-only cross-embodiment는 로봇 dynamics 재현이 아니다",
+          "body": "source 로봇을 지운 배경 위에 새 로봇 모델을 IK로 배치하면 2D appearance와 task-space motion label이 생긴다. 그러나 원 물체의 실제 접촉력/잡힘/충돌 및 가림이 target에 물리적으로 맞는지는 별도 검증이 필요하다. Appendix B는 SAM3·ProPainter·URDF·IK 구성의 구체적인 절차를 기록한다.",
+          "watch": "§3.5, Appendix B·E, target robot rendering"
+        },
+        {
+          "title": "ATE의 지표 정의에 성능 해석이 걸린다",
+          "body": "Tracker Table 1의 ATE는 영상 단위로 GT와 예측 SE(3) trajectory를 Sim(3) align한 다음 계산된다(Appendix D). 따라서 7.60mm를 '카메라 캘리브레이션 없이 즉시 절대 좌표 7.60mm 오차'라고 써서는 안 된다. MPE처럼 정렬 없이 보는 오차를 함께 기록해야 한다.",
+          "watch": "Appendix D.6의 Sim(3) alignment와 Table 1의 ATE/MPE"
+        },
+        {
+          "title": "데이터 증강 효과와 인과 ablation의 범위",
+          "body": "ARX-X5의 30.5→72.0%는 augmented-only와 source+augmented 학습의 비교다. 원문은 target-only demonstrations를 별도 수집하지 않았다. 동일 epoch에서도 dataset size가 바뀌면 gradient update 수가 달라지고 학습 seed 하나라 불확실성이 크다.",
+          "watch": "§4.3, Appendix E.2 one seed, 동일 optimizer update 조건 검토"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "DROID TCP tracking ATE",
+          "value": "7.60 mm",
+          "context": "Table 1, DROID PointWorld subset 33,966 episodes·두 카메라; Appendix D GT Sim(3) alignment 후 평가"
+        },
+        {
+          "metric": "RoboLab TCP tracking ATE",
+          "value": "16.07 mm",
+          "context": "Table 1, 미공개 환경 100 episode; GT Sim(3) 정렬된 trajectory, unaligned MPE와 구분"
+        },
+        {
+          "metric": "DROID / RoboLab gripper accuracy",
+          "value": "95.84% / 81.92%",
+          "context": "Table 1, tracking gripper open/close 판단, 위치오차와 다른 분류 지표"
+        },
+        {
+          "metric": "RoboTwin 2.0 Clean (C2C)",
+          "value": "69.19%",
+          "context": "Table 3, 48 tasks ×100 trials; Clean만 학습, TCP4D third camera 사용"
+        },
+        {
+          "metric": "RoboTwin 2.0 Random (C2R)",
+          "value": "10.94%",
+          "context": "Table 3, domain-randomized OOD; EventVLA 14.50%, Xiaomi Robotics-0 17.85%보다 낮음"
+        },
+        {
+          "metric": "ARX-X5 정책 증강 데이터",
+          "value": "30.5→72.0% (+41.5pp)",
+          "context": "§4.3, 4과제×50 trials/task; augmented-only vs source+augmented DP, 데이터량/업데이트 수 동시 변화 가능"
+        },
+        {
+          "metric": "UR5WSG 증강 데이터",
+          "value": "32.0→39.0%",
+          "context": "§4.3, 4과제, aug-only vs joint, ARX-X5와 이득 크기가 다름"
+        },
+        {
+          "metric": "실물 placing pens",
+          "value": "25/30 = 83.33%",
+          "context": "§4.5, CoBoT Magic, 과제당 60 데모, 모델별 30 trials, binary strict success"
+        },
+        {
+          "metric": "실물 stacking bowls",
+          "value": "22/30 = 73.33%",
+          "context": "§4.5, 같은 학습·평가 단위; 두 실물 과제의 산술 평균 78.33%"
+        }
+      ],
+      "evidence_note": "GT Sim(3) 정렬 ATE와 metric absolute pose 오차, Clean C2C와 Random C2R, binary strict task success와 단계별 progress score는 각각 다른 지표다. Table 3은 TCP4D third-view와 다수 비교 모델 head-view 차이가 있으며, 증강 실험은 Appendix E의 단일 학습 seed이다.",
+      "comparison": "기존 점 추적기는 표면에 묶인 3D points를 추적하고 회전은 외부 후처리로 얻는 경우가 많다. 일반 VLA는 직접 기록된 robot actions가 있는 시연을 요구한다. TCP4D는 표면이 아닐 수 있는 TCP를 camera-aware SE(3) query로 직접 추적하며 같은 4D 표현을 미래 action predictor에 재사용한다. 그 결과 RGB 영상에서 복원한 TCP를 다른 로봇의 IK와 합성 영상으로 옮기는 데이터 파이프라인도 가능하다. 하지만 기존 공개 benchmark 비교에서 관측 카메라·학습 프로토콜 차이를 통제하지 않았고, 전체 module ablation을 제공한 것은 아니다.",
+      "reading_guide": [
+        "Figure 2 Tracker와 Generator의 입력·출력 및 공유 scene representation을 두 흐름으로 그려보기.",
+        "§3.2의 TCP가 공중에 있을 수 있다는 이유와 6D rotation head의 필요성 설명.",
+        "Appendix C의 generator 12-block/1280 및 32-step/4 Euler 설정 확인.",
+        "Table 1 ATE가 Appendix D의 GT Sim(3) alignment 후인 점 강조.",
+        "Table 3 RoboTwin C2C 69.19 vs C2R 10.94의 극단적 domain shift 해석.",
+        "Appendix E.2의 one seed, 600 epochs·dataset-size 변화와 Figure 7의 실물 32-step rollout 비교."
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] TCP4D의 cross-embod 일반화는 TCP 초기 2D 질의/Sim(3) 정렬 및 합성 영상의 접촉 정확도에 가장 민감하며, 다양화된 geometry와 도메인 조건에 학습시키면 C2R 붕괴가 줄어들 것이다.",
+        "setup": "[편집 제안] DROID/RoboLab에서 TCP 초기 픽셀을 0/5/10/20px 오프셋으로 교란하고 GT Sim(3) align ATE와 align 전 MPE를 같이 출력한다. RoboTwin 48과제 Clean/Random에 조명/카메라/재질을 한 축씩 바꿔 3 train seed로 재평가한다. 재표적화 ARX-X5에 대해 augmentation 50/100/200 demos 및 fixed optimizer updates를 교차한다.",
+        "baselines": "[편집 제안] 일반 point tracker+orientation postprocess, TCP4D tracker without geometry, without temporal loss, generator without local 4D TCP tokens, source-only, synthetic-only, source+synthetic with equal total demos, equal gradient updates.",
+        "metrics": "[편집 제안] ATE aligned/unaligned, MPE, orientation error, gripper F1, tracking SR, IK feasibility ratio, strict success/phase score, C2C vs C2R per task, runtime latency, GPU hours, per-seed CI.",
+        "risks": "[편집 제안] 공중 TCP와 가려진 gripper의 GT annotation, 카메라 좌표계·로봇 base frame 정합, non-reachable IK, 합성 로봇의 미실제 접촉을 모두 audit한다. 한 seed 차이를 인과 개선으로 단정하지 않는다."
+      },
+      "related": [
+        "2403.12945",
+        "2611.02629",
+        "2611.06447"
+      ]
+    }
   }
 }
