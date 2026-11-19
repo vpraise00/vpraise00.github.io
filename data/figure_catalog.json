@@ -1347,5 +1347,95 @@
         "verified_caption": "Figure 2: MDF++ training overview. Each iteration samples structured 2D noise patterns for policy learning, world-action modeling, forward/inverse dynamics, and random masking. Each modality’s denoising loss is blocked from updating its own encoder, while losses of other modalities train it."
       }
     ]
+  },
+  "2611.22584": {
+    "heading": "InteractVLA — 목표 정렬 시점과 양방향 기하 인터페이스",
+    "intro": "공식 arXiv:2611.22584v1 Figure 2·3의 이미지와 캡션을 각각 확인. 모듈의 설명 위치에만 배치한다.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "idea",
+        "reading_title": "Figure 2 — 조기 표적 정렬은 왜 파지 동작을 망치는가",
+        "context": "(a)는 목표에 너무 빨리 말단을 일치시키면 접근·접촉·그리퍼 닫기 순서를 망칠 수 있음을 보여준다. (b)(c)는 에이전트가 기하 목표를 지정하는 인터페이스와 LIBERO-Plus/RoboDojo의 온라인 결과 방향을 보여준다. 도식의 성능 수치는 Table 1·2의 조건을 따로 확인한다.",
+        "steps": [
+          "(a) 왼쪽: sparse target 고정 시간 강제에서 조기 gripper closure/rotation 확인.",
+          "(b) test-time guidance와 soft-time target alignment가 기존 pretrained VLA와 어디서 만나는지 확인.",
+          "(c)의 온라인 결과를 RSI 99.4%와 혼동하지 않고 Table 1·2 대응 확인."
+        ],
+        "verified_caption": "Figure 2: InteractVLA turns VLAs into interactive tools for agents. (a) Matching a sparse target too early disrupts the approach motion, causing premature gripper closure and rotation; timely alignment preserves the approach, contact, and lift sequence. (b) InteractVLA combines test-time geometric guidance with soft-time target alignment to steer a frozen VLA toward agent-specified targets, while returning action feedback for target revision and local motion refinement. (c) This interactive interface improves online tool-use success on both LIBERO-Plus and RoboDojo."
+      },
+      {
+        "number": 3,
+        "placement": "method",
+        "reading_title": "Figure 3 — Flow denoising 안의 guidance와 agent의 action-informed 수정",
+        "context": "왼쪽에서 denoising의 각 단계마다 목표와의 유사도가 행동 chunk의 시간축 guidance 가중치로 변한다. 오른쪽은 서로 다른 표적 후보가 다양한 행동 제안을 만들고, 카메라 재투영·실행 prefix를 거쳐 재계획이 되는 역방향 신호를 나타낸다.",
+        "steps": [
+          "시간축별 guidance weight가 언제 날카로워지는지 살피기.",
+          "action chunk의 실행된 prefix와 미실행 suffix를 구분하기.",
+          "low-confidence target reject와 feedback 기반 local correction 분기 확인."
+        ],
+        "verified_caption": "Figure 3: InteractVLA combines geometric guidance with action-informed refinement. Left: At each denoising step, target similarity determines the guidance weights across the action chunk, progressively steering the generated motion toward the agent-specified target. Right: Different targets elicit diverse motion proposals that the agent can reproject, compare, and locally refine to complete the task, while low-confidence targets trigger rejection and replanning."
+      }
+    ]
+  },
+  "2611.22592": {
+    "heading": "APM — student-reached state에서 출발하는 endpoint·local teacher target",
+    "intro": "공식 arXiv:2611.22592v1 Figure 1·2의 이미지 경로와 원문 번호·캡션 교차 대조.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Figure 1 — 같은 출발점에서 student와 teacher는 다른 길을 간다",
+        "context": "few-step coarse 업데이트로 student가 teacher의 조밀한 flow 경로에서 벗어난다. 정사각형은 영상 상태, 원은 행동 상태이며 최종 생성 비디오/액션의 오류 누적을 도식화한다. 도식만으로 실제 성공률을 증명할 수는 없다.",
+        "steps": [
+          "같은 초기 조건·같은 4 step에서 naive와 APM 경로 차이 보기.",
+          "square video와 circle action 등 두 modality의 위치 구분.",
+          "student-reached z_r에서 restart teacher supervision이 생기는 지점 확인."
+        ],
+        "verified_caption": "Figure 1: Student-state deviation in few-step generation. Coarse student transitions can depart from the dense teacher trajectory and change the remaining prediction. APM constructs restart-anchor and local-field supervision at student-reached states. Naive and APM use the same initial condition and four steps; squares denote video states and circles denote action states."
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 한 teacher continuation으로 두 감독을 구성",
+        "context": "(a) student z_r을 시작점으로 noise=0 endpoint anchor와 다음 intermediate local target을 함께 얻는다. gray Original anchor는 ablation 비교용으로만 사용한다. (b) modality별 gradient를 anchor-priority로 조정해 두 목적을 동시에 학습한다.",
+        "steps": [
+          "z_r과 endpoint y0, 첫 nonzero-time local ys의 출발점이 같음을 확인.",
+          "gray Original anchor를 실제 APM Restart anchor와 구분.",
+          "endpoint/local gradients의 반대 방향 성분을 projection으로 제거하는 위치 확인."
+        ],
+        "verified_caption": "Figure 2: Anchored Path Matching (APM). (a) One teacher continuation from z_r supplies the restart endpoint and next nonzero-time local target. The gray path supplies the Original anchor used in ablation. Φ_T integrates the teacher from noise level p to q. (b) Endpoint and short-transition queries share z_r; anchor-priority correction coordinates their gradients alongside the base objective."
+      }
+    ]
+  },
+  "2611.23143": {
+    "heading": "TCP4D — 4D scene 기반 TCP 추적과 미래 행동 생성",
+    "intro": "공식 arXiv:2611.23143v1 Figure 2와 Figure 7의 이미지·캡션을 확인. 구조 및 실물 rollout 설명 위치에 배치.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — RGB 비디오로 과거 TCP를 복원하고 미래 TCP를 생성",
+        "context": "① Tracker는 단안 RGB·최초 2D TCP query에서 camera/geometry와 시간별 SE(3) pose·gripper를 복원한다. ② Generator는 TCP 인근 4D feature, 손목 RGB, 언어, 로봇 상태를 합쳐 앞으로 h-step 동작을 생성한다. 두 경로의 입출력이 다르다.",
+        "steps": [
+          "Tracker는 관측된 과거 프레임, Generator는 미래 h-step 예측이라는 시간 방향 구분.",
+          "scene geometry/pose tracking이 action label 없이 동작할 수 있는 이유 확인.",
+          "추론 시 IK로 실제 joint motion에 연결되는 별도 제약을 설명."
+        ],
+        "verified_caption": "Figure 2: Overview of TCP4D. ① TCP4D Tracker takes a monocular video as input and constructs a 4D scene representation. Given the TCP’s 2D location in the initial frame as a query, it decodes the scene geometry, the TCP’s SE(3) motion, and the gripper state. ② TCP4D Generator extracts local features along the TCP tracks to form queries and incorporates the robot states. Conditioned on the current 4D scene representation, the wrist RGB view, and language instruction, it predicts the TCP motion and gripper state over the next h steps."
+      },
+      {
+        "number": 7,
+        "placement": "findings",
+        "reading_title": "Figure 7 — 실물 조작에서 다음 32-step TCP 예측을 보는 법",
+        "context": "CoBoT Magic의 펜 놓기·그릇 쌓기 과제에서 각 시점 다음 32 step의 TCP 경로를 시간색으로 표시한다. 파란색→주황색은 예측 단계 순서이며 성공률 그림이 아니라 rollout 시각화다. 이 그림을 Table/§4.5의 30 trials strict success와 짝지어 읽는다.",
+        "steps": [
+          "두 실물 과제의 손 위치·물체 정렬과 다음 32-step 색상 그라데이션 확인.",
+          "그림의 한 rollout과 평균 25/30,22/30 성공률을 구분.",
+          "Appendix F.2의 전체 rollout 설명과 실제 엄격 성공 규칙 확인."
+        ],
+        "verified_caption": "Figure 7: Real-world experiments setup and task rollouts. The right panel shows the rollout of tasks 1) placing pens and 2) stacking bowls, with the predicted TCP trajectory over the next 32 steps displayed in each inference window. The color gradient from blue to orange indicates the temporal order of future actions. Complete rollout visualizations are in Appx. F.2."
+      }
+    ]
   }
 }
