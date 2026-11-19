@@ -1135,5 +1135,65 @@
       "review": "paper_figure_number_caption_author_file_crosschecked",
       "hosting_note": "공식 arXiv HTML 저자 원본 PNG를 외부 링크로 표시; GitHub 자체 복사본 아님."
     }
+  },
+  "2611.22584": {
+    "2": {
+      "remote_url": "https://arxiv.org/html/2611.22584v1/cvpr-teaser.png",
+      "source": "https://arxiv.org/html/2611.22584v1/cvpr-teaser.png",
+      "paper_source": "https://arxiv.org/html/2611.22584v1",
+      "caption": "Figure 2: InteractVLA turns VLAs into interactive tools for agents. (a) Matching a sparse target too early disrupts the approach motion, causing premature gripper closure and rotation; timely alignment preserves the approach, contact, and lift sequence. (b) InteractVLA combines test-time geometric guidance with soft-time target alignment to steer a frozen VLA toward agent-specified targets, while returning action feedback for target revision and local motion refinement. (c) This interactive interface improves online tool-use success on both LIBERO-Plus and RoboDojo.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 원저자 이미지 외부 링크; 저장소 자체 복사본 아님."
+    },
+    "3": {
+      "remote_url": "https://arxiv.org/html/2611.22584v1/cvpr-main.png",
+      "source": "https://arxiv.org/html/2611.22584v1/cvpr-main.png",
+      "paper_source": "https://arxiv.org/html/2611.22584v1",
+      "caption": "Figure 3: InteractVLA combines geometric guidance with action-informed refinement. Left: At each denoising step, target similarity determines the guidance weights across the action chunk, progressively steering the generated motion toward the agent-specified target. Right: Different targets elicit diverse motion proposals that the agent can reproject, compare, and locally refine to complete the task, while low-confidence targets trigger rejection and replanning.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 원저자 이미지 외부 링크; 저장소 자체 복사본 아님."
+    }
+  },
+  "2611.22592": {
+    "1": {
+      "remote_url": "https://arxiv.org/html/2611.22592v1/figure1_apm_unified_v2.png",
+      "source": "https://arxiv.org/html/2611.22592v1/figure1_apm_unified_v2.png",
+      "paper_source": "https://arxiv.org/html/2611.22592v1",
+      "caption": "Figure 1: Student-state deviation in few-step generation. Coarse student transitions can depart from the dense teacher trajectory and change the remaining prediction. APM constructs restart-anchor and local-field supervision at student-reached states. Naive and APM use the same initial condition and four steps; squares denote video states and circles denote action states.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 원저자 이미지 외부 링크; 저장소 자체 복사본 아님."
+    },
+    "2": {
+      "remote_url": "https://arxiv.org/html/2611.22592v1/figure2_apm_independent_v9.png",
+      "source": "https://arxiv.org/html/2611.22592v1/figure2_apm_independent_v9.png",
+      "paper_source": "https://arxiv.org/html/2611.22592v1",
+      "caption": "Figure 2: Anchored Path Matching (APM). (a) One teacher continuation from z_r supplies the restart endpoint and next nonzero-time local target. The gray path supplies the Original anchor used in ablation. Φ_T integrates the teacher from noise level p to q. (b) Endpoint and short-transition queries share z_r; anchor-priority correction coordinates their gradients alongside the base objective.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 원저자 이미지 외부 링크; 저장소 자체 복사본 아님."
+    }
+  },
+  "2611.23143": {
+    "2": {
+      "remote_url": "https://arxiv.org/html/2611.23143v1/overview.png",
+      "source": "https://arxiv.org/html/2611.23143v1/overview.png",
+      "paper_source": "https://arxiv.org/html/2611.23143v1",
+      "caption": "Figure 2: Overview of TCP4D. ① TCP4D Tracker takes a monocular video as input and constructs a 4D scene representation. Given the TCP’s 2D location in the initial frame as a query, it decodes the scene geometry, the TCP’s SE(3) motion, and the gripper state. ② TCP4D Generator extracts local features along the TCP tracks to form queries and incorporates the robot states. Conditioned on the current 4D scene representation, the wrist RGB view, and language instruction, it predicts the TCP motion and gripper state over the next h steps.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 원저자 이미지 외부 링크; 저장소 자체 복사본 아님."
+    },
+    "7": {
+      "remote_url": "https://arxiv.org/html/2611.23143v1/rollout.png",
+      "source": "https://arxiv.org/html/2611.23143v1/rollout.png",
+      "paper_source": "https://arxiv.org/html/2611.23143v1",
+      "caption": "Figure 7: Real-world experiments setup and task rollouts. The right panel shows the rollout of tasks 1) placing pens and 2) stacking bowls, with the predicted TCP trajectory over the next 32 steps displayed in each inference window. The color gradient from blue to orange indicates the temporal order of future actions. Complete rollout visualizations are in Appx. F.2.",
+      "method": "arxiv_html_exact_figure",
+      "review": "paper_figure_number_caption_author_file_crosschecked",
+      "hosting_note": "공식 arXiv HTML 원저자 이미지 외부 링크; 저장소 자체 복사본 아님."
+    }
   }
 }
