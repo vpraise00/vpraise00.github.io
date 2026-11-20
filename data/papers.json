@@ -3859,6 +3859,109 @@
       "curated": true,
       "featured": true,
       "editorial_verified": true
+    },
+    {
+      "id": "2611.22395",
+      "slug": "2611.22395",
+      "title": "CoBoVLA: Decoupling Language from Action with Discrete Codes for Robust and Interpretable Robot Manipulation",
+      "authors": [
+        "Mehul Arora",
+        "Dhruv Agarwal",
+        "Ambuj Agrawal"
+      ],
+      "published": "2026-11-17",
+      "updated": "2026-11-17",
+      "primary_category": "vla",
+      "categories": [
+        "vla",
+        "robotics"
+      ],
+      "tags": [
+        "VLA",
+        "Discrete Codes",
+        "LIBERO-Para",
+        "MDL Segmentation"
+      ],
+      "reading_minutes": 32,
+      "source_url": "https://arxiv.org/abs/2611.22395",
+      "pdf_url": "https://arxiv.org/pdf/2611.22395",
+      "origin": "manual-source-reviewed",
+      "project_url": "",
+      "code_url": "",
+      "abstract": "공식 arXiv v1 Method/Experiments/Appendix A–E를 읽고 6슬롯 step-code·MDL action-code의 학습/추론을 정리했다. 500 LIBERO-Goal 91.4%, 4092 패러프레이즈 81.1%, 2단계 78/160 성공과 초기상태 중복 한계를 확인.",
+      "summary_ko": "언어와 동작을 별도의 이산 코드 인터페이스로 나눠 250.3M VLA의 언어 강건성을 높인다. LIBERO-Goal·Para, 2단계 조합, 코드별 원인 추적, ablation과 학습·평가 중첩을 구분한 기술 리뷰.",
+      "curated": true,
+      "featured": true,
+      "editorial_verified": true
+    },
+    {
+      "id": "2611.19709",
+      "slug": "2611.19709",
+      "title": "Cache or Denoise Less? Residual Reuse in a Flow-Matching World Action Model",
+      "authors": [
+        "Abhinav Gupta",
+        "Nissan Pow"
+      ],
+      "published": "2026-11-15",
+      "updated": "2026-11-15",
+      "primary_category": "wam",
+      "categories": [
+        "wam",
+        "robotics"
+      ],
+      "tags": [
+        "World-Action Model",
+        "Flow Matching",
+        "Inference Cache",
+        "LIBERO"
+      ],
+      "reading_minutes": 32,
+      "source_url": "https://arxiv.org/abs/2611.19709",
+      "pdf_url": "https://arxiv.org/pdf/2611.19709",
+      "origin": "manual-source-reviewed",
+      "project_url": "",
+      "code_url": "",
+      "abstract": "공식 arXiv v1 본문 §2–5 및 Appendix A.1–A.11를 대조했다. Fast-WAM의 flow denoising 10→2-step 무캐시와 C³ache residual reuse를 동일 checkpoint/shift/latency 조건에서 비교했다.",
+      "summary_ko": "6B Fast-WAM의 캐시가 2step 무캐시보다 유리한지 실제 LIBERO 폐루프에서 검토한다. 2step 92ms vs10step 202ms, τ8 캐시 63% 실패 조건·flow path share·noise 재추첨을 분석.",
+      "curated": true,
+      "featured": true,
+      "editorial_verified": true
+    },
+    {
+      "id": "2611.23843",
+      "slug": "2611.23843",
+      "title": "RePlan-VLA: Progress-Aware Replanning for Long-Horizon Vision-Language-Action Models",
+      "authors": [
+        "Apoorva Vashisth",
+        "Manav Kulshrestha",
+        "Damon Conover",
+        "Zachary Kingston",
+        "Aniket Bera"
+      ],
+      "published": "2026-11-18",
+      "updated": "2026-11-18",
+      "primary_category": "robotics",
+      "categories": [
+        "robotics",
+        "vla"
+      ],
+      "tags": [
+        "Robotics",
+        "Long-Horizon",
+        "Progress Estimation",
+        "Replanning"
+      ],
+      "reading_minutes": 32,
+      "source_url": "https://arxiv.org/abs/2611.23843",
+      "pdf_url": "https://arxiv.org/pdf/2611.23843",
+      "origin": "manual-source-reviewed",
+      "project_url": "",
+      "code_url": "",
+      "abstract": "공식 arXiv v1 Method/Experiments, Figure1/2, Table1–3을 대조했다. frozen VLA, trained progress estimator, VLM subtask planner와 RoboCasa365/CALVIN 성능, 본문 CALVIN 100/50 샘플 모순을 명시했다. 원문은 Appendix를 참조하나 첨부 PDF/HTML에는 없음.",
+      "summary_ko": "동결된 VLA 위에서 학습된 progress monitor와 실패 피드백 기반 재계획을 운용한다. RoboCasa365 62.5% vs 40.6%, CALVIN 평균4.10/5, 검증기/진행률/context ablation과 정량 근거 부족을 분석.",
+      "curated": true,
+      "featured": true,
+      "editorial_verified": true
     }
   ]
 }
