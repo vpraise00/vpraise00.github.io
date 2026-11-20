@@ -6983,5 +6983,159 @@
         "2611.06447"
       ]
     }
+  },
+  "2611.22395": {
+    "summary_ko": "6슬롯 의미 코드와 MDL 동작 코드로 언어 이해·행동 계획·제어를 분리한 250.3M VLA. LIBERO-Goal 91.4%, LIBERO-Para 81.1%, 2-step 78/160; 다중 지시 실패와 초기상태 중첩·평가 조건까지 분석했다.",
+    "reading_minutes": 33,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-20",
+    "source_scope_ko": "arXiv:2611.22395v1 공식 16쪽 PDF·HTML §3 Method/§4 Experiments/§5 Limitations, Appendix A–E, Figure 1(p1)·2(p3), Table 1·2·4 및 S5/S9 대조. 원본 PDF 페이지 임베드이며 개별 Figure 파일 크롭은 아님.",
+    "review": {
+      "one_line": "**언어를 모터 제어기에서 분리하면 실패 원인이 보인다.** 동의 문장들이 같은 6슬롯 step-code가 되면 planner는 목표 단어 없이 동작 코드를 선택할 수 있다. 단어 해석이 틀렸는지 모션 실행이 틀렸는지 코드별로 읽는 것이 CoBoVLA의 핵심이다(§3·Figure 2).",
+      "problem": "LIBERO의 canonical 지시문을 학습한 VLA는 '그릇을 찬장 위에 올려라'를 비슷한 뜻의 '그릇을 사이드보드 위에 놓아줘'로 바꾸면 다른 물체와 목표를 선택할 수 있다. 0.6B–7.5B 모델도 LIBERO-Para에서 성공률 하락을 보였고 전형적인 end-to-end 정책은 언어 이해 실패와 제어 실패를 내부적으로 분리해 관찰하기 어렵다. 제어 주기마다 언어와 영상을 함께 처리하는 비용도 크다.",
+      "idea": "독립된 두 종류의 이산 인터페이스를 만든다. 텍스트 encoder는 지시의 각 단계를 여섯 개 의미 슬롯(각 32개 중 하나)으로 표현하고, 다른 단어로 말해도 같은 의미 코드를 내도록 텍스트 쌍만으로 학습한다. 모션 시연은 MDL 가변 길이 분절을 통해 두 레벨 action code로 압축한다. 시각 planner는 step code와 이미지/상태에서 다음 action code chain을 예측하고 actor는 language를 직접 보지 않고 flow-matching 행동을 출력한다. Figure 1은 성공/실패 단일 예시, Figure 2는 실제 아키텍처·학습 경로다.",
+      "method": "훈련 순서는 ① 1,693개 LIBERO 시연을 residual VQ(레벨당 32)로 인코딩하고 MDL 동적 계획법으로 6–192step segment를 찾는 8라운드 과정, ② bge-base 6슬롯 의미 codebook에 paraphrase 양방향 코드 예측/언어 reconstruction·commitment·entropy·중복 방지 적용, ③ 소형 bge-small step coder(38.4M)를 최대 세 지시 단계에 맞춰 학습, ④ 공유 frozen SigLIP 86.4M에서 전면/손목 카메라를 읽는 26.1M planner가 3개 행동 segment를 예측, ⑤ 99.4M actor가 모션 코드와 영상을 조건으로 flow matching 연속 행동 chunk를 생성하는 단계다. 총 250.3M은 actor 고유 SigLIP tail 사본도 포함한다(Appendix A). 추론 때 사용자 문장은 처음 한 번만 인코딩되며 actor는 단어 자체를 보지 않는다.",
+      "findings": "Table 4의 4092 LIBERO-Para 각 1회 rollout에서 전체 성공률 81.1%, step code가 canonical과 같은 3459개에서는 91.0%, 다른 633개에서는 27.2%. 같은 시뮬레이터 기준 LIBERO-Goal 500회에서 91.4% vs SmolVLA 82.8%, paraphrase로 LoRA 학습한 SmolVLA 36.5%, PRIDE 78.5다. Table1의 별도 복합 지시 시험은 16쌍×10=160회이며 두 목표가 모두 유지될 때 78회(48.8%) 성공. Table2는 코드 파싱 오류18, 첫 작업 도중 원상복귀22, 둘째 단계 실패26 등을 분리한다. §4.6의 이산/연속 비교에서 200개 Para 선택 subset 77.0/65.5, Goal-100 93/82였으나 각각 한 시드다. 개발 ablation에서 temporal ensembling 이외 추가 요소 개별 효과는 통계적으로 명확하지 않다.",
+      "limitations": "본 연구의 모든 로봇 실험은 시뮬레이션으로 실제 로봇 강건성을 보증하지 않는다. LIBERO-Para는 단 10개 canonical 작업의 표현 변형이고 강한 '원지시 최근접 검색' baseline은 실험하지 않았다. 일부 DAgger 학습 상태가 500 episode 표준 평가 초기 상태와 겹치므로 저자가 분리 제시한 비중복 300상태 확인이 중요하다. 두 단계 전환 시 scripted home reset을 사용하며 두 번째 단계에서 첫 단계의 완료 상태를 없애는 경우가 22회다. 17ms/step은 74ms 호출을 다섯 스텝에 나눠 환산한 값이지 단일 호출 응답 17ms가 아니다. 다른 연구의 5-seed 평균과 단일 rollout 값은 엄밀한 동일 비교가 아니다.",
+      "questions": [
+        "목표 코드 대신 canonical instruction 최근접 검색을 기존 VLA 앞에 넣으면 얼마나 비슷하게 견딜까?",
+        "학습에서 본 적 없는 실제 물체·장면에서 의미 코드와 action code를 별도로 얼마나 재사용할까?",
+        "두 단계에서 중간 목표가 취소되지 않도록 planner에 어떤 상태/접촉 제약을 넣을까?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**해설의 분리 기준:** 원논문 Figure 2(b)의 meaning codebook과 (c)의 action-code MDL 분절은 입력 데이터와 감독 신호가 완전히 다르다. 이 차이를 놓치면 '텍스트만 학습해서 새로운 동작을 생성한다'는 오해가 생긴다. Table 1/2/4 및 Appendix S5의 평가 횟수도 섞어서는 안 된다.",
+      "pipeline": [
+        {
+          "title": "MDL 동작 분절과 코드북",
+          "detail": "1,693개 LIBERO 시연 행동을 6–192 제어스텝 길이 가변 세그먼트로 분할한다. 2레벨·각 32개 residual VQ로 재구성 비용과 구간 길이/코드 빈도 비용을 함께 최소화한다. 초기 16-step 구간에서 시작해 8회 동적계획법 분할과 autoencoder 재학습을 반복한다.",
+          "io": "demonstration actions → segmentation → 2×32 codes"
+        },
+        {
+          "title": "언어 쌍으로 의미 코드북 학습",
+          "detail": "bge-base와 여섯 의미 슬롯, 공유 K=32 cosine codebook. 같은 작업의 다른 패러프레이즈가 같은 코드로 상호예측되도록 학습하고 언어 재구성·commitment·entropy·slot중복 방지 손실을 결합한다.",
+          "io": "paraphrases only → 6 discrete semantic slots"
+        },
+        {
+          "title": "경량 step coder 학습",
+          "detail": "bge-small 일부 층만 미세조정해 사용자 문장을 최대 3개 하위 지시로 분리하고 각 단계의 여섯 슬롯 의미 코드를 예측한다. 배포 모델의 step coder는 38.4M 매개변수.",
+          "io": "instruction → z_step^1,...,z_step^S"
+        },
+        {
+          "title": "시각 planner의 다음 모션 구간 선택",
+          "detail": "전면·손목 카메라의 공유 frozen SigLIP 토큰과 8차원 robot state, 현재 의미 코드를 받아 26.1M planner가 이후 세 action-code segment와 done을 추론한다.",
+          "io": "step code + images + state → action code chain"
+        },
+        {
+          "title": "언어를 보지 않는 actor 실행",
+          "detail": "99.4M actor는 현재/미래 action code와 영상·상태를 조건으로 flow matching 기반 행동 chunk를 생성한다. 부록은 비전 인코더 상단 일부의 actor용 미세조정 사본도 집계한다.",
+          "io": "action code + observation → motor actions"
+        },
+        {
+          "title": "완료 토큰 후 다음 지시 단계로 전환",
+          "detail": "현재 동작이 done으로 끝나면 다음 step code를 실행한다. 2-step 실험은 단계 사이 scripted home reset을 수행하며 첫 단계의 목표를 두 번째 동작에서도 유지해야 최종 성공이다.",
+          "io": "done → next step → both goals held"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "목표 코드와 동작 코드의 물리 의미는 다르다",
+          "body": "여섯 슬롯 의미 코드는 지시의 대상과 목표를 나타내며 2레벨 32개 모션 코드는 각 시연 구간의 행동 특징을 나타낸다. 같은 숫자 토큰이라도 같은 코드 공간이 아니다.",
+          "watch": "§3.1–3.4·Figure 2(a–c)"
+        },
+        {
+          "title": "MDL vs 수작업 gripper-event 분할",
+          "body": "Appendix E에서 MDL 모션 코드 3-gram의 타 과제 재사용률은 74%, gripper event 기준은 35%. 반면 시퀀스만으로 task label 찾기 정확도는 각각 62%/73%로 역전돼 재사용성과 구분성을 함께 고려해야 한다.",
+          "watch": "Appendix E·Table S9"
+        },
+        {
+          "title": "잘못된 코드를 보면 실행 전 언어 오류를 추적할 수 있다",
+          "body": "'cabinet'을 'sideboard'로 대체한 문장에서는 여러 경우 다른 목표 코드를 선택했다. 다른 LIBERO-Goal task 코드가 나온 181 episode는 0% 성공이고 175회 실제 다른 과제의 행동 체인을 따른다.",
+          "watch": "§4.5·Table 4·Figure 3"
+        },
+        {
+          "title": "17ms/step이라는 수치의 계산 단위",
+          "body": "RTX4050에서 planner/actor 한 호출이 74ms이고 5 제어스텝마다 실행해 스텝 평균을 17ms로 보고한다. 모델 전체 forward를 매 17ms마다 실행하는 것이 아니다.",
+          "watch": "§4.2·Appendix A"
+        },
+        {
+          "title": "개발 ablation과 독립 confirmation 구분",
+          "body": "Appendix S5의 200 episode 개발셋에서 temporal ensembling 추가 80.5→88.0%(p=.04), fine-tuned SigLIP 90.0, path attention 91.0. 마지막 두 추가항목 개별 효과는 통계적으로 뚜렷하지 않으며 별도 초기상태 40–49 확인에서는 89%다.",
+          "watch": "Appendix A·Table S5"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "LIBERO-Goal 표준 지시",
+          "value": "91.4% vs SmolVLA 82.8%",
+          "context": "§4.2, 동일 simulator/protocol, 10과제×50 초기상태 500회"
+        },
+        {
+          "metric": "LIBERO-Para 전체",
+          "value": "81.1%",
+          "context": "§4.1·Table 4, unseen 패러프레이즈 4092문장 각각 1회 실행"
+        },
+        {
+          "metric": "언어 강건성 지표 PRIDE",
+          "value": "78.5",
+          "context": "§4.4, 원문과 표현 거리 가중 점수; 단순 SR과 구별"
+        },
+        {
+          "metric": "paraphrase-LoRA SmolVLA",
+          "value": "36.5%",
+          "context": "§4.2, 같은 시뮬레이터·패러프레이즈 조건의 강한 baseline"
+        },
+        {
+          "metric": "두 단계 자유형 지시",
+          "value": "78/160=48.8%",
+          "context": "Table 1, 16 작업쌍×10 초기상태, 두 최종 목표 동시 유지"
+        },
+        {
+          "metric": "두 단계 실패 분해",
+          "value": "18 parse, 22 undo, 26 step2",
+          "context": "Table 2, 총 실패 82회; 그 밖에 11 first failure, 5 premature done"
+        },
+        {
+          "metric": "목표 코드가 canonical인 문장",
+          "value": "3459/4092 → SR 91.0%",
+          "context": "Table 4, 84.5%에서 정확한 코드; 기준 작업 성공률 91.4%"
+        },
+        {
+          "metric": "목표 코드가 비정규인 문장",
+          "value": "633/4092 → SR 27.2%",
+          "context": "Table 4, 다른 작업코드 181회 SR0%; 나머지 경우도 포함"
+        },
+        {
+          "metric": "이산 대 연속 의미 슬롯",
+          "value": "77.0 vs 65.5%",
+          "context": "§4.6, LIBERO-Para 200 선택 subset; Goal-100 93% vs82%, 한 seed"
+        }
+      ],
+      "evidence_note": "모든 수치는 저자 보고다. 500 canonical, 4092 paraphrase, 160 2-step, 200개 개발 ablation은 서로 다른 집합이다. DAgger 초기상태 일부 중첩, 고정 robot embodiment, 비교 논문 seed 차이를 유의한다.",
+      "comparison": "기존 SmolVLA·π0처럼 언어/행동을 한 모델에 결합하면 동의 문장 변형의 원인을 찾기 어렵다. CoBoVLA는 의미 인터페이스를 텍스트 데이터로만 바꿔도 downstream motion actor를 건드리지 않는 장점을 가진다. 다만 코드가 맞았다고 조작 성공이 자동 보장되지 않으며, MDL 코드의 해석 가능성은 통계적 의미다. Appendix E는 gripper 이벤트 분할보다 재사용이 높아도 task 판별 성능은 낮을 수 있음을 보여준다.",
+      "reading_guide": [
+        "Figure1의 end-to-end 실패/CoBo 성공은 하나의 동일 지시·초기상태 사례라는 점 확인",
+        "Figure2(a)의 stage1 → planner → actor, (b) 텍스트 코드, (c) 동작 코드 분리",
+        "Appendix A의 총 250.3M과 6슬롯 의미·2×32 행동 코드 확인",
+        "Table1 78/160은 최종 두 목표를 모두 보존했는지 보는 strict 기준",
+        "Table4 3459 canonical/633 mismatch의 성공률이 왜 극단적으로 다른지 추적",
+        "Appendix S5 개발 selection과 초기 상태 중첩 없는 confirmation 분리"
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] 문장 강건성 향상의 상당 부분은 discretization의 의미 동치 고정에서 나오지만 새 목표 조합과 OOD 물체명에선 의미 코드 오류가 급증할 것이다.",
+        "setup": "[편집 제안] 초기상태 DAgger-overlap 제거, LIBERO-Para 기존 10과제와 새로운 task object 조합에 seed 5개/문장 여러 실행을 적용한다. 두 단계 상태 유지(서랍 재닫힘 등)를 strict predicate로 검증한다.",
+        "baselines": "[편집 제안] SmolVLA+canonical nearest-neighbor rewrite, same-size continuous slots, MDL vs gripper-event segmentation, semantic-code oracle, frozen actor, no temporal ensemble.",
+        "metrics": "[편집 제안] semantic-slot accuracy, conditional task SR, 2-step both-goals-hold SR, per-pair failure taxonomy, CI, GPU peak memory, call-level latency.",
+        "risks": "[편집 제안] 개발/확인 초기상태가 겹치지 않게 고정하고 실제 모터 안전은 별도 저수준 controller가 관리. 1회 rollout 수치를 다중 seed의 불확실성과 혼동하지 않는다."
+      },
+      "related": [
+        "2506.01844",
+        "2611.06447",
+        "2611.14365"
+      ]
+    }
   }
 }
