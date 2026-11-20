@@ -1437,5 +1437,95 @@
         "verified_caption": "Figure 7: Real-world experiments setup and task rollouts. The right panel shows the rollout of tasks 1) placing pens and 2) stacking bowls, with the predicted TCP trajectory over the next 32 steps displayed in each inference window. The color gradient from blue to orange indicates the temporal order of future actions. Complete rollout visualizations are in Appx. F.2."
       }
     ]
+  },
+  "2611.22395": {
+    "heading": "CoBoVLA — 의미 코드와 행동 코드를 분리해 이해/실행의 실패 원인 추적",
+    "intro": "공식 arXiv 2611.22395v1 PDF Figure1(p.1), Figure2(p.3)의 실제 도식과 전체 캡션을 직접 확인. 개별 이미지는 추출하지 않고 원문 PDF 페이지를 표시한다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "problem",
+        "reading_title": "Figure 1 — 같은 문장·시작 상태에서 end-to-end 실패 vs 코드 제어",
+        "context": "SmolVLA가 말을 직접 행동에 연결해 실패한 장면과 CoBoVLA가 목표 step code→action-code chain→actor를 거쳐 90 control-step 후 성공한 장면을 비교한다. 성능 평균이 아닌 한 개의 동일 시작상태 사례다.",
+        "steps": [
+          "상단 정책에서 어디서 언어 뜻이 바뀌었는지 추적하기 어려운 이유",
+          "하단 step code가 문장의 의미를 고정하고 action code가 계획을 압축하는 과정",
+          "Table4의 전체 4092회 결과와 단일 화면을 혼동하지 않기"
+        ],
+        "verified_caption": "Figure 1. The same paraphrase and initial state, end-to-end versus through discrete codes. Top: an end-to-end VLA maps the words directly to actions; it fails, and nothing in the model shows why (frames from SmolVLA). Bottom: CoBoVLA’s stage 1 maps the paraphrase to the task’s own step code, the planner turns it into a chain of action codes, and an actor executes it, and the task succeeds after 90 control steps (t)."
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 6-slot 의미 코드와 MDL action code가 만나는 아키텍처",
+        "context": "(a)는 38M stage1→26M planner→99M actor의 inference pipeline, (b)는 텍스트 paraphrase 쌍의 meaning codebook, (c)는 robot demonstration만 사용하는 variable-length MDL segment를 보여준다.",
+        "steps": [
+          "(a)의 step coder가 텍스트를 한 번만 읽는 위치 확인",
+          "(b)의 의미 6슬롯 K=32는 (c)의 2레벨×32 모션 VQ와 다른 것",
+          "(c)의 세그먼트 경계를 손 동작·gripper 변화와 비교"
+        ],
+        "verified_caption": "Figure 2. CoBoVLA separates understanding from acting through two discrete codes. (a) At test time, stage 1 maps the instruction to a learned step code; the canonical instruction and two paraphrases receive the same code. The planner turns the current step code into a chain of action codes, and an actor turns the current action code into motor commands. (b) Step codes come from a meaning codebook trained on paraphrase pairs. (c) Action codes come from segmenting demonstrations by minimum description length."
+      }
+    ]
+  },
+  "2611.19709": {
+    "heading": "Fast-WAM 캐시 연구 — 성공률–지연과 sampler의 path share 해석",
+    "intro": "arXiv 2611.19709v1 공식 PDF Figure1(p.2), Figure2(p.4)와 Table1 평가 조건 대조. 각각 Figure가 포함된 공식 PDF 페이지를 표시한다(개별 크롭이 아님).",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "findings",
+        "reading_title": "Figure 1 — 2-step 무캐시와 10-step cache의 공정한 성공률–latency 비교",
+        "context": "두 패널 Optional-IDM s1과 original s5를 구분해 읽어야 한다. x축은 replanning call 당 평균 지연, y축은 100 LIBERO-Goal 초기상태 성공률이다. 오류막대는 95% Wilson SR 구간.",
+        "steps": [
+          "파랑 uncached 1–10steps와 주황 cache refresh τ별 성공률/latency",
+          "2-step 94/92ms가 10-step 202ms보다 빠른 점",
+          "Optional-IDM τ8의 실패 SR63%를 original τ8 SR94%와 함께 보기"
+        ],
+        "verified_caption": "Figure 1: Success against mean latency per call on 100 LIBERO-Goal states (one RTX A6000). Blue: uncached, 1–10 steps. Orange: caches refreshed every τ calls (squares: 8 of 10 steps cached; diamond: attenuated; triangle: 2 of 4 cached). Bars: 95% Wilson intervals."
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — cache한 step 수 아닌 실제 flow 적분 경로 비율",
+        "context": "캐시가 실제 덮는 noise-to-action flow path share를 x축으로 잡고 sampler shift s1/3/5와 fixed/fresh noise가 성공률에 미치는 영향을 보인다. 동일한 첫 8/10 스텝은 s1=80%, s5=44%를 덮는다.",
+        "steps": [
+          "τ8·50 initial states와 Table1의 100-state 비교 구분",
+          "s1/3/5, 호출마다 fresh noise 조건을 색/표식으로 구분",
+          "64% 이하 경로에서의 결과를 모든 모델의 보증으로 오해하지 않기"
+        ],
+        "verified_caption": "Figure 2: Success against the cached share of the flow path (τ=8, 50 states; 0% is uncached). Triangles: s=3. Crosses: fresh noise per call. Bars: 95% Wilson intervals."
+      }
+    ]
+  },
+  "2611.23843": {
+    "heading": "RePlan-VLA — 실제 실패 복구와 frozen VLA 위의 진행률 제어 루프",
+    "intro": "arXiv 2611.23843v1 공식 HTML Figure1(teaser_replan.png)·Figure2(method.png) 원저자 PNG 링크를 클릭해 실제 이미지와 캡션을 확인.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Figure 1 — 블록을 그릇에 놓지 못했을 때 계획을 다시 쓰는 실제 장면",
+        "context": "흰 블록/당근/그릇을 다루는 장기 명령에서 첫 목표를 실패한 로봇이 점검기로부터 실패 신호를 받아 같은 목표를 재시도한다. 정량 성공률이 아니라 한 실물 rollout의 증거다.",
+        "steps": [
+          "실패한 흰 블록이 그릇 안에 없다는 visual state 확인",
+          "다음 목표로 잘못 넘어가지 않고 실패한 목표 재지시 확인",
+          "단일 실물 장면을 다회 trial 평균 성공으로 환산하지 않기"
+        ],
+        "verified_caption": "Figure 1: RePlan-VLA: Execution-aware replanning for long-horizon robotic manipulation. Given a long-horizon language instruction and scene observations, RePlan-VLA decomposes the task into executable short-horizon subtasks, monitors the robot’s progress and detects discrepancies between intended and observed outcomes. In this real-world rollout, the robot initially fails to place the white block into the bowl. RePlan-VLA identifies the incomplete manipulation and replans to retry the failed subtask before proceeding with the remaining objectives."
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — planner → frozen executor → trained monitor → planner",
+        "context": "장기 지시·객체 주석된 장면으로 하위 지시를 만들고 동결된 VLA가 action chunk를 실행한다. 별도 훈련된 진행률 estimator가 진행률 p/실패 플래그 r/자연어 진단 E를 생성해 planner로 반환한다. 하단에서는 croissant를 완료한 뒤 jam jar를 잘못 접근한 상황을 고쳐 나간다.",
+        "steps": [
+          "상단 왼쪽 DΨ, 가운데 πΦ, 오른쪽 FΘ의 입력과 출력 식별",
+          "진행률 숫자와 실패 설명 문장이 각각 어디로 전달되는지 확인",
+          "하단 incorrect object 접근과 회복이 Table3의 failure context 필요성에 어떻게 연결되는지 생각"
+        ],
+        "verified_caption": "Figure 2: Overview of RePlan-VLA. Given a long-horizon language instruction and visually grounded scene observations, the planner decomposes the task into executable short-horizon subtasks, which are sequentially executed by a frozen VLA policy. A separate progress estimator monitors execution at the manipulation-primitive level, detects deviations from the intended subtask, and generates natural-language failure feedback. Upon failure, the planner uses updated scene observations and diagnostic feedback to revise the remaining subtask sequence."
+      }
+    ]
   }
 }
