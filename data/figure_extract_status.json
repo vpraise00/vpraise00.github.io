@@ -1195,5 +1195,65 @@
       "review": "paper_figure_number_caption_author_file_crosschecked",
       "hosting_note": "공식 arXiv HTML 원저자 이미지 외부 링크; 저장소 자체 복사본 아님."
     }
+  },
+  "2611.22395": {
+    "1": {
+      "method": "arxiv_pdf_page_embed",
+      "source": "https://arxiv.org/pdf/2611.22395",
+      "paper_source": "https://arxiv.org/pdf/2611.22395",
+      "page": 1,
+      "caption": "Figure 1. The same paraphrase and initial state, end-to-end versus through discrete codes. Top: an end-to-end VLA maps the words directly to actions; it fails, and nothing in the model shows why (frames from SmolVLA). Bottom: CoBoVLA’s stage 1 maps the paraphrase to the task’s own step code, the planner turns it into a chain of action codes, and an actor executes it, and the task succeeds after 90 control steps (t).",
+      "review": "figure_and_caption_checked_against_original_PDF_screenshot",
+      "hosting_note": "공식 PDF 원본 전체 페이지(개별 이미지 크롭 아님)를 문맥별로 삽입"
+    },
+    "2": {
+      "method": "arxiv_pdf_page_embed",
+      "source": "https://arxiv.org/pdf/2611.22395",
+      "paper_source": "https://arxiv.org/pdf/2611.22395",
+      "page": 3,
+      "caption": "Figure 2. CoBoVLA separates understanding from acting through two discrete codes. (a) At test time, stage 1 maps the instruction to a learned step code; the canonical instruction and two paraphrases receive the same code. The planner turns the current step code into a chain of action codes, and an actor turns the current action code into motor commands. (b) Step codes come from a meaning codebook trained on paraphrase pairs. (c) Action codes come from segmenting demonstrations by minimum description length.",
+      "review": "figure_and_caption_checked_against_original_PDF_screenshot",
+      "hosting_note": "공식 PDF 원본 전체 페이지(개별 이미지 크롭 아님)를 문맥별로 삽입"
+    }
+  },
+  "2611.19709": {
+    "1": {
+      "method": "arxiv_pdf_page_embed",
+      "source": "https://arxiv.org/pdf/2611.19709",
+      "paper_source": "https://arxiv.org/pdf/2611.19709",
+      "page": 2,
+      "caption": "Figure 1: Success against mean latency per call on 100 LIBERO-Goal states (one RTX A6000). Blue: uncached, 1–10 steps. Orange: caches refreshed every τ calls (squares: 8 of 10 steps cached; diamond: attenuated; triangle: 2 of 4 cached). Bars: 95% Wilson intervals.",
+      "review": "figure_and_caption_checked_against_original_PDF_screenshot",
+      "hosting_note": "공식 PDF 원본 전체 페이지(개별 이미지 크롭 아님)를 문맥별로 삽입"
+    },
+    "2": {
+      "method": "arxiv_pdf_page_embed",
+      "source": "https://arxiv.org/pdf/2611.19709",
+      "paper_source": "https://arxiv.org/pdf/2611.19709",
+      "page": 4,
+      "caption": "Figure 2: Success against the cached share of the flow path (τ=8, 50 states; 0% is uncached). Triangles: s=3. Crosses: fresh noise per call. Bars: 95% Wilson intervals.",
+      "review": "figure_and_caption_checked_against_original_PDF_screenshot",
+      "hosting_note": "공식 PDF 원본 전체 페이지(개별 이미지 크롭 아님)를 문맥별로 삽입"
+    }
+  },
+  "2611.23843": {
+    "1": {
+      "remote_url": "https://arxiv.org/html/2611.23843v1/teaser_replan.png",
+      "source": "https://arxiv.org/html/2611.23843v1/teaser_replan.png",
+      "paper_source": "https://arxiv.org/html/2611.23843v1",
+      "caption": "Figure 1: RePlan-VLA: Execution-aware replanning for long-horizon robotic manipulation. Given a long-horizon language instruction and scene observations, RePlan-VLA decomposes the task into executable short-horizon subtasks, monitors the robot’s progress and detects discrepancies between intended and observed outcomes. In this real-world rollout, the robot initially fails to place the white block into the bowl. RePlan-VLA identifies the incomplete manipulation and replans to retry the failed subtask before proceeding with the remaining objectives.",
+      "method": "arxiv_html_exact_figure",
+      "review": "author_png_direct_url_and_number_caption_verified",
+      "hosting_note": "공식 arXiv HTML 저자 원본 PNG; 외부 호스팅"
+    },
+    "2": {
+      "remote_url": "https://arxiv.org/html/2611.23843v1/method.png",
+      "source": "https://arxiv.org/html/2611.23843v1/method.png",
+      "paper_source": "https://arxiv.org/html/2611.23843v1",
+      "caption": "Figure 2: Overview of RePlan-VLA. Given a long-horizon language instruction and visually grounded scene observations, the planner decomposes the task into executable short-horizon subtasks, which are sequentially executed by a frozen VLA policy. A separate progress estimator monitors execution at the manipulation-primitive level, detects deviations from the intended subtask, and generates natural-language failure feedback. Upon failure, the planner uses updated scene observations and diagnostic feedback to revise the remaining subtask sequence.",
+      "method": "arxiv_html_exact_figure",
+      "review": "author_png_direct_url_and_number_caption_verified",
+      "hosting_note": "공식 arXiv HTML 저자 원본 PNG; 외부 호스팅"
+    }
   }
 }
