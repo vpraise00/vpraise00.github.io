@@ -7137,5 +7137,164 @@
         "2611.14365"
       ]
     }
+  },
+  "2611.19709": {
+    "summary_ko": "6B Fast-WAM에서 2-step 무캐시 정책이 10-step의 LIBERO 성공률을 유지하며 지연을 202→92ms로 줄인 반면, 캐시는 sampler·noise 가정에 따라 63%까지 추락한다는 근거 기반 비판적 연구.",
+    "reading_minutes": 33,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-20",
+    "source_scope_ko": "arXiv:2611.19709v1 공식 PDF 13쪽 + HTML §2–5 Method/Experiments, Appendix A.1–A.11, Figure 1(p2)·2(p4) 및 Table 1·추가 500-state 검정 확인. 두 Figure는 공식 PDF 페이지 전체로 내장(개별 크롭 파일 아님).",
+    "review": {
+      "one_line": "**비교 기준선을 10-step에서 2-step으로 바꾸면 캐시의 의미가 달라진다.** Flow-matching WAM에서 이전 제어주기 transformer 중간 출력(residual)을 재사용하는 캐시가 10-step보다 빠른 것은 사실이지만, 2-step 무캐시 정책이 거의 같은 성공률로 더 빠를 수도 있다. 성공/지연/캐시 경로 비율의 세 축을 함께 봐야 한다.",
+      "problem": "로봇 VLA/WAM은 매 제어주기에 diffusion/flow denoiser를 여러 번 평가한다. 기존 C³ache는 10-step 원본을 기준으로 첫 8개 스텝의 행동 transformer residual을 재사용해 가속을 보고했다. 그러나 첫 2번 적분만으로도 원하는 행동을 거의 생성할 수 있다면 10-step cache의 점진적 최적화가 단순 K=2 baseline에 이기는지 알 수 없다. 또한 캐시가 '8단계를 건너뛰었다'는 숫자는 노이즈 시간표가 바뀔 때 flow 경로의 물리적 의미가 같지 않아 로봇에서 오래된 토큰이 제어를 망칠 수 있다.",
+      "idea": "Fast-WAM 자체를 새로 학습하지 않고 **inference 최적화의 평가 기준선**을 재설정한다. 1/2/4/10 Euler step을 캐시 없이 실행해 지연·성공률을 측정하고, 동일 Fast-WAM의 30-block action stack이 더한 residual R_k=h30−h0를 각 noise step에 저장한 후 다음 replanning 때 그대로 더하는 C³ache형 재사용과 맞비교한다. refresh 주기 τ와 sampler shift s, 고정/재추첨 시작 noise를 나눠 flow path 중 실제 재사용되는 몫 1−σ_m와 성공률 관계를 검사한다. Figure1은 SR–latency 파레토, Figure2는 flow coverage별 캐시 취약성 분석이다.",
+      "method": "Fast-WAM은 5B video expert+1B action expert로 두 카메라 입력을 한 번 인코딩하고 영상 KV context를 얻는다. 이후 30-block action transformer가 32개 미래 action chunk를 noise σ=1에서 σ=0까지 Euler K단계 적분하며 20Hz 로봇은 그중 10개(0.5초)를 사용한다. sigma_k=s*u_k/(1+(s−1)*u_k), u_k=1−k/K이고 original checkpoint는 s=5, Optional-IDM은 s=1로 기본 제공된다. refresh cycle에서 30-layer 전체 입력 h0·출력 h30 차이 R_k를 저장해 후속 같은 k step에서 h0+R_k로 재사용하고 나머지 단계는 full forward를 수행한다. τ=2/4/8/never, cache0–7/10, attenuation, first-step partial caching, 신선 노이즈와 서로 다른 shift를 교차한다. LIBERO-Goal 10과제×10초기상태, 전체 검정 500초기상태, shift 검정 50초기상태, RTX A6000 개별 프로세스 환경에서 CUDA synchronized call time(초기 compile 제외)을 측정했다(§2–4, Appendix A).",
+      "findings": "Table1: Optional-IDM s1에서 2-step uncached 95%/94ms, 10-step uncached 95%/202ms, τ8 8step cache 63%/116ms; original s5에서 같은 행은 96%/92ms, 95%/202ms, 94%/120ms다. 500개 initial states의 Optional-IDM 2 vs10 단계는 96.6 vs96.4%와 90% CI [−1.4,1.8]pp로 2pp 비열등 기준을 만족한다(단일 checkpoint/noise seed). Figure2에서 첫 8/10 step cache의 실제 path share는 s1일 때 80%, s5일 때 44%여서 성능 저하 차이가 크다. shift를 교차한 50-state 평가에서 Optional-IDM cache s1→s5는 54→92%, original cache s5→s1은 92→72%이다. 같은 조건의 미캐시 성능은 2pp 이하로 변한다. 매 호출 noise를 새로 뽑으면 60% 이상 경로를 캐시하는 방법은 14–40pp 손실이 있지만 uncached는 2pp 이내다. 2step의 첫 단계만 캐시하고 4번마다 재계산하는 가속의 이론 상한은 호출 비용 기준 11~14%, 실측 차이는 불확실하다. 지연 모사 실험의 2-step48/50 vs 10-step43/50은 p=.12로 확정적 우위가 아니다.",
+      "limitations": "벤치마크는 실물 로봇이 아니라 LIBERO 시뮬레이션이다. 대개 10작업×10 상태 또는 5상태, 한 6B 구조, 두 checkpoint, 거의 하나의 noise seed, 한 RTX A6000 기기라는 좁은 조건이다. 500상태의 비열등 검정도 전체 WAM 일반화가 아니라 Optional-IDM 한 모델의 2 vs 10-step 조건이다. 지연값은 한 호출 CUDA 동기화 지연으로 20Hz 실제 제어·보정/재계획 staleness, GPU memory 및 energy를 측정한 것은 아니다. s=5 original과 s=1 Optional-IDM은 checkpoint와 sampler가 함께 다른 비교이므로 Figure2 교차 실험을 함께 봐야 한다. 50상태에서 캐시 flow coverage가 64% 이하면 성능이 유지된 듯 보인다는 관찰은 보편적인 안전 경계가 아니다. 초반 refresh 때의 큰 시간도 평균과 p95에 다르게 나타난다.",
+      "questions": [
+        "새 로봇/장기 조작에서는 2-step이 10-step과의 비열등을 잃는가?",
+        "동일 path share를 맞추고 shift만 바꿔도 캐시 error는 얼마나 변하는가?",
+        "실물 20Hz의 불규칙한 latency jitter와 이전 action chunk 실행을 넣으면 Pareto가 어떻게 바뀌나?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**연구 성격을 먼저 규정:** 새 World-Action Model의 학습 논문이 아니라 **이미 공개된 Fast-WAM의 residual-cache 최적화에 대한 재검증**이다. Figure 1에서 x축은 평균 replanning call 지연, Figure 2에서 x축은 캐시된 flow path 비율이며 전혀 다른 실험을 나타낸다. 비열등성을 보고한 신뢰구간도 90%와 Wilson 95%를 혼동하면 안 된다.",
+      "pipeline": [
+        {
+          "title": "Fast-WAM의 관측·영상 context 구축",
+          "detail": "두 카메라 관측을 인코딩하고 5B video expert가 동작 생성을 조건화할 KV context를 한 번 생성한다. 재계획마다 이 작업은 생략되지 않는다.",
+          "io": "2 images → video KV memory"
+        },
+        {
+          "title": "행동 expert의 K단계 Euler 적분",
+          "detail": "30-block 1B action expert가 시작 noise에서 32 future actions를 생성한다. 실행기는 20Hz에서 앞 10개만 수행하고 다시 관측한다.",
+          "io": "σ=1 → K=1/2/4/10 Euler steps → σ=0"
+        },
+        {
+          "title": "refresh 호출에서 residual 저장",
+          "detail": "10step 전체를 계산할 때 각 step의 transformer 입력 h0와 출력 h30의 차이 R_k=h30−h0를 저장한다. 같은 k의 residual이 다음 제어 주기에 존재한다.",
+          "io": "R_k(step k)=h30−h0"
+        },
+        {
+          "title": "reuse 호출에서 중간계산 대체",
+          "detail": "cache된 noise step에서는 30-block 전체를 건너뛰고 h0+R_k로 복원, 뒤쪽 미캐시 step은 다시 계산한다. 첫 호출과 매 τ번째 호출에는 cache를 새로 갱신한다.",
+          "io": "(K,m,τ)→reused/fresh expert passes"
+        },
+        {
+          "title": "sampler shift와 noise 시드 교차",
+          "detail": "s1/3/5와 fresh/fixed latent를 나눠 최초 m step이 실제 noise-to-action flow path의 1−σ_m 만큼을 차지하는지 측정한다.",
+          "io": "m=8,K=10 → path share 80% (s1), 44%(s5)"
+        },
+        {
+          "title": "같은 평가구간에서 성능·지연·불확실성 측정",
+          "detail": "LIBERO-Goal 100 또는 shift/noise 50상태를 구성별 독립 프로세스로 실행하고 RTX A6000 synchronized ms와 성공을 기록. 500상태·카메라 지터로 비열등성 보강.",
+          "io": "matched SR / mean,p95 ms / CI"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "왜 두 fresh step을 유지하는 캐시는 2-step uncached보다 빨라지기 어려운가",
+          "body": "영상 인코딩·video expert와 마지막 두 step을 그대로 계산한다면 다른 앞단의 캐시를 만들고 읽어오는 overhead가 남는다. 새로 계산할 때 두 단계면 충분한 시나리오에서는 cache 이득이 원천적으로 좁다.",
+          "watch": "§3 cost model; Table1"
+        },
+        {
+          "title": "단계 개수보다 integration path coverage",
+          "body": "s1은 초기 8/10 step이 경로 80%를, s5는 44%를 담당한다. 실제 flow vector field를 크게 건너뛴 채 stale residual을 재사용하면 선택한 최종 행동이 달라질 수 있다.",
+          "watch": "§2 Eq(1), Figure2"
+        },
+        {
+          "title": "고정 latent와 새 noise의 차이",
+          "body": "Fast-WAM은 주기마다 동일 latent를 사용한다. noise를 재추첨하면 초기 action token이 다른 지점에서 시작해 이전 호출의 residual과 정합성이 떨어진다. 60%+ coverage에서 14–40pp 성공 손실이 이를 드러낸다.",
+          "watch": "§4 and Appendix A.3–A.5"
+        },
+        {
+          "title": "양측 검정과 비열등 한계",
+          "body": "100상태 Table1은 5pp 비열등 마진을 미리 정해 해석하고 500상태 결과는 90% CI [−1.4,1.8]pp로 2pp 마진도 만족한다. 수치가 가깝다는 것만으로 '완전 동등'은 아니다.",
+          "watch": "§3 paired Tango CI / Appendix A.1"
+        },
+        {
+          "title": "지연 측정과 실제 제어 staleness",
+          "body": "92ms 추론은 20Hz 제어스텝 50ms를 넘어 2step까지 수행될 수 있다. 에뮬레이션에서 평균 지연을 50ms의 정수배로 올림 처리한 지연 시나리오는 실제 지터·동시성과 다르다.",
+          "watch": "§3 delayed execution·Appendix A.6"
+        },
+        {
+          "title": "attenuation은 만능 해결책이 아니다",
+          "body": "stale residual에 회귀보정 계수를 곱하면 Optional-IDM τ8 성공이 63%에서 81%로 올라가도 95% uncached에는 못 미친다. 해당 비용과 갱신 규칙까지 공정하게 포함해야 한다.",
+          "watch": "Table1 attenuated τ8"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "Optional-IDM s1 uncached K=2",
+          "value": "95% / 94ms",
+          "context": "Table1, 100 LIBERO-Goal state, RTX A6000 torch.compile default"
+        },
+        {
+          "metric": "Optional-IDM s1 uncached K=10",
+          "value": "95% / 202ms",
+          "context": "Table1, 같은 조건"
+        },
+        {
+          "metric": "Original s5 uncached K=2",
+          "value": "96% / 92ms",
+          "context": "Table1, 다른 checkpoint·shift 주의"
+        },
+        {
+          "metric": "Original s5 uncached K=10",
+          "value": "95% / 202ms",
+          "context": "Table1, 원본 설정"
+        },
+        {
+          "metric": "τ8, 8/10 cache Optional-IDM",
+          "value": "63% / 116ms",
+          "context": "Table1, 80% path cached, s1"
+        },
+        {
+          "metric": "τ8, 8/10 cache original",
+          "value": "94% / 120ms",
+          "context": "Table1, 44% path cached, s5"
+        },
+        {
+          "metric": "500-state 2 vs10 step",
+          "value": "96.6% vs96.4%",
+          "context": "§3, Optional-IDM one checkpoint/seed, 90% CI −1.4~1.8pp"
+        },
+        {
+          "metric": "1.5cm camera jitter 250-state",
+          "value": "70.0% vs64.8%",
+          "context": "§3, 2step vs10step, 별도 평가조건"
+        },
+        {
+          "metric": "fresh noise & cached path≥60%",
+          "value": "14–40pp 감소",
+          "context": "§4, cache 실험; uncached noise 변화는 2pp 이하"
+        }
+      ],
+      "evidence_note": "Table1은 100상태·한 GPU, Figure2는 50상태, 추가 noninferiority는 500상태; 각 실험 샘플 크기가 다르다. s1 Optional-IDM/s5 Original은 checkpoint와 shift가 달라 단순 조건동일 비교가 아니다. p95에는 refresh cycle 지연이 반영된다.",
+      "comparison": "기존 C³ache는 10step 원본 정책 대비 캐시로 많은 transformer pass를 생략하는 방향을 강조한다. 이 논문은 이미 2step 실행으로 같은 성공률이 나온다면 캐시 자체가 가장 유리한 비용-품질 조합이 아닐 수 있음을 보인다. action expert residual reuse, sampler shift와 초기 noise 규칙을 함께 적시하도록 요구하며 더 적은 step이라는 평범한 baseline을 강력한 반례로 사용한다. 높은 시뮬레이션 성공률만으로 실제 임베디드 지연 개선을 단정하지 않는다.",
+      "reading_guide": [
+        "Figure1 각 점의 x축이 end-to-end call latency이고 y축이 100상태 SR인지 확인",
+        "Table1의 Optional-IDM(s1), Original(s5)을 각각 동일 열에서 비교",
+        "Eq1에서 K10 첫 8step 경로가 s1 80%, s5 44%인 계산",
+        "Figure2의 flow-path 비율·Wilson interval·τ8/50상태 표기",
+        "§3의 500상태 2pp 비열등 검정과 100상태 5pp를 구분",
+        "Appendix A.10 identity gate·A.11 reproducibility 및 CUDA그래프 조건 확인"
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] 단순 2step baseline이 LIBERO-Goal에서는 cache를 압도하지만 어렵고 긴 접촉/다양한 camera 변화가 있는 과제에서는 다단계 denoising+부분 cache가 다른 최적점을 형성할 것이다.",
+        "setup": "[편집 제안] 같은 Fast-WAM checkpoint로 K1/2/4/10, s1/2/3/5, refresh τ2/4/8/never, 고정 latent/매주기 resample을 전부 교차. Goal/Long 과제별 상태 50–100회×3–5 seed로 paired rollout. A6000 및 저전력 GPU에서 warmup·memory·energy·명령 staleness 측정.",
+        "baselines": "[편집 제안] 2step 무캐시, 10step 무캐시, C³ache, residual attenuation, 첫 step 캐시/나머지 1step fresh, CUDA Graph on/off, 동일 path-share cache.",
+        "metrics": "[편집 제안] task-level SR, noise별 paired CI, noninferiority 마진2/5pp, p50/p95 call latency, first refresh overhead, GPU peak VRAM/energy, 20Hz stale controls.",
+        "risks": "[편집 제안] cache 초기화와 지연을 부하 동등 조건으로 측정하고 한 시드·50상태의 64% 경로 관찰을 안전 보장으로 외삽하지 않는다."
+      },
+      "related": [
+        "2611.22592",
+        "2611.03103",
+        "2506.01844"
+      ]
+    }
   }
 }
