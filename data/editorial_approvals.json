@@ -47,8 +47,11 @@
     "2611.09293",
     "2611.22584",
     "2611.22592",
-    "2611.23143"
+    "2611.23143",
+    "2611.22395",
+    "2611.19709",
+    "2611.23843"
   ],
-  "note_ko": "2026-11-19 신규 3편: InteractVLA(2611.22584), Anchored Path Matching(2611.22592), TCP4D(2611.23143). 공식 arXiv v1 HTML Method/Experiments와 존재하는 Appendix, Figure 2·3 / 1·2 / 2·7 및 Table 평가조건 대조. WAM·InteractVLA는 독립 Appendix 없음. 원본 arXiv Figure 총 6개를 해당 설명 위치에 링크. 이전 43편과 중복 없음.",
-  "updated_at": "2026-11-19"
+  "note_ko": "2026-11-20 신규 승인 3편: CoBoVLA(2611.22395), Fast-WAM residual cache 평가(2611.19709), RePlan-VLA(2611.23843). 공식 PDF/HTML Method·Experiments, CoBo Appendix A–E, Cache Appendix A.1–A.11 및 Figure1·2·Table 원문 대조. RePlan Appendix는 본문에 참조되지만 PDF/HTML에 독립 텍스트 없음. CoBo·Cache Figure는 원본 PDF 전체 페이지 내장(개별 추출 이미지 아님), RePlan 두 Figure는 원본 arXiv PNG. CALVIN harD 샘플 수 50/100 본문 모순 명시. 기존 46편 중복 없음.",
+  "updated_at": "2026-11-20"
 }
