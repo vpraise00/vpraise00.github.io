@@ -427,7 +427,7 @@ def build():
     edits=json.loads((ROOT/'data/editorial_content.json').read_text(encoding='utf-8'))
     approved=set(gate.get('approved_ids',[]))
     # FAIL CLOSED: unapproved metadata stays archived, never becomes a published article.
-    papers=sorted(({**p, **edits[p['id']]} for p in content.get('papers',[]) if p.get('id') in approved and p.get('id') in edits and edits[p['id']].get('editorial_verified') is True),key=lambda p:(p.get('published',''),p.get('id','')),reverse=True)
+    papers=sorted(({**p, **edits[p['id']]} for p in content.get('papers',[]) if p.get('id') in approved and p.get('id') in edits and edits[p['id']].get('editorial_verified') is True),key=lambda p:(p.get('reviewed_at') or p.get('published',''),p.get('published',''),p.get('id','')),reverse=True)
     ids=set()
     for p in papers:
         clean_slug(p['id'])
