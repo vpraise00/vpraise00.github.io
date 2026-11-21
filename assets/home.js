@@ -9,9 +9,10 @@
  const category=id=>R.getCategories(config).find(x=>x.id===id)||{id,label:id.toUpperCase(),color:'#82959e'};
  const chip=(id,cl='cat-badge')=>{const c=category(id);return `<span class="${cl}" style="--cat-color:${R.safeColor(c.color)}">${e(c.label)}</span>`;};
  const isNote=p=>Boolean(R.note(p.id).trim()||R.getHighlights(p.id).length);
- const isNew=p=>R.ageDays(p.published)>=0&&R.ageDays(p.published)<=14;
+ const editorialDate=p=>p.reviewed_at||p.published;
+ const isNew=p=>R.ageDays(editorialDate(p))>=0&&R.ageDays(editorialDate(p))<=14;
  function counters(){
-  const fresh=papers.filter(p=>R.ageDays(p.published)>=0&&R.ageDays(p.published)<=30).length;
+  const fresh=papers.filter(p=>R.ageDays(editorialDate(p))>=0&&R.ageDays(editorialDate(p))<=30).length;
   $('#total-count').textContent=papers.length; $('#count-all').textContent=papers.length;
   $('#fresh-count').textContent=fresh; $('#channel-count').textContent=String(R.getCategories(config).length).padStart(2,'0');
   $('#bookmarks-count').textContent=R.state().saved.length; $('#count-saved').textContent=R.state().saved.length;
@@ -32,7 +33,7 @@
  function getFiltered(){
   const q=search.toLocaleLowerCase().trim();
   let filtered=papers.filter(p=>(channel==='all'||R.categoriesFor(p,config).includes(channel)) && (view==='all'||(view==='saved'?R.isSaved(p.id):isNote(p))) && (!q||[p.title,p.summary_ko,p.abstract,(p.tags||[]).join(' '),(p.authors||[]).join(' ')].join(' ').toLocaleLowerCase().includes(q)));
-  filtered=[...filtered].sort((a,b)=>sort==='title'?a.title.localeCompare(b.title):sort==='featured'?(Number(b.featured)-Number(a.featured))||b.published.localeCompare(a.published):b.published.localeCompare(a.published));
+  filtered=[...filtered].sort((a,b)=>sort==='title'?a.title.localeCompare(b.title):sort==='featured'?(Number(b.featured)-Number(a.featured))||editorialDate(b).localeCompare(editorialDate(a)):editorialDate(b).localeCompare(editorialDate(a)));
   return filtered;
  }
  function decorate(p){const primary=category(p.primary_category);return `--paper-color:${R.safeColor(primary.color)}`;}
@@ -52,7 +53,7 @@
  }
  function spotlight(){
   const picks=[papers.find(p=>p.id==='2504.16054')].filter(Boolean);
-  const options=picks.length===2?picks:papers.filter(p=>p.featured).sort((a,b)=>b.published.localeCompare(a.published)).slice(0,2);
+  const options=picks.length===2?picks:papers.filter(p=>p.featured).sort((a,b)=>editorialDate(b).localeCompare(editorialDate(a))).slice(0,2);
   $('#spotlight-grid').innerHTML=options.map(spotlightCard).join('');
  }
  function render(){
@@ -124,7 +125,7 @@
    const approvals=await approvalResponse.json(); const edits=await contentResponse.json();
    const approvedIds=new Set(approvals.approved_ids||[]);
    papers=(data.papers||[]).filter(p=>approvedIds.has(p.id) && edits[p.id]?.editorial_verified===true).map(p=>({...p,...edits[p.id]}));
-   $('#today-date').innerHTML=`<span>LAST INDEXED</span><strong>${e(R.showDate((data.last_checked||'').slice(0,10)))}</strong>`;
+   $('#today-date').innerHTML=`<span>LAST EDITORIAL</span><strong>${e(R.showDate(approvals.updated_at||(data.last_checked||'').slice(0,10)))}</strong>`;
    $('#sync-status').textContent='공개: 원문 대조를 통과한 해설만';
    const categoryFromLink=new URLSearchParams(window.location.search).get('category');
    if(categoryFromLink && R.getCategories(config).some(c=>c.id===categoryFromLink))channel=categoryFromLink;
