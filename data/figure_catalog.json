@@ -1527,5 +1527,95 @@
         "verified_caption": "Figure 2: Overview of RePlan-VLA. Given a long-horizon language instruction and visually grounded scene observations, the planner decomposes the task into executable short-horizon subtasks, which are sequentially executed by a frozen VLA policy. A separate progress estimator monitors execution at the manipulation-primitive level, detects deviations from the intended subtask, and generates natural-language failure feedback. Upon failure, the planner uses updated scene observations and diagnostic feedback to revise the remaining subtask sequence."
       }
     ]
+  },
+  "2410.07864": {
+    "heading": "RDT-1B — 로봇별 차이를 보존하는 통합 행동공간과 두 팔 확산정책",
+    "intro": "arXiv:2410.07864v2 공식 28쪽 PDF Fig.3 p.4와 Fig.4 p.6, caption과 해당 Method/Experiment 및 Appendix H를 확인. 개별 크롭이 아닌 Figure가 있는 PDF 원본 페이지.",
+    "figures": [
+      {
+        "number": 3,
+        "placement": "method",
+        "reading_title": "Figure 3 — 세 로봇 감각에서 동작 노이즈를 제거하는 RDT 입력 경로",
+        "context": "관절상태·제어 주파수·노이즈 행동 chunk, 2시점 3뷰 카메라, 언어가 별도 인코더를 지나 확산 Transformer의 교대 교차 주의로 결합한다. 행동 차원의 존재 마스크로 로봇 차이를 드러낸다.",
+        "steps": [
+          "각 modality가 고정 인코더/학습 인코더 중 어디로 들어가는지 구분",
+          "노이즈 action chunk와 diffusion time k의 입력 위치 찾기",
+          "실제 로봇 구조에 없는 action 차원을 어떻게 제외하는지 해석"
+        ],
+        "verified_caption": "Figure 3: RDT framework. Heterogeneous action spaces of various robots are embedded into a unified action space for multi-robot training."
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Figure 4 — QKNorm·RMSNorm 안정화와 MLP·ACI 설계 제거",
+        "context": "위 패널은 QKNorm/RMSNorm이 없을 때 훈련 손실 급등을, 아래는 MLP decoder 또는 alternating condition injection 제거 시 제어 성공률을 비교한다. 자원 문제로 Figure 4 비교 모델은 모두 사전학습 없이 평가했다.",
+        "steps": [
+          "위 plot의 손실 폭주와 안정 학습의 차이",
+          "아래 dexterity/instruction 하위작업에서 제거 효과",
+          "Table 2의 사전학습 ablation과 이 무사전학습 구조 ablation은 분리"
+        ],
+        "verified_caption": "Figure 4: (a) Unstable loss curve during training without QKNorm & RMSNorm. (b) Success rates of RDT (w/o MLP Decoder or w/o ACI) in tasks of Robot Dog and Pour Water-L1/3. All the models are without pre-training in this experiment due to resource constraints."
+      }
+    ]
+  },
+  "2506.21539": {
+    "heading": "WorldVLA — 행동 생성과 행동 조건부 미래 영상 생성의 결합",
+    "intro": "arXiv:2506.21539v1 공식 HTML §3–4 Figure 2/4의 원본 PNG·캡션, Table 2–6를 검증. 공식 HTML에 독립된 Appendix 항목은 없음.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 같은 Chameleon 기반 모델의 두 작업 토큰 경로",
+        "context": "Action mode는 지시와 과거 영상에서 행동 토큰을 예측하고 world mode는 이미지+행동에서 다음 이미지 토큰을 예측한다. 세계모델이 추론 시 매 행동마다 생성되는 것은 아니다.",
+        "steps": [
+          "왼편의 action 모델 입력/출력과 오른편의 미래 프레임 경로 구분",
+          "같은 토큰 어휘지만 loss 대상 token이 다른 점 식별",
+          "해당 도식은 별도 물리 시뮬레이터 호출을 의미하지 않음"
+        ],
+        "verified_caption": "Figure 2: Overview of WorldVLA. WorldVLA integrates two distinct but complementary functional components: an action model and a world model. The action model is responsible for generating actions conditioned on both textual and visual data. The world model functions to predict the subsequent environmental state (e.g., the next visual frame) by leveraging textual information, current image, and current action."
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Figure 4 — 행동 전용 정책과 공동학습 정책의 질적 롤아웃",
+        "context": "상단 action model이 물체를 제대로 잡지 못했는데 목적지로 이동한 경우, 하단 joint 모델이 잡는 동작을 반복한 시각 사례다. 성공률의 통계는 Figure 하나가 아니라 Table 2·3의 조건별 숫자를 따로 읽어야 한다.",
+        "steps": [
+          "상단·하단 같은 과제에서 대상 물체의 접촉 여부 비교",
+          "정성 예시를 전체 LIBERO 평균 성공률로 취급하지 않기",
+          "세계모델 손실 추가 효과는 Table 3 동일 마스크 설정 row 4/5 비교"
+        ],
+        "verified_caption": "Figure 4: Visualization of action model. Top: action model. Bottom: our action world model."
+      }
+    ]
+  },
+  "2406.02523": {
+    "heading": "RoboCasa — 생성형 에셋, 작업 명세, 모방학습 데이터, sim-to-real 검증",
+    "intro": "arXiv:2406.02523v1 공식 HTML Sections III–V와 Appendix VII–IX, Fig.1/8 및 Figure 7·12/실물 Table의 수치·조건 대조. 두 PNG는 arXiv HTML 원저자 이미지.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Figure 1 — 120개 주방 장면과 로봇·일상 작업 다양성의 네 기둥",
+        "context": "장면·3D 자산·로봇형태·LLM 지원 복합 작업과 대량 시연 데이터의 구성도를 보여준다. LLM이 모든 작업의 실행 코드를 자동으로 보장하는 시스템은 아니다.",
+        "steps": [
+          "10 kitchen layout × 12 design style의 곱으로 120 scene 구성",
+          "직접 코딩된 25 atomic과 사람이 필터한 75 composite task 구분",
+          "100K trajectories의 자동 생성 비중과 출처 확인"
+        ],
+        "verified_caption": "Fig. 1: Overview of RoboCasa. RoboCasa is a simulation framework for training generalist robot agents. Four pillars underlie RoboCasa: (1) Diverse assets, including 120 kitchen scenes and 2,500+ 3D objects, created with the aid of generative AI tools; (2) Cross-embodiment support for mobile manipulators and humanoid robots; (3) Diverse tasks created with the guidance of large language models; (4) Massive training datasets with over 100K trajectories."
+      },
+      {
+        "number": 8,
+        "placement": "findings",
+        "reading_title": "Figure 8 — 실제 Franka 주방 조작은 시뮬레이션과 관측·제어가 다르다",
+        "context": "바퀴형 플랫폼 위 Franka Emika Panda로 counter→cabinet와 counter→sink를 실행하는 실제 평가 현장이다. 실물 13.6→24.4% seen, 2.6→9.3% unseen은 Figure 장면이 아닌 별도 실험 Table에서 가져온 평균이다.",
+        "steps": [
+          "좌우에서 카메라가 보게 되는 물체와 목적지 차이",
+          "실물-only vs real+sim 동일 50 real demos 조건으로 비교",
+          "3 과제×seen/unseen object ×3 seed의 한계 읽기"
+        ],
+        "verified_caption": "Fig. 8: Real-World Experiment Setup. We conduct experiments in a real-world kitchen environment with a Franka Emika Panda arm on a wheeled mobile platform. The two pictures illustrate two of the three evaluation tasks: (left) pick and place an object from the counter to the cabinet, and (right) pick and place an object from the counter to the sink."
+      }
+    ]
   }
 }
