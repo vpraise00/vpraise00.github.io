@@ -7455,5 +7455,485 @@
         "2611.03103"
       ]
     }
+  },
+  "2410.07864": {
+    "summary_ko": "RDT-1B는 서로 다른 로봇의 관절·그리퍼 정의를 물리적으로 해석 가능한 통합 행동공간에 넣고, 1.2B 확산 Transformer로 두 팔 조작의 다봉 행동 분포를 학습한다. ALOHA 실물 7과제·미지 물체/공간 비교와 사전학습·설계 제거 실험을 원문 Figure 3·4, Table 1–3, Appendix H로 검토한다.",
+    "reading_minutes": 36,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-21",
+    "source_scope_ko": "공식 arXiv:2410.07864v2 PDF 28쪽(2024 공개, ICLR 2025 출판). §3–5 Method/Experiments, Figure 3 PDF p.4·Figure 4 p.6 원본 페이지(개별 크롭 아님), Table 1–3, Appendix A–H 중 H 구현/평가 조건 확인. 보고된 수치는 ALOHA 저자 실험이며 독립 재현하지 않음.",
+    "review": {
+      "one_line": "**두 로봇의 동작을 무조건 같은 좌표로 묶는 것이 아니라, 어떤 물리량이 어떤 차원에 존재하는지 함께 학습한다.** RDT는 1.2B DiT로 이종 로봇 데이터를 사전학습한 뒤 두 팔 시연으로 미세조정한다. Diffusion의 다봉성, 128차원 물리적 의미/존재 마스크, 멀티모달 주입의 안정성이 결합되는 설계다.",
+      "problem": "한 팔 로봇은 오른손만 움직이고 두 팔 로봇은 양손으로 컵을 잡을 수 있다. 명령이 '컵을 씻어'라면 왼손으로 잡고 오른손으로 문지르는 궤적, 순서를 바꾼 궤적처럼 정답이 여러 개다. 단일 평균 행동을 회귀하면 두 경로 중간의 불가능한 팔 위치를 낼 수 있다. 기존 단일 로봇 동작 분포 학습은 시연 수가 적고, 다른 로봇에서 모은 관절값을 단순 concat/zero padding하면 값 0과 존재하지 않는 관절을 혼동할 수 있다. 또한 이미지/언어/상태/행동의 길이·스케일이 달라 대형 Transformer가 안정적 학습에 실패하기 쉽다(§3–4).",
+      "idea": "RDT의 핵심은 세 부분이다. (1) 각 로봇의 행동 채널을 물리적 의미를 보존하는 128차원 통합 행동공간으로 옮기고 차원별 유효성 마스크를 함께 인코딩한다. 이는 물리적으로 다른 자유도를 숫자만 같은 인덱스로 맞추지 않도록 한다. (2) 확산 과정에서 노이즈 행동 chunk를 점차 복원하는 1.2B Diffusion Transformer를 사용해 두 팔 동작의 여러 가능한 모드를 표현한다. (3) SigLIP 영상, T5-XXL 언어, 상태/제어 주파수 및 확산 시점을 서로 다른 채널로 처리하면서 QKNorm·RMSNorm·비선형 MLP 출력·교대 교차 주의(ACI)로 안정성을 개선한다. Figure 3이 바로 이 처리 순서를 설명한다.",
+      "method": "§4의 학습은 ① 원 데이터의 로봇별 상태/행동을 물리적 통합 action embedding과 presence mask로 변환, ② 시간 t에서 현재 proprioception z_t·카메라 2시점/외부·좌·우 손목 이미지·언어를 준비, ③ SigLIP/T5-XXL(고정 인코더) 및 MLP/Fourier 특성으로 고차원 latent로 변환, ④ 행동 chunk에 가우시안 노이즈를 더한 x_k와 diffusion step k를 DiT에 입력, ⑤ image/language 조건을 교대로 주입하여 깨끗한 행동 x_0 복원 목표로 MSE 손실 최적화, ⑥ 추론 시 DPM-Solver++의 제한된 복원 단계로 다음 행동 묶음을 생성해 저수준 제어에 전달한다. Appendix의 28층/hidden2048/32 heads, action chunk64, 학습용 DDPM1000 step 및 배포용 5 step은 구분해야 한다. 46개 데이터셋 약 100만 trajectory로 사전학습 후 ALOHA 약 6천+ 에피소드로 적응한다.",
+      "findings": "§5 Table 3에서 Handover는 RDT가 25회 중 40%(10회), Fold Shorts는 68%(17회), Robot Dog 전체 작업은 76%(19회)이며 동일 RDT의 walk-straight 부분 성공률은 48%다. 물체/장면 일반화는 8회씩의 소표본: Wash Cup에서 학습한 컵 50%, 미지 컵1 75%, 미지 컵2 50%; Pour Water에서 미지 방1 62.5%, 방2 100%, 방3 62.5%. Table 2 사전학습 제거 RDT(scratch) vs full RDT의 특정 하위 조건은 미지 컵2 0→50%, 미지 방3 25→62.5%, 지시 기반 정량 붓기 62.5→100%다. RDT-small(166M) 37.5/62.5/25%와 회귀형 RDT 12.5/50/12.5%도 같은 세 하위 조건 비교다. Figure 4는 QKNorm/RMSNorm, MLP decoder, ACI 제거에 따른 손실과 성공률 변화를 보여주지만 **이 Figure의 모델들은 자원상 사전학습을 거치지 않았다**. 평균 집계 Figure1의 68.2%는 단일 엄격 과제 성공률이 아니라 여러 구성요소를 섞어 계산한 평가 수치라 이 글의 개별 성공률과 직접 같지 않다.",
+      "limitations": "다른 로봇 데이터에서 목표 로봇으로 전이가 있다는 저자 결과지만, 이를 임의 embodiment의 제로샷 제어라고 읽을 수 없다. 목표 ALOHA 대상 데이터로 별도 미세조정했다. Wash Cup/Poor Water의 각 조건은 8회씩이므로 표본변동이 크고 12.5%p는 1회 성공 차이다. 두 팔/7개 실물 작업에 한정되어 충돌 안전·시간 지연·모든 미지 사물/집 일반화 보장은 없다. 1.2B 학습의 대형 GPU 예산(48×H100)을 저비용 재현으로 취급해서는 안 된다. Appendix H의 미세조정은 별도 checkpoint에서 시작하므로 단순 '1M step 사전학습+130K step 미세조정'으로 선형 합산하면 훈련 이력이 왜곡된다. Figure 4와 Table2는 학습 조건이 다르다.",
+      "questions": [
+        "128차원 physical slot에 없는 관절을 0으로 채운 경우와 존재 마스크를 쓴 경우의 전이 실패를 같은 예산에서 비교할 수 있는가?",
+        "두 팔 궤적의 행동 multimodality를 결정론 회귀+GMM/diffusion과 나누어 정량화하려면 어떤 metric이 필요한가?",
+        "Figure4의 무사전학습 구조 ablation 결과가 1M trajectory 사전학습 모델에서도 유지되는가?",
+        "미지 컵 각 8회 success rate 차이의 통계적 불확실성을 어떻게 표시할 것인가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**‘통합 행동공간’은 로봇마다 임의 관절 배열을 억지로 붙인 128개의 숫자가 아니다.** 각 slot에 물리량 의미를 고정하고, 존재하지 않는 채널의 값과 실제 0을 구별할 때 cross-embodiment 사전학습이 가능해진다. 그리고 diffusion은 두 팔이 서로를 도우며 같은 목표로 갈 수 있는 대안 궤적을 하나의 평균점으로 뭉개지 않으려는 선택이다.",
+      "pipeline": [
+        {
+          "title": "로봇별 state/action을 의미 있는 128차원 공통 슬롯으로 정규화",
+          "detail": "Appendix H의 통합 구성은 상태/행동의 각 slot이 특정 물리적 차원을 뜻하도록 배치한다. 관측/행동에 해당 차원이 실제 있는지 별도 0/1 mask를 연결해 없는 자유도를 실제 0 angle/position과 혼동하지 않는다. 학습용 입력 표현은 원래 슬롯과 mask로 256차원으로 다룬다.",
+          "io": "robot-specific z_t,a_t → 128 physical slots + 128 presence bits"
+        },
+        {
+          "title": "언어·카메라·고유상태와 제어 주파수를 각각 인코딩",
+          "detail": "과제 텍스트는 고정된 T5-XXL, 주변 및 양 손목 카메라의 2시점 이미지는 고정된 SigLIP, 관절 상태와 제어 주파수는 MLP 및 Fourier 주파수 임베딩을 사용한다. 이미지 토큰이 언어 토큰보다 많다는 불균형도 고려한다.",
+          "io": "language + multi-view RGB + proprioception + control rate"
+        },
+        {
+          "title": "미래 행동 chunk의 목표 노이즈 버전 만들기",
+          "detail": "시연으로 확보된 길이 64 action chunk에 확산 시점 k에 따른 노이즈를 더하고 학습 예제로 만든다. 이는 연속 단일값 회귀 대신 다양한 가능한 동작 모드를 복원하도록 모델을 감독한다.",
+          "io": "x_0 → x_k, k ∈ diffusion schedule"
+        },
+        {
+          "title": "28층 DiT에 조건을 교대로 주입하고 안정적으로 역확산",
+          "detail": "28-layer 2048 hidden 32-head Transformer의 self/cross-attention에 QKNorm, RMSNorm과 영상·언어 교대 주입(ACI)을 적용한다. 최종 MLP decoder는 선형 readout보다 비선형 로봇 행동을 표현하도록 설계했다.",
+          "io": "(x_k,k,z_t,image,language) → x̂_0"
+        },
+        {
+          "title": "다중 로봇 사전학습 후 ALOHA 맞춤 미세조정",
+          "detail": "46개 로봇 데이터셋 약 1M trajectory에서 공통 모터 사전을 학습한 뒤 6K+ ALOHA bimanual episode로 대상 과제를 미세조정한다. Appendix에서 pretrained checkpoint 선택과 학습 스텝을 확인해 비용과 결과 해석을 구분한다.",
+          "io": "cross-robot pretraining → target-robot fine-tuning"
+        },
+        {
+          "title": "배포 시 5단계 solver로 다음 행동 묶음 생성",
+          "detail": "학습 시 DDPM 1000 noise timesteps와 추론 시 DPM-Solver++ 5-step은 다르다. 관측이 들어오면 조건에 따른 가능한 chunk 하나를 복원하고 실제 로봇 컨트롤러가 그 명령을 실행한다. 추론 샘플링이 physical collision-free를 보장하는 것은 아니다.",
+          "io": "noise + observation → action chunk → low-level control"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "물리적 의미 + 존재 비트: 숫자 0은 '없는 관절'이 아니다",
+          "body": "예를 들어 단일 팔의 왼손 gripper가 없다고 그 좌표를 0으로 넣으면, 두 팔 로봇의 '왼손이 열린 상태'와 관측상 겹칠 수 있다. RDT는 유효 차원의 이진 mask를 곁들여 같은 tensor에도 다른 embodiment를 구별하는 감독을 제공한다.",
+          "watch": "§4 unified action space; Appendix H action representation"
+        },
+        {
+          "title": "다봉 분포 때문에 MSE 회귀보다 확산 행동 생성",
+          "body": "같은 목표컵을 좌/우손 순서를 바꿔 잡는 두 경로의 평균은 어느 쪽도 아닐 수 있다. 회귀형 baseline은 Table2 세 하위 조건 12.5/50/12.5%로, diffusion RDT 50/62.5/100%보다 낮았다. 단 이것만으로 범용 정책 우월성 전체가 증명되는 것은 아니다.",
+          "watch": "§3 multi-modal actions, Table2 RDT(regress)"
+        },
+        {
+          "title": "QKNorm/RMSNorm이 필요한 이유는 로봇 센서 스케일의 차이",
+          "body": "각도·거리·이미지 token은 scale과 분포가 상이하다. Figure4(a)는 설계 제거시 loss spikes를 보여주지만 오류 재현/확률에 대한 확장 실험은 보이지 않는다. 정규화 안정성 결과와 실제 strict SR 결과는 별도 증거다.",
+          "watch": "Figure4(a) PDF p6; §4"
+        },
+        {
+          "title": "MLP Decoder와 ACI가 구별해 개선하는 문제",
+          "body": "선형 출력 층만으로는 복잡한 조인트 비선형을 근사하기 어렵고, 이미지/언어를 동시에 주입하면 이미지 token 수에 언어가 희석될 수 있다. Figure4(b)는 이 부품들을 하나씩 제거한 대조 실험이며 사전학습 없는 통제 실험임을 캡션이 밝힌다.",
+          "watch": "Figure4(b) caption"
+        },
+        {
+          "title": "계산 예산과 정확도는 같은 표에서 비교해야 한다",
+          "body": "1.2B는 사전학습 46 dataset 약 1M trajectory와 대형 GPU 클러스터가 전제다. 실물 과제별 trial 수는 8회 또는 25회로 다르므로 '로봇 전체 평균'으로 동일 가중 평균하면 오도할 수 있다.",
+          "watch": "Appendix H implementation / Table 1–3"
+        },
+        {
+          "title": "학습 시 1000 DDPM step은 추론 비용 1000회를 뜻하지 않는다",
+          "body": "확산 훈련의 시간 이산화와 배포 solver의 step 수는 구별된다. 배포는 DPM-Solver++ 5-step이며 저자가 표시한 행동 추론 수치와 센서 주기·chunk 실행 시간을 동일한 latency로 합산해선 안 된다.",
+          "watch": "Appendix sampling parameters"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "ALOHA Handover strict task SR",
+          "value": "40% (10/25)",
+          "context": "Table3, 실물 ALOHA 25회; ACT/OpenVLA/Octo와 비교"
+        },
+        {
+          "metric": "ALOHA Fold Shorts",
+          "value": "68% (17/25)",
+          "context": "Table3, 25회 복합 조작, RDT scratch 40%, Octo 4%"
+        },
+        {
+          "metric": "ALOHA Robot Dog 전체/하위",
+          "value": "76% / 48%",
+          "context": "Table3 전체 작업 vs walk straight 하위 성공; 25회"
+        },
+        {
+          "metric": "Wash Cup seen / unseen1 / unseen2",
+          "value": "50 / 75 / 50%",
+          "context": "Table3, 컵 종류별 8회; 12.5%p=한 번의 성공"
+        },
+        {
+          "metric": "Pour Water 미지 방 1/2/3",
+          "value": "62.5 / 100 / 62.5%",
+          "context": "Table3, 공간별 8회, 미지 공간 평가"
+        },
+        {
+          "metric": "사전학습 제거 효과: 미지 컵2",
+          "value": "0% → 50%",
+          "context": "Table2 RDT scratch vs full; 같은 subcondition 8회"
+        },
+        {
+          "metric": "사전학습 제거 효과: 미지 방3",
+          "value": "25% → 62.5%",
+          "context": "Table2, 모두 unseen scene 특정 조건"
+        },
+        {
+          "metric": "지시량 따르기: RDT scratch vs full",
+          "value": "62.5% → 100%",
+          "context": "Table2, Pour Water correct amount 하위 점수, 전체 pour SR 아님"
+        },
+        {
+          "metric": "모델 크기·학습/추론",
+          "value": "1.2B / 64 actions / 5 solver steps",
+          "context": "Appendix H; 28 layers 2048 hidden 32 heads, train1000 DDPM steps"
+        }
+      ],
+      "evidence_note": "Table2 열은 unseen cup2·unseen room3·instruction correct amount의 한정된 부분평가다. Table3은 task마다 8 또는 25회이며 overall 68.2% Figure1 집계와 동일 정의가 아니다. Figure4의 회로 제거는 무사전학습 실험이다.",
+      "comparison": "ACT는 같은 시연 조건에서 조건부 행동을 생성하는 대표적인 imitation baseline이며 OpenVLA/Octo는 범용 로봇 표현을 활용한다. RDT는 다봉 행동을 diffusion으로 모델링하면서 다양한 로봇에서 사전학습을 하는 방식을 결합했다. 그러나 로봇 형태·목표 데이터·사전학습 예산이 다르므로 Table3의 숫자를 backbone 자체만의 인과 효과라고 단정할 수 없다.",
+      "reading_guide": [
+        "Figure3의 행동 chunk, z_t, 제어 주파수, 시간 k, SigLIP와 T5-XXL의 화살표 따라가기",
+        "Appendix H 통합 128 action slots와 mask 존재/부재 정확히 확인",
+        "Table2의 세 열이 전체 task success가 아니라 각각 특정 하위 조건임을 확인",
+        "Table3 Wash Cup/Pour Water는 8회, Handover/Fold Shorts는 25회 분모 구분",
+        "Figure4 캡션의 '모든 모델 without pretraining' 조건 표시",
+        "추론 DPM-Solver++ 5step과 train 1000 DDPM step 분리"
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] 이종 로봇 사전학습의 전이 이득은 통합 슬롯의 0/1 유효성 표지에 상당 부분 의존하며, ACI와 normalization의 효과는 학습 데이터 규모에 따라 달라질 수 있다.",
+        "setup": "[편집 제안] 2종 로봇의 일부 관절에만 있는 물리 채널을 포함한 소규모 행동 데이터에서 RDT-small 수준 실험을 수행한다. 대상 ALOHA task는 seen cup 1종, unseen cups 2종×각 40회 이상, unseen room3종×각40회 이상을 고정. 5 seeds 동일 시연 수와 학습 step로 통제한다.",
+        "baselines": "[편집 제안] valid-mask vs all-zero padded vs robot-ID embedding; 166M diffusion vs 동일 용량 regression; ACI vs 한 번에 image/text cross-attn; QKNorm/RMSNorm 제거. 대상 로봇 fine-tuning demo 수는 5/50/500으로 sweep.",
+        "metrics": "[편집 제안] strict task SR 및 substep SR 구분, 성공 Wilson95% CI, image/linguistic OOD, 접촉 충돌/액션 jerk, 정확도-배포 latency curve, GPU-hours.",
+        "risks": "[편집 제안] 큰 모델과 전체 데이터셋을 재현했다고 주장하지 않는다. Figure4와 Table2의 사전학습 조건이 다르므로 재현 시 둘 다 통제하고, 실물 충돌 방지 안전책 마련."
+      },
+      "related": [
+        "2406.09246",
+        "2410.24164",
+        "2502.05855"
+      ]
+    }
+  },
+  "2506.21539": {
+    "summary_ko": "WorldVLA는 이미지·언어·로봇 행동을 Chameleon 기반 한 토큰 공간에서 공동학습한다. 액션 chunk에서 앞선 액션을 보지 못하게 하는 attention mask, 행동 조건부 미래 영상 생성 손실의 상호 이득을 LIBERO Table 2–6 및 저자 Figure 2·4로 검증하며, OpenVLA-OFT보다 높은 성능을 주장하지 않는다.",
+    "reading_minutes": 35,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-21",
+    "source_scope_ko": "arXiv:2506.21539v1 공식 HTML §3.1–3.3 Method/§4.1–4.2 Experiments, Table 2–6, Figure 2/4 실제 arXiv PNG·캡션 확인. 2025-06-26 최초 공개. 해당 공식 HTML에 독립 Appendix 없음. 논문 저자 보고값이며 자체 재현 없음.",
+    "review": {
+      "one_line": "**세계모델이 예측하는 미래 영상과 VLA가 산출하는 행동을 하나의 자기회귀 멀티모달 모델에서 배운다.** 그러나 행동 chunk 내부에서 앞서 낸 행동을 다시 보지 못하도록 막아 오류 누적을 억제한다. '자기회귀 모델'이라고 행동 5~10개도 모두 순차 출력하는 것은 아니다.",
+      "problem": "지시가 '냉장고에서 병을 집어 찬장 위에 올려'일 때 정책이 병을 놓친 채 이미 목표 위치까지 손을 보내면 실패한다. 기존 VLA는 행동을 출력하지만 행동이 물체 상태를 어떻게 바꾸는지 별도 감독하지 않을 수 있다. 반면 영상 세계모델은 움직임의 결과를 예측해도 실제 제어 명령을 바로 내지는 않는다. 한편 언어모델 방식으로 행동 token a1,a2,...를 한 개씩 자기회귀 생성하면 첫 token 오류가 뒤의 모든 action token에 누적되는 문제가 있다(§1–3).",
+      "idea": "WorldVLA는 하나의 Chameleon 계열 autoregressive backbone에 텍스트 BPE, VQ-GAN 이미지, 이산화 행동 token을 함께 넣는다. 같은 모델을 두 모드로 학습한다: 행동 생성은 '텍스트+이미지 → 7차원 이산 action tokens'에만 cross entropy, 세계예측은 '현재 이미지+입력 행동 → 다음 이미지 tokens'에만 cross entropy를 부과한다. 전체 손실은 L_action+0.04·L_world. 행동 chunk에서는 동작 tokens 상호주의를 막는 전용 mask를 쓰고 world mode에서는 보통 causal attention을 유지한다. 저자 Figure2는 같은 backbone의 두 역할을 비교한다.",
+      "method": "§3.2 이미지 tokenizer는 16배 압축된 VQ-GAN 코드북 8,192개를 이용한다. 256×256에서는 256 visual token, 512×512에서는 1,024개이다. 행동은 Δ위치 3, Δ각도 3, 절대 gripper 1의 7 스칼라를 각 256 bin으로 양자화해 토큰으로 나타낸다. 65,536 vocabulary에 visual/action token을 포함한다. §3.3 action 학습에서는 과제지시+M장의 과거 RGB를 입력해 K action을 예측하고 action CE만 계산한다. World 학습은 현재 이미지와 실제 action으로 다음 이미지의 token CE를 계산한다. action chunk마다 과거 action을 서로 참조하지 않는 mask로 조건부 독립적 action outputs를 계산하되, 영상 조건은 모두 공유한다. 평가 설정은 M=2, LIBERO-Spatial/Object/Goal K=5, LIBERO-Long K=10, world 예측 한 단계 N=1, α=.04다. 훈련 rollout 데이터는 보통 90/10 분리지만 Table2 비교는 전 데이터를 학습에 썼다.",
+      "findings": "Table2 실험(과제당 서로 다른 초기상태 50회)에서 WorldVLA 256 해상도 Spatial85.6/Object89.0/Goal82.6/Long59.0, 평균79.1%; 512 해상도 87.6/96.2/83.4/60.0 평균81.8%. 이는 pretrained OpenVLA 76.5보다 높지만 pretrained OpenVLA-OFT 95.4보다 낮다. Table3 같은 ablation 기준으로 action only/no chunk62.8%, action+world/no chunk67.2%, action+chunk/기본 causal mask54.0%, action+chunk/제안 mask76.6%, full world+mask+chunk78.1%; world supervision 추가 효과는 row4→5의 +1.5pp, 마스크를 반영한 chunk 적용 효과는 별도 통제 비교를 봐야 한다. Table4 세계예측 FVD는 10 frame에서 pure world250.0 vs unified255.1로 **오히려 약간 악화**, 50 frame에서718.6→674.1로 개선한다. Figure4의 반복 파지 시도는 질적 사례일 뿐 n회 성공률이 아니다.",
+      "limitations": "저자 초록에서 world model이 행동 후보를 사전에 시뮬레이션해 위험을 회피할 수 있다고 서술하지만, 실제 Method는 joint training과 두 mode를 설명하며 계획 시 후보를 검색하는 explicit MPC loop는 규정하지 않는다. 추론 시 매 action마다 미래 영상을 만드는 온라인 planner라는 설명은 근거가 없다. LIBERO는 시뮬레이션이므로 새로운 주방/하드웨어 제어 일반화를 검증하지 않았다. 512 해상도는 영상 token이 4배라 연산량을 함께 비교해야 한다. Table2의 pretrained vs non-pretrained baseline 및 90/10 split 예외를 구분한다. Table3 평균78.1과 Table2 512 모델81.8은 **실험 조건이 달라 동일 실행의 결과로 합치면 안 된다**. World FVD 10 frame 저하를 숨기지 않는다. 공식 HTML에 독립 Appendix가 없으므로 부족한 학습 세부를 추정하지 않는다.",
+      "questions": [
+        "action chunk에서 앞선 action을 mask하는 구조가 학습 중 오프라인 CE와 실시간 5-step 실행에서 실제로 어떤 이득/지연을 만드는가?",
+        "world supervision과 action mask 중 LIBERO-Long 완주에 가장 큰 기여는 무엇인가?",
+        "세계모델의 시각적 plausibility가 실제 물리적 정확성(물체 접촉, gripper closure)을 보장하는가?",
+        "세계 모델 rollout을 실제 정책 선택에 사용하는 MPC를 별도 추가하면 학습만 하는 구조보다 좋아지는가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**학습과 추론을 분리해 이해할 필요가 있다.** WorldVLA는 행동정책과 시각 생성 세계모델을 공통 표현으로 학습하지만, 논문은 온라인에서 미래 영상을 돌려 행동 후보를 고르는 검색 기반 제어기를 구현했다고 말하지 않는다. 관찰한 동작의 결과를 예측하게 학습해 정책 표현을 개선하고, 동작 chunk 간의 잘못된 자기회귀 의존성을 주의 마스크로 제거했다.",
+      "pipeline": [
+        {
+          "title": "텍스트·RGB·7차원 로봇 행동을 통합 tokenizer로 이산화",
+          "detail": "Chameleon 사전학습 backbone에서 BPE 텍스트와 VQ-GAN 영상 tokens(코드북 8192), 연속 행동의 차원별 256개 bin을 같은 vocabulary 공간으로 통합한다. 256픽셀 이미지256 tokens, 512픽셀1024 tokens를 구분해 자원 비용을 추적한다.",
+          "io": "instruction + observation + action → shared token stream"
+        },
+        {
+          "title": "행동 모드 — 과거 두 영상과 명령에서 K개 행동 학습",
+          "detail": "동작 데이터의 입력은 과제 명령을 담은 텍스트와 M=2 이미지. 정답은 K개의 7-token actions이며 action token 예측 CE만 역전파한다. 로봇 기준 Δxyz, Δrpy, gripper를 각각 양자화해 label로 만든다.",
+          "io": "(text,image_{t-1:t}) → a_t...a_{t+K-1}"
+        },
+        {
+          "title": "chunk용 mask — 과거 동작 token 노출 금지",
+          "detail": "일반 언어 decoder라면 a_(t+1)이 예측된 a_t를 보고 다음 동작을 만든다. WorldVLA의 action-specific attention mask는 행동 token이 영상/문장만 보게 해 자기 action 예측 오류가 chunk 전체를 오염시키는 경로를 막는다.",
+          "io": "attention(action_i, earlier action_j)=masked"
+        },
+        {
+          "title": "세계 모드 — 이미지+실제 행동에서 다음 영상 token 복원",
+          "detail": "입력으로 현재 RGB 및 실제 실행 action을 주고 다음 RGB image token을 autoregressive하게 예측해 image token CE를 계산한다. 행동 token은 조건이자 세계 dynamics 표현이 된다. 이 경로는 일반 causal attention을 사용한다.",
+          "io": "(o_t,a_t) → next-frame token target o_(t+1)"
+        },
+        {
+          "title": "둘의 교대 공동학습과 불균형 손실 조정",
+          "detail": "영상은 행동보다 token 수가 훨씬 많아 손실 스케일이 지배적일 수 있다. 저자는 L_action+αL_world에서 α=0.04로 조절하며 policy와 world training examples를 섞는다. 이 계수는 결과에 맞춘 연구 설정이지 임의 dataset에 최적이라는 보증이 아니다.",
+          "io": "minimize L_action + 0.04 L_world"
+        },
+        {
+          "title": "LIBERO 폐루프 실행/평가와 world video 예측 분리",
+          "detail": "정책은 K=5 또는 Long의 K=10 action chunk를 관측 조건에서 생성한다. 행동 성능은 LIBERO 네 스위트별 50 rollouts/task의 성공률, 세계모델은 held-out trajectories 영상에 대해 FVD/PSNR/SSIM/LPIPS로 측정한다. 이것을 실물 성공률과 섞지 않는다.",
+          "io": "action success evaluation ≠ video quality metrics"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "왜 이미지 토큰이 너무 많은가",
+          "body": "VQ-GAN 16배 압축은 256×256을 16×16=256 위치 token, 512×512를32×32=1024로 바꾼다. 액션은 7개 token이라 이미지 CE가 쉽게 압도하므로 0.04 손실 계수로 균형을 잡는다.",
+          "watch": "§3.2 tokenizer / §3.3 objective"
+        },
+        {
+          "title": "‘자기회귀’와 ‘행동 chunk 내 독립 마스크’의 공존",
+          "body": "전체 model은 순차 토큰 생성 아키텍처지만 action output tokens끼리 이전 예측을 조건으로 삼지 않게 self-attention을 제한한다. world prediction에는 causal mask가 남는다. 따라서 K=5를 누적 오차와 반응 지연 관점에서 다른 범주의 output으로 취급한다.",
+          "watch": "§3.3 Figure3 attention masks"
+        },
+        {
+          "title": "학습 때만 세계예측을 넣어도 동작에 도움되는가",
+          "body": "Table3 row4 action+chunk+mask 76.6%에서 row5 world joint training 78.1%로 +1.5pp다. 마스크 없는 action model에 world를 넣는 row1 62.8→row2 67.2의 +4.4pp와 함께 읽어야 한다.",
+          "watch": "Table3 rows 1/2 and 4/5"
+        },
+        {
+          "title": "행동 chunk가 늘면 오히려 실패하는 반례",
+          "body": "Table3에서는 기본 causal mask로 chunk를 붙일 때 62.8→54.0%로 떨어졌다. action mask를 붙이면 76.6%로 회복한다. 따라서 chunk 자체가 개선의 이유가 아니라 mask와 결합된 조건이 핵심이다.",
+          "watch": "Table3 rows1/3/4; Figure6"
+        },
+        {
+          "title": "장단기 영상 품질의 방향이 다르다",
+          "body": "10-frame FVD는 world-only 250.0과 joint 255.1로 후자가 나쁘지만 50-frame은718.6 vs674.1로 joint가 낫다. 모델의 세계이해를 단일 FVD 수치로 일반화해서는 안 된다.",
+          "watch": "Table4 10/50 frames"
+        },
+        {
+          "title": "Figure4는 '계획 수색'이 아닌 observed rollout 사례",
+          "body": "치즈나 병을 집기 전에 움직이는 action-only top과 집기를 다시 시도하는 공동학습 bottom을 비교한다. 재시도 동작은 learned policy의 현상이지만 모델 내부에 명시적 실패 monitor/MPC가 있다는 뜻은 아니다.",
+          "watch": "Figure4 qualitative results"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "LIBERO 전체 4-suite 평균, 256 입력",
+          "value": "79.1% SR",
+          "context": "Table2 WorldVLA no robotics pretraining, 50 rollouts/task; Spatial85.6,Object89,Goal82.6,Long59"
+        },
+        {
+          "metric": "LIBERO 전체 4-suite 평균, 512 입력",
+          "value": "81.8% SR",
+          "context": "Table2; Spatial87.6,Object96.2,Goal83.4,Long60"
+        },
+        {
+          "metric": "Pretrained OpenVLA / OpenVLA-OFT",
+          "value": "76.5% / 95.4%",
+          "context": "Table2; pretrained 비교군, WorldVLA는 robot-pretrain 표시 ✗"
+        },
+        {
+          "metric": "기본 action-only, no chunk",
+          "value": "62.8% SR",
+          "context": "Table3 row1, 별도 ablation 설정"
+        },
+        {
+          "metric": "action + world, no chunk",
+          "value": "67.2% SR",
+          "context": "Table3 row2, row1 대비 +4.4pp"
+        },
+        {
+          "metric": "action + naive causal chunk",
+          "value": "54.0% SR",
+          "context": "Table3 row3, mask 없어 오류 전파"
+        },
+        {
+          "metric": "action + masked chunk",
+          "value": "76.6% SR",
+          "context": "Table3 row4, world loss 없음"
+        },
+        {
+          "metric": "joint world + masked chunk",
+          "value": "78.1% SR",
+          "context": "Table3 row5, row4 대비 +1.5pp"
+        },
+        {
+          "metric": "10/50 frames 세계예측 FVD",
+          "value": "250.0→255.1 / 718.6→674.1",
+          "context": "Table4, pure world→joint, ↓가 좋은 지표; short는 악화, long은 개선"
+        }
+      ],
+      "evidence_note": "Table2와 Table3은 다른 학습 비교 설정이므로 평균을 서로 맞춰 해석하지 않는다. Table2 학습에는 90/10 split 예외로 전체 시연 데이터를 썼다. 영상 품질 FVD와 로봇 제어 성공률은 별도 데이터/평가 정의이다.",
+      "comparison": "OpenVLA는 pretrained 이산 행동 VLA로, OpenVLA-OFT는 별도 최적화된 연속 행동 head를 활용한다. WorldVLA는 공통 AR vocabulary와 future frame supervision으로 동작 표현을 공유하는 비교 연구라는 점이 중요하지만, LIBERO에서 pretrained OpenVLA-OFT 95.4%를 앞섰다는 주장은 성립하지 않는다. WorldVLA의 자체 유의한 차이는 Table3에서 action attention mask와 joint world supervision을 따로 제거해 제시한 것이다.",
+      "reading_guide": [
+        "Figure2에서 별도 두 네트워크가 아니라 공유 backbone의 두 학습 경로 확인",
+        "§3.2 256vs512 영상 tokens 256vs1024, 행동 token7개 차이 확인",
+        "Figure3 mask의 a_i↔a_j 차단 조건 읽기",
+        "Table2 no pretrain WorldVLA 81.8과 pretrained OFT95.4의 조건 분리",
+        "Table3 row3 54.0과 row4 76.6은 action attention mask 대조",
+        "Table4의 10-frame FVD 악화와 50-frame FVD 개선 함께 기록"
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] action autoregression에서 생기는 오차 전파를 막는 mask 효과가 world loss보다 큰 부분을 설명하며, world loss의 한계 이득은 영상 데이터 다양성과 horizon에 의존한다.",
+        "setup": "[편집 제안] LIBERO 4 suites의 공식 50 initial states/task, 동일 Chameleon checkpoint/해상도256, 관측 M2, chunk K=1/5/10, world weight α=0/.01/.04/.1, seed≥3. train/validation split 90/10을 일관 적용하고 Table2 재현은 별도 all-data로 명시한다.",
+        "baselines": "[편집 제안] action-only no chunk, causal chunk, masked chunk, masked chunk+world; world-only next frame, language future video supervised; 512 동일 FLOP budget 제약 대조.",
+        "metrics": "[편집 제안] suite별 strict SR와 CI, first-grasp success, regrasp attempts, per-token error growth, inference latency/GPU time, 10/50-frame FVD 및 PSNR.",
+        "risks": "[편집 제안] world rollout 결과가 온라인 계획 수행을 증명하지 않으므로 MPC 비교는 추가한 별도 실험이라고 표시한다. 이미지 tokenizer/attention mask 구현 차이로 오차가 발생하기 쉬우며 official Appendix 미제공 조건에서 숨은 설정을 임의 확정하지 않는다."
+      },
+      "related": [
+        "2602.15922",
+        "2611.19709",
+        "2610.07922"
+      ]
+    }
+  },
+  "2406.02523": {
+    "summary_ko": "RoboCasa는 10개 주방 평면×12개 스타일의 120장면, 2,509개 3D 자산, 25 atomic+75 composite 작업과 10만여 합성 시연으로 로봇 데이터 확장을 시험한다. 생성 시연 수별 성공률, 어려운 복합작업, Franka 실물 Real-only 대비 Real+Sim을 공식 HTML·부록 Figure/Table과 함께 분석한다.",
+    "reading_minutes": 36,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-21",
+    "source_scope_ko": "arXiv:2406.02523v1 공식 HTML §III–V Method/Experiments 및 Appendix §VII–IX(시뮬레이터, 데이터, Policy 구현), 원본 arXiv PNG Fig1/8, Fig6/7/9/12 실험 숫자·평가 조건 확인. 2024-06-04 최초 공개. 저자 수행 실험이며 독립 재현 아님.",
+    "review": {
+      "one_line": "**로봇 학습 데이터 확장은 이미지 배경을 늘리는 일만이 아니다.** RoboCasa는 실제 기구가 열리고 닫히는 물리 환경, 작업 계층, 인간 시연의 object-centric 재배열, 합성 궤적의 성공 필터를 결합한다. 그러나 10만 시연에도 일부 장기 작업 성공률은 0%다.",
+      "problem": "실물 로봇에게 '찬장에서 컵을 꺼내 커피머신에 놓고 버튼을 눌러'를 가르치려면 많은 장소·조명·기물·물체와 긴 작업 순서를 경험해야 한다. 실제 집 수백 개와 로봇 운영자를 모집해 수만 개 시연을 모으기는 어렵다. 기존 시뮬레이터는 장면/물체/실행 가능한 주방 조작이 부족하고, 언어모델이 작업을 제안하더라도 로봇이 실제 수행할 성공 판정과 물리 구현은 사람이 검토해야 한다. RoboCasa는 '무엇을 얼마만큼 다양하게 합성해야 실물로 전이하는가'라는 플랫폼/데이터 연구 문제다.",
+      "idea": "RoboCasa는 MuJoCo/robosuite 물리 위에 10 kitchen layouts×12 design styles로 120 scenes, 2,509 3D object assets(153 categories, 그중1,592 Luma.ai)와 생성형 텍스처를 구성한다. 25 atomic tasks는 파지·문·서랍·손잡이·노브·버튼·삽입·이동의 8기술, 75 composite tasks는 20 kitchen activities를 LLM으로 초안 작성한 뒤 연구자가 논리 오류를 걸러 직접 구현한다. 4명의 인간 조작자가 SpaceMouse로 각 atomic task당 50 demonstrations(총1,250)를 수집하고 MimicGen이 object-centric segment를 새로운 배치에 맞춰 변환해 자동 시연을 만든다. 편집 포인트는 'GPT가 코드를 자동 작성했다'가 아니라 사람이 유효한 과제와 데이터 생성을 검수했다는 사실이다.",
+      "method": "§III–IV 및 Appendix VII–IX를 따라 ① 주방 layout/style/fixture/texture로 scene 표본공간 생성, ② Objaverse/Luma의 물체와 articulated appliances를 MJCF로 변환해 Door/knob/state change 구현, ③ 원자 작업 25개와 human-screened LLM composite 75개 작성, ④ operator 4인이 25×50=1,250 teleop seed trajectories 수집, ⑤ MimicGen이 객체 기준 조작 구간을 추출·새 object pose에 맞춰 warp/stitch하고 실제 simulated rollout으로 성패 검증, ⑥ 24 atomic(task navigation 제외) ×100/300/3,000 = 2,400/7,200/72,000 synthetic datasets를 만들어 BC-Transformer 학습, 복합작업 pretrain→50-human fine-tune, 실물 Franka Real+Sim co-training 평가. Release는 생성 물체 데이터 28K를 추가해 총100K scale이다. Appendix IX의 BC Transformer는 지난10 observations+language CLIP, image 3views ResNet18+FiLM, 6층 약20M trainable, 다음10 actions 산출 후 첫 행동만 실행하고 재계획; 500k steps LR1e−4이다.",
+      "findings": "§V-A Fig6/Appendix Fig12, 총 24 atomic task 성공률 평균은 Human-50 28.8%, Generated-100 26.3%, Generated-300 35.0%, Generated-3000 47.6%. 50회/작업, 5개의 고정 평가 scene에서 미지 object instances와 학습하지 않은 2개 style을 포함한다. 합성 100개가 인간 50개보다 반드시 낫지 않은 것이 중요한 반례다. §V-B Fig7, 50회 인간 시연으로 복합 작업 scratch→atomic pretraining 후 finetune: ArrangeVegetables 2→12%, MicrowaveThawing 0→2%, RestockPantry 0→6%, PreSoakPan 0→4%, PrepareCoffee 0→0%. §V-C Fig9 실물 Franka + DROID 기반 3과제 평균: Real-only vs Real+Sim 학습 시 seen object 13.6→24.4%, unseen 2.6→9.3%. 세 과제 모두 실물 50 demos/task이고 3 seeds 및 5 seen/3 unseen object categories 평가이며 controller sim20Hz OSC/real15Hz non-OSC라는 차이가 있다. Appendix IX의 단일 PickPlaceCounterToSink 비교 BC-Transformer 56% vs Diffusion Policy 12%는 observation history가 10 vs2이고 다른 action horizon이어서 architecture 우월성 인과 증거가 아니다.",
+      "limitations": "RoboCasa의 생성형 객체와 텍스처가 새 환경 다양성을 주지만 일상 전체의 고충실도를 보장하지 않는다. 논문 스스로 합성 시연에 급격한 움직임·충돌이 남는다고 인정한다. 10만 synthetic trajectories ≠ 10만 개 독립 인간 조작 시연; 대부분은 MimicGen 기존 segment 재사용이다. 75개 복합작업을 LLM이 완전 자동 생성/코딩했다는 것도 사실이 아니다. 5개 composite task만 실제 정책 실험했으며 최종 성공률은 PrepareCoffee 0% 등 낮다. 실물 Real+Sim은 각 과제별 50 real demos를 사용했으므로 ‘시뮬만 학습하여 실물 제로샷 성공’으로 표현할 수 없다. 실물 setup/제어주파수/카메라 calibration이 달라 domain gap가 남는다. Appendix Diffusion Policy 12 vs BC56은 입력 history가 달라 apples-to-apples architecture ablation이 아니다. 부록 시뮬레이터 RTX A5000·CPU 관측 속도는 성능과 안전 보증이 아니다.",
+      "questions": [
+        "합성 궤적을 72K로 늘렸는데 PickPlace와 insertion에 지속적인 실패가 남는 이유는 object shape 변화인가 행동 접촉 품질인가?",
+        "생성형 텍스처 다양성, kitchen layout 다양성, 3D object 다양성 중 어느 요인을 동량 데이터 ablation으로 분리할 수 있는가?",
+        "Real+Sim 성공률 증가가 state-action coverage 때문인지 simulation camera 렌더링 편향 때문인지 구분할 설계는?",
+        "25 atomic pretraining이 5 composite 장기 작업의 하위 성공률엔 도움이 되지만 전체 연속성공엔 왜 한계가 큰가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**시뮬레이터의 공헌을 모델의 SOTA로 착각하지 않는 것이 중요하다.** RoboCasa는 더 다양한 관측과 행동을 만드는 데이터·벤치마크 인프라 논문이다. 공간/객체/언어/작업 순서의 다양성을 동시에 제공하고, 100k trajectory와 실제 로봇 실험으로 그 가치와 실패를 모두 보고한다.",
+      "pipeline": [
+        {
+          "title": "10 layout×12 style 주방 장면과 물리적 fixture 만들기",
+          "detail": "MuJoCo/robosuite의 물리 장면에 각 주방 평면과 디자인 스타일을 조합해 120장면을 구축한다. 도어·서랍·노브는 관절을 갖춘 MJCF 객체로, 색/재질은 MidJourney 텍스처로 변동시켜 관측의 외형 변화를 만든다.",
+          "io": "layout × style × randomized texture → kitchen scene"
+        },
+        {
+          "title": "2,509개 물체와 사용 가능한 interactive appliances 보강",
+          "detail": "Objaverse와 Luma.ai에서 153개 범주 중 2,509개 물체를 품질 필터로 선정하고, 그중 1,592개는 Luma.ai에서 가져온다. 단순 이미지 생성과 달리 집거나 회전시킬 수 있는 물리 모델이 필요하므로 microwave door/stove knob 등 joint와 상태 변환을 구현한다.",
+          "io": "assets → MJCF + graspable/articulated semantics"
+        },
+        {
+          "title": "25개 원자 작업 및 75개 복합 작업을 검수해 구현",
+          "detail": "8종 기본 운동 기술에 해당하는 atomic 25개를 정의한다. GPT-4/Gemini 1.5로 20 kitchen activities에서 복합작업 초안을 얻되 blender가 없는 주방에서 blender를 요구하는 오류처럼 현실성 없는 제안은 사람이 걸러내고 75개 블루프린트의 실행 로직을 코딩한다.",
+          "io": "skills + LLM draft + human review → executable tasks"
+        },
+        {
+          "title": "SpaceMouse 원본 시연을 object-centric 동작 세그먼트로 변환",
+          "detail": "4명의 operator가 atomic마다50개 시연을 만든다. MimicGen은 object-centric segment를 잘라 다른 scene/object pose에 맞춰 좌표를 바꾸고 이어 붙인다. 실제 simulated replay로 성공을 확인한 합성 시연만 dataset에 남긴다.",
+          "io": "1,250 human seeds → MimicGen transforms + simulation rollouts"
+        },
+        {
+          "title": "2.4K/7.2K/72K 데이터 크기별 BC-Transformer 정책 학습",
+          "detail": "각 24개 atomic non-navigation tasks에 대해100/300/3000개의 generated data를 구성한다. BC-Transformer는 observation 10개, 3 camera, CLIP text와 6층 Transformer(약20M)로 다음10 actions를 학습하며 첫 action만 실행한 후 관측해 replanning한다. 비교를 위해 학습 texture와 평가 texture를 분리한다.",
+          "io": "generated demonstrations → BC-Transformer → closed-loop action"
+        },
+        {
+          "title": "장기 복합작업과 실제 Franka에 동일 데이터 원리 적용",
+          "detail": "복합작업 5개는 atomic-pretrained policy의 50-demo finetune을 scratch와 비교한다. 실물은 DROID 기반 Franka에서 각 과제50 real demonstrations를 모두 확보한 상태로, real-only와 real+all synthetic co-training을 비교한다. sim OSC20Hz와 real15Hz 제어 차이를 인정한다.",
+          "io": "atomic pretrain → composite finetune; real demos + sim demos"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "자동 생성은 실패 실험도 포함하는 물리 rollout 과정",
+          "body": "원 시연을 객체 중심 구간으로 분할해 신규 object poses에 좌표 변환한 다음 시뮬레이션으로 재생해 성공한 rollout을 수집한다. 이는 단순 색상 증강이나 기존 시연 복제와 다르지만, 성공 체크가 충돌 없는 자연스런 행동을 의미하지는 않는다.",
+          "watch": "§IV-C MimicGen / §VI limitations"
+        },
+        {
+          "title": "LLM이 만드는 것은 executable source 전체가 아니라 검토가 필요한 blueprint",
+          "body": "예를 들어 존재하지 않는 blender 사용이나 식기류에 맞지 않는 gripper skill을 제안할 수 있다. 논문은 task blueprint을 사람이 필터/수정하고 75개를 구현했다고 적는다. 따라서 '100 tasks fully automatic'이라고 부르면 사실과 다르다.",
+          "watch": "§IV-B / Appendix VIII-B invalid examples"
+        },
+        {
+          "title": "BC-Transformer와 Diffusion Policy 비교의 confound",
+          "body": "Appendix IX에 따르면 PickPlaceCounterToSink에서 BC 56%, diffusion12%다. 하지만 BC는 history10, diffusion은 history2, diffusion의 prediction/action horizon도 달라서 policy family만 바꾼 엄격 ablation은 아니다.",
+          "watch": "Appendix IX architecture and 56/12 comparison"
+        },
+        {
+          "title": "대량 합성의 효과는 monotonic 전체 평균이지 모든 과제의 보증이 아니다",
+          "body": "평균은 generated100 26.3→300 35.0→3000 47.6%지만 인간50 28.8% 대비 generated100은 오히려 낮다. PickPlace 세부 작업/문열기/삽입 기술은 난도가 달라 성능 향상의 분포도 균일하지 않다.",
+          "watch": "§V-A Fig6, Appendix Fig12"
+        },
+        {
+          "title": "장기 작업은 원자 기술 성공률의 단순합이 아니다",
+          "body": "Fig7 ArrangeVeg 2→12% 개선에도 MicrowaveThawing 2%, PrepareCoffee0%에 머문다. 파지·놓기·다음 단계 전환의 오류 확률이 연속해서 곱해지므로 완료률은 길이에 따라 빠르게 감소할 수 있다.",
+          "watch": "§V-B Fig7"
+        },
+        {
+          "title": "Real+Sim은 zero-shot sim-to-real이 아니다",
+          "body": "각 target task의 real demonstrations50개를 Real-only에도 Real+Sim에도 준다. sim 데이터를 공동학습했을 때 seen13.6→24.4%, unseen2.6→9.3%이지만 실물-only 데이터 없이 평가하지는 않았다.",
+          "watch": "§V-C Fig9"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "장면·물체·작업 수",
+          "value": "120 / 2,509 / 100",
+          "context": "10 layouts×12 styles; 153 object categories; 25 atomic +75 composite"
+        },
+        {
+          "metric": "인간 시연과 자동 생성 시연",
+          "value": "1,250 / 72,000 + 28,000",
+          "context": "25 task×50 human; 24 non-navigation task×3000 MimicGen + Luma objects supplement"
+        },
+        {
+          "metric": "Human-50 정책 평균 SR",
+          "value": "28.8%",
+          "context": "Fig6/12, 24 atomic task 평가, 50 trials/task, 5 fixed scenes"
+        },
+        {
+          "metric": "Generated-100 평균 SR",
+          "value": "26.3%",
+          "context": "24×100=2400 synthetic trajectory, human50보다 낮음"
+        },
+        {
+          "metric": "Generated-300 평균 SR",
+          "value": "35.0%",
+          "context": "24×300=7200 trajectories, 미지 물체/일부 미지 style 평가"
+        },
+        {
+          "metric": "Generated-3000 평균 SR",
+          "value": "47.6%",
+          "context": "24×3000=72K trajectories, Fig6·Appendix Fig12"
+        },
+        {
+          "metric": "Composite ArrangeVegetables",
+          "value": "2% → 12%",
+          "context": "Fig7, scratch50 demos vs atomic-pretrained fine-tuning50"
+        },
+        {
+          "metric": "Composite PrepareCoffee",
+          "value": "0% → 0%",
+          "context": "Fig7, 복합 작업 전이의 한계"
+        },
+        {
+          "metric": "실물 Franka Real-only vs Real+Sim",
+          "value": "Seen 13.6→24.4%; Unseen 2.6→9.3%",
+          "context": "Fig9, 3 tasks, 50 real demos/task, 5 seen+3 unseen categories, 3 seeds"
+        }
+      ],
+      "evidence_note": "Atomic 평균의 분모는 24개 atomic × 과제당50 rollouts(5개 평가 scene)이며 navigation task는 MimicGen 생성에서 제외했다. 실물 Fig9는 각 과제 50 real demos가 포함된 비교이고, sim20Hz OSC/real15Hz non-OSC다. Appendix IX diffusion vs BC는 history length 상이.",
+      "comparison": "실세계 DROID(2403.12945)는 여러 실제 환경의 시연을 모아 다양성을 확보한다. RoboCasa는 유사한 목표를 시뮬레이션 scene/object/language/task 변동과 MimicGen rollout으로 보완한다. 그러나 동일한 물리 오차와 촉각을 재현했다는 뜻이 아니며 Real+Sim 24.4% 평균은 아직 실물 조작의 높은 reliability라 보기 어렵다.",
+      "reading_guide": [
+        "Fig1의 네 기둥(자산, embodiment, task, data)과 120 scene 조합 확인",
+        "§IV-C MimicGen의 human seed→object-centric segment→success filter 흐름 이해",
+        "Fig6와 Appendix Fig12의 28.8/26.3/35.0/47.6 평균과 평가 split 확인",
+        "Fig7의 다섯 복합작업 중 PrepareCoffee 0→0 실패 포함",
+        "Fig8은 실물 setup 이미지이며 Fig9가 진짜 비교 숫자임을 구분",
+        "Appendix IX BC-Transformer history10 vs diffusion history2 confound 확인"
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] 실물 전이의 이득은 합성 수량보다 대상 객체 형태와 카메라/텍스처 다양성에 민감하며, 불안정한 MimicGen 궤적을 무조건 늘리면 특정 기술에서 역효과가 날 수 있다.",
+        "setup": "[편집 제안] RoboCasa에서 24 tasks의 장면 다양성 10/50/120, 객체 범주 10/50/153, texture augment on/off를 같은 7200 trajectories/총 gradient steps로 통제한다. 실물에는 counter→sink/counter→cabinet 등 3과제, 50 real demos/task 공통, 각 seen/unseen cat≥30 trials×3 seed를 수집한다.",
+        "baselines": "[편집 제안] real-only, sim-only(별도 평가), real+random-sim, real+object-matched-sim, real+quality-filtered-sim; BC-Transformer와 Diffusion Policy를 history/action horizon 등 동일한 인풋으로 맞춰 비교.",
+        "metrics": "[편집 제안] strict episode SR/성공 WilsonCI, 특정 skill SR(파지, 접촉, 문 조작), 궤적 jerk/물리 충돌, scene-style OOD gap, training GPU cost, real sensor sync/control lag.",
+        "risks": "[편집 제안] 생략한 tactile physics와 충돌 위험 때문에 sim policy를 실물에 직접 돌리기 전에 제한 속도/soft stop/작업 공간 안전구역을 정의한다. 100K trajectories의 독립성 및 human dataset 1,250 차이를 투명하게 보고."
+      },
+      "related": [
+        "2403.12945",
+        "2503.14734",
+        "2611.02629"
+      ]
+    }
   }
 }
