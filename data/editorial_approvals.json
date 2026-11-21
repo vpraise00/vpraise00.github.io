@@ -50,8 +50,11 @@
     "2611.23143",
     "2611.22395",
     "2611.19709",
-    "2611.23843"
+    "2611.23843",
+    "2410.07864",
+    "2506.21539",
+    "2406.02523"
   ],
-  "note_ko": "2026-11-20 신규 승인 3편: CoBoVLA(2611.22395), Fast-WAM residual cache 평가(2611.19709), RePlan-VLA(2611.23843). 공식 PDF/HTML Method·Experiments, CoBo Appendix A–E, Cache Appendix A.1–A.11 및 Figure1·2·Table 원문 대조. RePlan Appendix는 본문에 참조되지만 PDF/HTML에 독립 텍스트 없음. CoBo·Cache Figure는 원본 PDF 전체 페이지 내장(개별 추출 이미지 아님), RePlan 두 Figure는 원본 arXiv PNG. CALVIN harD 샘플 수 50/100 본문 모순 명시. 기존 46편 중복 없음.",
-  "updated_at": "2026-11-20"
+  "note_ko": "2026-11-21 신규 승인 3편: RDT-1B(2410.07864), WorldVLA(2506.21539), RoboCasa(2406.02523). 세 논문 모두 이전 49편과 중복 없음. 공식 RDT 28p PDF Method/Experiments/Appendix H 및 Figure3·4 원본 PDF 페이지와 Table1–3 직접 대조; WorldVLA arXiv HTML §3–4 Table2–6 및 Figure2·4 원저자 PNG 대조(독립 Appendix 없음); RoboCasa HTML §III–V 및 Appendix VII–IX와 Figure1·8 원본 PNG, Fig6/7/9/12 수치·평가조건 검증. RDT는 원본 PDF 전체 페이지 내장(개별 Figure crop 아님). 공개 날짜는 각 2024/2025년으로, 본 승인일만 2026-11-21.",
+  "updated_at": "2026-11-21"
 }
