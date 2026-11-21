@@ -1255,5 +1255,65 @@
       "review": "author_png_direct_url_and_number_caption_verified",
       "hosting_note": "공식 arXiv HTML 저자 원본 PNG; 외부 호스팅"
     }
+  },
+  "2410.07864": {
+    "3": {
+      "method": "arxiv_pdf_page_embed",
+      "source": "https://arxiv.org/pdf/2410.07864",
+      "paper_source": "https://arxiv.org/pdf/2410.07864",
+      "page": 4,
+      "caption": "Figure 3: RDT framework. Heterogeneous action spaces of various robots are embedded into a unified action space for multi-robot training.",
+      "review": "figure_and_caption_checked_against_original_PDF_screenshot",
+      "hosting_note": "공식 PDF 페이지 전체, 그림만 추출한 이미지 아님"
+    },
+    "4": {
+      "method": "arxiv_pdf_page_embed",
+      "source": "https://arxiv.org/pdf/2410.07864",
+      "paper_source": "https://arxiv.org/pdf/2410.07864",
+      "page": 6,
+      "caption": "Figure 4: (a) Unstable loss curve during training without QKNorm & RMSNorm. (b) Success rates of RDT (w/o MLP Decoder or w/o ACI) in tasks of Robot Dog and Pour Water-L1/3. All the models are without pre-training in this experiment due to resource constraints.",
+      "review": "figure_and_caption_checked_against_original_PDF_screenshot",
+      "hosting_note": "공식 PDF 페이지 전체, 그림만 추출한 이미지 아님"
+    }
+  },
+  "2506.21539": {
+    "2": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2506.21539v1/fig_1_3.png",
+      "source": "https://arxiv.org/html/2506.21539v1/fig_1_3.png",
+      "paper_source": "https://arxiv.org/html/2506.21539",
+      "caption": "Figure 2: Overview of WorldVLA. WorldVLA integrates two distinct but complementary functional components: an action model and a world model. The action model is responsible for generating actions conditioned on both textual and visual data. The world model functions to predict the subsequent environmental state (e.g., the next visual frame) by leveraging textual information, current image, and current action.",
+      "review": "author_png_direct_url_and_number_caption_verified",
+      "hosting_note": "arXiv HTML 원저자 PNG; 외부 호스팅"
+    },
+    "4": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2506.21539v1/vis_action_model.png",
+      "source": "https://arxiv.org/html/2506.21539v1/vis_action_model.png",
+      "paper_source": "https://arxiv.org/html/2506.21539",
+      "caption": "Figure 4: Visualization of action model. Top: action model. Bottom: our action world model.",
+      "review": "author_png_direct_url_and_number_caption_verified",
+      "hosting_note": "arXiv HTML 원저자 PNG; 외부 호스팅"
+    }
+  },
+  "2406.02523": {
+    "1": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2406.02523v1/robots_in_kitchen.png",
+      "source": "https://arxiv.org/html/2406.02523v1/robots_in_kitchen.png",
+      "paper_source": "https://arxiv.org/html/2406.02523",
+      "caption": "Fig. 1: Overview of RoboCasa. RoboCasa is a simulation framework for training generalist robot agents. Four pillars underlie RoboCasa: (1) Diverse assets, including 120 kitchen scenes and 2,500+ 3D objects, created with the aid of generative AI tools; (2) Cross-embodiment support for mobile manipulators and humanoid robots; (3) Diverse tasks created with the guidance of large language models; (4) Massive training datasets with over 100K trajectories.",
+      "review": "author_png_direct_url_and_number_caption_verified",
+      "hosting_note": "arXiv HTML 원저자 PNG; 외부 호스팅"
+    },
+    "8": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2406.02523v1/images/real_robot_exps/real_robot_setup.png",
+      "source": "https://arxiv.org/html/2406.02523v1/images/real_robot_exps/real_robot_setup.png",
+      "paper_source": "https://arxiv.org/html/2406.02523",
+      "caption": "Fig. 8: Real-World Experiment Setup. We conduct experiments in a real-world kitchen environment with a Franka Emika Panda arm on a wheeled mobile platform. The two pictures illustrate two of the three evaluation tasks: (left) pick and place an object from the counter to the cabinet, and (right) pick and place an object from the counter to the sink.",
+      "review": "author_png_direct_url_and_number_caption_verified",
+      "hosting_note": "arXiv HTML 원저자 PNG; 외부 호스팅"
+    }
   }
 }
