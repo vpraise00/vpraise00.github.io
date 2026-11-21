@@ -3962,6 +3962,125 @@
       "curated": true,
       "featured": true,
       "editorial_verified": true
+    },
+    {
+      "id": "2410.07864",
+      "title": "RDT-1B: a Diffusion Foundation Model for Bimanual Manipulation",
+      "authors": [
+        "Songming Liu",
+        "Lingxuan Wu",
+        "Bangguo Li",
+        "Hengkai Tan",
+        "Huayu Chen",
+        "Zhengyi Wang",
+        "Ke Xu",
+        "Hang Su",
+        "Jun Zhu"
+      ],
+      "published": "2024-10-10",
+      "primary_category": "vla",
+      "tags": [
+        "VLA",
+        "Diffusion Transformer",
+        "Bimanual",
+        "Cross-embodiment"
+      ],
+      "abstract": "Robotics Diffusion Transformer (RDT-1B) addresses bimanual manipulation through a diffusion transformer and a physically interpretable unified action space for heterogeneous robots. Pre-training uses large collections of robot trajectories, followed by bimanual fine-tuning; the paper reports evaluation on real ALOHA robots and specific unseen-object and unseen-scene settings.",
+      "slug": "2410.07864",
+      "updated": "2024-10-10",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2410.07864",
+      "pdf_url": "https://arxiv.org/pdf/2410.07864",
+      "categories": [
+        "vla"
+      ],
+      "featured": true,
+      "curated": true,
+      "origin": "editorial-source-reviewed",
+      "reading_minutes": 33,
+      "summary_ko": "원문 Method·Experiments·부록을 교차 검토한 한국어 연구 해설입니다."
+    },
+    {
+      "id": "2506.21539",
+      "title": "WorldVLA: Towards Autoregressive Action World Model",
+      "authors": [
+        "Jun Cen",
+        "Chaohui Yu",
+        "Hangjie Yuan",
+        "Yuming Jiang",
+        "Siteng Huang",
+        "Jiayan Guo",
+        "Xin Li",
+        "Yibing Song",
+        "Hao Luo",
+        "Fan Wang",
+        "Deli Zhao",
+        "Hao Chen"
+      ],
+      "published": "2025-06-26",
+      "primary_category": "wam",
+      "tags": [
+        "World-Action Model",
+        "WorldVLA",
+        "Action Chunking",
+        "Autoregressive"
+      ],
+      "abstract": "WorldVLA combines action token prediction and future visual frame prediction in a shared autoregressive multimodal model. Its action-specific attention mask prevents conditioning a future chunk action on previously predicted chunk actions. Evaluations on LIBERO compare success rates, action/world modeling ablations and visual generation metrics.",
+      "slug": "2506.21539",
+      "updated": "2025-06-26",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2506.21539",
+      "pdf_url": "https://arxiv.org/pdf/2506.21539",
+      "categories": [
+        "wam"
+      ],
+      "featured": true,
+      "curated": true,
+      "origin": "editorial-source-reviewed",
+      "reading_minutes": 33,
+      "summary_ko": "원문 Method·Experiments·부록을 교차 검토한 한국어 연구 해설입니다."
+    },
+    {
+      "id": "2406.02523",
+      "title": "RoboCasa: Large-Scale Simulation of Everyday Tasks for Generalist Robots",
+      "authors": [
+        "Soroush Nasiriany",
+        "Abhiram Maddukuri",
+        "Lance Zhang",
+        "Adeet Parikh",
+        "Aaron Lo",
+        "Abhishek Joshi",
+        "Ajay Mandlekar",
+        "Yuke Zhu"
+      ],
+      "published": "2024-06-04",
+      "primary_category": "robotics",
+      "tags": [
+        "Robotics",
+        "Simulation",
+        "Imitation Learning",
+        "Sim-to-Real"
+      ],
+      "abstract": "RoboCasa provides a diverse kitchen simulation benchmark with many realistic assets, tasks and demonstrations. The paper evaluates data scaling for imitation learning, composite-task transfer and joint learning from simulation with real-robot demonstrations, distinguishing evaluation scenes and seen/unseen objects.",
+      "slug": "2406.02523",
+      "updated": "2024-06-04",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2406.02523",
+      "pdf_url": "https://arxiv.org/pdf/2406.02523",
+      "categories": [
+        "robotics"
+      ],
+      "featured": true,
+      "curated": true,
+      "origin": "editorial-source-reviewed",
+      "reading_minutes": 33,
+      "summary_ko": "원문 Method·Experiments·부록을 교차 검토한 한국어 연구 해설입니다."
     }
   ]
 }
