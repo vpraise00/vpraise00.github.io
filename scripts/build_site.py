@@ -236,13 +236,21 @@ def render_visual_figures(p: dict) -> dict[str, str]:
                 'https://arxiv.org/html/2611.09293v1/pull_fig.png',
                 'https://arxiv.org/html/2611.09293v1/sys_figure.png'
               })
+          or (pid in {'2506.19850','2506.18088'}
+              and record.get('method') == 'arxiv_html_exact_figure'
+              and remote in {
+                'https://arxiv.org/html/2506.19850v1/teaserv1.png',
+                'https://arxiv.org/html/2506.19850v1/pipelinev2.png',
+                'https://arxiv.org/html/2506.18088v2/main.png',
+                'https://arxiv.org/html/2506.18088v2/gpt.png'
+              })
         )
         image_exists=bool((path and (ROOT/path).exists()) or author_remote)
         if image_exists:
             img=(remote if author_remote else '../'+path)
             img=h(img,quote=True)
             method=record.get('method','')
-            kind=(('arXiv HTML 저자 원본 (외부 링크)' if pid in ('2610.22146','2611.04839','2611.14365','2611.06447','2611.17626','2611.03103','2611.21607','2611.15368','2611.09293','2611.22584','2611.22592','2611.23143','2611.23843','2506.21539','2406.02523') else '저자 공식 프로젝트 원본 (외부 링크)') if author_remote else ('arXiv HTML 저자 원본' if method=='arxiv_html_exact_figure' else '원논문 PDF 자동 추출 (크롭 검수 필요)'))
+            kind=(('arXiv HTML 저자 원본 (외부 링크)' if pid in ('2610.22146','2611.04839','2611.14365','2611.06447','2611.17626','2611.03103','2611.21607','2611.15368','2611.09293','2611.22584','2611.22592','2611.23143','2611.23843','2506.21539','2406.02523','2506.19850','2506.18088') else '저자 공식 프로젝트 원본 (외부 링크)') if author_remote else ('arXiv HTML 저자 원본' if method=='arxiv_html_exact_figure' else '원논문 PDF 자동 추출 (크롭 검수 필요)'))
             source_link=h(record.get('source',source),quote=True)
             image='<div class="original-figure-stage"><a href="'+img+'" target="_blank" rel="noopener noreferrer" title="원문 그림 크게 보기"><img src="'+img+'" alt="'+h(p['title']+f' Figure {display_n} 원본',quote=True)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer"/></a></div>'
             clip=clip_original_caption(fig.get('verified_caption') or record.get('caption',''))
