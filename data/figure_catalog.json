@@ -1681,5 +1681,37 @@
         ]
       }
     ]
+  },
+  "2506.18088": {
+    "heading": "RoboTwin 2.0 — 저자 원본 Figure 2·3",
+    "intro": "원본 arXiv HTML 저자 PNG와 Fig.2·3 캡션을 실제로 맞춰 설명 위치에 넣습니다.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "idea",
+        "reading_title": "Figure 2 — MLLM expert code에서 domain-randomized 정책 데이터까지",
+        "verified_caption": "RoboTwin 2.0 pipeline: RoboTwin-OD and skill API, simulation feedback, domain-randomized trajectories, and unseen-scene policy evaluation.",
+        "context": "왼쪽의 task+API 기반 코드 생성, 오른쪽 위 검증된 expert data, 중간의 배경·조명·높이 변형, 아래의 OOD 정책 평가를 순서대로 읽는다. 하나의 신경망 architecture 그림이 아니다.",
+        "steps": [
+          "task 명령과 RoboTwin-OD/API를 generator 입력으로 추적.",
+          "시뮬레이션 실패 로그가 code agent로 돌아오는 방향 확인.",
+          "우측 중간 clutter/texture/light/tabletop/instruction 변화 확인.",
+          "하단에서 생성 시연을 학습한 제어정책의 미지 scene 테스트를 구분."
+        ]
+      },
+      {
+        "number": 3,
+        "placement": "method",
+        "reading_title": "Figure 3 — Run×10, VLM observation, Code Repair의 폐루프",
+        "verified_caption": "Expert Code Generation Pipeline.",
+        "context": "코드 agent가 Python skill program을 만들고 simulator가 10회 실행한 뒤 구조화 로그·VLM observer가 실패 시간과 원인을 알려준다. 성공률 검증 또는 5회 수정 한도라는 별도 종료 조건을 본문과 함께 확인한다.",
+        "steps": [
+          "API list·functions·example이 code agent의 입력임을 표시.",
+          "run×10 평가와 structured failure logs의 종류 찾기.",
+          "VLM observer의 Step1~Step4 국소 실패 진단 확인.",
+          "success threshold와 ≤5 iterations 제한이 100% code success를 보증하지 않음을 확인."
+        ]
+      }
+    ]
   }
 }
