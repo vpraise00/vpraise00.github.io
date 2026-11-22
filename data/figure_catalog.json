@@ -1649,5 +1649,37 @@
         ]
       }
     ]
+  },
+  "2609.02531": {
+    "heading": "SA-WAM — 원논문 PDF Figure 2·5",
+    "intro": "9쪽 공식 PDF의 저자 그림이 있는 원본 페이지를 수정 없이 해당 해설 위치에 삽입합니다. 개별 Figure crop이 아닌 원본 페이지임을 명시.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — RGB와 depth를 짝지어 하나의 diffusion Transformer에 넣는 구조",
+        "verified_caption": "SA-WAM architecture. Geometry is injected as tokenizer-compatible frames paired with each RGB view; future RGB/depth decoding is optional.",
+        "context": "PDF 원본 2쪽의 Figure 2에는 wrist/left/right RGB와 depth가 각기 별도 latent로 배치되고 q_t, action chunk 및 미래 RGB-D가 빨강/검은 점선으로 구별된다. 전체 PDF 페이지를 제공하며 자른 Figure가 아니다.",
+        "steps": [
+          "RGB view마다 depth view가 뒤따르는 토큰 위치 확인.",
+          "분홍색 forward nonlinear f와 파란색 inverse f의 역할 구분.",
+          "q_t가 조건인 반면 a_H가 예측 대상이라는 점 확인.",
+          "future video VAE decode는 배포 때 필수가 아님을 확인."
+        ]
+      },
+      {
+        "number": 5,
+        "placement": "findings",
+        "reading_title": "Figure 5 — UR5 실물 Clean/Randomized 부분완료 비교",
+        "verified_caption": "Real-world UR5 results: completion scores over 10 trials per category for π0, Cosmos-Policy and SA-WAM in clean and randomized settings.",
+        "context": "원본 PDF 7쪽 Figure5는 4개 composite category×10 trials에서 subgoal partial credit을 합산한 평균이다. 막대가 9 또는 8.5여도 10회 strict 성공이라는 의미는 아니다.",
+        "steps": [
+          "왼쪽 clean·오른쪽 randomized 조건 구분.",
+          "각 조건에서 π0·Cosmos·SA-WAM 색상과 4개 카테고리를 비교.",
+          "partial credit 0.25/0.5 scoring과 시행 수를 본문에서 찾기.",
+          "90.0%/77.5% aggregate가 100% strict episode 성공률이 아님을 확인."
+        ]
+      }
+    ]
   }
 }
