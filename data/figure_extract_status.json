@@ -1315,5 +1315,23 @@
       "review": "author_png_direct_url_and_number_caption_verified",
       "hosting_note": "arXiv HTML 원저자 PNG; 외부 호스팅"
     }
+  },
+  "2506.19850": {
+    "1": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2506.19850v1/teaserv1.png",
+      "source": "https://arxiv.org/html/2506.19850v1/teaserv1.png",
+      "paper_source": "https://arxiv.org/html/2506.19850v1",
+      "caption": "Figure 1: We present UniVLA, a unified vision-language-action model. Unlike prior VLA approaches that typically rely on an extra vision encoder to extract image features and generate only action outputs, UniVLA represents vision, language, and action as discrete tokens within a unified autoregressive framework.",
+      "review": "2026-11-22 official arXiv HTML Figure 1 caption + author PNG visually crosschecked"
+    },
+    "2": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2506.19850v1/pipelinev2.png",
+      "source": "https://arxiv.org/html/2506.19850v1/pipelinev2.png",
+      "paper_source": "https://arxiv.org/html/2506.19850v1",
+      "caption": "Figure 2: Overview of the UniVLA framework. Our model unifies information from different modalities into a discrete interleaved sequence, which is modeled using an autoregressive Transformer.",
+      "review": "2026-11-22 official arXiv HTML Figure 2 caption + author PNG visually crosschecked"
+    }
   }
 }
