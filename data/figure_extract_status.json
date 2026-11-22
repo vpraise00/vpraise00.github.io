@@ -1333,5 +1333,23 @@
       "caption": "Figure 2: Overview of the UniVLA framework. Our model unifies information from different modalities into a discrete interleaved sequence, which is modeled using an autoregressive Transformer.",
       "review": "2026-11-22 official arXiv HTML Figure 2 caption + author PNG visually crosschecked"
     }
+  },
+  "2609.02531": {
+    "2": {
+      "method": "arxiv_pdf_page_embed",
+      "source": "https://arxiv.org/pdf/2609.02531",
+      "paper_source": "https://arxiv.org/pdf/2609.02531",
+      "page": 2,
+      "caption": "Fig. 2: SA-WAM architecture. SA-WAM injects geometry into the WAM latent sequence as tokenizer-compatible frames paired with each RGB view.",
+      "review": "2026-11-22 official PDF page 2 Figure 2 screenshot/caption verified; full PDF page embed, no crop"
+    },
+    "5": {
+      "method": "arxiv_pdf_page_embed",
+      "source": "https://arxiv.org/pdf/2609.02531",
+      "paper_source": "https://arxiv.org/pdf/2609.02531",
+      "page": 7,
+      "caption": "Fig. 5: Real-world UR5 results. Task-completion scores over 10 trials per category for π0, Cosmos-Policy, and SA-WAM in the clean and randomized settings.",
+      "review": "2026-11-22 official PDF page 7 Figure 5 screenshot/caption verified; full PDF page embed, no crop"
+    }
   }
 }
