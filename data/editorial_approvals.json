@@ -53,8 +53,11 @@
     "2611.23843",
     "2410.07864",
     "2506.21539",
-    "2406.02523"
+    "2406.02523",
+    "2506.19850",
+    "2609.02531",
+    "2506.18088"
   ],
-  "note_ko": "2026-11-21 신규 승인 3편: RDT-1B(2410.07864), WorldVLA(2506.21539), RoboCasa(2406.02523). 세 논문 모두 이전 49편과 중복 없음. 공식 RDT 28p PDF Method/Experiments/Appendix H 및 Figure3·4 원본 PDF 페이지와 Table1–3 직접 대조; WorldVLA arXiv HTML §3–4 Table2–6 및 Figure2·4 원저자 PNG 대조(독립 Appendix 없음); RoboCasa HTML §III–V 및 Appendix VII–IX와 Figure1·8 원본 PNG, Fig6/7/9/12 수치·평가조건 검증. RDT는 원본 PDF 전체 페이지 내장(개별 Figure crop 아님). 공개 날짜는 각 2024/2025년으로, 본 승인일만 2026-11-21.",
-  "updated_at": "2026-11-21"
+  "note_ko": "2026-11-22 신규 승인 3편: Unified Vision-Language-Action Model(2506.19850), Spatially Aware World Action Model via Geometric Latent Diffusion(2609.02531), RoboTwin 2.0(2506.18088). 기존 승인 52편과 중복 없음. 각각 공식 HTML/PDF Method, Experiments, Appendix(존재하는 경우), Figure 번호·캡션·Table 평가조건 직접 대조; 원본 Fig1/2, Fig2/5(PDF 전체 페이지), Fig2/3 설명 위치에 배치. SA-WAM 독립 Appendix 없음. 독립 재현 실험 아님.",
+  "updated_at": "2026-11-22"
 }
