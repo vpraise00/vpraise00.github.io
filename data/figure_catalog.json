@@ -1617,5 +1617,37 @@
         "verified_caption": "Fig. 8: Real-World Experiment Setup. We conduct experiments in a real-world kitchen environment with a Franka Emika Panda arm on a wheeled mobile platform. The two pictures illustrate two of the three evaluation tasks: (left) pick and place an object from the counter to the cabinet, and (right) pick and place an object from the counter to the sink."
       }
     ]
+  },
+  "2506.19850": {
+    "heading": "UniVLA — 저자 원본 Figure 1·2",
+    "intro": "원본 arXiv HTML 저자 PNG, 캡션 및 배치 영역 확인.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Figure 1 — 행동 출력만이 아니라 영상·언어·행동의 통합",
+        "verified_caption": "UniVLA represents vision, language, and action as discrete tokens within a unified autoregressive framework.",
+        "context": "상단의 action-only VLA와 multimodal output 비교가 문제 정의다. 하단의 grounding/world modeling/policy loss는 학습 감독의 범주이고, 오른쪽 CALVIN/LIBERO 점수는 평가 단위가 다르다.",
+        "steps": [
+          "왼쪽의 단일 Action output을 확인.",
+          "중앙 Multi-modal output과 영상 시퀀스의 관계를 확인.",
+          "PERCEPTION/WORLD/POLICY supervision의 서로 다른 target을 구분.",
+          "CALVIN bar는 평균 연속 과제 수임을 확인."
+        ]
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — VQ 영상과 FAST 행동의 causal interleaving",
+        "verified_caption": "Image VQ encoding, DCT action tokens, a single autoregressive transformer, world-model post-training and policy fine-tuning.",
+        "context": "초록색 text token, 분홍 vision token, 노란 action token이 한 causal sequence에 교대로 놓인다. post-training은 미래 영상 target, fine-tuning은 행동 target을 주로 맞힌다.",
+        "steps": [
+          "모달리티별 token 색과 temporal interleaving을 찾기.",
+          "이미지 VQ와 행동 DCT/FAST를 개별 부호화로 이해.",
+          "pre-train→post-train→fine-tune에서 바뀌는 supervision 확인.",
+          "추론 시 반드시 미래 동영상을 렌더링하는 것이 아님을 확인."
+        ]
+      }
+    ]
   }
 }
