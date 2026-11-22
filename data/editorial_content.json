@@ -8252,5 +8252,166 @@
         "2608.01397"
       ]
     }
+  },
+  "2506.18088": {
+    "summary_ko": "RoboTwin 2.0은 MLLM expert code, simulator×10 feedback, VLM 실패 위치 진단, 최대5회 수리와 다섯 축 domain randomization으로 양팔 정책 데이터를 만든다. Table1–5, Appendix A–L, Figure2·3 저자 원본으로 성공률과 반례를 검증한다.",
+    "reading_minutes": 39,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-22",
+    "editorial_published_at": "2026-11-22",
+    "source_scope_ko": "공식 arXiv:2506.18088v2 HTML Method §2, Experiments §4, Appendix A–L, Fig2·3 원저자 PNG·캡션 및 Table1–5 대조. 최초 2025-06-22, v2 2025-08-27. 독립 재현 아님.",
+    "review": {
+      "one_line": "RoboTwin 2.0의 핵심은 VLA 신경망이 아니라 '코드 생성→10회 시뮬 실행→VLM 실패 위치 분석→코드 수리→domain randomization'으로 양팔 로봇 시연을 생산하고 강건성을 평가하는 데이터 엔진이다.",
+      "problem": "양팔 로봇으로 블록을 한 손에서 다른 손으로 건네려면 물체 파지 방향, 상대 위치, 손 사이 충돌과 타이밍이 맞아야 한다. 전문가가 태스크마다 Python 제어 프로그램을 수작업으로 짜면 다양한 로봇 기구와 조명·탁자 높이에 맞춰 수천 번 코드를 고쳐야 한다. 기존 깨끗한 시뮬 환경에서 학습한 조작 정책은 클러터나 배경이 바뀌면 성공률이 급락한다. RoboTwin 2.0은 대규모 검증된 자동 생성 시연과 어려운 domain randomization을 결합하는 방법을 묻는다.",
+      "idea": "RoboTwin-OD(731 물체/147 범주)·skill API·언어 명령으로 MLLM code agent가 expert program을 작성한다. 이를 시뮬에서 iteration당 10회 실행해 성공률·오류 로그를 얻고, VLM observer가 프레임별 실패 시점을 진단한다. code agent는 최대 다섯 번 수정해 기준을 통과한 프로그램을 시연 생성에 활용한다. 합성 성공 궤적에는 distractor clutter, texture, lighting, tabletop height, instruction 표현의 무작위화를 적용한다. 서로 다른 gripper에 맞춘 grasp 후보도 고려한다.",
+      "method": "§2–3과 Figure 2·3의 순서는 ① RoboTwin-OD 물체와 embodiment별 파지 affordance 준비, ② task description/API examples/계층 제약을 code agent에 주어 Python expert code 작성, ③ generated code의 시뮬레이션 10회 실행 및 구조화된 실패 로그 저장, ④ VLM agent가 비디오에서 잘못된 grasp/대상 위치/단계 순서를 localize, ⑤ code repair→재실행을 통과 또는 최대 5 refinements까지 반복, ⑥ 검증된 프로그램으로 다섯 양팔 로봇의 50 tasks에서 100K+ 도메인 무작위화 궤적을 만들고 ACT/DP/RDT/π0/DP3를 평가한다. Figure 3의 pass 조건은 프로그램에 대한 평가이며 정책 모델의 성공률과 구분한다.",
+      "findings": "Table 1의 공통 10개 코드 생성 작업에서 RoboTwin2.0 vanilla 62.1%→multimodal feedback 71.3%로 ASR 향상; RoboTwin1.0 + multimodal 63.9%다. Table 2의 50 tasks×5 embodiments expert execution 평균 52.2→60.5%지만 Franka 67.3→67.2와 UR5 57.6→57.1은 악화한다. Table 5는 50 tasks, 과제별 50 clean demonstrations로 정책을 학습하고 Easy/Hard 각각 과제당 100 rollouts 평가: RDT 34.5→13.7%, π0 46.4→16.3%, DP3 55.2→5.0%. Table 4 실제 COBOT-Magic 4 tasks의 unseen+clutter 조건에서 RDT real-only 9.0%→real+1000 synthetic 42.0%로 +33.0%p이나 개별 과제에선 역효과도 보고된다.",
+      "limitations": "100K+ 자동 생성 시연은 독립 인간 시연 100K가 아니다. MLLM이 모든 작업에 검증 성공 코드를 제공한다는 보장도 없고 expert success가 플랫폼별로 퇴행한다. Table 1 code ASR, Table 2 expert execution, Table 5 학습된 정책 success는 분모와 의미가 전혀 다르다. 특히 DP3는 시뮬레이터의 이상적인 point cloud와 segmentation을 활용하므로 이미지 기반 RDT/π0의 직접 공정 비교에는 감각 입력 차이가 있다. 실물 결과는 COBOT-Magic 4 tasks 한정이며 다른 하드웨어에서 재현한 실험은 아니다.",
+      "questions": [
+        "오류 로그만 주는 code repair 대비 VLM의 실패 위치 진단은 어느 유형에서 가장 많이 도움이 되는가?",
+        "성공 trajectory만으로 훈련한 모델은 어려운 실패·충돌을 언제 학습할 수 있나?",
+        "Hard 성능 하락에 조명·클러터·테이블 높이·언어 변화가 각각 얼마만큼 기여하나?",
+        "실물에서 합성 시연이 도움이 안 되는 특정 과제를 선별하려면 어떤 품질 지표가 필요한가?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**‘LLM이 로봇 코드를 생성한다’보다 중요한 것은 실행 검증과 실패 학습이다.** 코드를 자동 생성해도 물리 엔진에서 10번 움직여봐야 파지 실패나 팔 충돌을 알 수 있다. 이 논문은 성공한 expert program을 확장할 수 있는 시스템과, 합성 데이터로 학습된 제어기가 실제로 강건한지 평가할 별도 벤치마크를 함께 낸다.",
+      "pipeline": [
+        {
+          "title": "1. 다양한 물체/그리퍼에 맞춘 실행 가능한 skill 공간",
+          "detail": "RoboTwin-OD는 147개 category의 731 물체 instance를 담고 있으며 물체별 상호작용과 파지 가능 방향을 기록한다. 각 로봇의 gripper motion 및 기구학 제약에 맞는 grasp 후보를 생성한다.",
+          "io": "object affordance + robot embodiment + skill API"
+        },
+        {
+          "title": "2. 언어 작업을 Python expert 프로그램으로 번역",
+          "detail": "Handover Block 같은 과제 이름·설명·API 목록·example·hierarchical constraints를 code agent에 제공한다. 출력은 학습용 이미지가 아니라 검증할 필요가 있는 실행 코드다.",
+          "io": "task, API, examples → code agent → program"
+        },
+        {
+          "title": "3. 같은 코드를 10회 반복 실행하고 결과 수집",
+          "detail": "각 iteration마다 10번 시뮬레이션한다. 코드 구문/호출 실패, 좌·우 grasp 실패, 잘못된 목표 위치 등을 structured log에 남긴다. 한번의 lucky success로 통과시키지 않는 이유다.",
+          "io": "program → simulator×10 → pass/error logs"
+        },
+        {
+          "title": "4. 영상 관찰 VLM의 실패 단계 진단",
+          "detail": "VLM observer는 재생된 각 단계의 프레임을 보고 어디서 성공 흐름이 깨졌는지, API logic과 object position 중 무엇이 틀렸는지 조사한다. 통계 로그와 서로 보완되는 피드백이다.",
+          "io": "rollout frames + logs → localized failure"
+        },
+        {
+          "title": "5. 코드 수리 및 종료 기준 적용",
+          "detail": "Code agent가 진단된 라인을 고치고 새 배치를 다시 실행한다. 목표 success criterion을 만족하거나 5번 refinements의 한도에 도달하면 멈춘다. 실패한 프로그램도 무한 반복해 성공한다고 주장하지 않는다.",
+          "io": "diagnosis → repaired code → re-run≤5"
+        },
+        {
+          "title": "6. 검증 시연 생성·학습·OOD 평가",
+          "detail": "성공 expert를 클러터/재질/조명/탁자 높이/언어 변형에 반복 적용한다. 5개 로봇·50개 과제에서 100K+ 합성 trajectory를 만들고, 단일 과제당 50 clean demos로 ACT·DP·RDT·π0·DP3를 학습해 Easy/Hard 100 rollouts/task로 테스트한다.",
+          "io": "verified experts → randomized demos → Easy/Hard policy evaluation"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "Figure 2의 파이프라인은 정책이 아니라 데이터 생성 시스템",
+          "body": "왼쪽은 MLLM+API 코드 합성, 오른쪽은 반복 expert data 수집, 가운데는 randomization, 아래는 미지 장면 정책 학습이다. 모든 블록이 하나의 신경망 forward pass로 동작한다고 오독하면 안 된다.",
+          "watch": "Figure 2와 §2"
+        },
+        {
+          "title": "Figure 3의 VLM observer와 code agent 분업",
+          "body": "Code agent는 어떤 함수 호출을 해야 하는지 결정한다. VLM observer는 한 번 실패한 물리 실행에서 스텝별 관측을 추적한다. 왼손이 잡기 전에 오른손이 놓는 등 실패 시간을 localize하면 코드 수리 후보가 구체화된다.",
+          "watch": "Figure 3, §2.1"
+        },
+        {
+          "title": "ASR·expert execution·policy success의 세 단위",
+          "body": "Table1 code program ASR 71.3%는 10개 자동 코드 과제, Table2는 50과제의 5기종 expert 성공률, Table5는 모델이 만든 행동의 시각적 OOD 실행 성공률이다. 같은 백분율 표시만 보고 비교하면 잘못이다.",
+          "watch": "Table 1/2/5"
+        },
+        {
+          "title": "Randomization 다섯 축의 분해",
+          "body": "불필요 clutter, texture background, light, table height, diverse instruction을 각각 변형한다. 이것은 target object 자체를 바꿔야 하는 물체 일반화와 다른 축이다. Appendix C는 정책학습·평가의 적용 조건을 확인하는 데 필수다.",
+          "watch": "§2.2, Appendix C"
+        },
+        {
+          "title": "Expert 생성 전체평균과 로봇별 악화 반례",
+          "body": "Table2 평균은 52.2→60.5%지만 Franka67.3→67.2%, UR5 57.6→57.1%다. 개선이 모든 robot embodiment에서 동일하게 일어난다는 주장은 틀리다.",
+          "watch": "Table 2, Appendix L"
+        },
+        {
+          "title": "Sim-to-real 효과와 개별 후퇴",
+          "body": "Table4 COBOT-Magic unseen+clutter RDT는 real-only9%에서 real+1000 synthetic42%로 향상하지만 다른 seen condition Handover Block 16→12% 등 악화도 있다. 특정 조건의 이득을 일반 보증으로 바꾸지 않는다.",
+          "watch": "Table 4"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "RoboTwin-OD 규모",
+          "value": "731 object instances / 147 categories",
+          "context": "§3.1, 534 custom+153 Objaverse+44 PartNet"
+        },
+        {
+          "metric": "데이터·로봇·태스크 규모",
+          "value": "100K+ synthetic trajectories / 5 robots / 50 tasks",
+          "context": "§3, 검증 expert program에서 만든 시연이지 인간 100K 아님"
+        },
+        {
+          "metric": "2.0 코드 ASR vanilla→multimodal",
+          "value": "62.1% → 71.3%",
+          "context": "Table1, 공통 10-task 코드 생성 실험"
+        },
+        {
+          "metric": "1.0 코드 ASR multimodal",
+          "value": "63.9%",
+          "context": "Table1, 2.0 multimodal71.3과 +7.4%p 차이"
+        },
+        {
+          "metric": "5 embodiment expert 성공률",
+          "value": "52.2% → 60.5%",
+          "context": "Table2, RoboTwin1.0 vs2.0, Franka·UR5 일부 후퇴"
+        },
+        {
+          "metric": "실물 RDT unseen+clutter",
+          "value": "9.0% → 42.0%",
+          "context": "Table4, COBOT-Magic 4 tasks, real-only vs real+1,000 synthetic"
+        },
+        {
+          "metric": "RDT Easy→Hard",
+          "value": "34.5% → 13.7%",
+          "context": "Table5, 50 tasks, 50 clean demos/task, 조건당 100 rollouts/task"
+        },
+        {
+          "metric": "π0 Easy→Hard",
+          "value": "46.4% → 16.3%",
+          "context": "Table5, 같은 50-task 시뮬 benchmark"
+        },
+        {
+          "metric": "DP3 Easy→Hard",
+          "value": "55.2% → 5.0%",
+          "context": "Table5, 시뮬 perfect pointcloud/background segmentation privileged input"
+        }
+      ],
+      "evidence_note": "Table1은 10 code-generation tasks, Table2는 50 tasks×5 embodiments expert 실행, Table4는 실물 COBOT-Magic 4 tasks, Table5는 50 tasks 단일정책의 Easy/Hard 환경 평가다. Appendix C/D/G/K/L에서 data/control/setup을 재확인했다. 저자 보고이며 독립 재현 아님.",
+      "comparison": "RoboCasa(2406.02523)는 주방 120장면·MimicGen object-centric segment를 이용해 다양성을 늘린다. RoboTwin2.0은 양팔 상호작용·반복 시뮬레이션+VLM 기반 expert 코드 품질 검증과 강력한 domain randomization에 초점을 맞춘다. 둘 다 모델 백본만 발표한 것이 아니라 데이터 생성·벤치마크 인프라 연구다.",
+      "reading_guide": [
+        "Figure2의 expert code generation과 domain randomization을 다른 단계로 보기.",
+        "Figure3에서 run×10과 최대 5회 수리 제한 확인.",
+        "Table1 code ASR의 10-task subset을 Table2 expert success와 구분.",
+        "Table4 unseen+clutter 평균 외 악화 사례를 찾기.",
+        "Table5 50 clean demos와 Easy/Hard 각 100 eval rollouts/task를 읽기.",
+        "Appendix C(무작위화), D(훈련), G(코드 metrics), K/L(전체 task/robot results)를 대조."
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] VLM의 국소 실패 진단과 랜덤화 분포의 다양성은 동일 synthetic trajectory budget에서도 별개의 강건성 향상을 준다.",
+        "setup": "[편집 제안] handover/stack 과제 각 5개를 고르고 동일 총 5,000 successful synthetic rollouts 및 GPU-hours로 code-only, log-repair, VLM-repair, VLM+DR을 비교한다. 과제당 train50 clean demonstrations와 동일 robot camera/control을 고정한다.",
+        "baselines": "[편집 제안] RoboTwin1.0 manual experts, generated code vanilla, log-only, +VLM localized repair, +DR. RDT·DP3는 입력 센서 조건을 맞추고 privileged segmentation 없는 대조군을 둔다.",
+        "metrics": "[편집 제안] code ASR, expert program SR, repair iteration/time, policy Easy/Hard strict success와 CI, 실물 COBOT-Magic subtask failures, 수리 실패 유형, 합성 데이터 다양성.",
+        "risks": "[편집 제안] VLM observer hallucination, 10회 시행의 표본 불확실성, 성공 사례 편향, 충돌을 실제 로봇으로 복사할 위험을 별도 모니터링한다."
+      },
+      "related": [
+        "2406.02523",
+        "2403.12945",
+        "2611.02629"
+      ]
+    }
   }
 }
