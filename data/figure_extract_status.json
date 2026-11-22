@@ -1351,5 +1351,23 @@
       "caption": "Fig. 5: Real-world UR5 results. Task-completion scores over 10 trials per category for π0, Cosmos-Policy, and SA-WAM in the clean and randomized settings.",
       "review": "2026-11-22 official PDF page 7 Figure 5 screenshot/caption verified; full PDF page embed, no crop"
     }
+  },
+  "2506.18088": {
+    "2": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2506.18088v2/main.png",
+      "source": "https://arxiv.org/html/2506.18088v2/main.png",
+      "paper_source": "https://arxiv.org/html/2506.18088v2",
+      "caption": "Figure 2: RoboTwin 2.0 Pipeline. Built on RoboTwin-OD and a skill API, the framework uses MLLM-based code generation with simulation feedback to produce expert task programs and domain-randomized trajectories for policy training and evaluation.",
+      "review": "2026-11-22 official arXiv HTML author Figure2 number caption and PNG visually confirmed"
+    },
+    "3": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2506.18088v2/gpt.png",
+      "source": "https://arxiv.org/html/2506.18088v2/gpt.png",
+      "paper_source": "https://arxiv.org/html/2506.18088v2",
+      "caption": "Figure 3: Expert Code Generation Pipeline.",
+      "review": "2026-11-22 official arXiv HTML author Figure3 number caption and PNG visually confirmed"
+    }
   }
 }
