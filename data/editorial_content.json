@@ -8091,5 +8091,166 @@
         "2506.21539"
       ]
     }
+  },
+  "2609.02531": {
+    "summary_ko": "SA-WAM은 3개 카메라 RGB-D의 depth를 정규화해 동결 비디오 VAE에 주입하고 행동·미래 RGB·depth를 동시에 확산 생성한다. RoboCasa/LIBERO-Plus 및 UR5 결과의 평가 단위와 depth ablation을 공식 PDF Tables I–IV 및 Figure2·5로 검증한다.",
+    "reading_minutes": 38,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-22",
+    "editorial_published_at": "2026-11-22",
+    "source_scope_ko": "공식 arXiv:2609.02531 9쪽 PDF Method III, Experiments IV–V, Table I–IV, Figure2 PDF p.2 및 Figure5 PDF p.7 원본·캡션 대조. 독립 Appendix는 제공되지 않음. 최초 2026-09-02; 독립 재현 아님.",
+    "review": {
+      "one_line": "SA-WAM은 별도 3D encoder를 학습하는 대신 depth를 비선형 정규화해 동결된 영상 VAE로 토큰화하고, 행동·미래 RGB·미래 depth를 같은 DiT에서 디노이징한다. (§III, Fig.2)",
+      "problem": "회색 탁자 위에 같은 색 물체가 앞뒤로 겹쳐 있는 상황에서 RGB만 보면 어느 물체가 그리퍼에 더 가까운지 판단하기 어렵다. 비디오 예측 사전학습은 물체 움직임의 모양을 배워도 실제 거리 정보를 직접 갖지 못한다. 기존 RGB-only World-Action Model의 한계를 해결하려고 point-cloud encoder를 새로 만들면 대규모 영상 사전학습의 잠재공간을 재사용하기 어렵다. SA-WAM은 저렴하게 기하 정보를 결합할 수 있는가를 묻는다.",
+      "idea": "깊이의 raw meter 값을 영상 VAE 입력의 [-1,1] 범위로 바꾸되 극단값 clipping과 로그형 매핑으로 가까운 물체의 정밀도를 유지한다. 이렇게 만든 3채널 depth frame을 원래 RGB frame과 동일한 동결 Wan2.1 VAE로 변환한다. wrist/left/right RGB latent와 대응 depth latent, 로봇 상태·행동을 교대로 놓고 Cosmos-Predict2 DiT에서 미래 RGB/depth/action의 공동 확산 손실을 최적화한다. 미래 비디오의 이미지 복원은 추론 중 선택 사항이다.",
+      "method": "원문 §III의 순서: ① 손목과 두 고정 카메라의 동기 RGB-D, 명령 및 q_t 수집, ② 카메라별 깊이 유효값을 2~98 percentile로 winsorize한 후 log/inverse/linear를 비교한 정규화 f로 3채널 입력 생성, ③ 사전학습된 동결 spatiotemporal VAE를 RGB와 depth 양쪽에 공용으로 적용, ④ view별 RGB/depth latent와 proprioception·action chunk 슬롯을 인터리브, ⑤ Cosmos-Predict2 diffusion transformer를 공동 denoising으로 조정, ⑥ 추론 시 예측 행동의 prefix만 실행하고 새 관측으로 다음 chunk를 생성한다. RoboCasa에서는 H=32 중 16개 실행, 실물 UR5는 key-step 세 개 중 첫 두 개 실행. 원문은 별도의 trainable depth-specific encoder나 action-only MLP head를 주장하지 않는다.",
+      "findings": "RoboCasa 24개 태스크 평균은 SA-WAM 76.6%와 Cosmos-Policy 67.1%(두 방법 모두 50 demonstrations/task), π0 62.5%(300 demos), FLARE 71.3%(1,000 demos)다(Table II). Table I의 depth ablation은 **다른 8개 태스크 하위 집합**에서 RGB-only 52.7%, linear 56.5%, inverse 59.5%, log 61.7%다. LIBERO-Plus의 7종 perturbation 평균 86.6%는 Cosmos81.4%, π0.5 84.6%와 비교되고 기본 LIBERO 98.4%와 구분한다(Table III). 실물 UR5 Figure 5는 clean composite task completion 90.0%, randomized 77.5%를 보고하지만, 네 범주당 10 시행, 부분 단계에 0.25/0.5 credit을 주는 진행률 지표이므로 엄격한 episode 성공률로 읽으면 안 된다.",
+      "limitations": "Depth 카메라의 투명체·반사·가림 오류와 카메라 정렬 의존성을 해소한 결과는 아니다. 실물 실험은 10 tasks×20 demonstrations 학습, 그중 복합 4 categories를 condition마다 category당 10회 평가해 표본이 작다. RoboCasa 8 task 정규화 ablation과 24 task main 결과를 동일 수치군으로 비교하지 않는다. Fig.4의 미래 3D 오차 기반 실패 검출은 simulator-derived ground-truth target mask가 필요해 실물에서 곧바로 deployable한 감시기를 증명하지 않는다. 독립된 Appendix는 9쪽 공식 PDF에 제공되지 않는다.",
+      "questions": [
+        "RGB-D 센서의 깊이 노이즈·결측이 큰 투명 물체에서 log mapping이 오히려 손해인가?",
+        "VAE latent slot 수가 늘어 이득이 생긴 것인지 depth 자체의 정보가 중요한지 어떻게 통제할까?",
+        "실물 네 category의 부분 점수 외에 엄격 에피소드 성공률을 따로 수집한다면?",
+        "Fig.4의 simulator GT segmentation 없이 실제 로봇 실패 탐지를 구현하려면?"
+      ]
+    },
+    "deep_dive": {
+      "lead": "**깊이를 비디오 토큰처럼 취급하는 방법**이 이 논문의 실제 설계 핵심이다. 새 pointcloud backbone 대신 이미 검증된 영상 VAE를 쓰므로 적은 변경으로 3D-aware WAM을 구성할 수 있다. 그러나 정규화 전/후 단위와 실물 평가의 부분 점수 정의를 정확히 알아야 수치를 해석할 수 있다.",
+      "pipeline": [
+        {
+          "title": "1. Wrist/Left/Right RGB-D 및 로봇 상태 조건 수집",
+          "detail": "각 카메라의 RGB frame, metric-depth, 작업 언어, joint/EE 상태를 수집한다. 영상과 깊이가 같은 순간·같은 view에 대응하는지가 모델 입력의 전제다.",
+          "io": "task + q_t + {RGB,Depth}×3 cameras"
+        },
+        {
+          "title": "2. 카메라별 depth winsorization과 비선형 변환",
+          "detail": "각 깊이값을 카메라별 유효 구간 2–98 percentile로 제한하고 f_log 등으로 [-1,1] 범위에 넣는다. 동결된 RGB VAE가 수용할 수 있도록 3채널 depth 이미지처럼 복제한다. meter 단위 그대로 VAE에 넣는 것은 아니다.",
+          "io": "z(m) → P2/P98 clipping → f_log(z) → [-1,1]"
+        },
+        {
+          "title": "3. 공용 동결 Wan2.1 VAE로 토큰화",
+          "detail": "RGB와 정규화 depth를 같은 사전학습 VAE로 인코딩한다. 별도 깊이 VAE fine-tuning 없이 대규모 영상 사전학습의 공간적 prior를 재사용한다. 하지만 modality 사이 토큰 위치가 달라 명시적 정합이 중요하다.",
+          "io": "VAE(RGB); VAE(depth_as_3ch)"
+        },
+        {
+          "title": "4. 관측 슬롯과 예측 슬롯의 interleave",
+          "detail": "wrist/left/right RGB와 depth latent를 view별로 짝짓고, q_t와 action chunk를 전용 위치에 넣는다. Figure 2의 검정 점선은 조건부, 빨강 점선은 디노이징 대상 미래 슬롯이다.",
+          "io": "[q_t, wrist_RGB, wrist_D, left_RGB, left_D, ... , action_H]"
+        },
+        {
+          "title": "5. 미래 이미지·깊이·행동의 공동 확산 학습",
+          "detail": "Cosmos-Predict2 DiT를 초기화로 하고 future RGB, future depth, action에 대해 EDM 기반 denoising objective를 학습한다. 관측·텍스트 입력은 조건이고, 예측이 필요한 위치는 noise sample을 반복 개선한다.",
+          "io": "denoise(a_H, RGB_future, depth_future | task, observations)"
+        },
+        {
+          "title": "6. 로봇 제어에는 action prefix만 실행",
+          "detail": "RoboCasa는 32-action horizon에서 처음16개, UR5는 3 key-step 행동 중 처음2개만 실행한 뒤 다시 관측한다. 디코딩된 가상 미래 RGB/depth는 연구 분석 때는 유용하지만 컨트롤 경로에서는 선택적이다.",
+          "io": "action chunk → execute prefix → new observations"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "Figure 2의 분홍색/파란색 depth 함수 화살표",
+          "body": "분홍은 metric depth를 VAE 입력 범위로 바꿔 RGB slot과 나란히 놓는 함수, 파랑은 필요할 때 미래 depth를 metric form으로 되돌리는 역함수다. 모델의 depth branch가 독립적으로 학습된다고 보면 틀린다.",
+          "watch": "PDF p.2 Figure 2, §III"
+        },
+        {
+          "title": "8-task depth ablation의 분모",
+          "body": "Table I RGB-only 52.7→log61.7의 +9.0%p는 RoboCasa 중 8개 태스크에서의 실험이다. Table II 24개 태스크 평균 76.6과 이를 직접 차분하여 depth 효과라 부르면 안 된다.",
+          "watch": "Table I vs Table II"
+        },
+        {
+          "title": "선형/역깊이/로그에서의 재구성 비용",
+          "body": "Depth reconstruction AbsRel은 linear1.47%, inverse1.41%, log0.63%로 전체에서는 log가 좋지만 wrist 근거리 <0.3m에서는 inverse가 더 좋은 별도 결과가 있다. 3D 표현 손실과 실제 행동 성공률은 같지 않다.",
+          "watch": "§IV depth reconstruction, Table I"
+        },
+        {
+          "title": "서로 다른 데이터 예산의 baseline",
+          "body": "RoboCasa 76.6 vs Cosmos67.1은 둘 다 50 demos/task라 상대적으로 비교가 잘 맞는다. π0와 FLARE는 각각 300/1000 demos/task이므로 저자 자료의 모든 baseline을 동등한 demo budget으로 표현하면 잘못이다.",
+          "watch": "Table II"
+        },
+        {
+          "title": "영상 예측 품질과 성공의 상관관계",
+          "body": "future wrist LPIPS Cosmos .417→SA-WAM .354, 미래 frame quality가 개선된다(Table IV). 실패 검출 Fig.4는 simulator ground-truth object mask를 사용해 residual을 계산하므로 실시간 비지도 오류 검출이라는 일반 주장을 뒷받침하지 않는다.",
+          "watch": "Table IV, Fig.4"
+        },
+        {
+          "title": "Fig.5는 strict success가 아닌 진행률 점수",
+          "body": "실물 task는 3–11 key steps이며 2-step task의 절반을 끝내면 0.5, 4-step task 한 단계는 0.25 점수를 얻는다. 90.0 또는77.5는 category completion aggregate이지 모든 시퀀스 완수 비율과 같지 않다.",
+          "watch": "PDF p.7 Figure 5, §V"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "RoboCasa 24 tasks 평균",
+          "value": "SA-WAM 76.6% / Cosmos 67.1%",
+          "context": "Table II, 모두 50 demonstrations/task, seed3"
+        },
+        {
+          "metric": "RoboCasa 다른 예산",
+          "value": "π0 62.5%(300 demos) / FLARE71.3%(1000 demos)",
+          "context": "Table II, 데이터 예산 불균형 명시"
+        },
+        {
+          "metric": "RGB-depth normalization ablation",
+          "value": "RGB-only52.7 / linear56.5 / inverse59.5 / log61.7%",
+          "context": "Table I, 8 tasks, 50 demos/task, 6k steps, 3 seeds×50 trials/task"
+        },
+        {
+          "metric": "Depth 전체 AbsRel",
+          "value": "linear1.47 / inverse1.41 / log0.63%",
+          "context": "깊이 표현 품질 지표; SR과 분리"
+        },
+        {
+          "metric": "LIBERO-Plus 7 perturbations",
+          "value": "86.6%(Cosmos81.4, π0.5 84.6)",
+          "context": "Table III, randomized benchmark"
+        },
+        {
+          "metric": "Standard LIBERO",
+          "value": "98.4%",
+          "context": "원논문 기본 LIBERO; Plus86.6과 다른 환경 조건"
+        },
+        {
+          "metric": "미래 wrist LPIPS",
+          "value": ".417 → .354 (낮을수록 좋음)",
+          "context": "Table IV, Cosmos→SA-WAM forecast quality"
+        },
+        {
+          "metric": "실물 UR5 clean",
+          "value": "90.0% (Cosmos75.0 / π0 21.3)",
+          "context": "Figure 5, 4 categories, 각10회, partial completion score"
+        },
+        {
+          "metric": "실물 UR5 randomized",
+          "value": "77.5% (Cosmos48.8 / π0 11.3)",
+          "context": "Figure 5, 4 categories, 각10회, distractor/visual perturbations"
+        }
+      ],
+      "evidence_note": "Table I 8-task, Table II 24-task, LIBERO-Plus randomized test, UR5 4-task partial credit은 분모와 성공 정의가 서로 다르다. UR5 점수는 10회/카테고리에서의 하위 단계 완료 점수이며 binary success rate가 아니다. 논문 PDF에 별도 Appendix는 없다.",
+      "comparison": "DreamZero(2602.15922)나 WorldVLA(2506.21539)가 video-action joint generation을 추구한다면 SA-WAM은 같은 종류의 WAM에 depth token을 추가하여 metric geometry를 활용한다. 별도의 pointcloud 인코더를 학습하지 않아 간단한 반면 RGB-only 정책과 달리 RGB-D 센서·depth calibration이 반드시 존재해야 한다.",
+      "reading_guide": [
+        "PDF 2쪽 Fig.2의 관측/미래 빨간·검은 점선 슬롯을 구분.",
+        "§III 깊이 clipping→log→VAE 입력 범위와 변환식 확인.",
+        "Table I 8개 태스크와 Table II 24개 태스크 분모 분리.",
+        "Table II 50/300/1000 demo baseline 학습 예산 검토.",
+        "Table IV 미래 영상 품질과 Fig.4 GT mask 필요성을 함께 읽기.",
+        "PDF p.7 Fig.5 10 rollouts/category와 부분점수 기준 확인."
+      ],
+      "replication": {
+        "hypothesis": "[편집 제안] RGB-D WAM 이득은 부정확한 3D prior보다 카메라별 올바른 depth normalization과 센서 정합에 더 민감하다.",
+        "setup": "[편집 제안] RoboCasa 8 tasks×3 seeds에서 같은 50 demos/task, 6k steps의 RGB-only, log, inverse, scrambled-depth, depth-dropout 조건을 통제한다. 실제 UR5는 각 category strict episode complete와 substep completion을 동시에 기록한다.",
+        "baselines": "[편집 제안] Cosmos RGB-only, SA-WAM log, linear, inverse, randomized depth, depth-noise+camera misregistration ablation.",
+        "metrics": "[편집 제안] strict SR/WilsonCI, substep score, AbsRel, future LPIPS, 3D EE error, latency, collisions, real task near/far depth bins.",
+        "risks": "[편집 제안] 반사면·가림에서 depth missing을 실제 관측처럼 다루고 simulator ground-truth mask를 배포 로봇에 쓸 수 있다고 가정하지 않는다."
+      },
+      "related": [
+        "2602.15922",
+        "2506.21539",
+        "2608.01397"
+      ]
+    }
   }
 }
