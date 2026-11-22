@@ -4184,6 +4184,60 @@
           "Fig.4의 simulator GT segmentation 없이 실제 로봇 실패 탐지를 구현하려면?"
         ]
       }
+    },
+    {
+      "id": "2506.18088",
+      "slug": "2506.18088",
+      "title": "RoboTwin 2.0: A Scalable Data Generator and Benchmark with Strong Domain Randomization for Robust Bimanual Robotic Manipulation",
+      "authors": [
+        "Tianxing Chen",
+        "Zanxin Chen",
+        "Baijun Chen",
+        "Zijian Cai",
+        "Yibin Liu",
+        "Zixuan Li",
+        "Qiwei Liang",
+        "Yao Mu"
+      ],
+      "published": "2025-06-22",
+      "updated": "2025-08-27",
+      "abstract": "RoboTwin 2.0 automates expert policy-code generation with simulation-in-the-loop vision-language feedback and domain randomization, supporting robust bimanual manipulation benchmarking.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2506.18088",
+      "pdf_url": "https://arxiv.org/pdf/2506.18088",
+      "primary_category": "robotics",
+      "categories": [
+        "robotics"
+      ],
+      "tags": [
+        "Robotics",
+        "Bimanual",
+        "Data Generator",
+        "Benchmark"
+      ],
+      "featured": true,
+      "curated": true,
+      "origin": "editorial_verified_2026-11-22",
+      "reading_minutes": 39,
+      "project_url": "https://robotwin-platform.github.io",
+      "code_url": "",
+      "summary_ko": "RoboTwin 2.0은 MLLM expert code, simulator×10 feedback, VLM 실패 위치 진단, 최대5회 수리와 다섯 축 domain randomization으로 양팔 정책 데이터를 만든다. Table1–5, Appendix A–L, Figure2·3 저자 원본으로 성공률과 반례를 검증한다.",
+      "review": {
+        "one_line": "RoboTwin 2.0의 핵심은 VLA 신경망이 아니라 '코드 생성→10회 시뮬 실행→VLM 실패 위치 분석→코드 수리→domain randomization'으로 양팔 로봇 시연을 생산하고 강건성을 평가하는 데이터 엔진이다.",
+        "problem": "양팔 로봇으로 블록을 한 손에서 다른 손으로 건네려면 물체 파지 방향, 상대 위치, 손 사이 충돌과 타이밍이 맞아야 한다. 전문가가 태스크마다 Python 제어 프로그램을 수작업으로 짜면 다양한 로봇 기구와 조명·탁자 높이에 맞춰 수천 번 코드를 고쳐야 한다. 기존 깨끗한 시뮬 환경에서 학습한 조작 정책은 클러터나 배경이 바뀌면 성공률이 급락한다. RoboTwin 2.0은 대규모 검증된 자동 생성 시연과 어려운 domain randomization을 결합하는 방법을 묻는다.",
+        "idea": "RoboTwin-OD(731 물체/147 범주)·skill API·언어 명령으로 MLLM code agent가 expert program을 작성한다. 이를 시뮬에서 iteration당 10회 실행해 성공률·오류 로그를 얻고, VLM observer가 프레임별 실패 시점을 진단한다. code agent는 최대 다섯 번 수정해 기준을 통과한 프로그램을 시연 생성에 활용한다. 합성 성공 궤적에는 distractor clutter, texture, lighting, tabletop height, instruction 표현의 무작위화를 적용한다. 서로 다른 gripper에 맞춘 grasp 후보도 고려한다.",
+        "method": "§2–3과 Figure 2·3의 순서는 ① RoboTwin-OD 물체와 embodiment별 파지 affordance 준비, ② task description/API examples/계층 제약을 code agent에 주어 Python expert code 작성, ③ generated code의 시뮬레이션 10회 실행 및 구조화된 실패 로그 저장, ④ VLM agent가 비디오에서 잘못된 grasp/대상 위치/단계 순서를 localize, ⑤ code repair→재실행을 통과 또는 최대 5 refinements까지 반복, ⑥ 검증된 프로그램으로 다섯 양팔 로봇의 50 tasks에서 100K+ 도메인 무작위화 궤적을 만들고 ACT/DP/RDT/π0/DP3를 평가한다. Figure 3의 pass 조건은 프로그램에 대한 평가이며 정책 모델의 성공률과 구분한다.",
+        "findings": "Table 1의 공통 10개 코드 생성 작업에서 RoboTwin2.0 vanilla 62.1%→multimodal feedback 71.3%로 ASR 향상; RoboTwin1.0 + multimodal 63.9%다. Table 2의 50 tasks×5 embodiments expert execution 평균 52.2→60.5%지만 Franka 67.3→67.2와 UR5 57.6→57.1은 악화한다. Table 5는 50 tasks, 과제별 50 clean demonstrations로 정책을 학습하고 Easy/Hard 각각 과제당 100 rollouts 평가: RDT 34.5→13.7%, π0 46.4→16.3%, DP3 55.2→5.0%. Table 4 실제 COBOT-Magic 4 tasks의 unseen+clutter 조건에서 RDT real-only 9.0%→real+1000 synthetic 42.0%로 +33.0%p이나 개별 과제에선 역효과도 보고된다.",
+        "limitations": "100K+ 자동 생성 시연은 독립 인간 시연 100K가 아니다. MLLM이 모든 작업에 검증 성공 코드를 제공한다는 보장도 없고 expert success가 플랫폼별로 퇴행한다. Table 1 code ASR, Table 2 expert execution, Table 5 학습된 정책 success는 분모와 의미가 전혀 다르다. 특히 DP3는 시뮬레이터의 이상적인 point cloud와 segmentation을 활용하므로 이미지 기반 RDT/π0의 직접 공정 비교에는 감각 입력 차이가 있다. 실물 결과는 COBOT-Magic 4 tasks 한정이며 다른 하드웨어에서 재현한 실험은 아니다.",
+        "questions": [
+          "오류 로그만 주는 code repair 대비 VLM의 실패 위치 진단은 어느 유형에서 가장 많이 도움이 되는가?",
+          "성공 trajectory만으로 훈련한 모델은 어려운 실패·충돌을 언제 학습할 수 있나?",
+          "Hard 성능 하락에 조명·클러터·테이블 높이·언어 변화가 각각 얼마만큼 기여하나?",
+          "실물에서 합성 시연이 도움이 안 되는 특정 과제를 선별하려면 어떤 품질 지표가 필요한가?"
+        ]
+      }
     }
   ]
 }
