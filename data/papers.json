@@ -4135,6 +4135,55 @@
           "다른 로봇에서는 영상 사전학습 도메인과 카메라 viewpoint가 얼마나 중요한가?"
         ]
       }
+    },
+    {
+      "id": "2609.02531",
+      "slug": "2609.02531",
+      "title": "Spatially Aware World Action Model via Geometric Latent Diffusion",
+      "authors": [
+        "Javier Alejandro Lopetegui Gonzalez",
+        "Paul Pacaud",
+        "Cordelia Schmid"
+      ],
+      "published": "2026-09-02",
+      "updated": "2026-09-02",
+      "abstract": "SA-WAM incorporates depth geometry into a pretrained video diffusion world-action model for joint future observation and action prediction, with robotics benchmark and real UR5 evaluation.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2609.02531",
+      "pdf_url": "https://arxiv.org/pdf/2609.02531",
+      "primary_category": "wam",
+      "categories": [
+        "wam"
+      ],
+      "tags": [
+        "World-Action Model",
+        "RGB-D",
+        "Geometry",
+        "Diffusion"
+      ],
+      "featured": true,
+      "curated": true,
+      "origin": "editorial_verified_2026-11-22",
+      "reading_minutes": 38,
+      "project_url": "https://jlopetegui98.github.io/projects/sa_wam.html",
+      "code_url": "",
+      "summary_ko": "SA-WAM은 3개 카메라 RGB-D의 depth를 정규화해 동결 비디오 VAE에 주입하고 행동·미래 RGB·depth를 동시에 확산 생성한다. RoboCasa/LIBERO-Plus 및 UR5 결과의 평가 단위와 depth ablation을 공식 PDF Tables I–IV 및 Figure2·5로 검증한다.",
+      "review": {
+        "one_line": "SA-WAM은 별도 3D encoder를 학습하는 대신 depth를 비선형 정규화해 동결된 영상 VAE로 토큰화하고, 행동·미래 RGB·미래 depth를 같은 DiT에서 디노이징한다. (§III, Fig.2)",
+        "problem": "회색 탁자 위에 같은 색 물체가 앞뒤로 겹쳐 있는 상황에서 RGB만 보면 어느 물체가 그리퍼에 더 가까운지 판단하기 어렵다. 비디오 예측 사전학습은 물체 움직임의 모양을 배워도 실제 거리 정보를 직접 갖지 못한다. 기존 RGB-only World-Action Model의 한계를 해결하려고 point-cloud encoder를 새로 만들면 대규모 영상 사전학습의 잠재공간을 재사용하기 어렵다. SA-WAM은 저렴하게 기하 정보를 결합할 수 있는가를 묻는다.",
+        "idea": "깊이의 raw meter 값을 영상 VAE 입력의 [-1,1] 범위로 바꾸되 극단값 clipping과 로그형 매핑으로 가까운 물체의 정밀도를 유지한다. 이렇게 만든 3채널 depth frame을 원래 RGB frame과 동일한 동결 Wan2.1 VAE로 변환한다. wrist/left/right RGB latent와 대응 depth latent, 로봇 상태·행동을 교대로 놓고 Cosmos-Predict2 DiT에서 미래 RGB/depth/action의 공동 확산 손실을 최적화한다. 미래 비디오의 이미지 복원은 추론 중 선택 사항이다.",
+        "method": "원문 §III의 순서: ① 손목과 두 고정 카메라의 동기 RGB-D, 명령 및 q_t 수집, ② 카메라별 깊이 유효값을 2~98 percentile로 winsorize한 후 log/inverse/linear를 비교한 정규화 f로 3채널 입력 생성, ③ 사전학습된 동결 spatiotemporal VAE를 RGB와 depth 양쪽에 공용으로 적용, ④ view별 RGB/depth latent와 proprioception·action chunk 슬롯을 인터리브, ⑤ Cosmos-Predict2 diffusion transformer를 공동 denoising으로 조정, ⑥ 추론 시 예측 행동의 prefix만 실행하고 새 관측으로 다음 chunk를 생성한다. RoboCasa에서는 H=32 중 16개 실행, 실물 UR5는 key-step 세 개 중 첫 두 개 실행. 원문은 별도의 trainable depth-specific encoder나 action-only MLP head를 주장하지 않는다.",
+        "findings": "RoboCasa 24개 태스크 평균은 SA-WAM 76.6%와 Cosmos-Policy 67.1%(두 방법 모두 50 demonstrations/task), π0 62.5%(300 demos), FLARE 71.3%(1,000 demos)다(Table II). Table I의 depth ablation은 **다른 8개 태스크 하위 집합**에서 RGB-only 52.7%, linear 56.5%, inverse 59.5%, log 61.7%다. LIBERO-Plus의 7종 perturbation 평균 86.6%는 Cosmos81.4%, π0.5 84.6%와 비교되고 기본 LIBERO 98.4%와 구분한다(Table III). 실물 UR5 Figure 5는 clean composite task completion 90.0%, randomized 77.5%를 보고하지만, 네 범주당 10 시행, 부분 단계에 0.25/0.5 credit을 주는 진행률 지표이므로 엄격한 episode 성공률로 읽으면 안 된다.",
+        "limitations": "Depth 카메라의 투명체·반사·가림 오류와 카메라 정렬 의존성을 해소한 결과는 아니다. 실물 실험은 10 tasks×20 demonstrations 학습, 그중 복합 4 categories를 condition마다 category당 10회 평가해 표본이 작다. RoboCasa 8 task 정규화 ablation과 24 task main 결과를 동일 수치군으로 비교하지 않는다. Fig.4의 미래 3D 오차 기반 실패 검출은 simulator-derived ground-truth target mask가 필요해 실물에서 곧바로 deployable한 감시기를 증명하지 않는다. 독립된 Appendix는 9쪽 공식 PDF에 제공되지 않는다.",
+        "questions": [
+          "RGB-D 센서의 깊이 노이즈·결측이 큰 투명 물체에서 log mapping이 오히려 손해인가?",
+          "VAE latent slot 수가 늘어 이득이 생긴 것인지 depth 자체의 정보가 중요한지 어떻게 통제할까?",
+          "실물 네 category의 부분 점수 외에 엄격 에피소드 성공률을 따로 수집한다면?",
+          "Fig.4의 simulator GT segmentation 없이 실제 로봇 실패 탐지를 구현하려면?"
+        ]
+      }
     }
   ]
 }
