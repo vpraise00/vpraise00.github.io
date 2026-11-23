@@ -56,8 +56,11 @@
     "2406.02523",
     "2506.19850",
     "2609.02531",
-    "2506.18088"
+    "2506.18088",
+    "2611.20314",
+    "2610.37381",
+    "2611.26596"
   ],
-  "note_ko": "2026-11-22 신규 승인 3편: Unified Vision-Language-Action Model(2506.19850), Spatially Aware World Action Model via Geometric Latent Diffusion(2609.02531), RoboTwin 2.0(2506.18088). 기존 승인 52편과 중복 없음. 각각 공식 HTML/PDF Method, Experiments, Appendix(존재하는 경우), Figure 번호·캡션·Table 평가조건 직접 대조; 원본 Fig1/2, Fig2/5(PDF 전체 페이지), Fig2/3 설명 위치에 배치. SA-WAM 독립 Appendix 없음. 독립 재현 실험 아님.",
-  "updated_at": "2026-11-22"
+  "note_ko": "2026-11-23 신규 승인 3편 NF-VLA(2611.20314), PDRVLA(2610.37381), PGX(2611.26596). 기존 승인 55편과 중복 없이 58편. 원문 공식 PDF/HTML Method·Experiments·Appendix(제공시), Fig.1·2 / Fig.3·4 / Fig.1·2 및 Table 성공률 평가 조건 확인. NF-VLA·PGX 독립 Appendix 없음. NF/PDRVLA 공식 PDF 원본 페이지, PGX 공식 arXiv PNG를 본문 문맥에 삽입. 독립 재현 실험 아님.",
+  "updated_at": "2026-11-23"
 }

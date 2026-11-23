@@ -4238,6 +4238,162 @@
           "실물에서 합성 시연이 도움이 안 되는 특정 과제를 선별하려면 어떤 품질 지표가 필요한가?"
         ]
       }
+    },
+    {
+      "id": "2611.20314",
+      "slug": "2611.20314",
+      "title": "NF-VLA: A Normalizing-Flow Baseline for Vision-Language-Action Learning",
+      "authors": [
+        "Ruichen Deng",
+        "Qinyu Zhao",
+        "Yong-Hyun Park",
+        "Mutian Tong",
+        "Liang Zheng",
+        "Jiatao Gu"
+      ],
+      "published": "2026-11-15",
+      "updated": "2026-11-15",
+      "abstract": "Conditional autoregressive normalizing flows trained through exact maximum likelihood on Gaussian-smoothed robot action chunks; one self-score Tweedie correction refines actions; tested on LIBERO and LIBERO-Plus.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2611.20314",
+      "pdf_url": "https://arxiv.org/pdf/2611.20314",
+      "primary_category": "vla",
+      "categories": [
+        "vla"
+      ],
+      "tags": [
+        "VLA",
+        "Normalizing Flow",
+        "Imitation Learning",
+        "LIBERO",
+        "Action Generation"
+      ],
+      "featured": true,
+      "curated": true,
+      "origin": "editorial_verified_2026-11-23",
+      "reading_minutes": 37,
+      "summary_ko": "행동 확률밀도를 직접 계산하는 자기회귀 Normalizing Flow VLA. NLL 학습, deep–shallow 블록과 자기 score 보정, LIBERO 1,967/2,000 및 LIBERO-Plus 72.6%의 조건·ablation을 원문 Figure 1·2, Table 1–3으로 검증.",
+      "review": {
+        "one_line": "NF-VLA는 행동을 반복 디노이징하는 대신 조건부 가역변환의 **정확한 likelihood**를 학습하고, 같은 모델의 score로 단 한 번 교정한다. 성공률 98.35%만큼 중요한 것은 밀도 계산, autoregressive latency, 교란 강건성 사이의 교환관계다(§4–6).",
+        "problem": "“서랍 손잡이를 잡고 열어”라는 지시는 하나의 정답 관절각만 요구하지 않는다. 손잡이의 좌우 어느 지점을 잡을지에 따라 유효한 연속 궤적이 여러 개다. VLA의 행동 헤드가 연속 분포를 풍부하게 표현해야 하지만, 일반적인 diffusion/flow-matching 방식은 반복 생성 단계와 density 평가의 차이 때문에 생성·점수화·보정을 각각 별도로 설계하기 쉽다. 연구는 가역 normalizing flow의 likelihood 하나로 이 세 역할을 연결할 수 있는가를 묻는다. RoMAN-Flow나 NinA 등 선행 flow 계열이 존재하므로, 이 논문을 '최초의 NF 로봇 정책'이라고 부르면 틀리다(§1–2).",
+        "idea": "사진·명령·현재 로봇 상태에서 얻은 문맥 C_t가 **6개의 가역 affine autoregressive 블록 중 고용량 deep 블록 하나만** 조건화한다. 5개 얕은 블록은 문맥을 직접 받지 않고 행동 좌표 사이의 공유 변환을 담당한다. 10스텝×7차원 action을 정규화하고 σ=0.05 가우시안 잡음을 더한 뒤 flow로 표준정규 잠재변수에 매핑해 정확한 NLL을 최소화한다. 추론에서는 Gaussian latent→역변환→동일 likelihood의 score 기반 Tweedie 한 번→원 단위 행동 복원으로 끝낸다. 그림 Figure 1에서 학습 방향과 추론 방향의 화살표가 반대임을 보는 것이 핵심이다(§4; Fig.1).",
+        "method": "§4.1–4.4: ① SmolVLM-500M-Instruct가 입력 384² 영상(두 이미지에서 시각토큰 72개), 최대 50 명령 토큰을 처리하고 proprioception을 붙여 123×1024 context를 구축한다. ② 목표 행동 chunk는 H=10, 7차원(3 평행이동·3 회전 증분·1 그리퍼)으로 정규화한다. ③ 정규화 action에 Gaussian σ=0.05 노이즈를 주어 밀도를 매끄럽게 하고, 5×2-layer shallow 및 1×14-layer deep 자기회귀 가역 블록을 통과시킨다. ④ 가역변환 Jacobian의 log scale과 표준정규 잠재 NLL을 합산해 VLM과 flow를 공동학습한다(보조 denoiser loss 없음). ⑤ 추론에서 Gaussian Z를 뽑아 역순의 블록에서 토큰을 앞부터 복원한다. K(H−1)=54회 순차 토큰 평가가 들어간다. ⑥ 현재 density qθ의 score gradient를 사용한 Tweedie 교정을 한 번 적용하고 unnormalize하여 실행한다. Figure 1(a)의 학습 병렬성과 1(b)의 추론 순차성이 결정적 차이다.",
+        "findings": "LIBERO Spatial/Object/Goal/Long 각각 97.4/99.8/98.4/97.8%, 합계 1,967/2,000=98.35%(Table 1). 같은 checkpoint를 재학습하지 않고 LIBERO-Plus의 카메라·로봇 초기 상태·언어·조명·배경·노이즈·배치 등 10,030 perturbed instances로 보내면 전체 72.6%로 하락한다(Table 2). 특히 로봇 초기 상태 53.8% 대 조명 96.9%의 격차가 크다. Figure 2의 ablation은 원래 모델 98.35%, score correction 없음 96.45%, 문맥을 모든 블록에 전달 97.15%, 모든 블록 AdaLN 92.85%를 보여준다(§6). RTX 4080 Super에서 NF sample 50.10ms, 한 번의 score 11.89ms, VLM 12.11ms를 합쳐 action chunk당 74.10ms다(Table 3).",
+        "limitations": "모든 정책 실험은 LIBERO 계열 **시뮬레이션**으로, 물리 로봇의 접촉 안정성이나 collision-free 제어 검증이 없다. Table 1의 다른 연구 baseline은 저자들이 인용한 보고치이므로 하드웨어·pretraining·로봇 데이터 예산을 완전히 일치시킨 통제 대조라고 단정하면 안 된다. 낮은 조명 민감도와 달리 초기 상태 교란은 여전히 실패가 많다. 'flow=한 번에 초고속'이라는 일반화도 오류다. 가역 변환 자체가 autoregressive여서 54번의 순차 token 평가와 추가 gradient score pass가 필요하다. 이 12쪽 원문에는 독립 Appendix가 없으므로 없는 세부사항(실물 안정성, seed별 CI)을 만들어 넣지 않는다.",
+        "questions": [
+          "밀도 NLL이 높아졌지만 task 성공이 낮아지는 action mode는 무엇인가?",
+          "σ=0.05를 0.02/0.1로 바꾸면 score 교정 이득 및 지연이 어떻게 변하나?",
+          "Table 2 초기로봇 위치 교란과 카메라 교란을 교차시킨 OOD에서 failure taxonomy를 만들 수 있나?",
+          "Table 3 단일 4080 Super latency를 Jetson·A6000에서도 동일하다고 볼 수 있나?"
+        ]
+      }
+    },
+    {
+      "id": "2610.37381",
+      "slug": "2610.37381",
+      "title": "PDRVLA: A Vision-Language-Action Model with Physical Dynamics Representations",
+      "authors": [
+        "Hanqing Wang",
+        "Zhaotian Cai",
+        "Ruichuan An",
+        "Bohan Zeng",
+        "Tao Zhang",
+        "Yilin Chen",
+        "Xu Jiang",
+        "Kaiquan Chen",
+        "Chongyang Wu",
+        "Haoran Li"
+      ],
+      "published": "2026-10-27",
+      "updated": "2026-11-04",
+      "abstract": "A Physical Dynamics Module extracts 50 latent physical tokens supervised by future RGB, depth and flow representations and a training-only frozen video world model; an action expert predicts control chunks without video generation at deployment.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2610.37381",
+      "pdf_url": "https://arxiv.org/pdf/2610.37381",
+      "primary_category": "wam",
+      "categories": [
+        "wam"
+      ],
+      "tags": [
+        "VLA",
+        "World Model",
+        "Physical Dynamics",
+        "World-Action",
+        "Video Latents",
+        "Flow Matching"
+      ],
+      "featured": true,
+      "curated": true,
+      "origin": "editorial_verified_2026-11-23",
+      "reading_minutes": 40,
+      "summary_ko": "훈련 중 비디오 world model로 물리 미래 표현을 감독하고 추론에서는 video generator를 제거한 PDRVLA. 50 physical tokens·8-step DiT와 4개 시뮬 벤치마크 및 RoboCOIN/서브태스크 ablation을 공식 PDF Figure3·4/Table5–12/Appendix A–B로 대조.",
+      "review": {
+        "one_line": "PDRVLA의 세계모델 활용은 '미래 영상을 생성해 본 다음 행동'이 아니다. 훈련 동안만 3종의 미래 RGB·깊이·광류 특징과 동결 비디오 예측기를 사용해 **50개의 physical token**을 학습하고, 실제 정책 추론에는 action expert만 실행한다(§3–4, Fig.3–4).",
+        "problem": "물체를 그릇에 올리는 상황에서 정지 사진은 물체가 어디 있는지 알려주지만, 그리퍼가 밀고 나면 어떤 방향으로 미끄러질지는 알려주지 않는다. 영상 세계모델은 변화를 학습할 수 있으나 매 로봇 행동마다 미래 프레임을 확산 복원하면 제어 지연이 커진다. VLM의 최종 계층 정보만 행동 head에 주는 관행을 넘어, 중간 시각 표현에 물리 변화에 대한 감독을 걸고 그 요약만 저비용으로 재사용할 수 있는지 조사한다. 이 논문은 엄밀히 VLA에 학습용 world-model supervision을 넣은 하이브리드이지, 배포 시 영상을 생성하는 video WAM이 아니다.",
+        "idea": "Qwen3.5-4B VLM(32 blocks)의 **8번째 중간 layer features**를 50개 learnable query와 4개의 cross/self attention 블록으로 압축한 physical module을 붙인다. RGB·depth·optical-flow의 먼 미래 latent를 직접 예측하는 loss와, 동결 LingBot-Video Dense-1.3B를 경유하는 훈련용 보조 loss가 이 token들을 형성한다. 이후 VLM 최종 특징+physical tokens+로봇 상태로 DiT action expert가 8-step chunk를 4 Euler steps에 생성한다. Fig.3은 inference, Fig.4는 physical pretraining→joint training에서 사라지는 world model 경로를 보여준다.",
+        "method": "§3–4, Fig.3–4의 여섯 단계: ① 다중 camera와 자연어 지시를 Qwen3.5-4B native template로 인코딩하고 layer8 및 final-layer 특징을 얻는다. ② 50개의 learnable queries를 가진 4-block 1024-wide 모듈(57.3M)이 layer8에 cross-attend하여 50×2560 physical tokens를 낸다. ③ 30 action steps에 해당하는 5-frame clip을 RGB·DA3 pseudo-depth·DPFlow optical flow로 변환하고 Wan video VAE의 미래 latent를 직접 회귀하도록 사전학습한다. 동결 LingBot-Video의 latent velocity loss가 auxiliary supervisor다. ④ joint training에서는 frozen video model을 제거하고 direct future prediction을 유지하면서 action flow matching + text CE loss를 함께 학습한다(결합 L_act+0.1L_VL+0.1L_direct). ⑤ 58D masked heterogeneous action slots 및 q_t를 사용하는 약150M DiT가 8-step chunk를 Gaussian에서 4 Euler 업데이트로 생성한다. ⑥ action chunk 전체를 실행한 후 다음 관측으로 재계획한다. 배포 중 RGB/depth/flow 영상을 실제로 만드는 경로는 없다.",
+        "findings": "Table 5 저자 보고 평균: LIBERO 99.3% (4 suites×500 episodes), LIBERO-Plus 89.9%(10,030 perturbations), RoboTwin 2.0 93.6%(50 tasks×100 episodes/setting; clean93.9/random93.3), SimplerEnv 81.5%(4 WidowX visual-matching tasks). Table7에서 로봇 initial 교란 75.2%, 조명99.1%, 언어90.7%로 취약성 차이가 크며 Qwen-RobotManip은 robot initial 75.5%로 조금 앞선다. Table10 world-model auxiliary ablation은 RoboCOIN heldout 828 clips/100 episodes에서 direct-only 평균 latent MSE 0.6439→direct+WM 0.6354로 감소하나, 광류만의 상대 향상 .62%의 95% CI는 0을 포함한다. Table12 서브태스크 refresh every1/8/32 chunks에서 RoboCasa365 avg success 32.25/32.13/20.63%, no-subtask 26.25%; 오래된 서브태스크가 역효과라는 반례다.",
+        "limitations": "4개 주요 수치는 모두 서로 다른 시뮬레이션·튜닝 프로토콜이며 실제 로봇 성공률 보고가 아니다. 대조군 수치는 원 논문/공식 repo에서 재인용했고 joint GPU/data 예산을 완전히 통제한 비교가 아니다. world-model auxiliary 개선은 **미래 latent 예측 MSE**이지 로봇 작업 성공률 인과 증가를 직접 증명하는 실험은 아니다. depth/flow는 사전학습 시 DA3/DPFlow pseudo-label이므로 센서 물리 ground truth가 아니다. 전체 8-step chunk 실행으로 장애물 변화 대응 간격이 제한된다. Appendix B probe는 frozen representation에 선형 readout을 맞춘 간접 지표이고 single seed다. 'physical tokens가 물리 법칙을 보장한다'는 주장을 피해야 한다.",
+        "questions": [
+          "세계모델 loss 없이 direct future prediction만으로도 행동 성공률이 유지되는가?",
+          "Table10의 latent MSE 1.32% 개선이 물체 충돌·접촉 실패와 어떤 관련이 있나?",
+          "50 query의 물리 토큰 수를 줄이면 4 Euler steps latency와 제어 안정성은?",
+          "Table12의 텍스트 서브태스크 갱신 주기를 성공 진척에 따라 적응시킨다면?"
+        ]
+      }
+    },
+    {
+      "id": "2611.26596",
+      "slug": "2611.26596",
+      "title": "PGX: Physically Grounded Execution for Long-Horizon Humanoid Loco-Manipulation",
+      "authors": [
+        "Kai Lu",
+        "Chenyang Ma",
+        "Ioannis Havoutis"
+      ],
+      "published": "2026-11-19",
+      "updated": "2026-11-19",
+      "abstract": "A predicate-gated stage machine and world-coordinate locking organize pretrained VLA skills for long-horizon Unitree G1 loco-manipulation; compared against flat policies and FSM-only baselines in Isaac Lab Arena and on real hardware.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2611.26596",
+      "pdf_url": "https://arxiv.org/pdf/2611.26596",
+      "primary_category": "robotics",
+      "categories": [
+        "robotics"
+      ],
+      "tags": [
+        "Robotics",
+        "Humanoid",
+        "Loco-Manipulation",
+        "World-Coordinate Locking",
+        "Finite-State Machine",
+        "Long Horizon"
+      ],
+      "featured": true,
+      "curated": true,
+      "origin": "editorial_verified_2026-11-23",
+      "reading_minutes": 39,
+      "summary_ko": "PGX는 VLA를 새로 대형화하지 않고 물리 predicate 상태기계·world-coordinate locking으로 휴머노이드 장기 과제를 실행한다. Unitree G1·π0.5·GR00T 비교, nominal/random start success, station drift, real G1 조건을 Figure1·2, Table I–III로 검증.",
+      "review": {
+        "one_line": "PGX의 중요한 발견은 VLA가 모든 작업 순서를 암기하지 않아도 된다는 것이다. **언제 끝났는지(state predicate)**와 **어디서 동작할지(world frame)**를 executor가 관리하면 같은 GR00T 가중치로 커피 과제 nominal success 35→80%를 얻는다(§III–IV).",
+        "problem": "휴머노이드에게 ‘커피를 가져와’라고 지시하면 걷기, 머그 집기, 머신 앞 정렬, 놓기, 버튼 누르기, 기다리기, 다시 잡기, 전달하기가 뒤섞인다. flat VLA는 학습 데이터에서 긴 걷기와 대기 구간 비중이 커서 손동작 표현이 약해질 수 있고, 머그를 집었다는 착각으로 머신 동작을 건너뛰기도 한다. 이동하는 골반 좌표계를 기준으로 손을 제어하면 버튼 접촉 위치가 서서히 흔들린다. 기존 전통 제어는 각 기술을 수작업 제작해 정밀하나 복잡한 접촉을 학습하기 어렵다. PGX는 VLA는 손 조작에 집중시키고 물리적 전제·기하 제약은 외부에서 처리한다.",
+        "idea": "Task를 stage graph로 표현하고 stage마다 (언어 명령, executor, 완료 판정, 타임아웃, 회복정책)를 고정한다. `grasped`는 그리퍼 닫힘만 보지 않고 손목-물체 거리와 물체 높이 변화를 함께 검사한다. `placed`, `triggered`, `at-stance`, `dropped` 등 guard가 전이를 결정하고 실패 시 retry 또는 이전 단계로 복귀한다. WCL(world-coordinate locking)은 목표 물체에 상대적인 도착 자세·작업대 기준 base station keeping·버튼 world-anchored contact target을 관리한다. Fig.1은 flat VLA와 PGX의 실제 실패 유형, Fig.2는 FSM–VLA–WCL의 권한 분할을 보여준다. 이 기술은 새로운 network architecture가 아니라 **학습 없이 붙이는 실행 구조**다.",
+        "method": "§III의 순서: ① Task graph를 명시하고 커피 8개 단계 approach/grasp/transport/place/press/re-grasp/transport/deliver에 stage-specific executor와 physical guard를 지정한다(press 후 wait는 executor 관리). ② 동일 grasped/placed/triggered predicate를 시연 구간 자르기, online 전이, 평가 지표의 기준으로 사용한다. ③ 접근·이동·대기는 navigation/wait executor가, 조작은 π0.5 또는 GR00T VLA가 맡는다. ④ 조작 직전 목표 물체에 상대적인 base stance를 정하고 base가 진동을 멈춘 후 gripper ready/carry posture로 시작한다. ⑤ 16-step action chunk에서 base velocity channel을 executor가 마스킹/대체하고 HOMIE(sim)/GR00T-WBC(real)가 하체를 추종한다. ⑥ guard 만족 시 다음 단계, 잡기 실패·stage confusion 시 retry/backedge, 비정상 drop 시 abort. 세계 좌표에 고정한 목표를 움직이는 base frame으로 재투영해 버튼 위치 오차를 억제한다.",
+        "findings": "Isaac Lab Arena의 Unitree G1 Dex-3, Box transport(100 demos), Mug placement(30), Coffee fetching(50)에서 테스트. C0 nominal/C1 랜덤 시작(±0.30m 위치, ±30° yaw), 최소 20 episode/cell이다. Coffee Table I에서 flat GR00T 35/20%→PGX 80/80%, flat π0.5 0/0→PGX 60/55%. FSM-only는 각각 GR00T 65/75%, π0.5 32/50%로 제어 분할 자체의 이득을 분리한다. Table II Box/Mug/Coffee의 LIFT+SUCC 12개 셀을 섞은 종합 progress 지표 GR00T 35.0→77.9, π0.5 17.1→82.1은 strict task success와 **다르다**. WCL 지속 외란 주입에서 base drift p90 54cm→9cm. Button world-anchored primitive 사용 시 243/245 entry 성공(99%)은 **버튼 단계에 도달한 경우**에 대한 조건부 비율이다. 실물 G1도 44 시연으로 네 조작 단계 완료를 비교하지만 공식 HTML은 end-to-end 실물 성공률 단일 숫자를 보고하지 않는다.",
+        "limitations": "FSM/guard는 물체 pose, Vicon/joint feedback, 장치 state 등을 필요로 해 완전히 camera-only learned autonomy가 아니다. stage graph, object-relative stances, retry policy 등 수동 시스템 통합 비용도 있다. 실물은 Unitree G1 한 종류, 44 Quest demos, Vicon 외부 위치추적에 의존하며 실제 4단계 conditional completion과 시뮬 strict episode success를 혼용하면 안 된다. π0.5/GR00T의 모델별 stage training 차이가 있고 Table III에서 GR00T stage model이 기존 flat-weight PGX보다 80/80→35/35로 하락한다. WCL-P도 GR00T C1 80→70으로 악화되는 조건이 있다. 작업 전이에는 오히려 시간 오버헤드가 있다고 저자도 인정한다. HTML 목차 §I–V에 별도 Appendix가 없다.",
+        "questions": [
+          "grasped predicate 임계값과 물체 포즈 잡음에 얼마나 강건한가?",
+          "Vicon 없이 egocentric SLAM+object tracking을 쓰면 WCL의 p90 drift 이득이 유지되나?",
+          "동일 가중치 GR00T에서 flat→FSM-only→PGX의 효과를 재현하려면 어떤 외부 제어 자원을 동일하게 제공해야 하나?",
+          "성공률뿐 아니라 완수 시간과 retry 횟수를 패널티에 넣으면 결론이 달라지나?"
+        ]
+      }
     }
   ]
 }

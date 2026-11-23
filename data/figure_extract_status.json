@@ -1369,5 +1369,59 @@
       "caption": "Figure 3: Expert Code Generation Pipeline.",
       "review": "2026-11-22 official arXiv HTML author Figure3 number caption and PNG visually confirmed"
     }
+  },
+  "2611.20314": {
+    "1": {
+      "method": "arxiv_pdf_page_embed",
+      "source": "https://arxiv.org/pdf/2611.20314",
+      "paper_source": "https://arxiv.org/pdf/2611.20314",
+      "page": 5,
+      "caption": "Figure 1: NF-VLA architecture for training and sampling. Vision–language features and proprioception are projected into a shared prefix C_t that conditions only the deep flow block.",
+      "review": "2026-11-23 official PDF p.5 screenshot + caption visually checked; full page, no crop"
+    },
+    "2": {
+      "method": "arxiv_pdf_page_embed",
+      "source": "https://arxiv.org/pdf/2611.20314",
+      "paper_source": "https://arxiv.org/pdf/2611.20314",
+      "page": 9,
+      "caption": "Figure 2: Effect of NF-VLA design choices on LIBERO success. Bars show success rates for the baseline and three ablation variants across the four suites; diamonds show suite averages rounded to one decimal place.",
+      "review": "2026-11-23 official PDF p.9 screenshot + caption verified; full page, no crop"
+    }
+  },
+  "2610.37381": {
+    "3": {
+      "method": "arxiv_pdf_page_embed",
+      "source": "https://arxiv.org/pdf/2610.37381",
+      "paper_source": "https://arxiv.org/pdf/2610.37381",
+      "page": 8,
+      "caption": "Figure 3: PDRVLA architecture. (a) Physical tokens complement final-layer VLM features as inputs to the action expert. Starting from Gaussian noise, Euler updates integrate predicted velocities into an action chunk.",
+      "review": "2026-11-23 official PDF p.8 figure/caption screenshot checked; no crop"
+    },
+    "4": {
+      "method": "arxiv_pdf_page_embed",
+      "source": "https://arxiv.org/pdf/2610.37381",
+      "paper_source": "https://arxiv.org/pdf/2610.37381",
+      "page": 11,
+      "caption": "Figure 4: Training stages. (a) Physical pretraining combines direct future-feature prediction with supervision through a frozen video model. (b) Joint policy training removes the video model.",
+      "review": "2026-11-23 official PDF p.11 screenshot figure/caption checked; no crop"
+    }
+  },
+  "2611.26596": {
+    "1": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2611.26596v1/teaser_pdf3.png",
+      "source": "https://arxiv.org/html/2611.26596v1/teaser_pdf3.png",
+      "paper_source": "https://arxiv.org/html/2611.26596v1",
+      "caption": "Fig. 1: Humanoid long-horizon loco-manipulation. With the same VLA model, the flat policy fails before the machine, whereas our method PGX completes the task by keeping timing and world-frame precision outside the network.",
+      "review": "2026-11-23 official HTML Fig1 image and caption verified"
+    },
+    "2": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2611.26596v1/frame_pdf.png",
+      "source": "https://arxiv.org/html/2611.26596v1/frame_pdf.png",
+      "paper_source": "https://arxiv.org/html/2611.26596v1",
+      "caption": "Fig. 2: Overall framework of PGX. FSM (top): stages separated by predicate gates, with walking and waiting handled by the executor; retry and reverse edges for failed guards and stage confusion. VLA (middle), WCL (bottom).",
+      "review": "2026-11-23 official HTML Fig2 image and caption verified"
+    }
   }
 }

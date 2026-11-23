@@ -1713,5 +1713,102 @@
         ]
       }
     ]
+  },
+  "2611.20314": {
+    "heading": "NF-VLA — 공식 PDF Figure 1 학습/추론과 Figure 2 ablation",
+    "intro": "원저자 PDF의 수정 없는 5·9쪽 전체 페이지를 각각 아키텍처와 실험 해설 위치에 삽입. 직접 screenshot으로 번호·캡션 대조함. 개별 크롭 아님.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "method",
+        "reading_title": "Figure 1 — Maximum-likelihood 병렬 학습과 순차 역샘플링",
+        "verified_caption": "NF-VLA architecture for training and sampling. Vision–language features and proprioception are projected into a shared prefix C_t that conditions only the deep flow block.",
+        "context": "(a) training은 정규화·Gaussian smoothing된 action을 가역 flow로 Z에 보내며 log likelihood를 계산하고 (b) sampling은 Gaussian noise에서 역변환과 Tweedie score로 복원한다. deep 블록 하나만 context를 받는다.",
+        "steps": [
+          "위쪽 (a)의 action→Z 화살표와 아래쪽 (b)의 Z→action 방향 비교.",
+          "5 shallow(각2층)+1 deep(14층) 중 문맥 C_t는 deep에만 들어감.",
+          "학습 scale/shift 병렬 평가와 추론 54개 순차 token 연산을 구분.",
+          "오른쪽 Tweedie 보정은 같은 density에서 계산되는 추가 score pass."
+        ]
+      },
+      {
+        "number": 2,
+        "placement": "findings",
+        "reading_title": "Figure 2 — Prefix 주입/score 교정/AdaLN 제거 실험",
+        "verified_caption": "Effect of NF-VLA design choices on LIBERO success. Bars show success rates for the baseline and three ablation variants across four suites.",
+        "context": "회색 98.35%와 파랑 all-block-prefix97.15%, 노랑 without denoising96.45%, 초록 AdaLN92.85% 평균. suite별 변화가 달라 Long과 Goal을 따로 읽어야 한다.",
+        "steps": [
+          "4개 LIBERO suites bar 높이와 오른쪽 평균 diamond를 다른 지표로 읽기.",
+          "Tweedie 제거의 −1.9%p와 모든 블록 prefix −1.2%p 구별.",
+          "AdaLN의 92.85% 및 Table3의 추가 latency·parameter cost 함께 보기.",
+          "저자 보고 타 연구 baseline과 동일 GPU/훈련 조건 비교가 아님을 확인."
+        ]
+      }
+    ]
+  },
+  "2610.37381": {
+    "heading": "PDRVLA — 공식 PDF Figure 3 architecture 및 Figure 4 training stages",
+    "intro": "25쪽 공식 저자 PDF의 p.8 및 p.11 Figure 번호/캡션을 눈으로 대조. 해당 PDF 전체 페이지를 설명 위치에 삽입하며 Figure 개별 크롭이 아님을 명시.",
+    "figures": [
+      {
+        "number": 3,
+        "placement": "idea",
+        "reading_title": "Figure 3 — Physical tokens과 DiT 8-step action 생성",
+        "verified_caption": "PDRVLA architecture. Physical tokens complement final-layer VLM features as inputs to the action expert. Learnable queries attend to shared VLM features.",
+        "context": "Qwen3.5-4B layer8에서 나온 50 query→physical token과 final-layer features→action expert를 분리해 추적한다. Figure 3의 action Gaussian→Euler×4는 world video diffusion과 무관하다.",
+        "steps": [
+          "VLM 중간 layer8의 query-based 4 Transformer blocks 찾기.",
+          "50 physical tokens가 final-layer VLM features와 합쳐지는 지점 표시.",
+          "robot state q_t와 action noise가 DiT에서 만나는 위치 찾기.",
+          "8-action chunk와 4 Euler integration steps를 구별."
+        ]
+      },
+      {
+        "number": 4,
+        "placement": "method",
+        "reading_title": "Figure 4 — Frozen video world model은 학습에만 쓰인다",
+        "verified_caption": "Training stages. Physical pretraining combines direct future-feature prediction with supervision through a frozen video model. Joint policy training removes the video model.",
+        "context": "(a)는 LingBot-Video frozen model의 보조 학습과 미래 RGB/depth/flow latent 예측, (b)는 world generator 없이 L_act+0.1L_VL+0.1L_direct를 유지한다. 별표 frozen, 불꽃 trainable, sg stop-gradient를 함께 읽는다.",
+        "steps": [
+          "상단 physical pretrain의 Wan VAE future 5-frame latent와 frozen LingBot 구별.",
+          "RGB·Depth·Flow 세 velocity heads의 training-only supervision 확인.",
+          "아래 joint training에서 비디오 world model이 사라지는 점 확인.",
+          "sg는 VLM→physical path의 gradient 차단임을 확인.",
+          "배포 시 4 Euler updates는 video generator 아닌 action expert."
+        ]
+      }
+    ]
+  },
+  "2611.26596": {
+    "heading": "PGX — 공식 arXiv HTML Figure 1·2 원저자 PNG",
+    "intro": "arXiv HTML v1 원저자 PNG와 실제 Figure 1·2 캡션을 대조하고 해당 연구 문제·구조 설명 위치에 배치한다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "problem",
+        "reading_title": "Figure 1 — 같은 VLA의 flat 실행과 PGX 실패·성공 비교",
+        "verified_caption": "Humanoid long-horizon loco-manipulation. With the same VLA model, the flat policy fails before the machine, whereas PGX completes the task by keeping timing and world-frame precision outside the network.",
+        "context": "머그를 들고 기계를 통과해버리는 flat VLA가 비슷한 마지막 위치라도 진짜 task complete가 아님을 보여준다. 그림은 정량 증거 자체가 아니며 Table I을 통해 검증해야 한다.",
+        "steps": [
+          "왼쪽 flat policy가 커피 머신 인터랙션을 생략하는 오류 확인.",
+          "오른쪽 PGX가 물리 전제들을 만족하고 버튼 단계를 거치는 동선 확인.",
+          "같은 VLA 가중치를 사용할 수 있다는 §IV-D의 비교조건 읽기.",
+          "시각 사례를 strict task SR과 구분."
+        ]
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — FSM, VLA skill, WCL 3층 실행기",
+        "verified_caption": "Overall framework of PGX. FSM stages are separated by predicate gates with retry/reverse edges, VLA executes manipulation, and WCL manages station keeping, object-relative stances, and contact targets.",
+        "context": "상단 graph는 '언제', 가운데 VLA는 '어떻게 손을 움직일지', 하단 WCL은 '어느 세계 좌표에서'를 결정한다. 행동 chunk 종료가 stage 성공을 의미하지 않는다는 사실이 핵심이다.",
+        "steps": [
+          "상단 predicate guard·retry·reverse transitions 구분.",
+          "중간 VLA의 local manipulation action chunk와 navigation/wait executor 구분.",
+          "하단 object-relative stance와 world station keeping을 찾아보기.",
+          "오른쪽 box·mug·coffee task가 서로 다른 시간 budget/성공조건임을 확인."
+        ]
+      }
+    ]
   }
 }
