@@ -4394,6 +4394,156 @@
           "성공률뿐 아니라 완수 시간과 retry 횟수를 패널티에 넣으면 결론이 달라지나?"
         ]
       }
+    },
+    {
+      "id": "2602.12063",
+      "slug": "2602.12063",
+      "title": "VLAW: Iterative Co-Improvement of Vision-Language-Action Policy and World Model",
+      "authors": [
+        "Yanjiang Guo",
+        "Tony Lee",
+        "Lucy Xiaoyang Shi",
+        "Jianyu Chen",
+        "Percy Liang",
+        "Chelsea Finn"
+      ],
+      "published": "2026-02-12",
+      "updated": "2026-02-12",
+      "abstract": "Iterative real and synthetic rollout training improves an action-conditioned world model and VLA policy on five contact-rich tasks.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2602.12063",
+      "pdf_url": "https://arxiv.org/pdf/2602.12063",
+      "primary_category": "vla",
+      "categories": [
+        "vla"
+      ],
+      "tags": [
+        "VLA",
+        "World Model",
+        "Online Learning",
+        "Contact-rich Manipulation"
+      ],
+      "featured": true,
+      "curated": true,
+      "origin": "editorial_verified_2026-11-24",
+      "reading_minutes": 25,
+      "summary_ko": "VLAW는 실제 정책 실패를 세계모델에 학습시키고, 그 모델이 생성한 성공 궤적만으로 π0.5를 반복 개선한다. DROID 5개 접촉 과제 평균 46.0→86.8%; 동일 실물 수집 예산 Filtered BC 75.2%와 비교한다.",
+      "review": {
+        "one_line": "실패 시연은 정책의 정답 행동이 아니라 세계모델의 물리적 반례로 사용한다. 그 결과 가상의 성공을 실제 성공으로 오인하는 오류가 감소한다.",
+        "problem": "예를 들어 로봇이 숟가락으로 땅콩을 뜨다가 옆으로 밀어 떨어뜨렸다면, 성공 시연만 본 생성모델은 땅콩이 그릇에 들어가는 영상을 만들어낼 수 있다. 이런 가상 성공을 그대로 학습하면 로봇은 잘못된 동작을 강화한다. 실제 로봇에서 실패를 포함한 반복 실행은 비싸고 환경을 매번 초기화해야 한다. 또 flow matching 정책은 일반적인 확률밀도 기반 policy gradient 적용이 까다롭다.",
+        "idea": "정책과 환경의 모델을 함께 개선하되 학습 데이터의 역할을 분리한다. 실패한 실제 궤적도 Ctrl-World의 미래 예측에 유용하지만, 행동 모방에는 성공 궤적만 사용한다. 보상 VLM이 합성 궤적을 필터링하고, 기존 정책의 flow matching 목적을 유지한다. Figure 3은 이 네 단계의 연결을 보여주며 Figure 6은 동일 행동을 재생해 접촉 예측이 맞는지 비교한다.",
+        "method": "01 초기 정책 준비: 5개 과제마다 전문가 시연 25개로 π0.5를 warm-start한다. 세계모델은 DROID로 사전학습한 Ctrl-World에서 시작한다.\n\n02 실제 실행 수집: 각 반복에서 과제 범주당 50개 실제 궤적을 수집하고 리셋 시 성공/실패를 이진 판정한다. 누적 실제 데이터에는 실패도 남긴다.\n\n03 세계모델 후학습: 현재 관측과 행동 chunk에 조건화한 미래 영상 diffusion 복원 손실을 최소화한다. 이전 실제 궤적과 DROID 원본 데이터를 함께 사용하여 과적합을 완화한다. 50k step.\n\n04 가상 환경의 폐루프: 실제 초기 관측에서 정책을 실행하고 생성된 미래 관측으로 다시 정책을 호출한다. 반복당 과제별 500개의 가상 궤적을 생성한다. 기록 행동 재생 실험과 달리 정책 입력 자체가 생성 결과로 갱신된다.\n\n05 보상 필터: 첫 반복 실제 라벨로 Qwen3-VL-4B-Instruct를 미세조정한다. 영상 16프레임과 지시를 입력하고 yes 토큰 확률이 0.8을 넘을 때 합성 성공으로 채택한다. Appendix C: 200 steps, batch 128.\n\n06 정책 갱신 및 반복: 실제 성공과 합성 성공의 flow matching 손실만 계산한다. 실패 weight=0. 정책 업데이트 2k steps, batch 256, 총 두 반복. 실제 배포에서는 갱신된 π0.5가 행동을 출력한다; 세계모델은 훈련용이다.",
+        "findings": "Base → VLAW 2: 46.0 → 86.8% (Table 2; 5과제 평균, 각 50회)\nFiltered BC 2 → VLAW 2: 75.2 → 86.8% (동일 실물 rollout 수; 11.6%p 차이)\nDSRL: 50.0% (동일 수집 예산이나 Appendix B 평가 10회/과제, 나머지 50회)\nDrawing: 22 → 78% (Table 2; 지정 영역에 닫힌 원 그리기)\nStacking: 62 → 92% (블록 A가 B 위에서 안정적으로 유지)\nScooping: 44 → 92% (정해진 양 이상 그릇 안에 남아야 함)\nFVD: 225.13 → 99.98 → 64.12 (Table 1; pretrained/expert/online, 손목 시점 256개 5초 클립)\n접촉 FP/FN: 11/2 → 1/4 (50개 접촉 클립, expert-only vs expert+online)\n합성 데이터 ablation: 500 → 250 (Fig.9; drawing에서 감소 시 성능 저하, 수치 미인용)",
+        "limitations": "실험은 DROID Franka Panda/Robotiq, 두 외부·한 손목 카메라의 5개 범주에 한정된다. 학습된 환경 모델이 새로운 물체·마찰·도구까지 일반화한다는 증거는 아니다. 합성 영상의 reward false positive, autoregressive drift와 실제 데이터 수집 비용이 남아 있다. 모델 업데이트의 계산 비용까지 포함한 실물 절약 효과는 별도로 평가해야 한다.",
+        "questions": [
+          "[제안] 실제 실패를 학습한 세계모델의 사건 오탐 감소가 정책 개선의 매개 요인인지 검증한다.",
+          "같은 warm-start, 과제별 25 시연·50 실제 실행/round, 동일 평가 초기 상태에서 2회 반복한다. 합성 budget 0/250/500 및 모델 업데이트 횟수를 고정 또는 교차 비교한다.",
+          "Filtered BC, expert-only world model, expert+online model, oracle reward, learned reward를 교차 배치한다. 동일 실물 횟수와 별도의 동일 GPU 시간 비교를 실시한다."
+        ]
+      }
+    },
+    {
+      "id": "2606.15768",
+      "slug": "2606.15768",
+      "title": "LaWAM: Latent World Action Models for Efficient Dynamics-Aware Robot Policies",
+      "authors": [
+        "Jialei Chen",
+        "Kai Wang",
+        "Kang Chen",
+        "Shuaihang Chen",
+        "Feng Gao",
+        "Wenhao Tang",
+        "Zhiyuan Li",
+        "Weilin Liu",
+        "Zhuyu Yao",
+        "Boxun Li",
+        "Yuanbo Xu",
+        "Chao Yu"
+      ],
+      "published": "2026-06-14",
+      "updated": "2026-06-14",
+      "abstract": "A latent-action-conditioned world model predicts spatial future features instead of pixel videos, conditioning a robot action expert on those features.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2606.15768",
+      "pdf_url": "https://arxiv.org/pdf/2606.15768",
+      "primary_category": "wam",
+      "categories": [
+        "wam"
+      ],
+      "tags": [
+        "World Action Model",
+        "Latent Action",
+        "DINOv3",
+        "Flow Matching"
+      ],
+      "featured": true,
+      "curated": true,
+      "origin": "editorial_verified_2026-11-24",
+      "reading_minutes": 25,
+      "summary_ko": "LaWAM은 latent action decoder를 추론 시 미래 특징 예측기로 재사용한다. LIBERO 98.6%, A100 187ms, RoboTwin clean 92.64%/random 89.80%, 실물 3과제 평균 90.0%.",
+      "review": {
+        "one_line": "픽셀 전체를 생성하지 않아도 미래를 직접 행동 전문가에 전달할 수 있다. LaWAM은 현재 DINO 특징을 잠재 행동으로 변환한 미래 공간 특징을 제어에 사용한다.",
+        "problem": "수건을 접을 때 로봇이 필요한 것은 다음 접촉 위치와 천의 변형이지, 바닥 반사광이나 배경의 고해상도 픽셀을 재현하는 것이 아니다. 기존 VLA는 현재 장면에서 행동을 바로 추론하고, 영상 WAM은 미래를 명시하지만 반복 영상 생성 때문에 지연이 길다. 잠재 행동만 전달하는 방법은 현재 로봇의 형태와 공간 위치를 충분히 복원하지 못할 수 있다.",
+        "idea": "미래를 하나의 공간 특징 지도 형태로 표현하고 잠재 행동 모델의 forward decoder를 살린다. 첫 단계에서 현재·미래 특징을 통해 잠재 행동을 얻고, 두 번째 단계에서는 미래 없이 VLM이 그 행동을 예측하도록 증류한다. 미래 특징은 별도 iterative video sampler 없이 한 번 계산하고 Alternate-DiT가 현재/미래 dynamics와 언어 의미를 번갈아 읽는다.",
+        "method": "01 영상 쌍의 시간 정렬: 동결 DINOv3로 현재 및 일정 실제 시간 뒤의 관측을 인코딩한다. 로봇 영상 약 3000시간, 사람 egocentric 영상 약 1500시간. horizon은 각각 1.2초와 0.4초.\n\n02 역동역학 인코더 학습: 현재·미래 특징에서 연속 잠재 행동 z를 추론한다. decoder는 현재 특징과 z로 미래 특징을 예측한다. KL 정규화와 EEF 상태 예측 보조 손실을 추가한다.\n\n03 정책 prior 증류: 추론에서는 실제 미래를 사용할 수 없으므로 Qwen3-VL의 처음 16개 층이 현재 장면과 지시, query에서 잠재 행동을 예측하도록 학습한다. teacher는 Stage 1 posterior.\n\n04 미래 특징 계산: 230M LaWM decoder가 u와 예측 z를 받아 미래 공간 특징을 한 번에 계산한다. DINO 특징 지도이므로 영상 픽셀을 출력하는 과정은 없다.\n\n05 Alternate-DiT 행동 생성: 4개 Alternate-DiT block(총 16층, hidden 1024)이 VLM semantic context와 current/future dynamics context를 교대 참조한다. EEF 행동 chunk를 flow matching으로 생성한다.\n\n06 추론과 실제 시간: RGB 256×256, proprioception 입력 없음. 미래 특징 한 번 예측 후 행동 denoise 10회(기본). 각 로봇 제어 주파수 h에서 H=round(τh)로 chunk 길이를 정하고 다음 관측을 갱신한다.",
+        "findings": "LIBERO 평균: 98.6% (Table 1, 40 tasks·2000 trials)\nLIBERO suite: 97.0 / 98.4 / 99.6 / 99.4% (Spatial/Object/Goal/Long)\nChunk latency: 187ms vs LingBot-VA 4482ms (A100, 1000 반복, 10 denoising steps; 약 24배)\nRoboTwin clean/random: 92.64 / 89.80% (Table 2; 50 tasks, 각 100 trials/condition)\nRoboTwin LingBot-VA: 91.50 / 90.92% (random에서는 LaWAM이 낮음; H100 재평가)\n실물 평균: 90.0% vs π0.5 83.3% (Table 3; 3과제 각 30회)\nPick/place · drawer: 93.3 / 86.7% (Franka, 각 30회)\n수건 접기: 90.0% vs LingBot-VA 0.0% (Quanta X1, 각 30회; 특정 환경 결과)\nLaWM / 전체 크기: 230M / 2.3B (5B WAN 대비 world module 약 95% 감소; VAE/text encoder 제외 조건)",
+        "limitations": "고정 카메라에서 강한 현재 구조는 이동 로봇·휴머노이드의 self-motion을 별도 분리하지 못할 수 있다. 사람 영상은 Stage 1에만 사용된다. 16 H100 100k steps와 64 H100 200k steps의 사전학습은 재현 비용이 크다. cross-embodiment open-loop 시각화만으로 새로운 로봇의 제어 성공을 입증하지 않는다.",
+        "questions": [
+          "[제안] 같은 VLM과 action expert에서 미래 공간 특징 자체가 지연 대비 성능을 높이는지 확인한다.",
+          "LIBERO 40과제 동일 시연, 3 seeds, 2000 trials/seed. 고정 DINO 특징, τ=1.2s에서 5/10/20Hz 데이터와 카메라 perturbation을 교차한다.",
+          "latent action only, no LaWM, LaWM without distill, without KI, pixel future, full LaWAM; 동일 backbone 및 action denoise 횟수."
+        ]
+      }
+    },
+    {
+      "id": "2406.07539",
+      "slug": "2406.07539",
+      "title": "Baku: An Efficient Transformer for Multi-Task Policy Learning",
+      "authors": [
+        "Siddhant Haldar",
+        "Zhuoran Peng",
+        "Lerrel Pinto"
+      ],
+      "published": "2024-06-11",
+      "updated": "2024-07-16",
+      "abstract": "A compact multi-task imitation learning transformer combines modular sensory encoders, observation trunk and action heads.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2406.07539",
+      "pdf_url": "https://arxiv.org/pdf/2406.07539",
+      "primary_category": "robotics",
+      "categories": [
+        "robotics"
+      ],
+      "tags": [
+        "Imitation Learning",
+        "Action Chunking",
+        "FiLM",
+        "Multi-task Policy"
+      ],
+      "featured": true,
+      "curated": true,
+      "origin": "editorial_verified_2026-11-24",
+      "reading_minutes": 25,
+      "summary_ko": "Baku는 약 10M 파라미터의 모듈형 모방학습 정책으로 LIBERO-90 90%, 실물 xArm VQ-BeT 91%를 보고한다. 행동 chunking, 관측 history, 모델 크기의 효과를 Table 3에서 분리한다.",
+      "review": {
+        "one_line": "적은 시연에서 중요한 것은 파라미터를 무작정 늘리는 것이 아니라 관측 통합과 시간적으로 일관된 행동 출력이다.",
+        "problem": "컵을 꺼내기와 오븐 문을 닫기는 같은 카메라와 팔을 사용해도 주목할 위치와 행동의 길이가 다르다. 모든 작업에 거대한 하나의 모델을 적용하면 작업별 데이터가 부족할 수 있고, 독립 단일 작업 정책은 공통 기술을 공유하지 못한다. Baku는 대규모 VLM pretraining 경쟁이 아니라 제한된 전문가 시연에서 다중 작업 BC 설계의 효과를 검토한다.",
+        "idea": "센서 encoder, observation trunk, action head를 분리해 설계 선택을 독립적으로 바꾼다. 텍스트 지시로 FiLM을 조절해 시각 특징을 조건화하고, causal transformer의 action token이 여러 센서를 모은다. 미래 여러 행동을 한 벡터로 출력하고 이전 예측과 시간 평균하여 제어한다. Figure 1의 여러 과제와 Figure 2의 행동 chunk를 비교하면 명령이 어떻게 행동으로 연결되는지 보인다.",
+        "method": "01 다중 과제 시연: 관측, 목표 지시, 전문가 행동으로 offline BC를 학습한다. LIBERO-90 50개/과제, Meta-World 35개, DMC 500개. xArm 30과제 총 520개.\n\n02 감각별 표현: FiLM ResNet-18로 RGB를 처리한다. 6-layer MiniLM 텍스트 encoder와 2-layer proprioception MLP를 사용하고 공통 차원으로 투영한다. 다중 카메라에 공유 시각 encoder.\n\n03 Transformer trunk: 인코딩된 센서 토큰에 학습 가능한 action token을 추가한다. causal mask로 이후 관측의 유출을 차단한다. Appendix A.4: minGPT 8층·4 heads.\n\n04 독립 action head: 기본 MLP는 연속 행동 chunk 전체를 concatenated vector로 회귀한다. GMM, BeT, VQ-BeT, diffusion으로 교체할 수 있다. 기본 모델 약 10M.\n\n05 학습과 시간 평균: BC 손실로 시연 행동을 맞힌다. 기본 모델 입력은 현재 관측이며 과거 예측 chunk들의 같은 실행 시점에 해당하는 명령을 exponential averaging한다.\n\n06 폐루프 제어: xArm 7의 네 RGB 카메라(손목 포함), 128×128 영상과 상태를 사용한다. 시연 30Hz, 배포 10Hz; chunk length xArm 20, LIBERO/Meta-World 10, DMC 3.",
+        "findings": "LIBERO-90: 90% vs MT-ACT 54%, RT-1 16% (Table 1; 90과제, 10 rollouts/과제)\nMeta-World: 79% vs RT-1 65% (30과제, 35 시연/과제)\nDMC: 0.70 vs RT-1 0.66 (9개 locomotion, state 기반; 조작 SR와 분리)\n실물 MLP / VQ-BeT: 86 / 91% (Table 1; §4.2는 30과제×5회, 표 header는 20 tasks로 불일치)\n실물 baseline: MT-ACT 56%, RT-1 37% (동일 표의 값; 분모 불일치 유의)\nLIBERO-10: 86 vs MT-ACT 68% (Table 2, 10 장기과제)\n실물 장기: 84 vs 64% (Table 2; 5개 두 단계 과제, 평균 19 시연)\nAction chunking: LIBERO 76→90%, DMC 0.74→0.70 (Table 3 동일 나머지 구성)\nHistory loss: LIBERO 54→90% (last-step loss vs multi-step loss; no history도 90%)",
+        "limitations": "단일 실물 xArm 주방과 정해진 평가 위치에 기반한다. 보지 못한 작업에 대한 zero-shot VLA 성능은 입증하지 않는다. DMC는 영상이 아닌 상태 입력으로 평가되어 조작과 직접 평균하기 어렵다. 긴 작업은 두 단계 연결 중심이며 대규모 장기 계획 능력 일반화가 아니다.",
+        "questions": [
+          "[제안] 작은 모델의 우위가 데이터 부족과 행동 chunking에 의해 설명되는지 확인한다.",
+          "LIBERO-90 공식 50 시연/과제에서 10/25/50 시연 subsample, 4.4/10/31/114M 모델, 3 seeds, task별 동일 초기 상태로 평가한다.",
+          "MLP/transformer trunk, chunk 1/10, history no/last/multi, FiLM off/on, MLP/VQ-BeT head를 한 번에 하나씩 바꾼다."
+        ]
+      }
     }
   ]
 }

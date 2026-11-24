@@ -1810,5 +1810,89 @@
         ]
       }
     ]
+  },
+  "2602.12063": {
+    "heading": "VLAW — 공식 arXiv 원저자 Figure",
+    "intro": "공식 HTML 캡션과 실제 PNG를 대조하고 설명 위치에 원본 링크로 배치한다.",
+    "figures": [
+      {
+        "number": 3,
+        "placement": "method",
+        "reading_title": "Figure 3 — 실제 실행과 합성 학습의 순환",
+        "verified_caption": "실제 궤적 수집→세계모델 후학습→합성 데이터→보상 가중 정책 학습의 4단계.",
+        "context": "실물·합성 데이터가 같은 VLA 업데이트로 합류하는 지점과 실패 데이터의 역할을 구분한다.",
+        "steps": [
+          "실물·합성 데이터가 같은 VLA 업데이트로 합류하는 지점과 실패 데이터의 역할을 구분한다.",
+          "원문 Figure 번호와 평가 표의 조건을 구분한다."
+        ]
+      },
+      {
+        "number": 6,
+        "placement": "findings",
+        "reading_title": "Figure 6 — 동일 행동 재생 비교",
+        "verified_caption": "동일 시작 관측과 다섯 행동 chunk로 실제 및 여러 세계모델을 비교한 손목 시점 영상.",
+        "context": "초록색 online 모델과 노란색 expert-only 모델의 접촉 결과를 실제 파란색 영상과 비교한다. 정량 분모는 Table 1.",
+        "steps": [
+          "초록색 online 모델과 노란색 expert-only 모델의 접촉 결과를 실제 파란색 영상과 비교한다. 정량 분모는 Table 1.",
+          "원문 Figure 번호와 평가 표의 조건을 구분한다."
+        ]
+      }
+    ]
+  },
+  "2606.15768": {
+    "heading": "LaWAM — 공식 arXiv 원저자 Figure",
+    "intro": "공식 HTML 캡션과 실제 PNG를 대조하고 설명 위치에 원본 링크로 배치한다.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 두 단계 잠재 세계모델 학습",
+        "verified_caption": "역동역학 인코더와 forward decoder 사전학습 후, 정책의 잠재 행동 증류 및 Alternate-DiT 연결.",
+        "context": "상단의 미래 관측 teacher가 하단 추론에 들어가지 않는 점과 KI 경계를 확인한다.",
+        "steps": [
+          "상단의 미래 관측 teacher가 하단 추론에 들어가지 않는 점과 KI 경계를 확인한다.",
+          "원문 Figure 번호와 평가 표의 조건을 구분한다."
+        ]
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Figure 4 — 두 실물 플랫폼의 조작",
+        "verified_caption": "Pick/place, drawer opening, towel folding 실행 예시.",
+        "context": "위쪽 두 단일 팔 과제와 아래 양팔 수건 접기를 구별한다. 영상은 대표 사례이고 Table 3이 30회 평가 결과다.",
+        "steps": [
+          "위쪽 두 단일 팔 과제와 아래 양팔 수건 접기를 구별한다. 영상은 대표 사례이고 Table 3이 30회 평가 결과다.",
+          "원문 Figure 번호와 평가 표의 조건을 구분한다."
+        ]
+      }
+    ]
+  },
+  "2406.07539": {
+    "heading": "Baku — 공식 arXiv 원저자 Figure",
+    "intro": "공식 HTML 캡션과 실제 PNG를 대조하고 설명 위치에 원본 링크로 배치한다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Figure 1 — 다중 과제 모방학습의 구성",
+        "verified_caption": "다양한 감각을 인코딩하고 trunk를 거쳐 행동을 출력하는 구조와 LIBERO 및 xArm 예시.",
+        "context": "하단 왼쪽은 구성 요소 누적 비교이며 Table 3의 단일 요소 ablation과 혼동하지 않는다.",
+        "steps": [
+          "하단 왼쪽은 구성 요소 누적 비교이며 Table 3의 단일 요소 ablation과 혼동하지 않는다.",
+          "원문 Figure 번호와 평가 표의 조건을 구분한다."
+        ]
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 모듈형 trunk와 행동 chunk",
+        "verified_caption": "카메라·상태·지시를 토큰화하고 action token을 행동 head로 전달하는 10Hz 폐루프 제어.",
+        "context": "여러 시점에서 예측된 chunk의 현재 실행 시점이 겹치는 부분을 확인한다.",
+        "steps": [
+          "여러 시점에서 예측된 chunk의 현재 실행 시점이 겹치는 부분을 확인한다.",
+          "원문 Figure 번호와 평가 표의 조건을 구분한다."
+        ]
+      }
+    ]
   }
 }

@@ -1423,5 +1423,59 @@
       "caption": "Fig. 2: Overall framework of PGX. FSM (top): stages separated by predicate gates, with walking and waiting handled by the executor; retry and reverse edges for failed guards and stage confusion. VLA (middle), WCL (bottom).",
       "review": "2026-11-23 official HTML Fig2 image and caption verified"
     }
+  },
+  "2602.12063": {
+    "3": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2602.12063v1/fig5-2.png",
+      "source": "https://arxiv.org/html/2602.12063v1/fig5-2.png",
+      "paper_source": "https://arxiv.org/html/2602.12063v1",
+      "caption": "실제 궤적 수집→세계모델 후학습→합성 데이터→보상 가중 정책 학습의 4단계.",
+      "review": "2026-11-24 official HTML Figure 3 image viewed and caption crosschecked"
+    },
+    "6": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2602.12063v1/fig4-2.png",
+      "source": "https://arxiv.org/html/2602.12063v1/fig4-2.png",
+      "paper_source": "https://arxiv.org/html/2602.12063v1",
+      "caption": "동일 시작 관측과 다섯 행동 chunk로 실제 및 여러 세계모델을 비교한 손목 시점 영상.",
+      "review": "2026-11-24 official HTML Figure 6 image viewed and caption crosschecked"
+    }
+  },
+  "2606.15768": {
+    "2": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2606.15768v1/LaWAM_overview.png",
+      "source": "https://arxiv.org/html/2606.15768v1/LaWAM_overview.png",
+      "paper_source": "https://arxiv.org/html/2606.15768v1",
+      "caption": "역동역학 인코더와 forward decoder 사전학습 후, 정책의 잠재 행동 증류 및 Alternate-DiT 연결.",
+      "review": "2026-11-24 official HTML Figure 2 image viewed and caption crosschecked"
+    },
+    "4": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2606.15768v1/real_exp_pin_2x8.png",
+      "source": "https://arxiv.org/html/2606.15768v1/real_exp_pin_2x8.png",
+      "paper_source": "https://arxiv.org/html/2606.15768v1",
+      "caption": "Pick/place, drawer opening, towel folding 실행 예시.",
+      "review": "2026-11-24 official HTML Figure 4 image viewed and caption crosschecked"
+    }
+  },
+  "2406.07539": {
+    "1": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2406.07539v2/intro2.png",
+      "source": "https://arxiv.org/html/2406.07539v2/intro2.png",
+      "paper_source": "https://arxiv.org/html/2406.07539v2",
+      "caption": "다양한 감각을 인코딩하고 trunk를 거쳐 행동을 출력하는 구조와 LIBERO 및 xArm 예시.",
+      "review": "2026-11-24 official HTML Figure 1 image viewed and caption crosschecked"
+    },
+    "2": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2406.07539v2/architecture.png",
+      "source": "https://arxiv.org/html/2406.07539v2/architecture.png",
+      "paper_source": "https://arxiv.org/html/2406.07539v2",
+      "caption": "카메라·상태·지시를 토큰화하고 action token을 행동 head로 전달하는 10Hz 폐루프 제어.",
+      "review": "2026-11-24 official HTML Figure 2 image viewed and caption crosschecked"
+    }
   }
 }
