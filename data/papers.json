@@ -4544,6 +4544,152 @@
           "MLP/transformer trunk, chunk 1/10, history no/last/multi, FiLM off/on, MLP/VQ-BeT head를 한 번에 하나씩 바꾼다."
         ]
       }
+    },
+    {
+      "id": "2502.19645",
+      "slug": "2502.19645",
+      "title": "Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success",
+      "authors": [
+        "Moo Jin Kim",
+        "Chelsea Finn",
+        "Percy Liang"
+      ],
+      "published": "2025-02-27",
+      "updated": "2025-04-28",
+      "abstract": "OpenVLA의 사전학습은 그대로 두고 미세조정의 병렬 디코딩·연속 행동·L1 회귀를 재설계한다. LIBERO 동일 입력 95.3%, 추가 입력 97.1%, 단일 이미지 chunk 처리량 109.7Hz의 조건을 분리해 해설한다.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2502.19645",
+      "pdf_url": "https://arxiv.org/pdf/2502.19645",
+      "primary_category": "vla",
+      "categories": [
+        "vla"
+      ],
+      "tags": [
+        "VLA",
+        "Parallel Decoding",
+        "Action Chunking",
+        "LoRA"
+      ],
+      "project_url": "https://openvla-oft.github.io",
+      "featured": true,
+      "curated": true,
+      "origin": "editorial_verified_2026-11-25",
+      "reading_minutes": 25,
+      "summary_ko": "OpenVLA의 사전학습은 그대로 두고 미세조정의 병렬 디코딩·연속 행동·L1 회귀를 재설계한다. LIBERO 동일 입력 95.3%, 추가 입력 97.1%, 단일 이미지 chunk 처리량 109.7Hz의 조건을 분리해 해설한다.",
+      "review": {
+        "one_line": "OpenVLA의 사전학습은 그대로 두고 미세조정의 병렬 디코딩·연속 행동·L1 회귀를 재설계한다. LIBERO 동일 입력 95.3%, 추가 입력 97.1%, 단일 이미지 chunk 처리량 109.7Hz의 조건을 분리해 해설한다.",
+        "problem": "로봇 팔이 25Hz로 움직이는데 매 행동 차원마다 언어모델을 다시 부르면 명령이 늦어진다. 원래 OpenVLA는 7차원 행동을 256개 구간의 토큰으로 표현하고 순차 생성한다. K개 시간의 행동을 한꺼번에 요청하면 K×D번의 디코더 호출이 필요하다. 사전학습을 잘했다고 그 생성 방식까지 새 로봇에 최적이라는 보장은 없다. 특히 양팔 제어에서는 이미지와 상태 입력도 늘어난다. §III–IV의 질문은 기존 모델을 유지하면서 적은 시연으로 적응 방식을 바꿀 수 있느냐이다.",
+        "idea": "예를 들어 컵을 집고 옮기는 8개 동작을 작성할 때 앞 수치가 확정되기를 기다리는 대신 빈 출력 슬롯 전체에 서로 주목하게 하고 연속 값을 동시에 회귀한다. 이는 독립적인 8번의 정책 호출과 다르다. Figure 1에서 세 카메라와 관절 상태, 25×14 행동을 한 모델에 연결한 ALOHA 버전을 볼 수 있다. 단순 L1이 충분한지는 행동 분포가 단일 전략에 가까운 시연인지에 따라 달라진다.",
+        "method": "01. 기반 모델과 시연: 기존 OpenVLA의 Prismatic VLM 기반 사전학습을 유지하고 downstream 데이터로 LoRA 적응한다. LIBERO 각 suite는 10과제 500시연이며 실패 시연을 제외하는 조건을 따로 둔다.\n\n02. 다중 관측을 공통 시퀀스로: 카메라별 dual encoder가 256개 patch embedding을 만들고 공통 projector로 언어 임베딩 공간에 넣는다. proprioception은 별도 projector의 한 토큰이다. 여러 카메라 특징과 지시를 sequence 축에 연결한다.\n\n03. 병렬 디코딩: 행동 슬롯에 빈 embedding을 넣고 bidirectional attention으로 변경한다. D개 차원 또는 K×D개 슬롯을 단일 forward에서 예측한다. 기존 autoregressive head의 순차 호출을 제거한다.\n\n04. 연속 행동과 학습: 마지막 decoder hidden state를 MLP action head로 연속 normalized action으로 회귀한다. 정답과 평균 L1 오차를 최소화한다. 비교군의 diffusion은 잡음 예측으로 훈련하고 테스트에서 DDIM으로 반복 복원한다.\n\n05. 언어 조건 강화 OFT+: 언어 임베딩 평균에서 γ, β를 얻고 각 ViT block에서 self-attention 이후 FFN 이전에 특징별 (1+γ)F+β를 적용한다. 위치별 patch가 아닌 hidden channel 단위로 공유한다.\n\n06. 추론과 폐루프: 8 또는 25개 행동을 모두 실행하고 새 관측으로 다음 chunk를 계산한다. ALOHA는 14차원 절대 관절 목표, 25Hz이며 25-step chunk는 1초 분량이다. 생성 처리량과 새 관측 갱신률은 다르다.",
+        "findings": "LIBERO 기본: 76.5% (Table I; 제3자 이미지와 언어, 정제 시연)\nPD+AC: 90.2% (동일 입력; K=8)\n연속 L1 / diffusion: 95.3% / 95.4% (Table I 동일 입력 및 정제 데이터)\n추가 입력 OFT: 97.1% vs π0 94.2% (Table I; 4 suite, OFT suite당 500 trials; 비교군 원 논문)\n정제하지 않은 데이터: 94.5% (Table I; 추가 입력 OFT, original unfiltered)\nA100 지연·처리량: 239.6ms / 4.2Hz → 72.9ms / 109.7Hz (Table II; 100 queries, 단일 이미지, K=8)\n확산 테스트 단계: 50: 91.1%; 5: 90.0%; 1: 0.0% (Table II; LIBERO-Long, 50-step 학습)\nALOHA 평균 score: 87.8 vs ACT 72.3, π0 83.9 (Figure 4; 부분완료 rubric, 4과제, 10/10/12/24 trials)\nALOHA 처리량: 77.9Hz, 321ms (Table III; 100 queries; K=25; ACT 432.8Hz)\n사전학습 ablation: 97.1 → 91.9% (Table XV; underlying VLM 직접 OFT)",
+        "limitations": "LIBERO는 suite별 독립 학습, 50k 간격으로 평가한 최고 checkpoint 보고라는 선택 조건이 있다. ALOHA 네 과제는 시연 20/30/45/300개로 차이가 크며 Figure 4는 strict success가 아닌 단계별 점수이다. 특히 pot 점수 51.25는 전체 성공률이 아니다. 25-step open-loop는 도중 물체가 이동하면 새 관측에 즉시 반응하지 못한다. 다양하게 가능한 시연 분포나 사전학습 자체에 L1을 적용했을 때의 우위는 입증하지 않았다. 비교 추론 구현은 π0 JAX, 다른 모델 PyTorch라는 차이도 있다.",
+        "questions": [
+          "동일한 시연 예산에서 병렬 슬롯과 연속 회귀가 각각 성공률과 시간 지연에 기여하는지 분리한다.",
+          "LIBERO 4 suite, 동일 시연과 seed 3개, suite당 500회 평가를 사전 등록한다. K=1/4/8/16 및 손목 카메라 on/off를 교차하고 마지막 checkpoint와 선택 checkpoint를 둘 다 보고한다.",
+          "기존 AR, PD, PD+AC, L1, diffusion 5/10/50-step; 상태 입력과 trainable parameter budget을 기록한다. 별도로 ALOHA 언어 지시만 바꾼 paired trial을 구성한다."
+        ]
+      }
+    },
+    {
+      "id": "2611.07229",
+      "slug": "2611.07229",
+      "title": "Spatial-UMI-Dream: Scaling World Action Models with Metric Geometry for UMI Manipulation",
+      "authors": [
+        "Weiduo Yuan",
+        "Ze Yuan",
+        "Sihan Liu",
+        "Jionghao Wang",
+        "Liang Heng",
+        "Zhenyu Zhao",
+        "Yue Wang"
+      ],
+      "published": "2026-11-04",
+      "updated": "2026-11-04",
+      "abstract": "605시간 UMI RGB-D와 Wan2.2 5B를 활용해 미래 RGB·metric depth·행동을 공동 생성한다. RoboTwin-UMI 20과제에서 79.10%, 조명+로봇 변화 72.15%, 실물 엄격 성공률 85.0%를 보고한다.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2611.07229",
+      "pdf_url": "https://arxiv.org/pdf/2611.07229",
+      "primary_category": "wam",
+      "categories": [
+        "wam"
+      ],
+      "tags": [
+        "World-Action Model",
+        "RGB-D",
+        "UMI",
+        "Flow Matching"
+      ],
+      "project_url": "https://weiduoyuan.com/spatial-umi-dream/",
+      "featured": true,
+      "curated": true,
+      "origin": "editorial_verified_2026-11-25",
+      "reading_minutes": 25,
+      "summary_ko": "605시간 UMI RGB-D와 Wan2.2 5B를 활용해 미래 RGB·metric depth·행동을 공동 생성한다. RoboTwin-UMI 20과제에서 79.10%, 조명+로봇 변화 72.15%, 실물 엄격 성공률 85.0%를 보고한다.",
+      "review": {
+        "one_line": "605시간 UMI RGB-D와 Wan2.2 5B를 활용해 미래 RGB·metric depth·행동을 공동 생성한다. RoboTwin-UMI 20과제에서 79.10%, 조명+로봇 변화 72.15%, 실물 엄격 성공률 85.0%를 보고한다.",
+        "problem": "손에 쥔 UMI 카메라는 물체와 함께 움직인다. 그리퍼가 앞으로 다가갔는지 물체가 다가왔는지 RGB만으로 판별하기 어려울 수 있고 거리 스케일이 모호하다. RGB 영상 예측 WAM은 이 물리적 정보를 간접 학습하지만 정밀 집기·쌓기에는 센티미터 단위 거리가 중요하다. 기존 UMI 데이터는 로봇 독립적 수집이라는 강점이 있으나 특정 로봇에서 학습한 정책의 다른 몸체 이전까지 보장하지 않는다. §I–III는 이를 기하 정보 공동 예측과 별도 교차 몸체 평가로 다룬다.",
+        "idea": "예를 들어 그릇 위에 작은 그릇을 쌓을 때 손목 영상에서 크기가 비슷해 보여도 실제 거리와 높이는 다를 수 있다. 각 손의 RGB 옆에 같은 시점의 미터 단위 깊이를 놓고, 이미지 생성 VAE가 읽을 수 있는 2×2 영상 캔버스로 만든다. 앞으로 어떤 RGB-D가 나타날지와 어떤 행동을 할지 공동 생성한다. Figure 3의 stereo 정렬은 단순 pseudo-depth 색칠과 다르며, Figure 2는 왜 world-only와 joint 단계가 나뉘는지 보여준다.",
+        "method": "01. 스테레오 깊이 복원: 각 UMI gripper의 가운데와 오른쪽 카메라를 rectification하고 Fast FoundationStereo로 disparity를 계산한다. calibration으로 metric Z-depth를 구한 뒤 원래 가운데 fisheye 좌표로 재투영한다.\n\n02. 공유 RGB-D 영상 표현: 0.01–1.5m 고정 범위로 clip 및 역방향 정규화 후 Turbo 3채널 mapping, invalid depth는 검정. 양손 RGB/깊이를 각각 160×160으로 바꿔 320×320 캔버스에 패킹하고 Wan2.2 VAE로 encode한다.\n\n03. World-only adaptation: Wan2.2-TI2V-5B에서 시작하여 언어와 실제 시각 history로 미래 RGB-D를 예측한다. 행동 분기 bypass, 로봇 상태 조건 없음. 605시간 corpus 전체 source episode 사용, 30k steps.\n\n04. Joint world-action: stage1 가중치로 시작하고 무작위 초기 상태의 action encoder/decoder와 state conditioning을 연결한다. block-causal attention은 block 내 영상·행동을 양방향 연결, 이전 clean visual history를 teacher forcing한다. 30k steps, λa=1.\n\n05. 행동 데이터 검증 및 fine-tuning: Vega1 IK/ManiSkill replay로 부적합 궤적을 제거하고 속도·가속도·jerk의 dataset 99 percentile 초과 episode도 제외한다. sim/real은 별도로 미세조정한다. 20차원 양손 상대 행동(각 3 위치+6 회전+1 절대 폭).\n\n06. 실행과 그리퍼 보상: 공동 denoising으로 영상과 행동을 얻어 action decoder의 명령을 실행한다. 실제 gripper 지연을 보정하기 위해 calibrated first-order response의 역모델로 명령을 선행·증폭하고 폭 범위로 clip한다. 실행 결과를 다음 관측에 반영한다.",
+        "findings": "시뮬레이션 ID: 79.10 vs π0.5 74.45% (Table II; 20과제×100회)\n조명 변화 Aloha: 73.35 vs 66.15% (Table II; light color만 random)\n조명+몸체 ARX: 72.15 vs 61.85% (Table II; target adaptation 없음)\n실물 Vega1: 85.0% SR / 93.2% score (Table I; 6과제 각 20 trials)\n실물 π0.5: 60.8% SR / 73.3% score (Table I; 동일 downstream demonstrations)\n실물 Pack-and-Close: 60% SR / 80% score (Table I; 40 demonstrations, 20 trials)\nRGB-D ablation: ID +5.75%p; joint +8.25%p (Figure 6; matched visual token budget)\n실물 RGB only→RGB-D: 80.8→85.0% (§IV-D; 6과제 strict SR)\n사전학습 단계: 39.50→61.25→79.10% (Figure 6; Wan2.2 direct FT / video-only / full)\n실물 데이터: 180 demos / 69,032 frames (Appendix Table V; 과제당 20–40 demonstrations)",
+        "limitations": "RoboTwin-UMI는 expert plan이 성공하는 seed를 선택하며 동일 gripper·camera와 planner로 비교한다. 따라서 실패 가능한 초기 상태 전체나 센서가 다른 로봇에 대한 보장은 아니다. 환경 randomization은 조명색에 한정된다. 실물은 Vega1 한 플랫폼의 여섯 과제이고 20회씩으로 제한된다. 605시간·24GPU 비용과 stereo calibration, 깊이 invalid 픽셀의 영향을 분리 검증해야 한다. 이 논문은 video fidelity 자체가 아닌 closed-loop 성공을 보고한다. 실시간 latency 수치는 확인된 표에서 제공되지 않으므로 임의로 추정하지 않는다.",
+        "questions": [
+          "metric depth의 관측 이득과 미래 depth 감독 이득을 별도로 측정한다.",
+          "RoboTwin-UMI 20과제 clean Aloha 50시연/과제, 3 seeds. clean/조명/ARX/조명+ARX 각 100 episode를 원문 expert seed 규칙으로 평가하고, 별도 비선별 seed 결과도 보고한다.",
+          "RGB duplication, observed depth only, predicted depth loss only, full RGB-D; 같은 Wan init, 2×2 token count, optimizer와 업데이트 수. world-only/ joint 순서 ablation을 별도 수행한다."
+        ]
+      }
+    },
+    {
+      "id": "2406.10615",
+      "slug": "2406.10615",
+      "title": "Leveraging Locality to Boost Sample Efficiency in Robotic Manipulation",
+      "authors": [
+        "Tong Zhang",
+        "Yingdong Hu",
+        "Jiacheng You",
+        "Yang Gao"
+      ],
+      "published": "2024-06-15",
+      "updated": "2024-09-26",
+      "abstract": "3D point-wise 상대 목표와 가중치, dense supervision으로 적은 시연에서 조작을 학습한다. RLBench 5시연 53.2% vs RVT 40.4%, 실물 10개 하위 과제 평균 63%, 색상 OOD 70%의 조건을 해설한다.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2406.10615",
+      "pdf_url": "https://arxiv.org/pdf/2406.10615",
+      "primary_category": "robotics",
+      "categories": [
+        "robotics"
+      ],
+      "tags": [
+        "Robotics",
+        "Point Cloud",
+        "Locality",
+        "Behavior Cloning"
+      ],
+      "project_url": "https://sgrv2-robot.github.io/",
+      "featured": true,
+      "curated": true,
+      "origin": "editorial_verified_2026-11-25",
+      "reading_minutes": 25,
+      "summary_ko": "3D point-wise 상대 목표와 가중치, dense supervision으로 적은 시연에서 조작을 학습한다. RLBench 5시연 53.2% vs RVT 40.4%, 실물 10개 하위 과제 평균 63%, 색상 OOD 70%의 조건을 해설한다.",
+      "review": {
+        "one_line": "3D point-wise 상대 목표와 가중치, dense supervision으로 적은 시연에서 조작을 학습한다. RLBench 5시연 53.2% vs RVT 40.4%, 실물 10개 하위 과제 평균 63%, 색상 OOD 70%의 조건을 해설한다.",
+        "problem": "서랍 손잡이를 잡을 때 장면 전체의 벡터보다 손잡이 주변의 위치·방향이 더 직접적인 제어 단서다. 기존 SGR은 시각 의미와 기하 특징을 결합하지만 전체 장면을 global vector로 압축한 뒤 행동을 출력한다. 적은 시연에서는 목표와 배경의 우연한 관계까지 학습하기 쉽다. SGRv2는 행동의 locality를 3D 표현과 출력 구조에 함께 적용한다. 단, 장애물이 멀리 있거나 전체 작업 순서를 이해해야 하는 상황에서 국소성만으로 충분하다는 주장은 아니다.",
+        "idea": "화분에 물을 주는 경우 화분, 물뿌리개, 손잡이 부근의 점들이 각자 목표 위치에 대한 상대 변위를 투표한다고 생각할 수 있다. 각 점의 변위 예측에 그 점의 좌표를 더하고 신뢰도를 학습하여 합친다. 물체와 목표가 함께 평행 이동하면 상대 변위가 유지되므로 전역 절대 좌표를 외우는 부담을 줄일 수 있다. Figure 2에서 encoder-decoder, 점별 예측 화살표, 가중치를 확인한다. 이는 정답 affordance 마스크를 학습한다는 뜻은 아니다.",
+        "method": "01. RGB-D와 관절 관측: 보정된 단일/다중 RGB-D와 proprioception을 입력받아 point cloud와 2D 특징을 구성한다. RLBench 4개 카메라, ManiSkill2/MimicGen 2개 카메라. workspace 바깥 점을 제거한다.\n\n02. PointNeXt encoder-decoder: SGR의 semantic/geometric branch 결합에 PointNeXt U-Net형 decoder를 더해 각 점에서 global 및 local 특징을 함께 복원한다. 상대 좌표 연산으로 평행 이동에 불변인 점별 특징을 만든다.\n\n03. 상대 위치와 행동 예측: keyframe target은 pᵢ+Δp(fᵢ)로 나타낸다. dense에서는 end-effector 좌표계로 점을 옮기고 target 방향을 정규화하며 별도 MLP로 이동 크기를 예측한다. 회전 및 gripper도 예측한다.\n\n04. 가중 집계: 각 점의 행동 예측에 학습된 가중치를 적용하여 최종 행동을 집계한다. 중요한 영역의 예측이 더 반영되며 uniform weight ablation과 비교한다.\n\n05. Dense supervision과 손실: 집계 결과 및 개별 점에 동일 GT label로 supervision한다. keyframe은 위치 L1, 회전·open·collide CE; dense는 direction/magnitude/rotation MSE, open CE 및 point target smoothness를 사용한다.\n\n06. 실행 방식 분리: keyframe의 pose는 MoveIt 등 planner를 통해 실행하고 dense 모드는 delta action을 순차 실행한다. 실물 Franka는 front RealSense L515를 사용한다. 같은 시각 표현이라도 planner 의존성과 실패 유형이 다르다.",
+        "findings": "RLBench 5 demos: 53.2 vs RVT 40.4% (Table 1/6; 26 tasks; 3 seeds)\nRLBench 100 demos: 63.3 vs RVT 52.1% (Table 5/6; keyframe)\nManiSkill2: 55.8 vs SGR 14.9% (Table 2; 4 tasks, 50 demos/task; YCB per object)\nMimicGen: 26.0 vs SGR 14.2% (Table 2; 7 tasks, D1, dense)\ndecoder / absolute ablation: 21.3 / 21.0% (Table 3; RLBench 5 demos)\nuniform weights / no dense supervision: 44.2 / 40.1% (Table 3; full 53.2%)\n실물 하위 과제: 63 vs RVT 41, PerAct 30% (Figure 4; 10 sub-tasks, 8 demos, 10 eval episodes/subtask)\n실물 funnel 배치 / powder: 80% / 10% (Figure 4; 작은 표본, subtask success)\n색상 일반화: seen 100%; unseen 70% vs RVT 5% (§4.3; 4 seen/2 unseen colors, 10 episodes/color)\nsemantic 제거: unseen 0% (§4.3; 동일 색상 과제)",
+        "limitations": "실물 63%는 두 장기 작업 전체 완수율이 아니라 10개 하위 작업의 평균이다. 시뮬레이션은 마지막 5 checkpoints를 각각 50 episode 평가한 평균을 3 seeds에 걸쳐 보고한다; 최고 checkpoint를 쓰는 MimicGen 결과와 직접 혼용하면 안 된다. 색상 일반화는 2개 unseen 색으로 범위가 좁다. Appendix C.3에서 작은 막대사탕 탐지, 마커·깔때기 grasp 정밀도, planner 충돌을 실패 원인으로 명시했다. 단일 GT로 BC하는 방식은 다중 모드 행동에 취약할 수 있다. 원저자의 일반화 한계와 동일하게 카메라·형태·배경 변화는 추가 연구가 필요하다.",
+        "questions": [
+          "point-wise 상대 예측의 성능 이득이 위치 변화에 대한 inductive bias인지 검증한다.",
+          "RLBench 26과제에서 5/10/20/100 시연, 동일한 camera calibration과 3 seeds, 마지막 5 checkpoints 50회 평가. train/test에서 target translation, camera shift, distractor를 분리한다.",
+          "full, global encoder, absolute pos, uniform weights, no dense supervision, no semantic branch. 파라미터 수를 맞춘 대조군과 별도 multi-modal head도 고려한다."
+        ]
+      }
     }
   ]
 }

@@ -1894,5 +1894,89 @@
         ]
       }
     ]
+  },
+  "2502.19645": {
+    "heading": "OpenVLA-OFT — 공식 원문 Figure",
+    "intro": "원문 HTML의 저자 제공 이미지를 해당 설명 위치에 배치한다. 캡션은 편집 요약이다.",
+    "figures": [
+      {
+        "number": 1,
+        "placement": "idea",
+        "reading_title": "Figure 1 — 양팔 OFT+의 구조",
+        "verified_caption": "세 시점 영상이 아니라 세 카메라 영상과 상태, 언어 조건, 병렬 출력 슬롯을 보여주는 양팔 아키텍처와 실물 예시.",
+        "context": "14차원 절대 관절 목표를 25 timestep 생성하는 그림이다. 25Hz 제어와 모델 호출 빈도를 구분한다.",
+        "steps": [
+          "14차원 절대 관절 목표를 25 timestep 생성하는 그림이다. 25Hz 제어와 모델 호출 빈도를 구분한다.",
+          "원문 그림과 정량표의 평가 조건을 함께 읽는다."
+        ]
+      },
+      {
+        "number": 4,
+        "placement": "findings",
+        "reading_title": "Figure 4 — ALOHA 단계 점수 비교",
+        "verified_caption": "ACT, Diffusion Policy, RDT-1B, π0와 OFT+의 네 실물 과제별 평균 부분완료 점수.",
+        "context": "87.8 평균 score 및 pot 51.3은 strict 성공률이 아니다. Appendix A-F의 rubric을 함께 확인한다.",
+        "steps": [
+          "87.8 평균 score 및 pot 51.3은 strict 성공률이 아니다. Appendix A-F의 rubric을 함께 확인한다.",
+          "원문 그림과 정량표의 평가 조건을 함께 읽는다."
+        ]
+      }
+    ]
+  },
+  "2611.07229": {
+    "heading": "Spatial-UMI-Dream — 공식 원문 Figure",
+    "intro": "원문 HTML의 저자 제공 이미지를 해당 설명 위치에 배치한다. 캡션은 편집 요약이다.",
+    "figures": [
+      {
+        "number": 3,
+        "placement": "idea",
+        "reading_title": "Figure 3 — 스테레오 깊이의 fisheye 재정렬",
+        "verified_caption": "UMI 카메라 rectification, Fast FoundationStereo의 거리 복원, 원래 fisheye RGB에 맞춘 깊이 재투영.",
+        "context": "그리퍼별 RGB와 깊이가 동일 좌표를 공유하도록 만드는 전처리이며 생성 모델 자체가 stereo를 학습하는 그림이 아니다.",
+        "steps": [
+          "그리퍼별 RGB와 깊이가 동일 좌표를 공유하도록 만드는 전처리이며 생성 모델 자체가 stereo를 학습하는 그림이 아니다.",
+          "원문 그림과 정량표의 평가 조건을 함께 읽는다."
+        ]
+      },
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 두 단계 세계·행동 공동학습",
+        "verified_caption": "왼쪽은 RGB-D future 예측만, 오른쪽은 state와 noisy action 입력을 더하고 RGB-D 및 행동을 공동 출력한다.",
+        "context": "공유 Wan VAE와 block-causal attention, stage1 checkpoint 초기화 연결을 확인한다.",
+        "steps": [
+          "공유 Wan VAE와 block-causal attention, stage1 checkpoint 초기화 연결을 확인한다.",
+          "원문 그림과 정량표의 평가 조건을 함께 읽는다."
+        ]
+      }
+    ]
+  },
+  "2406.10615": {
+    "heading": "SGRv2 — 공식 원문 Figure",
+    "intro": "원문 HTML의 저자 제공 이미지를 해당 설명 위치에 배치한다. 캡션은 편집 요약이다.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 국소 행동 예측 구조",
+        "verified_caption": "물주기 예시에서 2D 의미 특징·3D 기하 특징을 encoder-decoder로 결합하고 점별 상대 위치 예측을 가중 집계한다.",
+        "context": "붉은 목표 위치와 녹색 가중치 점, 화살표를 구분한다. 원 그림에는 dense supervision과 proprioception 연결이 생략되어 있다.",
+        "steps": [
+          "붉은 목표 위치와 녹색 가중치 점, 화살표를 구분한다. 원 그림에는 dense supervision과 proprioception 연결이 생략되어 있다.",
+          "원문 그림과 정량표의 평가 조건을 함께 읽는다."
+        ]
+      },
+      {
+        "number": 6,
+        "placement": "findings",
+        "reading_title": "Figure 6 — 실물 색상 일반화 과제",
+        "verified_caption": "색이 다른 세 컵 중 언어 지시로 정한 컵을 흰 영역으로 옮기는 Franka 평가 장면.",
+        "context": "이미지는 실험 환경 예시이며 70%의 직접 그래프가 아니다. unseen 두 색의 10회씩 평가를 §4.3과 대조한다.",
+        "steps": [
+          "이미지는 실험 환경 예시이며 70%의 직접 그래프가 아니다. unseen 두 색의 10회씩 평가를 §4.3과 대조한다.",
+          "원문 그림과 정량표의 평가 조건을 함께 읽는다."
+        ]
+      }
+    ]
   }
 }

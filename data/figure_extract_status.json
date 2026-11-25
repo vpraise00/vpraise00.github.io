@@ -1477,5 +1477,59 @@
       "caption": "카메라·상태·지시를 토큰화하고 action token을 행동 head로 전달하는 10Hz 폐루프 제어.",
       "review": "2026-11-24 official HTML Figure 2 image viewed and caption crosschecked"
     }
+  },
+  "2502.19645": {
+    "1": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2502.19645v2/fig/figure_1_openvla_aloha.001.jpeg",
+      "source": "https://arxiv.org/html/2502.19645v2/fig/figure_1_openvla_aloha.001.jpeg",
+      "paper_source": "https://arxiv.org/html/2502.19645v2",
+      "caption": "세 시점 영상이 아니라 세 카메라 영상과 상태, 언어 조건, 병렬 출력 슬롯을 보여주는 양팔 아키텍처와 실물 예시.",
+      "review": "2026-11-25: official HTML figure image opened and caption crosschecked"
+    },
+    "4": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2502.19645v2/fig/aloha_task_performance_results_v3.001.jpeg",
+      "source": "https://arxiv.org/html/2502.19645v2/fig/aloha_task_performance_results_v3.001.jpeg",
+      "paper_source": "https://arxiv.org/html/2502.19645v2",
+      "caption": "ACT, Diffusion Policy, RDT-1B, π0와 OFT+의 네 실물 과제별 평균 부분완료 점수.",
+      "review": "2026-11-25: official HTML figure image opened and caption crosschecked"
+    }
+  },
+  "2611.07229": {
+    "2": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2611.07229v1/fig2_method.png",
+      "source": "https://arxiv.org/html/2611.07229v1/fig2_method.png",
+      "paper_source": "https://arxiv.org/html/2611.07229v1",
+      "caption": "왼쪽은 RGB-D future 예측만, 오른쪽은 state와 noisy action 입력을 더하고 RGB-D 및 행동을 공동 출력한다.",
+      "review": "2026-11-25: official HTML figure image opened and caption crosschecked"
+    },
+    "3": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2611.07229v1/figures/fig3_times_roman_v7.jpg",
+      "source": "https://arxiv.org/html/2611.07229v1/figures/fig3_times_roman_v7.jpg",
+      "paper_source": "https://arxiv.org/html/2611.07229v1",
+      "caption": "UMI 카메라 rectification, Fast FoundationStereo의 거리 복원, 원래 fisheye RGB에 맞춘 깊이 재투영.",
+      "review": "2026-11-25: official HTML figure image opened and caption crosschecked"
+    }
+  },
+  "2406.10615": {
+    "2": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2406.10615v2/method_camera_ready.png",
+      "source": "https://arxiv.org/html/2406.10615v2/method_camera_ready.png",
+      "paper_source": "https://arxiv.org/html/2406.10615v2",
+      "caption": "물주기 예시에서 2D 의미 특징·3D 기하 특징을 encoder-decoder로 결합하고 점별 상대 위치 예측을 가중 집계한다.",
+      "review": "2026-11-25: official HTML figure image opened and caption crosschecked"
+    },
+    "6": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2406.10615v2/figures/move_color_cup.jpg",
+      "source": "https://arxiv.org/html/2406.10615v2/figures/move_color_cup.jpg",
+      "paper_source": "https://arxiv.org/html/2406.10615v2",
+      "caption": "색이 다른 세 컵 중 언어 지시로 정한 컵을 흰 영역으로 옮기는 Franka 평가 장면.",
+      "review": "2026-11-25: official HTML figure image opened and caption crosschecked"
+    }
   }
 }
