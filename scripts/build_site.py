@@ -146,6 +146,15 @@ def render_visual_figures(p: dict) -> dict[str, str]:
         # arbitrary remote URLs from metadata as executable/embedded markup.
         remote=str(record.get('remote_url') or '')
         author_remote=bool(
+          (pid == '2501.09747' and record.get('method') == 'arxiv_html_exact_figure'
+           and remote in {'https://arxiv.org/html/2501.09747v1/teaser.png', 'https://arxiv.org/html/2501.09747v1/figures/environments.jpg'})
+          or
+          (pid == '2507.04447' and record.get('method') == 'arxiv_html_exact_figure'
+           and remote in {'https://arxiv.org/html/2507.04447v1/Pipeline.png', 'https://arxiv.org/html/2507.04447v1/module.png'})
+          or
+          (pid == '2303.04137' and record.get('method') == 'arxiv_html_exact_figure'
+           and remote in {'https://arxiv.org/html/2303.04137v5/policy_input_output.png', 'https://arxiv.org/html/2303.04137v5/real_results.png'})
+          or
           (pid == '2502.19645' and record.get('method') == 'arxiv_html_exact_figure'
            and remote in {'https://arxiv.org/html/2502.19645v2/fig/figure_1_openvla_aloha.001.jpeg', 'https://arxiv.org/html/2502.19645v2/fig/aloha_task_performance_results_v3.001.jpeg'})
           or
@@ -277,7 +286,7 @@ def render_visual_figures(p: dict) -> dict[str, str]:
             img=(remote if author_remote else '../'+path)
             img=h(img,quote=True)
             method=record.get('method','')
-            kind=(('arXiv HTML 저자 원본 (외부 링크)' if pid in ('2502.19645','2611.07229','2406.10615','2602.12063','2606.15768','2406.07539','2610.22146','2611.04839','2611.14365','2611.06447','2611.17626','2611.03103','2611.21607','2611.15368','2611.09293','2611.22584','2611.22592','2611.23143','2611.23843','2506.21539','2406.02523','2506.19850','2506.18088','2611.26596') else '저자 공식 프로젝트 원본 (외부 링크)') if author_remote else ('arXiv HTML 저자 원본' if method=='arxiv_html_exact_figure' else '원논문 PDF 자동 추출 (크롭 검수 필요)'))
+            kind=(('arXiv HTML 저자 원본 (외부 링크)' if pid in ('2501.09747','2507.04447','2303.04137','2502.19645','2611.07229','2406.10615','2602.12063','2606.15768','2406.07539','2610.22146','2611.04839','2611.14365','2611.06447','2611.17626','2611.03103','2611.21607','2611.15368','2611.09293','2611.22584','2611.22592','2611.23143','2611.23843','2506.21539','2406.02523','2506.19850','2506.18088','2611.26596') else '저자 공식 프로젝트 원본 (외부 링크)') if author_remote else ('arXiv HTML 저자 원본' if method=='arxiv_html_exact_figure' else '원논문 PDF 자동 추출 (크롭 검수 필요)'))
             source_link=h(record.get('source',source),quote=True)
             image='<div class="original-figure-stage"><a href="'+img+'" target="_blank" rel="noopener noreferrer" title="원문 그림 크게 보기"><img src="'+img+'" alt="'+h(p['title']+f' Figure {display_n} 원본',quote=True)+'" loading="lazy" decoding="async" referrerpolicy="no-referrer"/></a></div>'
             clip=clip_original_caption(fig.get('verified_caption') or record.get('caption',''))

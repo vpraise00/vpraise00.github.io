@@ -1978,5 +1978,89 @@
         ]
       }
     ]
+  },
+  "2501.09747": {
+    "heading": "FAST — 공식 원문 Figure",
+    "intro": "공식 HTML의 원저자 이미지를 해당 설명에 배치. 캡션은 한국어 편집 요약이다.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "idea",
+        "reading_title": "Figure 2 — FAST와 제어 주파수",
+        "verified_caption": "왼쪽은 주파수 기반 행동 토큰을 예측하는 VLA, 오른쪽은 제어 주파수별 점수 비교다.",
+        "context": "녹색 FAST와 노란 binning 점수의 추세를 확인한다. 오른쪽 세로축은 percent success가 아니라 score이며 오차막대가 있다.",
+        "steps": [
+          "녹색 FAST와 노란 binning 점수의 추세를 확인한다. 오른쪽 세로축은 percent success가 아니라 score이며 오차막대가 있다.",
+          "정량 수치와 평가 조건은 본문 실험 근거 및 원문 표를 확인한다."
+        ]
+      },
+      {
+        "number": 5,
+        "placement": "findings",
+        "reading_title": "Figure 5 — 일곱 평가 환경",
+        "verified_caption": "6개 실물 환경과 LIBERO 시뮬레이션; 세탁물 접기, 테이블 정리, DROID 등.",
+        "context": "실물 장면을 비교해 각 작업의 물체별 점수와 인간 판정, zero-shot/미세조정 조건이 서로 다름을 Appendix E에서 확인한다.",
+        "steps": [
+          "실물 장면을 비교해 각 작업의 물체별 점수와 인간 판정, zero-shot/미세조정 조건이 서로 다름을 Appendix E에서 확인한다.",
+          "정량 수치와 평가 조건은 본문 실험 근거 및 원문 표를 확인한다."
+        ]
+      }
+    ]
+  },
+  "2507.04447": {
+    "heading": "DreamVLA — 공식 원문 Figure",
+    "intro": "공식 HTML의 원저자 이미지를 해당 설명에 배치. 캡션은 한국어 편집 요약이다.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 미래 표현과 행동 head",
+        "verified_caption": "동결 텍스트·영상 encoder와 학습 상태 encoder, dream query 및 action query, 학습 전용 미래 decoder, 행동 DiT를 보여준다.",
+        "context": "점선 상자의 world decoder는 학습 전용이다. 행동 DiT는 잠재 표현을 조건으로 하므로 추론 중 RGB/depth 생성이 필수라는 해석을 피한다.",
+        "steps": [
+          "점선 상자의 world decoder는 학습 전용이다. 행동 DiT는 잠재 표현을 조건으로 하므로 추론 중 RGB/depth 생성이 필수라는 해석을 피한다.",
+          "정량 수치와 평가 조건은 본문 실험 근거 및 원문 표를 확인한다."
+        ]
+      },
+      {
+        "number": 6,
+        "placement": "findings",
+        "reading_title": "Figure 6 — 미래 감독 조합 ablation",
+        "verified_caption": "CALVIN ABC-D 평균 연속 완료 길이의 감독 조합별 비교. All-X는 해당 감독을 제외한 구성이다.",
+        "context": "막대 값 4.44와 4.32, 2.98 등을 읽되 개별 라벨의 의미는 원문 §4.4 및 caption과 함께 확인한다. 단독 depth/semantic 감독은 baseline보다 악화될 수 있다.",
+        "steps": [
+          "막대 값 4.44와 4.32, 2.98 등을 읽되 개별 라벨의 의미는 원문 §4.4 및 caption과 함께 확인한다. 단독 depth/semantic 감독은 baseline보다 악화될 수 있다.",
+          "정량 수치와 평가 조건은 본문 실험 근거 및 원문 표를 확인한다."
+        ]
+      }
+    ]
+  },
+  "2303.04137": {
+    "heading": "Diffusion Policy — 공식 원문 Figure",
+    "intro": "공식 HTML의 원저자 이미지를 해당 설명에 배치. 캡션은 한국어 편집 요약이다.",
+    "figures": [
+      {
+        "number": 2,
+        "placement": "method",
+        "reading_title": "Figure 2 — 행동 확산과 horizon",
+        "verified_caption": "왼쪽은 최근 관측에서 행동 시퀀스 생성과 receding horizon, 가운데는 CNN FiLM, 오른쪽은 Transformer cross-attention 및 causal mask.",
+        "context": "관측 To, 실행 Ta, 예측 Tp의 구별과 Gaussian noise에서 행동으로 반복 수정되는 K step을 읽는다.",
+        "steps": [
+          "관측 To, 실행 Ta, 예측 Tp의 구별과 Gaussian noise에서 행동으로 반복 수정되는 K step을 읽는다.",
+          "정량 수치와 평가 조건은 본문 실험 근거 및 원문 표를 확인한다."
+        ]
+      },
+      {
+        "number": 7,
+        "placement": "findings",
+        "reading_title": "Figure 7 — 실물 Push-T의 단계 전환",
+        "verified_caption": "동일 시작 조건에서 E2E/R3M diffusion과 LSTM-GMM/IBC 궤적 및 평균 종료 상태를 비교한다.",
+        "context": "E2E는 정밀한 끝 상태, R3M은 초기 정체 후 복구, LSTM은 end-zone 실패, IBC는 조기 이탈 사례를 보여 준다. 정량 비교는 Table 6에서 읽는다.",
+        "steps": [
+          "E2E는 정밀한 끝 상태, R3M은 초기 정체 후 복구, LSTM은 end-zone 실패, IBC는 조기 이탈 사례를 보여 준다. 정량 비교는 Table 6에서 읽는다.",
+          "정량 수치와 평가 조건은 본문 실험 근거 및 원문 표를 확인한다."
+        ]
+      }
+    ]
   }
 }

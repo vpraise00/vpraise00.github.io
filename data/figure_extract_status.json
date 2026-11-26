@@ -1531,5 +1531,59 @@
       "caption": "색이 다른 세 컵 중 언어 지시로 정한 컵을 흰 영역으로 옮기는 Franka 평가 장면.",
       "review": "2026-11-25: official HTML figure image opened and caption crosschecked"
     }
+  },
+  "2501.09747": {
+    "2": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2501.09747v1/teaser.png",
+      "source": "https://arxiv.org/html/2501.09747v1/teaser.png",
+      "paper_source": "https://arxiv.org/html/2501.09747v1",
+      "caption": "왼쪽은 주파수 기반 행동 토큰을 예측하는 VLA, 오른쪽은 제어 주파수별 점수 비교다.",
+      "review": "2026-11-26: official HTML figure image opened and caption crosschecked"
+    },
+    "5": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2501.09747v1/figures/environments.jpg",
+      "source": "https://arxiv.org/html/2501.09747v1/figures/environments.jpg",
+      "paper_source": "https://arxiv.org/html/2501.09747v1",
+      "caption": "6개 실물 환경과 LIBERO 시뮬레이션; 세탁물 접기, 테이블 정리, DROID 등.",
+      "review": "2026-11-26: official HTML figure image opened and caption crosschecked"
+    }
+  },
+  "2507.04447": {
+    "2": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2507.04447v1/Pipeline.png",
+      "source": "https://arxiv.org/html/2507.04447v1/Pipeline.png",
+      "paper_source": "https://arxiv.org/html/2507.04447v1",
+      "caption": "동결 텍스트·영상 encoder와 학습 상태 encoder, dream query 및 action query, 학습 전용 미래 decoder, 행동 DiT를 보여준다.",
+      "review": "2026-11-26: official HTML figure image opened and caption crosschecked"
+    },
+    "6": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2507.04447v1/module.png",
+      "source": "https://arxiv.org/html/2507.04447v1/module.png",
+      "paper_source": "https://arxiv.org/html/2507.04447v1",
+      "caption": "CALVIN ABC-D 평균 연속 완료 길이의 감독 조합별 비교. All-X는 해당 감독을 제외한 구성이다.",
+      "review": "2026-11-26: official HTML figure image opened and caption crosschecked"
+    }
+  },
+  "2303.04137": {
+    "2": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2303.04137v5/policy_input_output.png",
+      "source": "https://arxiv.org/html/2303.04137v5/policy_input_output.png",
+      "paper_source": "https://arxiv.org/html/2303.04137v5",
+      "caption": "왼쪽은 최근 관측에서 행동 시퀀스 생성과 receding horizon, 가운데는 CNN FiLM, 오른쪽은 Transformer cross-attention 및 causal mask.",
+      "review": "2026-11-26: official HTML figure image opened and caption crosschecked"
+    },
+    "7": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2303.04137v5/real_results.png",
+      "source": "https://arxiv.org/html/2303.04137v5/real_results.png",
+      "paper_source": "https://arxiv.org/html/2303.04137v5",
+      "caption": "동일 시작 조건에서 E2E/R3M diffusion과 LSTM-GMM/IBC 궤적 및 평균 종료 상태를 비교한다.",
+      "review": "2026-11-26: official HTML figure image opened and caption crosschecked"
+    }
   }
 }

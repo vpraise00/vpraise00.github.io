@@ -9862,5 +9862,497 @@
         "risks": "RGB-D 캘리브레이션, planner 동일성, FPS sampling, color/feature drop, 시연 다양성 차이를 통제하고 물체 가림과 미지 색을 별도 평가한다."
       }
     }
+  },
+  "2501.09747": {
+    "summary_ko": "고주파 행동 chunk를 주파수 영역에서 양자화하고 BPE로 압축하는 FAST. 50Hz 양팔 shirt folding의 평균 토큰 700→53, 대규모 π0-FAST 학습 GPU 시간 1/5, 반면 순차 추론 750ms 대 100ms의 조건을 분석한다.",
+    "reading_minutes": 23,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-26",
+    "editorial_published_at": "2026-11-26",
+    "source_scope_ko": "공식 arXiv HTML v1 Method, Experiments, 관련 Appendix 및 원본 Figure와 Table 조건 대조. 독립 재현 아님. https://arxiv.org/html/2501.09747v1",
+    "review": {
+      "one_line": "고주파 행동 chunk를 주파수 영역에서 양자화하고 BPE로 압축하는 FAST. 50Hz 양팔 shirt folding의 평균 토큰 700→53, 대규모 π0-FAST 학습 GPU 시간 1/5, 반면 순차 추론 750ms 대 100ms의 조건을 분석한다.",
+      "problem": "로봇 행동은 자연어처럼 본래 이산 기호가 아니다. 같은 팔의 연속 목표 위치를 매 시점·차원별로 양자화하면 고주파 데이터에서는 직전 토큰과 거의 동일한 기호가 길게 반복된다. 교사 강제 학습에서 다음 토큰을 복사하는 것만으로 손실이 낮아지는 현상은 정책이 실제 환경에서 올바른 방향을 선택하는 능력과 다르다. 본 연구는 행동 head를 더 크게 만드는 대신 예측해야 할 기호의 통계적 구조를 바꾼다. 저주파 데이터에서도 기존 binning이 항상 실패한다는 주장은 아니다.",
+      "idea": "50Hz로 양팔을 제어하며 티셔츠를 접는다고 하자. 14차원×50시점은 1초에 700개 기호다. 그러나 천을 잡고 이동하는 동안 관절의 변화는 연속적이며, 매 순간의 좌표를 하나씩 외우는 것보다 이동의 큰 흐름과 작은 변화를 따로 표현하는 것이 효율적이다. DCT는 시간축의 부드러운 움직임을 적은 저주파 계수에 집중시키고, BPE는 양자화된 계수의 반복 패턴을 합친다. 이는 행동을 저주파로 다운샘플링하는 것과 다르다. 복원한 시퀀스는 원래 시간 해상도를 유지하되 양자화 오차가 남는다.",
+      "method": "01. 데이터 절편과 정규화: 시연에서 1초 행동 구간을 얻고 각 행동 차원을 quantile 기반으로 정규화한다. 단위와 범위가 다른 로봇에 공통 압축기를 쓰기 위한 전처리이며 원래 제어 단위는 복원 시 필요하다.\n\n02. 시간축 DCT: 행동 차원마다 독립적으로 시간축 DCT를 계산한다. 낮은 주파수에는 완만한 움직임, 높은 주파수에는 빠른 변화가 주로 담긴다. DCT 자체는 정보 손실이 없는 선형 변환이다.\n\n03. 계수 양자화: 계수에 스케일 γ를 곱해 반올림한다. 단일 데이터셋 기본 γ=10이며 작은 계수가 0이 된다. 여기에서 손실 압축이 발생한다.\n\n04. BPE 사전: 낮은 주파수부터 같은 주파수의 각 행동 차원을 순서대로 펼친다. BPE로 반복 정수열을 합친다. 기본 단일 데이터셋 어휘 크기 1024; FAST+는 다양한 로봇 시퀀스 100만 개에서 학습한다.\n\n05. VLA 학습: 영상·언어 조건의 π0 또는 수정한 OpenVLA에 압축 토큰을 다음 기호 예측 목표로 제공한다. 기존 연속 행동 diffusion head와 학습 목적이 달라지므로 같은 토큰 길이 감소가 추론 시간 감소까지 보장하지 않는다.\n\n06. 복호화 및 제어: 자기회귀 토큰열을 BPE 역변환으로 정수 계수에 되돌리고 스케일을 나누고 역 DCT 및 역정규화한다. 제어기로 연속 chunk를 보낸다. 복원에는 원래 차원·시간 길이가 필요하다.",
+      "findings": "BridgeV2, 5Hz, 7D: 35→20 tokens; 1.75× (Table I, 1초 chunk, 비슷한 복원 오차)\nDROID, 15Hz, 7D: 105→29; 3.6× (Table I; 압축률이지 성공률 아님)\nBussing, 20Hz, 7D: 140→28; 5.0× (Table I; 1초 chunk)\nShirt fold, 50Hz, 14D: 700→53; 13.2× (Table I; 양팔)\n고주파 정책 비교: naïve: 작업 진전 없음; FAST/FSQ: 진전 (Figure 6; 평균·95% CI; 그래프 정밀 값은 기재하지 않음)\nFAST+ 미학습 데이터: 토큰 수 적어도 약 2배 감소 (Figure 8; Table III; 정책 zero-shot과 구분)\nBussing 학습: diffusion 대비 약 3배 적은 step (Figure 9; 단일 작업 학습)\n대규모 π0: GPU 학습 시간 약 1/5 (Figure 11; 같은 계열 비교; 10k hours 데이터)\n추론 시간: FAST 약 750ms vs diffusion 약 100ms (§VI-E; RTX4090; 1초 chunk)\nDROID 정량 평가: 44 trials/policy (Appendix E/Table II; 진행 점수, 본문 16과제 표 행 수 17개 불일치)",
+      "limitations": "논문의 강한 결과는 학습 효율과 다양한 행동의 압축 가능성에 관한 것이지 모든 조건의 실행 속도 우위를 의미하지 않는다. Figure 2 점수는 성공률이 아니며, Figure 6의 막대값을 숫자로 추정하지 않았다. 티셔츠는 약 150개 학습 의류 중 본 평가에서 본 적 있는 다섯 종류를 순환하므로 의류 OOD와 혼동할 수 없다. Appendix E는 DROID 16개 과제라고 적지만 Table II의 과제 행은 17개이고 총 44회다. FAST+ 일반화는 압축 평가와 정책 평가를 구분해야 한다. 급격한 접촉 신호의 양자화 오차·추론 지연이 동적 환경에 미치는 영향은 별도 측정이 필요하다.",
+      "questions": [
+        "고주파 행동의 다음 토큰 조건부 엔트로피 감소가 rollout 성능의 주된 원인인지 검증한다.",
+        "DROID와 양팔 접기 데이터를 고정하고 5/15/20/50Hz 재표본화, 1초 chunk, 같은 seed 및 train/val 분할로 학습한다. 원본 주파수에서 복호화해 재생한다.",
+        "naïve, DCT+round only, FAST, FAST+, FSQ, diffusion을 같은 VLM 및 입력·데이터 예산으로 비교하고 GPU 시간과 step 두 기준을 각각 맞춘다.",
+        "토큰 길이 분포, 관절별 복원 MAE 및 접촉 구간 최대 오차, next-token CE, 엄격한 episode SR 및 progress, p50/p95 latency, GPU 시간.",
+        "양자화로 인한 그리퍼 이벤트 소실, 데이터 혼입, frequency resampling aliasing을 검사하고 동일한 안전 제어 한계를 사용한다."
+      ]
+    },
+    "deep_dive": {
+      "lead": "고주파 행동 chunk를 주파수 영역에서 양자화하고 BPE로 압축하는 FAST. 50Hz 양팔 shirt folding의 평균 토큰 700→53, 대규모 π0-FAST 학습 GPU 시간 1/5, 반면 순차 추론 750ms 대 100ms의 조건을 분석한다. 원저자 보고치에 대한 편집 해설이며 독립 재현은 아니다. https://arxiv.org/html/2501.09747v1",
+      "pipeline": [
+        {
+          "title": "01. 데이터 절편과 정규화",
+          "detail": "시연에서 1초 행동 구간을 얻고 각 행동 차원을 quantile 기반으로 정규화한다. 단위와 범위가 다른 로봇에 공통 압축기를 쓰기 위한 전처리이며 원래 제어 단위는 복원 시 필요하다.",
+          "io": "H×D continuous action"
+        },
+        {
+          "title": "02. 시간축 DCT",
+          "detail": "행동 차원마다 독립적으로 시간축 DCT를 계산한다. 낮은 주파수에는 완만한 움직임, 높은 주파수에는 빠른 변화가 주로 담긴다. DCT 자체는 정보 손실이 없는 선형 변환이다.",
+          "io": "H×D frequency coefficients"
+        },
+        {
+          "title": "03. 계수 양자화",
+          "detail": "계수에 스케일 γ를 곱해 반올림한다. 단일 데이터셋 기본 γ=10이며 작은 계수가 0이 된다. 여기에서 손실 압축이 발생한다.",
+          "io": "integer coefficient matrix"
+        },
+        {
+          "title": "04. BPE 사전",
+          "detail": "낮은 주파수부터 같은 주파수의 각 행동 차원을 순서대로 펼친다. BPE로 반복 정수열을 합친다. 기본 단일 데이터셋 어휘 크기 1024; FAST+는 다양한 로봇 시퀀스 100만 개에서 학습한다.",
+          "io": "variable-length action tokens"
+        },
+        {
+          "title": "05. VLA 학습",
+          "detail": "영상·언어 조건의 π0 또는 수정한 OpenVLA에 압축 토큰을 다음 기호 예측 목표로 제공한다. 기존 연속 행동 diffusion head와 학습 목적이 달라지므로 같은 토큰 길이 감소가 추론 시간 감소까지 보장하지 않는다.",
+          "io": "observation+instruction → token probabilities"
+        },
+        {
+          "title": "06. 복호화 및 제어",
+          "detail": "자기회귀 토큰열을 BPE 역변환으로 정수 계수에 되돌리고 스케일을 나누고 역 DCT 및 역정규화한다. 제어기로 연속 chunk를 보낸다. 복원에는 원래 차원·시간 길이가 필요하다.",
+          "io": "tokens → continuous chunk"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "시간 중복과 학습 신호",
+          "body": "Table I에서 BridgeV2는 35→20개, DROID는 105→29개다. 고주파일수록 토큰 수가 선형 증가하는 binning과 달리 FAST는 운동의 복잡도를 반영하는 길이를 만든다. 같은 빈도에서 급격한 방향 전환이 많으면 압축 이득은 작아질 수 있다.",
+          "watch": "§IV–V; Table I"
+        },
+        {
+          "title": "양자화와 BPE의 역할 분리",
+          "body": "DCT 및 반올림은 근사 오차를 만들지만 BPE는 정수열을 손실 없이 합친다. BPE 제거 실험은 수백 개의 0 기호를 다시 예측하게 되어 성능·속도가 나빠지는 사례다. γ를 바꿔 압축률과 역변환 오차의 Pareto 곡선을 확인해야 한다.",
+          "watch": "Algorithm 1; §VI-D; Appendix B"
+        },
+        {
+          "title": "보편 tokenizer와 보편 정책은 다르다",
+          "body": "FAST+는 미학습 로봇 데이터에서 평균 토큰 감소를 보인다. 그러나 토큰화 가능한 새로운 로봇이라는 사실만으로 기존 VLA가 그 로봇을 제어한다는 결론은 나오지 않는다. 행동 좌표계와 역정규화는 별도로 맞춰야 한다.",
+          "watch": "§V-C, VI-C; Table III"
+        },
+        {
+          "title": "학습 비용과 실행 비용의 역전",
+          "body": "대규모 π0 비교는 GPU 학습 시간 5배 차이를 보고하지만 RTX4090에서 FAST는 1초 chunk당 약 750ms, diffusion은 약 100ms다. 큰 언어 백본 전체의 순차 디코딩과 작은 action expert의 반복 실행이라는 차이가 있다.",
+          "watch": "§VI-E–F"
+        },
+        {
+          "title": "데이터셋과 점수 정의",
+          "body": "실물 table bussing은 정리된 물체 비율, toast는 네 점 만점 진행 점수, laundry는 접고 쌓은 의류 비율이다. 이 값을 전체 장기 에피소드 성공률로 바꾸어 비교하면 안 된다.",
+          "watch": "Appendix E"
+        },
+        {
+          "title": "DROID의 언어 조건 일반화",
+          "body": "75k 성공 시연으로 학습하고 미학습 장면을 평가한다. 44회 정량 시도는 정해진 progress rubric이고 세 캠퍼스 시연은 별도 정성 결과다. 목표 물체에 접근만 하고 문을 못 여는 실패도 관찰했다.",
+          "watch": "§VI-B; Appendix D–E"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "BridgeV2, 5Hz, 7D",
+          "value": "35→20 tokens; 1.75×",
+          "context": "Table I, 1초 chunk, 비슷한 복원 오차"
+        },
+        {
+          "metric": "DROID, 15Hz, 7D",
+          "value": "105→29; 3.6×",
+          "context": "Table I; 압축률이지 성공률 아님"
+        },
+        {
+          "metric": "Bussing, 20Hz, 7D",
+          "value": "140→28; 5.0×",
+          "context": "Table I; 1초 chunk"
+        },
+        {
+          "metric": "Shirt fold, 50Hz, 14D",
+          "value": "700→53; 13.2×",
+          "context": "Table I; 양팔"
+        },
+        {
+          "metric": "고주파 정책 비교",
+          "value": "naïve: 작업 진전 없음; FAST/FSQ: 진전",
+          "context": "Figure 6; 평균·95% CI; 그래프 정밀 값은 기재하지 않음"
+        },
+        {
+          "metric": "FAST+ 미학습 데이터",
+          "value": "토큰 수 적어도 약 2배 감소",
+          "context": "Figure 8; Table III; 정책 zero-shot과 구분"
+        },
+        {
+          "metric": "Bussing 학습",
+          "value": "diffusion 대비 약 3배 적은 step",
+          "context": "Figure 9; 단일 작업 학습"
+        },
+        {
+          "metric": "대규모 π0",
+          "value": "GPU 학습 시간 약 1/5",
+          "context": "Figure 11; 같은 계열 비교; 10k hours 데이터"
+        },
+        {
+          "metric": "추론 시간",
+          "value": "FAST 약 750ms vs diffusion 약 100ms",
+          "context": "§VI-E; RTX4090; 1초 chunk"
+        },
+        {
+          "metric": "DROID 정량 평가",
+          "value": "44 trials/policy",
+          "context": "Appendix E/Table II; 진행 점수, 본문 16과제 표 행 수 17개 불일치"
+        }
+      ],
+      "evidence_note": "논문의 강한 결과는 학습 효율과 다양한 행동의 압축 가능성에 관한 것이지 모든 조건의 실행 속도 우위를 의미하지 않는다. Figure 2 점수는 성공률이 아니며, Figure 6의 막대값을 숫자로 추정하지 않았다. 티셔츠는 약 150개 학습 의류 중 본 평가에서 본 적 있는 다섯 종류를 순환하므로 의류 OOD와 혼동할 수 없다. Appendix E는 DROID 16개 과제라고 적지만 Table II의 과제 행은 17개이고 총 44회다. FAST+ 일반화는 압축 평가와 정책 평가를 구분해야 한다. 급격한 접촉 신호의 양자화 오차·추론 지연이 동적 환경에 미치는 영향은 별도 측정이 필요하다.",
+      "comparison": "Naïve binning은 시점별 표현, FSQ는 별도 학습된 압축 모델, FAST는 DCT와 BPE를 결합한다. π0 diffusion은 연속 행동을 공동 생성하고 FAST는 이산 토큰을 순차 생성한다. OpenVLA backbone 실험은 원본과 동일한 입력 설정이 아니라 다중 이미지와 1초 chunk를 지원하도록 수정한 비교다.",
+      "reading_guide": [
+        "Figure 2 — FAST와 제어 주파수: 녹색 FAST와 노란 binning 점수의 추세를 확인한다. 오른쪽 세로축은 percent success가 아니라 score이며 오차막대가 있다.",
+        "Figure 5 — 일곱 평가 환경: 실물 장면을 비교해 각 작업의 물체별 점수와 인간 판정, zero-shot/미세조정 조건이 서로 다름을 Appendix E에서 확인한다.",
+        "§IV–V; Table I — 시간 중복과 학습 신호",
+        "Algorithm 1; §VI-D; Appendix B — 양자화와 BPE의 역할 분리",
+        "§V-C, VI-C; Table III — 보편 tokenizer와 보편 정책은 다르다",
+        "§VI-E–F — 학습 비용과 실행 비용의 역전",
+        "Appendix E — 데이터셋과 점수 정의",
+        "§VI-B; Appendix D–E — DROID의 언어 조건 일반화"
+      ],
+      "replication": {
+        "hypothesis": "[편집자 제안] 고주파 행동의 다음 토큰 조건부 엔트로피 감소가 rollout 성능의 주된 원인인지 검증한다.",
+        "setup": "DROID와 양팔 접기 데이터를 고정하고 5/15/20/50Hz 재표본화, 1초 chunk, 같은 seed 및 train/val 분할로 학습한다. 원본 주파수에서 복호화해 재생한다.",
+        "baselines": "naïve, DCT+round only, FAST, FAST+, FSQ, diffusion을 같은 VLM 및 입력·데이터 예산으로 비교하고 GPU 시간과 step 두 기준을 각각 맞춘다.",
+        "metrics": "토큰 길이 분포, 관절별 복원 MAE 및 접촉 구간 최대 오차, next-token CE, 엄격한 episode SR 및 progress, p50/p95 latency, GPU 시간.",
+        "risks": "양자화로 인한 그리퍼 이벤트 소실, 데이터 혼입, frequency resampling aliasing을 검사하고 동일한 안전 제어 한계를 사용한다."
+      }
+    }
+  },
+  "2507.04447": {
+    "summary_ko": "DreamVLA는 미래 움직임 영역·깊이·의미 특징을 예측하는 latent query와 diffusion 행동 head를 결합한다. CALVIN ABC→D 4.44/5, Franka 3과제군 평균 76.7% 및 구조화 attention ablation을 분석한다.",
+    "reading_minutes": 23,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-26",
+    "editorial_published_at": "2026-11-26",
+    "source_scope_ko": "공식 arXiv HTML v1 Method, Experiments, 관련 Appendix 및 원본 Figure와 Table 조건 대조. 독립 재현 아님. https://arxiv.org/html/2507.04447v1",
+    "review": {
+      "one_line": "DreamVLA는 미래 움직임 영역·깊이·의미 특징을 예측하는 latent query와 diffusion 행동 head를 결합한다. CALVIN ABC→D 4.44/5, Franka 3과제군 평균 76.7% 및 구조화 attention ablation을 분석한다.",
+      "problem": "일반적인 VLA는 현재 영상과 언어를 행동으로 직접 사상한다. 미래 영상 전체를 생성하는 대안은 배경처럼 행동에 무관한 부분까지 복원해야 하고 단안 RGB의 공간·객체 의미를 명시적으로 감독하지 않는다. DreamVLA는 움직일 부분, 깊이 관계, 물체 특징을 미래의 중간 목표로 학습한다. 이는 후보 행동을 입력해 여러 미래를 rollout하는 고전적인 action-conditioned dynamics 모델과 구별되는 미래 표현 기반 VLA다.",
+      "idea": "서랍을 열라는 지시에서 책상 전체의 미래 색상을 정확히 그리는 것보다 손잡이와 서랍 앞판의 움직임, 로봇과 서랍 간의 상대 깊이, 서랍이라는 객체의 특징이 중요하다. 모델은 세 종류의 질문 토큰으로 이 정보를 예측하고 별도의 행동 질문이 그 잠재 표현을 읽는다. 실제 제어 시에는 미래 depth map을 화면에 그린 후 다시 읽는 것이 아니라 내부 표현을 바로 활용한다. 따라서 보조 감독과 실제 실행 경로를 구분해야 한다.",
+      "method": "01. 멀티모달 입력: 현재/과거 영상·언어·proprioception을 인코딩한다. Figure 2의 텍스트/시각 encoder는 동결, 상태 encoder는 학습된다. Appendix A의 GPT-2 Medium backbone은 24층, hidden 1024, 약 345M이다.\n\n02. Dream query: 학습 가능한 modality별 query를 멀티모달 토큰과 결합해 공유 언어모델에서 미래 잠재 표현을 만든다. 본문 §4.1의 modality별 query 길이는 9다.\n\n03. 동적 영역과 depth 감독: CoTracker로 움직이는 영역을 추출해 해당 픽셀만 복원하도록 감독한다. Depth-Anything 또는 깊이 GT를 사용하며 scale-normalized MSE로 전역 스케일 모호성을 줄인다.\n\n04. 의미 감독 및 attention: DINOv2와 SAM의 미래 특징을 InfoNCE로 학습한다. 공간적으로 이동한 특징을 negative로 사용한다. modality subquery 사이 직접 attention을 차단하고 과거 문맥으로 causal 제한한다.\n\n05. 행동 diffusion 학습: 별도 action query가 잠재 행동을 집계한다. DiT는 이 조건에서 노이즈를 예측하여 행동 시퀀스를 복원한다. 본문 손실 가중치는 dyn 0.1, depth 0.001, sem 0.1, action 1이다.\n\n06. 추론: 학습 전용 world decoder들을 실행하지 않고 latent world/action embedding을 행동 DiT에 제공한다. 본문 DiT 10 diffusion steps. 새 관측으로 과정을 반복한다. 물리적 충돌 안전이 구조적으로 보장되는 것은 아니다.",
+      "findings": "CALVIN ABC-D: 4.44/5 vs OpenVLA 3.27; UP-VLA 4.08 (Table 1, A/B/C 학습 D 평가; 1000 rollouts)\nCALVIN 연속 완료: 98.2% / 94.6% / 89.5% / 83.4% / 78.1% (Table 3–7; 1~5개 연속 완료율)\n실물 전체 평균: 76.7% vs DP 50.8%, Octo 45.0%, OpenVLA 35.0% (Table 2, Franka, 100 task demonstrations)\n실물 Pick / Place / Drawer: 82.5 / 80.0 / 67.5% (Table 2, 대상별 평균; drawer 변위 10cm 초과)\n누적 감독: 3.64→4.32→4.40→4.44 (Table 3, vanilla는 타 논문 인용, dynamic→depth→segment)\n보조 복원 vs 미래 예측: 4.14 vs 4.44 (Table 4; 같은 CALVIN 설정)\n광류 vs 동적 영역: 4.23 vs 4.44 (Table 5)\ncausal vs structured: 3.75 vs 4.44 (Table 6)\nshared vs separated: 4.17 vs 4.44 (Table 7)\n학습 자원: 8 A800; 64 effective batch (Appendix) (Appendix A.3 Table 11; 본문 batch 8 표기)",
+      "limitations": "4.44는 다섯 개 지시 중 평균 연속 완료 수이지 88.8%의 엄격한 전체 성공률이 아니다. 5개 연속 완료율은 78.1%다. 실물에서는 각 trial 최대 20번의 연속 시도를 허용한다고 본문에 기재하므로 단일 grasp 성공률과 직접 비교하지 않는다. Appendix B.4의 history 7·미래 3과 Appendix A.1의 K=2 (현재+2)는 설정을 구분해 읽어야 한다. Table 3의 vanilla는 별도 연구 결과이며 통제된 동일 seed ablation이 아니다. 본문 weight decay 1e-4, cosine/5% warmup과 Appendix Table 11의 0.01, constant/1 epoch가 불일치한다. 단일 depth/semantic 감독만 사용하면 성능이 떨어지는 Figure 6도 있어 모든 미래 신호가 유익하다는 결론은 성립하지 않는다.",
+      "questions": [
+        "미래 dynamic supervision의 이득이 현재의 동적 영역을 보조 복원하는 것과 구별되는지 확인한다.",
+        "CALVIN ABC-D의 동일 1000개 sequence와 학습 데이터로 3개 이상의 seed, 사전학습 가중치 고정. 본문과 Appendix의 optimizer 설정을 각각 재현하고 기록한다.",
+        "direct VLA, current-only reconstruction, future RGB, dynamic-only, all modalities, no structured mask, shared action query를 비교하고 모델 크기와 학습량을 맞춘다.",
+        "1~5 연속 완료율, Avg.Len, per-task failure, p95 latency, decoder 제거 전후 latency, 교사 depth/flow 오류별 SR.",
+        "사전학습 D 장면 중첩 검사, moving camera에 대한 CoTracker mask 오차, 가려진 물체, 실물 시도 한도와 안전 종료 조건을 통제한다."
+      ]
+    },
+    "deep_dive": {
+      "lead": "DreamVLA는 미래 움직임 영역·깊이·의미 특징을 예측하는 latent query와 diffusion 행동 head를 결합한다. CALVIN ABC→D 4.44/5, Franka 3과제군 평균 76.7% 및 구조화 attention ablation을 분석한다. 원저자 보고치에 대한 편집 해설이며 독립 재현은 아니다. https://arxiv.org/html/2507.04447v1",
+      "pipeline": [
+        {
+          "title": "01. 멀티모달 입력",
+          "detail": "현재/과거 영상·언어·proprioception을 인코딩한다. Figure 2의 텍스트/시각 encoder는 동결, 상태 encoder는 학습된다. Appendix A의 GPT-2 Medium backbone은 24층, hidden 1024, 약 345M이다.",
+          "io": "RGB + instruction + state"
+        },
+        {
+          "title": "02. Dream query",
+          "detail": "학습 가능한 modality별 query를 멀티모달 토큰과 결합해 공유 언어모델에서 미래 잠재 표현을 만든다. 본문 §4.1의 modality별 query 길이는 9다.",
+          "io": "world embedding"
+        },
+        {
+          "title": "03. 동적 영역과 depth 감독",
+          "detail": "CoTracker로 움직이는 영역을 추출해 해당 픽셀만 복원하도록 감독한다. Depth-Anything 또는 깊이 GT를 사용하며 scale-normalized MSE로 전역 스케일 모호성을 줄인다.",
+          "io": "future region/depth targets"
+        },
+        {
+          "title": "04. 의미 감독 및 attention",
+          "detail": "DINOv2와 SAM의 미래 특징을 InfoNCE로 학습한다. 공간적으로 이동한 특징을 negative로 사용한다. modality subquery 사이 직접 attention을 차단하고 과거 문맥으로 causal 제한한다.",
+          "io": "structured mask + semantic targets"
+        },
+        {
+          "title": "05. 행동 diffusion 학습",
+          "detail": "별도 action query가 잠재 행동을 집계한다. DiT는 이 조건에서 노이즈를 예측하여 행동 시퀀스를 복원한다. 본문 손실 가중치는 dyn 0.1, depth 0.001, sem 0.1, action 1이다.",
+          "io": "conditional noise loss + auxiliary losses"
+        },
+        {
+          "title": "06. 추론",
+          "detail": "학습 전용 world decoder들을 실행하지 않고 latent world/action embedding을 행동 DiT에 제공한다. 본문 DiT 10 diffusion steps. 새 관측으로 과정을 반복한다. 물리적 충돌 안전이 구조적으로 보장되는 것은 아니다.",
+          "io": "latent → action chunk → observation"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "동적 영역을 먼저",
+          "body": "CoTracker는 학습 라벨 생성용이다. full RGB 예측이나 optical flow 전체를 회귀하는 대신 움직이는 부분을 복원한다. Table 5의 optical flow 4.23 대비 4.44는 계산량과 감독 목표가 달라진 비교다.",
+          "watch": "§3.3, Table 5"
+        },
+        {
+          "title": "깊이의 스케일 불변성",
+          "body": "전역 scale을 맞춰 MSE를 줄이는 식은 상대 깊이 학습에 유리할 수 있으나 실제 미터 단위 거리 정확도나 충돌 없음의 증명은 아니다. 단안 teacher의 오류도 전파될 수 있다.",
+          "watch": "Eq.6–7"
+        },
+        {
+          "title": "의미 대조 학습",
+          "body": "미래 DINOv2/SAM feature를 정답으로 하고 공간상 다른 특징을 negative로 두는 방식은 위치에 민감한 의미 예측을 유도한다. 객체의 물리적 affordance GT를 학습한다고 볼 수는 없다.",
+          "watch": "Eq.8; Appendix A.2"
+        },
+        {
+          "title": "구조화 attention의 효과",
+          "body": "모달리티별 subquery 사이 직접 연결을 막아 공통 입력을 제외한 정보 혼합을 줄인다. Table 6의 vanilla causal 3.75 대비 4.44는 해당 구성 비교이며 완전한 통계적 독립을 보장하지 않는다.",
+          "watch": "Figure 4; Table 6"
+        },
+        {
+          "title": "별도 행동 query",
+          "body": "공유 query 4.17 대비 분리 query 4.44(Table 7). diffusion action head는 같은 표현으로 여러 가능한 행동 시퀀스를 생성할 수 있다. 명시적인 후보 미래 검색이나 최적화는 하지 않는다.",
+          "watch": "§3.4; Table 7"
+        },
+        {
+          "title": "사전학습과 fine-tune의 차이",
+          "body": "언어 없는 CALVIN과 DROID에서 전체 frame을 예측하는 사전학습 후 다중 미래 감독을 적용한다. Appendix A.3은 SAM 등 큰 feature를 미리 계산하여 저장하며 8 A800 GPU를 사용한다고 밝힌다. 본문과 Table 11 optimizer schedule/weight decay 표기가 다르다.",
+          "watch": "§4.1; Appendix A.3"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "CALVIN ABC-D",
+          "value": "4.44/5 vs OpenVLA 3.27; UP-VLA 4.08",
+          "context": "Table 1, A/B/C 학습 D 평가; 1000 rollouts"
+        },
+        {
+          "metric": "CALVIN 연속 완료",
+          "value": "98.2% / 94.6% / 89.5% / 83.4% / 78.1%",
+          "context": "Table 3–7; 1~5개 연속 완료율"
+        },
+        {
+          "metric": "실물 전체 평균",
+          "value": "76.7% vs DP 50.8%, Octo 45.0%, OpenVLA 35.0%",
+          "context": "Table 2, Franka, 100 task demonstrations"
+        },
+        {
+          "metric": "실물 Pick / Place / Drawer",
+          "value": "82.5 / 80.0 / 67.5%",
+          "context": "Table 2, 대상별 평균; drawer 변위 10cm 초과"
+        },
+        {
+          "metric": "누적 감독",
+          "value": "3.64→4.32→4.40→4.44",
+          "context": "Table 3, vanilla는 타 논문 인용, dynamic→depth→segment"
+        },
+        {
+          "metric": "보조 복원 vs 미래 예측",
+          "value": "4.14 vs 4.44",
+          "context": "Table 4; 같은 CALVIN 설정"
+        },
+        {
+          "metric": "광류 vs 동적 영역",
+          "value": "4.23 vs 4.44",
+          "context": "Table 5"
+        },
+        {
+          "metric": "causal vs structured",
+          "value": "3.75 vs 4.44",
+          "context": "Table 6"
+        },
+        {
+          "metric": "shared vs separated",
+          "value": "4.17 vs 4.44",
+          "context": "Table 7"
+        },
+        {
+          "metric": "학습 자원",
+          "value": "8 A800; 64 effective batch (Appendix)",
+          "context": "Appendix A.3 Table 11; 본문 batch 8 표기"
+        }
+      ],
+      "evidence_note": "4.44는 다섯 개 지시 중 평균 연속 완료 수이지 88.8%의 엄격한 전체 성공률이 아니다. 5개 연속 완료율은 78.1%다. 실물에서는 각 trial 최대 20번의 연속 시도를 허용한다고 본문에 기재하므로 단일 grasp 성공률과 직접 비교하지 않는다. Appendix B.4의 history 7·미래 3과 Appendix A.1의 K=2 (현재+2)는 설정을 구분해 읽어야 한다. Table 3의 vanilla는 별도 연구 결과이며 통제된 동일 seed ablation이 아니다. 본문 weight decay 1e-4, cosine/5% warmup과 Appendix Table 11의 0.01, constant/1 epoch가 불일치한다. 단일 depth/semantic 감독만 사용하면 성능이 떨어지는 Figure 6도 있어 모든 미래 신호가 유익하다는 결론은 성립하지 않는다.",
+      "comparison": "OpenVLA는 직접 행동, Susie는 두 단계 미래 목표와 inverse dynamics, GR-1은 영상 예측을 활용한다. DreamVLA는 미래 다중 표현을 학습 시 감독하지만 추론에서 decoder를 제외하는 구조다. CALVIN 표의 기존 비교군은 서로 다른 사전학습 데이터 및 backbone을 사용하므로 방법론 한 가지의 인과 효과는 Table 4–7의 내부 비교를 중심으로 판단한다.",
+      "reading_guide": [
+        "Figure 2 — 미래 표현과 행동 head: 점선 상자의 world decoder는 학습 전용이다. 행동 DiT는 잠재 표현을 조건으로 하므로 추론 중 RGB/depth 생성이 필수라는 해석을 피한다.",
+        "Figure 6 — 미래 감독 조합 ablation: 막대 값 4.44와 4.32, 2.98 등을 읽되 개별 라벨의 의미는 원문 §4.4 및 caption과 함께 확인한다. 단독 depth/semantic 감독은 baseline보다 악화될 수 있다.",
+        "§3.3, Table 5 — 동적 영역을 먼저",
+        "Eq.6–7 — 깊이의 스케일 불변성",
+        "Eq.8; Appendix A.2 — 의미 대조 학습",
+        "Figure 4; Table 6 — 구조화 attention의 효과",
+        "§3.4; Table 7 — 별도 행동 query",
+        "§4.1; Appendix A.3 — 사전학습과 fine-tune의 차이"
+      ],
+      "replication": {
+        "hypothesis": "[편집자 제안] 미래 dynamic supervision의 이득이 현재의 동적 영역을 보조 복원하는 것과 구별되는지 확인한다.",
+        "setup": "CALVIN ABC-D의 동일 1000개 sequence와 학습 데이터로 3개 이상의 seed, 사전학습 가중치 고정. 본문과 Appendix의 optimizer 설정을 각각 재현하고 기록한다.",
+        "baselines": "direct VLA, current-only reconstruction, future RGB, dynamic-only, all modalities, no structured mask, shared action query를 비교하고 모델 크기와 학습량을 맞춘다.",
+        "metrics": "1~5 연속 완료율, Avg.Len, per-task failure, p95 latency, decoder 제거 전후 latency, 교사 depth/flow 오류별 SR.",
+        "risks": "사전학습 D 장면 중첩 검사, moving camera에 대한 CoTracker mask 오차, 가려진 물체, 실물 시도 한도와 안전 종료 조건을 통제한다."
+      }
+    }
+  },
+  "2303.04137": {
+    "summary_ko": "조건부 행동 확산과 receding horizon 제어로 다중 모드 모방학습을 구현한다. 실물 Push-T E2E 95% vs LSTM-GMM 20%, 시뮬레이션 Transport 등 및 position/velocity·시각 encoder 비교의 평가조건을 분석한다.",
+    "reading_minutes": 23,
+    "featured": true,
+    "curated": true,
+    "editorial_verified": true,
+    "editorial_status": "source_crosschecked",
+    "reviewed_at": "2026-11-26",
+    "editorial_published_at": "2026-11-26",
+    "source_scope_ko": "공식 arXiv HTML v5 Method, Experiments, 관련 Appendix 및 원본 Figure와 Table 조건 대조. 독립 재현 아님. https://arxiv.org/html/2303.04137v5",
+    "review": {
+      "one_line": "조건부 행동 확산과 receding horizon 제어로 다중 모드 모방학습을 구현한다. 실물 Push-T E2E 95% vs LSTM-GMM 20%, 시뮬레이션 Transport 등 및 position/velocity·시각 encoder 비교의 평가조건을 분석한다.",
+      "problem": "한 장면에서 장애물의 왼쪽이나 오른쪽으로 우회하는 시연이 모두 정답일 수 있다. 단일 회귀는 그 평균을 선택해 충돌하거나 중간 행동을 만들 수 있고, 단일 timestep의 독립 예측은 여러 모드를 오가며 진행하지 못할 수 있다. GMM·이산 행동·에너지 기반 정책은 분포 표현을 개선하지만 높은 차원과 장시간 일관성, 에너지 정규화 추정에서 어려움이 있다. Diffusion Policy는 행동 시퀀스 자체를 조건부 생성 대상으로 바꾸며 환경의 미래 영상이나 보상을 예측하지 않는 모방학습 방법이다.",
+      "idea": "T자 블록을 목표로 밀 때 왼쪽 끝을 먼저 밀어 회전시킨 다음 중앙을 밀거나, 반대 순서를 택할 수 있다. 정책이 하나의 점 예측 대신 전체 미래 행동을 잡음에서 점진적으로 수정하면 일관된 한 가지 경로를 선택할 수 있다. 하지만 길게 생성한 모든 행동을 끝까지 실행하면 중간의 위치 변화에 대응할 수 없다. 몇 개만 실행하고 새 관측에서 다시 생성하는 receding horizon이 생성 모델과 폐루프 제어를 연결한다.",
+      "method": "01. 시연 구간 구성: 영상/로봇 상태의 최근 To step과 미래 행동 구간 Tp를 짝지어 학습 표본을 만든다. 행동 정규화와 좌표 표현은 Appendix A의 설정을 따른다.\n\n02. 시각 조건 인코딩: 영상 관측의 특징을 한 번 계산하고 denoising의 조건으로 제공한다. 관측 자체는 noise 대상이 아니므로 모든 diffusion step에서 영상 encoder를 다시 실행할 필요가 없다.\n\n03. 행동에 노이즈 추가: GT action sequence에 임의 noise level의 가우시안 잡음을 더하고 timestep k를 함께 제공한다. 학습 손실은 실제 주입 잡음과 예측 잡음의 MSE다.\n\n04. 두 denoiser 구조: CNN은 1D convolution과 FiLM으로 관측을 각 층에 주입한다. Transformer는 관측 embedding을 cross-attention으로 제공하고 행동 토큰의 causal self-attention을 제한한다.\n\n05. 역확산: Gaussian action sequence를 시작점으로 조건부 denoiser를 반복 적용한다. DDIM으로 학습 100단계와 실제 추론 단계 수를 분리할 수 있다. 이는 환경 동역학 rollout이 아니다.\n\n06. receding horizon 실행: 예측한 Tp 구간에서 Ta step만 실행한 후 새 관측으로 재계획한다. 실물 Push-T는 10Hz 명령을 125Hz 보간해 로봇을 제어한다. 정책 추론 시간과 저수준 서보 주기는 구분한다.",
+      "findings": "Visual Square MH: CNN 0.98/0.84 vs LSTM-GMM 0.64/0.38 (Table 2; max/last10; multi-human)\nVisual Transport MH: CNN 0.89/0.69 vs LSTM 0.44/0.24 (Table 2; 14D 양팔)\nVisual ToolHang PH: CNN 0.95/0.73 vs LSTM 0.68/0.49 (Table 2; 200 proficient demonstrations)\nVisual Push-T: CNN 0.91/0.84 vs IBC 0.75/0.64 (Table 2; target coverage, strict SR 아님)\nBlockPush p2: Transformer 0.94, CNN 0.11, BET 0.71 (Table 4; 두 블록 목표 도달 빈도)\nKitchen p4: CNN 0.99 vs BET 0.44 (Table 4; 4개 이상 객체 상호작용)\nSquare encoder ablation: ViT scratch 0.22, frozen 0.70, fine-tune 0.98 (Table 5; CNN action denoiser; 500 epochs)\nReal Push-T strict SR: E2E 95%, R3M 80%, T-E2E 65%, LSTM pos 20%, IBC 0% (Table 6; 최종 IoU 기준, 20회 평가)\nReal Push-T final IoU: E2E 0.80, human demo 0.84 (Table 6; E2E episode 평균 22.9초)\nDDIM 지연: 약 0.1s; 100 train/10 eval steps (§3.4; RTX3080; Appendix Table 8의 real Transformer는 16 eval steps)",
+      "limitations": "Table 1/2는 최고 checkpoint와 마지막 10 checkpoint 평균을 함께 제공한다. §5.2 각주는 Robomimic 평가 코드 버그로 50 대신 22 initializations를 사용했다고 밝힌다. 이 수치를 Table 1 caption의 150 rollout 설명과 구분해야 한다. sim Push-T는 목표 coverage, real Push-T는 마지막 frame IoU가 시연의 최솟값 이상인지로 성공을 정의한다. Figure 7은 동일 시작 장면의 정성 비교이지 개별 방법의 전체 성공률 그래프가 아니다. 20회 실물 시행과 136개 실물 시연의 제한이 있고, 외란 복구 사례가 모든 방해에 대한 통계적 안전 보장을 의미하지 않는다. 환경 밖의 물체·언어 명령에 대한 범용 VLA 성능을 입증한 연구도 아니다.",
+      "questions": [
+        "행동 다중 모드 학습과 chunk의 폐루프 갱신 효과를 독립적으로 검증한다.",
+        "공개 Push-T 및 Robomimic Square/Transport 시연을 고정하고 3 seeds, 동일 train split 및 초기 조건 50개, 500 epochs 후 고정 checkpoint와 last10을 동시에 평가한다.",
+        "LSTM-GMM, BET/IBC, CNN diffusion, Transformer diffusion, Ta=1/4/8/전체, Tp=16 고정, DDIM 4/10/16/100, position/velocity 및 동일 vision encoder.",
+        "strict SR, coverage/IoU, episode duration, action jerk, 접촉 전환 실패, p95 inference latency 및 closed-loop step deadline, seed별 신뢰구간.",
+        "정규화 통계 train-only, 평가 초기화 버그 수정, max checkpoint 선택 편향 방지, 실물은 동일 안전 제한과 중단 기준을 갖춘 뒤 제한된 반복 검증을 한다."
+      ]
+    },
+    "deep_dive": {
+      "lead": "조건부 행동 확산과 receding horizon 제어로 다중 모드 모방학습을 구현한다. 실물 Push-T E2E 95% vs LSTM-GMM 20%, 시뮬레이션 Transport 등 및 position/velocity·시각 encoder 비교의 평가조건을 분석한다. 원저자 보고치에 대한 편집 해설이며 독립 재현은 아니다. https://arxiv.org/html/2303.04137v5",
+      "pipeline": [
+        {
+          "title": "01. 시연 구간 구성",
+          "detail": "영상/로봇 상태의 최근 To step과 미래 행동 구간 Tp를 짝지어 학습 표본을 만든다. 행동 정규화와 좌표 표현은 Appendix A의 설정을 따른다.",
+          "io": "observation history + action sequence"
+        },
+        {
+          "title": "02. 시각 조건 인코딩",
+          "detail": "영상 관측의 특징을 한 번 계산하고 denoising의 조건으로 제공한다. 관측 자체는 noise 대상이 아니므로 모든 diffusion step에서 영상 encoder를 다시 실행할 필요가 없다.",
+          "io": "O_t condition"
+        },
+        {
+          "title": "03. 행동에 노이즈 추가",
+          "detail": "GT action sequence에 임의 noise level의 가우시안 잡음을 더하고 timestep k를 함께 제공한다. 학습 손실은 실제 주입 잡음과 예측 잡음의 MSE다.",
+          "io": "Eq.5 noise prediction"
+        },
+        {
+          "title": "04. 두 denoiser 구조",
+          "detail": "CNN은 1D convolution과 FiLM으로 관측을 각 층에 주입한다. Transformer는 관측 embedding을 cross-attention으로 제공하고 행동 토큰의 causal self-attention을 제한한다.",
+          "io": "Figure 2 CNN / Transformer"
+        },
+        {
+          "title": "05. 역확산",
+          "detail": "Gaussian action sequence를 시작점으로 조건부 denoiser를 반복 적용한다. DDIM으로 학습 100단계와 실제 추론 단계 수를 분리할 수 있다. 이는 환경 동역학 rollout이 아니다.",
+          "io": "noise → action chunk"
+        },
+        {
+          "title": "06. receding horizon 실행",
+          "detail": "예측한 Tp 구간에서 Ta step만 실행한 후 새 관측으로 재계획한다. 실물 Push-T는 10Hz 명령을 125Hz 보간해 로봇을 제어한다. 정책 추론 시간과 저수준 서보 주기는 구분한다.",
+          "io": "execute prefix, refresh observation"
+        }
+      ],
+      "mechanisms": [
+        {
+          "title": "다중 모드와 정규화 상수",
+          "body": "조건부 energy에서 action에 무관한 정규화 상수의 gradient는 0이다. score를 noise prediction으로 학습하면 IBC처럼 partition function의 negative sampling을 매번 추정하지 않아도 된다. 분포 표현력은 학습 데이터와 모델 용량에 제한된다.",
+          "watch": "§4.1,4.4; Eq.8"
+        },
+        {
+          "title": "시퀀스 공동 생성",
+          "body": "한 번에 Tp step을 생성해 시간 상관을 활용한다. To, Tp, Ta가 동일하지 않다. Appendix Table 8의 sim Push-T Transformer는 To=2, Ta=8, Tp=16, real Push-T는 Ta=6이다.",
+          "watch": "Figure 2; Table 8"
+        },
+        {
+          "title": "CNN vs Transformer",
+          "body": "CNN은 평활한 위치 행동에서 강할 수 있고 Transformer는 빠른 변화가 중요한 속도 제어에서 유용하다. BlockPush p2 0.11 vs 0.94는 차이가 극적인 예지만 real Push-T는 CNN이 더 높았다.",
+          "watch": "Table 4,6"
+        },
+        {
+          "title": "제어 표현과 지연",
+          "body": "position target은 절대 목표를 제공해 속도 누적 오차보다 지연에 덜 민감할 수 있다. Figure 5의 simulated latency 결과는 최대 4 step 조건의 관찰이며 모든 실제 로봇에서 4 step이 안전하다는 의미는 아니다.",
+          "watch": "§4.2,5.3"
+        },
+        {
+          "title": "시각 표현 학습",
+          "body": "Square PH에서 frozen ResNet18 58%, scratch 94%, CLIP ViT fine-tune 98%다. real Push-T에서는 E2E 95%, R3M 80%, ImageNet 15%로 task 적응이 중요함을 보인다. 실물과 sim의 데이터 규모와 task는 다르다.",
+          "watch": "Table 5,6"
+        },
+        {
+          "title": "평가 집계의 주의점",
+          "body": "Appendix B.2의 46.9%는 각 과제별 최선 variant와 최선 baseline의 상대 향상률 평균으로 절대 성공률 증가가 아니다. Table 1/2의 max 및 last10 평균과 Kitchen의 단계 달성 빈도를 구분해야 한다.",
+          "watch": "§5.2; Appendix B"
+        }
+      ],
+      "evidence": [
+        {
+          "metric": "Visual Square MH",
+          "value": "CNN 0.98/0.84 vs LSTM-GMM 0.64/0.38",
+          "context": "Table 2; max/last10; multi-human"
+        },
+        {
+          "metric": "Visual Transport MH",
+          "value": "CNN 0.89/0.69 vs LSTM 0.44/0.24",
+          "context": "Table 2; 14D 양팔"
+        },
+        {
+          "metric": "Visual ToolHang PH",
+          "value": "CNN 0.95/0.73 vs LSTM 0.68/0.49",
+          "context": "Table 2; 200 proficient demonstrations"
+        },
+        {
+          "metric": "Visual Push-T",
+          "value": "CNN 0.91/0.84 vs IBC 0.75/0.64",
+          "context": "Table 2; target coverage, strict SR 아님"
+        },
+        {
+          "metric": "BlockPush p2",
+          "value": "Transformer 0.94, CNN 0.11, BET 0.71",
+          "context": "Table 4; 두 블록 목표 도달 빈도"
+        },
+        {
+          "metric": "Kitchen p4",
+          "value": "CNN 0.99 vs BET 0.44",
+          "context": "Table 4; 4개 이상 객체 상호작용"
+        },
+        {
+          "metric": "Square encoder ablation",
+          "value": "ViT scratch 0.22, frozen 0.70, fine-tune 0.98",
+          "context": "Table 5; CNN action denoiser; 500 epochs"
+        },
+        {
+          "metric": "Real Push-T strict SR",
+          "value": "E2E 95%, R3M 80%, T-E2E 65%, LSTM pos 20%, IBC 0%",
+          "context": "Table 6; 최종 IoU 기준, 20회 평가"
+        },
+        {
+          "metric": "Real Push-T final IoU",
+          "value": "E2E 0.80, human demo 0.84",
+          "context": "Table 6; E2E episode 평균 22.9초"
+        },
+        {
+          "metric": "DDIM 지연",
+          "value": "약 0.1s; 100 train/10 eval steps",
+          "context": "§3.4; RTX3080; Appendix Table 8의 real Transformer는 16 eval steps"
+        }
+      ],
+      "evidence_note": "Table 1/2는 최고 checkpoint와 마지막 10 checkpoint 평균을 함께 제공한다. §5.2 각주는 Robomimic 평가 코드 버그로 50 대신 22 initializations를 사용했다고 밝힌다. 이 수치를 Table 1 caption의 150 rollout 설명과 구분해야 한다. sim Push-T는 목표 coverage, real Push-T는 마지막 frame IoU가 시연의 최솟값 이상인지로 성공을 정의한다. Figure 7은 동일 시작 장면의 정성 비교이지 개별 방법의 전체 성공률 그래프가 아니다. 20회 실물 시행과 136개 실물 시연의 제한이 있고, 외란 복구 사례가 모든 방해에 대한 통계적 안전 보장을 의미하지 않는다. 환경 밖의 물체·언어 명령에 대한 범용 VLA 성능을 입증한 연구도 아니다.",
+      "comparison": "LSTM-GMM은 관측 조건의 mixture, BET는 이산화된 행동 분포, IBC는 action energy 최적화를 사용한다. Diffusion Policy는 score를 통한 분포 샘플링과 receding horizon을 결합한다. Table 4 BlockPush에서 CNN variant가 BET보다 낮은 사례처럼 diffusion 구조만으로 우위를 보장하지 않으며 CNN과 Transformer의 선택은 제어 표현·작업별로 검증해야 한다.",
+      "reading_guide": [
+        "Figure 2 — 행동 확산과 horizon: 관측 To, 실행 Ta, 예측 Tp의 구별과 Gaussian noise에서 행동으로 반복 수정되는 K step을 읽는다.",
+        "Figure 7 — 실물 Push-T의 단계 전환: E2E는 정밀한 끝 상태, R3M은 초기 정체 후 복구, LSTM은 end-zone 실패, IBC는 조기 이탈 사례를 보여 준다. 정량 비교는 Table 6에서 읽는다.",
+        "§4.1,4.4; Eq.8 — 다중 모드와 정규화 상수",
+        "Figure 2; Table 8 — 시퀀스 공동 생성",
+        "Table 4,6 — CNN vs Transformer",
+        "§4.2,5.3 — 제어 표현과 지연",
+        "Table 5,6 — 시각 표현 학습",
+        "§5.2; Appendix B — 평가 집계의 주의점"
+      ],
+      "replication": {
+        "hypothesis": "[편집자 제안] 행동 다중 모드 학습과 chunk의 폐루프 갱신 효과를 독립적으로 검증한다.",
+        "setup": "공개 Push-T 및 Robomimic Square/Transport 시연을 고정하고 3 seeds, 동일 train split 및 초기 조건 50개, 500 epochs 후 고정 checkpoint와 last10을 동시에 평가한다.",
+        "baselines": "LSTM-GMM, BET/IBC, CNN diffusion, Transformer diffusion, Ta=1/4/8/전체, Tp=16 고정, DDIM 4/10/16/100, position/velocity 및 동일 vision encoder.",
+        "metrics": "strict SR, coverage/IoU, episode duration, action jerk, 접촉 전환 실패, p95 inference latency 및 closed-loop step deadline, seed별 신뢰구간.",
+        "risks": "정규화 통계 train-only, 평가 초기화 버그 수정, max checkpoint 선택 편향 방지, 실물은 동일 안전 제한과 중단 기준을 갖춘 뒤 제한된 반복 검증을 한다."
+      }
+    }
   }
 }
