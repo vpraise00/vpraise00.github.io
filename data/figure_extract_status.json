@@ -1585,5 +1585,75 @@
       "caption": "동일 시작 조건에서 E2E/R3M diffusion과 LSTM-GMM/IBC 궤적 및 평균 종료 상태를 비교한다.",
       "review": "2026-11-26: official HTML figure image opened and caption crosschecked"
     }
+  },
+  "2603.00926": {
+    "3": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2603.00926v1/3.png",
+      "source": "https://arxiv.org/html/2603.00926v1/3.png",
+      "paper_source": "https://arxiv.org/html/2603.00926v1",
+      "caption": "RGB와 명령을 VLM에서 통합하고, reasoning latent의 w로 두 diffusion expert를 선택한다.",
+      "review": "2026-11-27: official HTML author image opened; Figure 3 caption checked"
+    },
+    "6": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2603.00926v1/6.png",
+      "source": "https://arxiv.org/html/2603.00926v1/6.png",
+      "paper_source": "https://arxiv.org/html/2603.00926v1",
+      "caption": "ID의 조명·물체 위치 변형과 OOD의 미지 배경·물체·distractor를 보여 준다.",
+      "review": "2026-11-27: official HTML author image opened; Figure 6 caption checked"
+    }
+  },
+  "2506.09985": {
+    "6": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2506.09985v1/vjepa2-ac-detail.png",
+      "source": "https://arxiv.org/html/2506.09985v1/vjepa2-ac-detail.png",
+      "paper_source": "https://arxiv.org/html/2506.09985v1",
+      "caption": "실제 관측의 동결 표현과 action/pose token에서 다음 표현을 예측해 L1을 적용한다.",
+      "review": "2026-11-27: official HTML author image opened; Figure 6 caption checked"
+    },
+    "7": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2506.09985v1/vjepa2-mpc.png",
+      "source": "https://arxiv.org/html/2506.09985v1/vjepa2-mpc.png",
+      "paper_source": "https://arxiv.org/html/2506.09985v1",
+      "caption": "현재 관측을 encoder로 변환한 뒤 후보 action rollout의 최종 표현과 목표 표현의 L1 거리를 줄인다.",
+      "review": "2026-11-27: official HTML author image opened; Figure 7 caption checked"
+    },
+    "61": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2506.09985v1/vjepa2-ac-detail-ar.png",
+      "source": "https://arxiv.org/html/2506.09985v1/vjepa2-ac-detail-ar.png",
+      "paper_source": "https://arxiv.org/html/2506.09985v1",
+      "caption": "예측한 표현을 다음 step 입력으로 사용하고 최종 예측을 실제 표현과 비교한다.",
+      "review": "2026-11-27: official HTML author image opened; Figure 6 caption checked (right panel)"
+    }
+  },
+  "2304.13705": {
+    "5": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2304.13705v1/real_tasks.png",
+      "source": "https://arxiv.org/html/2304.13705v1/real_tasks.png",
+      "paper_source": "https://arxiv.org/html/2304.13705v1",
+      "caption": "지퍼·배터리·컵·Velcro·테이프·신발 작업의 초기 위치 및 하위 동작을 보여 준다.",
+      "review": "2026-11-27: official HTML author image opened; Figure 5 caption checked"
+    },
+    "7": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2304.13705v1/fm_data.png",
+      "source": "https://arxiv.org/html/2304.13705v1/fm_data.png",
+      "paper_source": "https://arxiv.org/html/2304.13705v1",
+      "caption": "(a) chunk 길이, (b) ensemble, (c) CVAE, (d) 사람 teleoperation 주파수 비교.",
+      "review": "2026-11-27: official HTML author image opened; Figure 7 caption checked"
+    },
+    "9": {
+      "method": "arxiv_html_exact_figure",
+      "remote_url": "https://arxiv.org/html/2304.13705v1/figures/obs.jpg",
+      "source": "https://arxiv.org/html/2304.13705v1/figures/obs.jpg",
+      "paper_source": "https://arxiv.org/html/2304.13705v1",
+      "caption": "상단, 전면, 좌우 손목의 영상 예시를 다섯 실물 작업에 대해 제시한다.",
+      "review": "2026-11-27: official HTML author image opened; Figure 9 caption checked"
+    }
   }
 }

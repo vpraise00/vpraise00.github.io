@@ -2062,5 +2062,119 @@
         ]
       }
     ]
+  },
+  "2603.00926": {
+    "heading": "DAM-VLA: A Dynamic Action Model-Based Vision-Language-Action Framework for Robot Manipulation — 공식 원문 Figure",
+    "intro": "공식 HTML에서 실제로 열어 확인한 저자 이미지. 캡션은 편집 요약이며 원문 그림은 수정하지 않았다.",
+    "figures": [
+      {
+        "number": 3,
+        "display_number": 3,
+        "placement": "method",
+        "reading_title": "Figure 3 — 전체 구조와 학습·추론 분기",
+        "verified_caption": "RGB와 명령을 VLM에서 통합하고, reasoning latent의 w로 두 diffusion expert를 선택한다.",
+        "context": "왼쪽 아래의 두 학습 분기와 오른쪽 아래의 단일 추론 분기를 비교한다. cognition과 class/register의 연결이 서로 다르다.",
+        "steps": [
+          "왼쪽 아래의 두 학습 분기와 오른쪽 아래의 단일 추론 분기를 비교한다. cognition과 class/register의 연결이 서로 다르다.",
+          "수치의 정확한 조건은 해당 본문 및 표를 확인한다."
+        ]
+      },
+      {
+        "number": 6,
+        "display_number": 6,
+        "placement": "findings",
+        "reading_title": "Figure 6 — 실물 ID/OOD 장면",
+        "verified_caption": "ID의 조명·물체 위치 변형과 OOD의 미지 배경·물체·distractor를 보여 준다.",
+        "context": "Figure의 사진은 평가 조건 예시다. 성공률은 Table V, 표본 수는 §IV-C를 함께 본다.",
+        "steps": [
+          "Figure의 사진은 평가 조건 예시다. 성공률은 Table V, 표본 수는 §IV-C를 함께 본다.",
+          "수치의 정확한 조건은 해당 본문 및 표를 확인한다."
+        ]
+      }
+    ]
+  },
+  "2506.09985": {
+    "heading": "V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning — 공식 원문 Figure",
+    "intro": "공식 HTML에서 실제로 열어 확인한 저자 이미지. 캡션은 편집 요약이며 원문 그림은 수정하지 않았다.",
+    "figures": [
+      {
+        "number": 6,
+        "display_number": 6,
+        "placement": "method",
+        "reading_title": "Figure 6 — Teacher forcing 패널(왼쪽)",
+        "verified_caption": "실제 관측의 동결 표현과 action/pose token에서 다음 표현을 예측해 L1을 적용한다.",
+        "context": "그림의 4단계는 예시이며 실제 teacher forcing은 T=15다. 다음 패널과 입력의 출처를 비교한다.",
+        "steps": [
+          "그림의 4단계는 예시이며 실제 teacher forcing은 T=15다. 다음 패널과 입력의 출처를 비교한다.",
+          "수치의 정확한 조건은 해당 본문 및 표를 확인한다."
+        ]
+      },
+      {
+        "number": 61,
+        "display_number": 6,
+        "placement": "method",
+        "reading_title": "Figure 6 — Rollout loss 패널(오른쪽)",
+        "verified_caption": "예측한 표현을 다음 step 입력으로 사용하고 최종 예측을 실제 표현과 비교한다.",
+        "context": "그림은 긴 전개를 예시하지만 실제 rollout loss는 T=2이며 recurrent step 하나를 통해 미분한다.",
+        "steps": [
+          "그림은 긴 전개를 예시하지만 실제 rollout loss는 T=2이며 recurrent step 하나를 통해 미분한다.",
+          "수치의 정확한 조건은 해당 본문 및 표를 확인한다."
+        ]
+      },
+      {
+        "number": 7,
+        "display_number": 7,
+        "placement": "method",
+        "reading_title": "Figure 7 — 목표 이미지 기반 MPC",
+        "verified_caption": "현재 관측을 encoder로 변환한 뒤 후보 action rollout의 최종 표현과 목표 표현의 L1 거리를 줄인다.",
+        "context": "그림 속 predictor 반복은 계획 개념이다. 실물 Table 3 조건은 horizon 1이고 첫 행동 뒤 다시 계획한다.",
+        "steps": [
+          "그림 속 predictor 반복은 계획 개념이다. 실물 Table 3 조건은 horizon 1이고 첫 행동 뒤 다시 계획한다.",
+          "수치의 정확한 조건은 해당 본문 및 표를 확인한다."
+        ]
+      }
+    ]
+  },
+  "2304.13705": {
+    "heading": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware — 공식 원문 Figure",
+    "intro": "공식 HTML에서 실제로 열어 확인한 저자 이미지. 캡션은 편집 요약이며 원문 그림은 수정하지 않았다.",
+    "figures": [
+      {
+        "number": 5,
+        "display_number": 5,
+        "placement": "idea",
+        "reading_title": "Figure 5 — 실물 여섯 작업의 초기화와 단계",
+        "verified_caption": "지퍼·배터리·컵·Velcro·테이프·신발 작업의 초기 위치 및 하위 동작을 보여 준다.",
+        "context": "한 번의 집기와 달리 양팔의 역할이 시간에 따라 바뀐다. 최종 단계만을 엄격 성공으로 읽는다.",
+        "steps": [
+          "한 번의 집기와 달리 양팔의 역할이 시간에 따라 바뀐다. 최종 단계만을 엄격 성공으로 읽는다.",
+          "수치의 정확한 조건은 해당 본문 및 표를 확인한다."
+        ]
+      },
+      {
+        "number": 9,
+        "display_number": 9,
+        "placement": "method",
+        "reading_title": "Figure 9 — 네 카메라 관측",
+        "verified_caption": "상단, 전면, 좌우 손목의 영상 예시를 다섯 실물 작업에 대해 제시한다.",
+        "context": "카메라 시점별로 물체 크기·가림이 달라지는 것을 확인한다. 특히 검은 Velcro의 대비에 주목한다.",
+        "steps": [
+          "카메라 시점별로 물체 크기·가림이 달라지는 것을 확인한다. 특히 검은 Velcro의 대비에 주목한다.",
+          "수치의 정확한 조건은 해당 본문 및 표를 확인한다."
+        ]
+      },
+      {
+        "number": 7,
+        "display_number": 7,
+        "placement": "findings",
+        "reading_title": "Figure 7 — Chunk/CVAE/ensemble 및 사용자 연구",
+        "verified_caption": "(a) chunk 길이, (b) ensemble, (c) CVAE, (d) 사람 teleoperation 주파수 비교.",
+        "context": "(a)와 (c)는 sim 정책 실험, (d)는 사람이 제어한 완료 시간이다. 서로 다른 분모와 단위를 혼합하지 않는다.",
+        "steps": [
+          "(a)와 (c)는 sim 정책 실험, (d)는 사람이 제어한 완료 시간이다. 서로 다른 분모와 단위를 혼합하지 않는다.",
+          "수치의 정확한 조건은 해당 본문 및 표를 확인한다."
+        ]
+      }
+    ]
   }
 }

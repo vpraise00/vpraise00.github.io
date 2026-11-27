@@ -4859,6 +4859,189 @@
           "정규화 통계 train-only, 평가 초기화 버그 수정, max checkpoint 선택 편향 방지, 실물은 동일 안전 제한과 중단 기준을 갖춘 뒤 제한된 반복 검증을 한다."
         ]
       }
+    },
+    {
+      "id": "2603.00926",
+      "slug": "2603.00926",
+      "title": "DAM-VLA: A Dynamic Action Model-Based Vision-Language-Action Framework for Robot Manipulation",
+      "authors": [
+        "Xiongfeng Peng",
+        "Jiaqian Yu",
+        "Dingzhe Li",
+        "Yixiang Jin",
+        "Lu Xu",
+        "Yamin Mao",
+        "Chao Zhang",
+        "Weiming Li",
+        "Sujin Jang",
+        "Dongwook Lee",
+        "Daehyun Ji"
+      ],
+      "published": "2026-03-01",
+      "updated": "2026-03-01",
+      "abstract": "팔의 이동과 접촉 전후 정밀 조작을 서로 다른 diffusion expert에 배분한다. SIMPLER Google VA 81%, FurnitureBench One-Leg 최종 56%, 실물 ID/OOD 91.4%/82.2%의 조건과 라우팅 가정의 한계를 해설한다.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2603.00926",
+      "pdf_url": "https://arxiv.org/pdf/2603.00926",
+      "primary_category": "vla",
+      "categories": [
+        "vla"
+      ],
+      "tags": [
+        "VLA",
+        "Action Routing",
+        "Diffusion Transformer",
+        "SIMPLER",
+        "FurnitureBench"
+      ],
+      "featured": true,
+      "curated": true,
+      "origin": "editorial_verified_2026-11-27",
+      "reading_minutes": 24,
+      "summary_ko": "팔의 이동과 접촉 전후 정밀 조작을 서로 다른 diffusion expert에 배분한다. SIMPLER Google VA 81%, FurnitureBench One-Leg 최종 56%, 실물 ID/OOD 91.4%/82.2%의 조건과 라우팅 가정의 한계를 해설한다.",
+      "review": {
+        "one_line": "팔의 이동과 접촉 전후 정밀 조작을 서로 다른 diffusion expert에 배분한다. SIMPLER Google VA 81%, FurnitureBench One-Leg 최종 56%, 실물 ID/OOD 91.4%/82.2%의 조건과 라우팅 가정의 한계를 해설한다.",
+        "problem": "책상 위의 물체를 향해 멀리 이동할 때와 물체를 잡기 직전 손가락을 맞출 때 필요한 정보는 다르다. 이동에서는 장애물과 목적지의 상대 위치, 접촉에서는 몇 픽셀 차이의 물체 경계와 그리퍼 자세가 중요하다. 단일 action head가 이 두 종류의 조건을 같은 방식으로 학습하면 작은 접촉 구간이 전체 시연에서 희석될 수 있다. ACT나 Diffusion Policy 같은 전문가 정책은 높은 정밀도를 보여도 별도 과제 데이터가 필요하고, OpenVLA 계열의 일반화 가능한 VLM은 행동의 정밀도를 자동으로 보장하지 않는다. CogACT는 의미 판단과 연속 행동 생성을 나누지만 행동 전문가를 조작 국면별로 명시적으로 나누지는 않는다. 이 논문의 질문은 전체 VLM을 교체하지 않고 행동 분포와 감독을 구간별로 재구성하면 양쪽 요구를 만족할 수 있는가이다.",
+        "idea": "당근을 접시 위에 놓는 경우를 생각해 보자. 로봇 팔이 당근 근처로 이동할 때는 접시와 팔의 전체 위치를 보되, 당근을 잡을 때는 그리퍼 양쪽이 물체를 정확히 사이에 두었는지 확인해야 한다. 저자는 그리퍼 열림/닫힘 전환을 이런 국면의 근사 라벨로 삼고 두 행동 생성기를 학습시킨다. 이는 팔 관절만 담당하는 모듈과 손가락만 담당하는 모듈을 따로 보내는 하드웨어 제어가 아니다. 두 전문가 모두 동일한 7차원 행동 구간을 출력하며 추론 시 라우터가 어느 전문가를 쓸지 결정한다. 접촉과 그리퍼 상태 전환이 항상 일치하지 않는다는 사실이 바로 검증할 후속 가설이다.",
+        "method": "01. 영상·언어 표현: DINOv2와 SigLIP 특징을 투영하고 RGB 패치 토큰, class token, register token을 사용한다. 명령 토큰 및 학습 가능한 reasoning token은 LLaMA-2의 causal attention으로 처리한다.\n\n02. 중간·마지막 층 분리: 두 번째 층의 reasoning latent는 라우팅에, 마지막 층의 cognition latent는 행동 조건에 사용한다. 별도의 자연어 추론 문장을 길게 생성하는 절차는 아니다.\n\n03. 시연에서 국면 라벨: 그리퍼 상태 전환 주변에 비대칭 Gaussian을 놓는다. 전환 전 표준편차 6, 이후 2로 설정하고 합을 정규화한 trajectory weight를 0.5에서 이진화해 분류 감독을 만든다.\n\n04. 두 시간 척도의 감독: chunk 내 j번째 행동에 0.8^j를 적용한다. 이동 손실은 (1−w_t)와, 조작 손실은 w_t와 각각 곱해 시점별 학습을 조절한다. 긴 미래의 예측 오차를 즉시 행동과 동등하게 취급하지 않는다.\n\n05. 전문가의 확산 학습: 동일 GT 행동에 서로 독립적인 잡음을 가하고 DiT가 잡음을 예측한다. 이동은 cognition+class, 조작은 cognition+register를 조건으로 사용한다. 가중 잡음 오차 두 개와 BCE를 1:1:0.0001로 합한다(식 1–4).\n\n06. 추론 및 제어: 라우터의 w가 0.5 미만이면 이동 expert, 이상이면 조작 expert만 실행한다. 랜덤 잡음에서 연속 행동 chunk를 복원한다. 출력은 end-effector 상대 위치·회전 변화와 이진 gripper 상태다. 정확한 추론 지연은 원문에서 보고되지 않아 추정하지 않는다.",
+        "findings": "Google VA 평균: 81% vs CogACT 62% (Table I; SIMPLER 네 작업, 배경·조명·distractor·테이블 변형 포함.)\nGoogle VM 평균: 83% vs CogACT 72% (Table II; 실제 환경 외관 재현 설정. OpenVLA 28%, π0* 70%.)\nGoogle VA Move Near: 74% vs 84% (Table I; CogACT보다 낮다. 평균의 향상이 모든 작업에서의 향상을 의미하지 않는다.)\nGoogle VA Drawer+Apple: 84% vs 40% (Table I; 서랍 열기와 사과 놓기, CogACT 비교.)\nWidowX VM: 71% vs CogACT 52% (Table III; 네 작업. π0* 57%. Eggplant은 SpatialVLA와 DAM 모두 100%.)\nFurnitureBench 최종: 56% vs 42% vs 29% (Table IV; DAM/CogACT/OpenVLA, One-Leg 초기 배치 무작위 50회, 500 expert 시연. 단계 4는 62/56/53%.)\n실물 ID/OOD: 91.4% / 82.2% (Table V; CogACT 65.7/60.0%. Franka 컵→그릇, 조건당 5회×16=80회, ID와 OOD 구성 수 별도 명시 없음.)\n구성 누적 ablation: 58→66→63→66→78% (Table VI; 세 SIMPLER 설정 평균. TW 추가 직후 하락한다. DAM 추가 단독 행의 WidowX 43%도 확인.)\n시각 토큰 제거: 78→73% (Table VI; full에서 VT만 제거. Google VM은 83→84%로 오히려 높다.)",
+        "limitations": "독립 부록이 없는 v1 원문만 검토했다. SIMPLER 시행 횟수는 CogACT 프로토콜을 따른다는 기술 외 구체적 과제별 횟수가 본문에 없어 임의로 채우지 않는다. FurnitureBench Table IV의 CogACT 최종값은 42%인데 Figure 1(b) 요약 그림의 해당 막대는 34로 보인다. 정량 인용은 상세 Table IV 기준이며 재현 시 원저자 코드로 확인해야 한다. Table VI 평균은 세 환경 설정의 집계이고, 순차 구성 추가가 독립적인 factorial ablation을 대신하지 않는다. 실제 실험은 한 종류의 컵 집기 과제에 국한되고, ID/OOD 평균 86.8%는 표의 그룹 평균으로 전체 80개 pooled 성공률이라고 단정할 수 없다. 안전한 접촉 제어, 미지 로봇의 무학습 전이, 추론 속도 개선을 증명한 결과로 확대하지 않는다.",
+        "questions": [
+          "그리퍼 전환 기반 분화가 실제 접촉 국면을 학습시키며 평균 향상뿐 아니라 접촉 직전 오류를 줄이는지 확인한다.",
+          "Fractal/BridgeDataV2 동일 split에서 소형 VLM을 고정하고 3 seeds로 SIMPLER Google VM/VA, WidowX VM을 평가한다. FurnitureBench One-Leg은 500 시연, 50개 고정 무작위 초기 조건을 사용한다. 실제 접촉은 안전한 힘 제한에서 별도 검증한다.",
+          "단일 DiT, parameter-matched 단일 DiT, 두 expert 무작위/학습/GT oracle routing, class/register 교환, trajectory와 chunk weight 각각 제거, σ 및 γ 변경, hard/soft routing.",
+          "작업별 최종 성공률, 단계별 성공률, 접촉 직전 pose error, 라우팅 precision/recall 및 전환 빈도, p50/p95 latency와 계산량, bootstrap CI.",
+          "접촉 GT가 없는 그리퍼 상태 라벨과 실제 접촉을 구별한다. OOD는 배경·물체·방해물 각각을 독립 변화시키고 평균 산출 방식과 분모를 공개한다."
+        ]
+      }
+    },
+    {
+      "id": "2506.09985",
+      "slug": "2506.09985",
+      "title": "V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning",
+      "authors": [
+        "Mahmoud Assran",
+        "Adrien Bardes",
+        "David Fan",
+        "Quentin Garrido",
+        "Russell Howes",
+        "Mojtaba Komeili",
+        "Matthew Muckley",
+        "Ammar Rizvi",
+        "Claire Roberts",
+        "Koustuv Sinha",
+        "Artem Zholus",
+        "Sergio Arnaud",
+        "Abha Gejji",
+        "Ada Martin",
+        "Francois Robert Hogan",
+        "Daniel Dugas",
+        "Piotr Bojanowski",
+        "Vasil Khalidov",
+        "Patrick Labatut",
+        "Francisco Massa",
+        "Marc Szafraniec",
+        "Kapil Krishnakumar",
+        "Yong Li",
+        "Xiaodong Ma",
+        "Sarath Chandar",
+        "Franziska Meier",
+        "Yann LeCun",
+        "Michael Rabbat",
+        "Nicolas Ballas"
+      ],
+      "published": "2025-06-11",
+      "updated": "2025-06-11",
+      "abstract": "대규모 무행동 영상 사전학습 뒤 동결 encoder와 action-conditioned latent predictor를 결합해 이미지 목표 MPC를 수행한다. 두 실험실 컵 pick-and-place 80%, 박스 65%와 단일 RTX 4090에서 16초/action이라는 조건을 분석한다.",
+      "arxiv_categories": [
+        "cs.AI"
+      ],
+      "source_url": "https://arxiv.org/abs/2506.09985",
+      "pdf_url": "https://arxiv.org/pdf/2506.09985",
+      "primary_category": "wam",
+      "categories": [
+        "wam"
+      ],
+      "tags": [
+        "World Model",
+        "JEPA",
+        "Latent Planning",
+        "MPC",
+        "DROID"
+      ],
+      "featured": true,
+      "curated": true,
+      "origin": "editorial_verified_2026-11-27",
+      "reading_minutes": 24,
+      "summary_ko": "대규모 무행동 영상 사전학습 뒤 동결 encoder와 action-conditioned latent predictor를 결합해 이미지 목표 MPC를 수행한다. 두 실험실 컵 pick-and-place 80%, 박스 65%와 단일 RTX 4090에서 16초/action이라는 조건을 분석한다.",
+      "review": {
+        "one_line": "대규모 무행동 영상 사전학습 뒤 동결 encoder와 action-conditioned latent predictor를 결합해 이미지 목표 MPC를 수행한다. 두 실험실 컵 pick-and-place 80%, 박스 65%와 단일 RTX 4090에서 16초/action이라는 조건을 분석한다.",
+        "problem": "영상 생성 모델은 로봇이 컵을 옮기는 모습을 만들어 낼 수 있지만 그 영상이 특정 관절 명령의 인과적 결과를 정확히 나타낸다는 보장은 없다. 또 시각적으로 정교한 미래 프레임을 매번 생성하고 수백 후보를 평가하면 폐루프 제어가 매우 느려진다. 직접 행동 회귀 정책은 이 비용을 피하지만 목표에 도달하기 위해 다른 후보 행동의 결과를 명시적으로 비교하지 않는다. V-JEPA 2는 영상 표현을 먼저 학습하고, 그 표현에서 행동의 결과를 예측한 뒤 계획하는 구조를 제안한다. 따라서 미래 영상과 행동을 한 번에 공동 생성하는 WAM이라기보다 행동 조건부 잠재 세계모델과 별도의 탐색 기반 planner를 결합한 연구다.",
+        "idea": "컵을 원하는 곳에 가져가려 할 때, 로봇이 지금의 장면과 목표 사진을 비교한다고 하자. 각각의 후보 행동을 실제로 실행하는 것은 위험하고 오래 걸린다. V-JEPA 2-AC는 후보가 만들 미래의 표현 벡터를 계산하고 목표 사진의 벡터와 가까운 후보를 택한다. 컵의 로고나 배경 픽셀까지 정확하게 재현하는 것이 아니라 제어에 필요한 상태 차이를 표현 공간에서 포착하려는 것이다. 단, 목표 사진에서 집게가 열린 상태와 닫힌 상태가 구별되지 않는다면 의미적으로 비슷한 표현이 잘못된 계획을 유도할 수 있다. 이 때문에 representation 학습과 계획 비용의 정렬이 핵심이다.",
+        "method": "01. 행동 없는 영상 사전학습: 100만 시간 이상 영상이 포함된 데이터에서 패치를 가린 영상으로부터 가려진 영역의 표현을 예측한다. target은 EMA encoder이며 stop-gradient를 둔 L1 손실을 가려진 영역에만 사용한다(식 1).\n\n02. 동결 encoder와 로봇 데이터: DROID raw에서 4초 미만 영상은 제외하고 왼쪽 외부 카메라 영상을 4fps, 256×256으로 샘플링해 16프레임 clip을 만든다. 약 62시간 미만, 23k 궤적이며 성공/실패·보상·과제 라벨은 사용하지 않지만 robot state는 필요하다.\n\n03. 행동 조건 predictor: 약 300M, 24층·16 heads·hidden 1024 Transformer를 학습한다. frame feature, action 및 end-effector state를 별도 투영해 시간별로 입력한다. block-causal attention으로 미래 관측을 볼 수 없게 한다.\n\n04. 두 손실: teacher forcing은 실제 표현을 조건으로 다음 표현을 15 전이 동안 예측한다. rollout loss는 예측 표현을 다시 입력으로 넣어 2-step을 감독한다. 두 L1 손실의 합으로 predictor만 학습한다. Figure 6은 설명용으로 더 긴 전개를 표시한다.\n\n05. 목표 기반 MPC: 현재와 목표 사진을 같은 encoder로 변환한다. CEM으로 행동 후보를 샘플링하고 상위 후보 통계로 Gaussian을 반복 갱신해 최종 표현과 목표 표현의 L1 차이를 낮춘다. 학습된 action head에서 직접 행동을 뽑는 방식이 아니다.\n\n06. 실행과 재계획: 계획한 시퀀스의 첫 행동만 실행하고 새 관측을 얻는다. 로봇 실험은 horizon 1, 후보 800개, 10 refinement, top 10, blocking control이다. Pick-and-place는 사람이 제공한 2개 중간 목표와 최종 목표를 4/10/4 timestep 순서로 사용한다.",
+        "findings": "Reach 두 실험실 평균: 100% vs Octo 100% (Table 2; 각 실험실 10회/과제. 단순 reach는 두 모델 모두 성공.)\nGrasp Cup / Box: 65% / 25% (Table 2; Octo 15% / 0%. 물체 종류에 따른 정밀도 차이가 크다.)\n물체를 든 Reach: 75% / 75% (Table 2; cup/box, Octo 15%/70%.)\nPick-and-place Cup: 80% vs 15% (Table 2; 두 실험실 각 10회. 중간 목표 2장 및 최종 이미지 제공.)\nPick-and-place Box: 65% vs 10% (Table 2; Lab1 80%, Lab2 50%; 위치·초기 pose 변경.)\nCosmos 비교 Lab2: Cup 80% vs 0% (Table 3; box 50% vs 0%, horizon 1, CEM, 각 skill 10회.)\n계획 비용: 16초 vs 4분/action (Table 3; RTX4090 한 장, V-JEPA 800 후보와 Cosmos 80 후보, 모두 10 refinement.)\n행동 크기 제한: L1 반경 0.075 (§4.1; 최대 위치 변위 약 13cm라는 논문 설명. 큰 행동은 학습 분포 밖으로 간주.)\n사전학습 영상 길이 ablation: +0.7%p / +9.7%p (§2.4 Fig 5: 16→64 학습 frame, 16 평가 고정. Appendix A.4.3 Fig 13: 단일 clip 평가 길이 16→64에서 최대 +9.7%p; 영상 이해 지표이지 로봇 SR이 아님.)",
+        "limitations": "제어 평가의 zero-shot은 두 실험실에서 추가 로봇 학습을 하지 않았다는 뜻이지 DROID와 다른 로봇 종류 전체에 대한 무학습 전이를 입증한 것이 아니다. 두 실험실은 Franka와 RobotiQ gripper를 사용하며 조건마다 10회라 신뢰구간이 넓다. 이미지 중간 목표와 시간 스케줄, 수동 카메라 위치 선정이 필요하다. 16초/action은 상대적 효율 향상이지 실시간 제어는 아니다. B.1에서 좌우 카메라를 위치 조건 없이 합쳐 훈련하면 성능이 악화됐다는 관찰이 있다. B.3의 열린/닫힌 그리퍼 정성 비교는 전체 작업 성공률 ablation이 아니다. 로봇 제어에서 teacher-forcing과 rollout loss의 독립적 성공률 제거 실험은 확인된 표에 없으므로 수치를 만들지 않는다. 장기 rollout 오차와 CEM 탐색 차원의 증가가 남아 있다.",
+        "questions": [
+          "픽셀 생성 없이 학습한 latent가 실제 행동 결과와 목표 진행도를 정렬하는지, 계획 예산에 따라 제어 성공이 어떻게 변하는지 검증한다.",
+          "DROID 동일 left camera split과 frozen encoder를 사용한다. 로봇에 앞서 replay에서 실제 다음 표현과 예측 표현의 오차를 측정하고 동일 시작/목표 사진·초기 pose 50개를 시뮬레이터에서 고정한다.",
+          "teacher forcing only vs rollout loss, horizon 1/2/4, 80/200/800 후보, 2/5/10 refinement, pixel model과 동일 GPU 시간 비교, camera extrinsic token 유무, 중간 목표 제거.",
+          "latent error vs Cartesian/rotation error의 상관, 실제 strict SR, 물체별 grasp와 place 성공, p95 wall time/action, search failure, camera angle별 오차와 95% CI.",
+          "테스트 카메라 선별을 사전에 고정하고 별도 회전 sweep을 실시한다. 목표 사진 정보와 후보 수를 비교군에 동일 제공한다. 실물은 저속·충돌 검사 및 중단 기준을 먼저 적용한다."
+        ]
+      }
+    },
+    {
+      "id": "2304.13705",
+      "slug": "2304.13705",
+      "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware",
+      "authors": [
+        "Tony Z. Zhao",
+        "Vikash Kumar",
+        "Sergey Levine",
+        "Chelsea Finn"
+      ],
+      "published": "2023-04-23",
+      "updated": "2023-04-23",
+      "abstract": "ALOHA의 50Hz 양팔 시연과 ACT의 CVAE 행동 chunk·temporal ensemble을 연결한다. 실물 배터리 삽입 96%, 지퍼 88%, Velcro 20%의 대비와 chunk 길이·CVAE ablation을 분석한다.",
+      "arxiv_categories": [
+        "cs.RO"
+      ],
+      "source_url": "https://arxiv.org/abs/2304.13705",
+      "pdf_url": "https://arxiv.org/pdf/2304.13705",
+      "primary_category": "robotics",
+      "categories": [
+        "robotics"
+      ],
+      "tags": [
+        "Robotics",
+        "ALOHA",
+        "ACT",
+        "Action Chunking",
+        "CVAE"
+      ],
+      "project_url": "https://tonyzhaozh.github.io/aloha/",
+      "featured": true,
+      "curated": true,
+      "origin": "editorial_verified_2026-11-27",
+      "reading_minutes": 24,
+      "summary_ko": "ALOHA의 50Hz 양팔 시연과 ACT의 CVAE 행동 chunk·temporal ensemble을 연결한다. 실물 배터리 삽입 96%, 지퍼 88%, Velcro 20%의 대비와 chunk 길이·CVAE ablation을 분석한다.",
+      "review": {
+        "one_line": "ALOHA의 50Hz 양팔 시연과 ACT의 CVAE 행동 chunk·temporal ensemble을 연결한다. 실물 배터리 삽입 96%, 지퍼 88%, Velcro 20%의 대비와 chunk 길이·CVAE ablation을 분석한다.",
+        "problem": "저렴한 로봇은 반복 위치 정확도와 센서 정밀도가 제한되지만 물체의 작은 상대 변화를 영상에서 관찰하고 피드백하면 복잡한 접촉 과제도 가능할 수 있다. 한 timestep씩 지도학습하면 50Hz 제어에서 수백 번의 오차가 누적되고, 시연자가 잠시 멈추거나 다른 경로를 선택한 데이터에서는 현재 관측만으로 다음 행동이 결정되지 않는 경우가 있다. ALOHA는 데이터를 수집하는 시스템, ACT는 이 데이터로 학습하는 정책이다. 논문은 일반 목적 VLA가 아니라 과제별 학습으로 모방학습의 horizon·다중 모드 문제를 완화하는 방법을 제시한다. FAST와 OpenVLA-OFT의 chunk를 이해하는 데도 중요한 선행 연구다.",
+        "idea": "배터리를 리모컨에 넣는 동작을 떠올리면, 한 손이 리모컨을 고정하고 다른 손은 배터리 각도를 바꾸어 밀어 넣는다. 매 20ms에 팔 목표를 독립적으로 출력하면 앞선 동작과 서로 모순된 작은 진동이 생길 수 있다. ACT는 미래 여러 step을 한꺼번에 출력해서 연속 행동을 묶되, 매 순간 새 관측에서 다시 예측해 이전 계획과 같은 시간의 목표를 부드럽게 합친다. 학습 중에는 시연의 스타일을 설명하는 잠재 변수 z를 사용하고 실제 추론에서는 z=0으로 결정적 행동을 생성한다. 따라서 CVAE가 있다고 매 제어마다 여러 후보를 샘플링하는 것은 아니다.",
+        "method": "01. ALOHA 시연: 두 leader WidowX의 관절을 사람 손으로 움직여 follower ViperX 양팔을 제어한다. 학습 action은 follower 측 실측 위치가 아니라 leader 목표 관절 위치다. 그 차이가 PID 추종과 간접적인 힘 명령에 중요하다.\n\n02. 데이터 구간과 관측: 현재 follower 14D joint state와 4개 RGB 영상, 앞으로 k개의 leader 14D 목표를 연결한다. 실물 대부분 50개, Thread Velcro 100개 시연. 카메라 영상은 30fps이고 제어는 50Hz다(App B).\n\n03. CVAE encoder(학습 전용): CLS, 현재 joint state, GT action sequence를 길이 k+2 토큰으로 입력하고 대각 Gaussian의 평균·분산을 추정한다. reparameterization으로 z를 샘플링한다. 빠른 학습을 위해 이 encoder에는 RGB를 넣지 않는다.\n\n04. 정책 encoder·decoder: 480×640 RGB마다 ResNet18의 15×20×512 feature map을 얻어 펼친다. 2D position embedding과 네 영상의 1200 토큰, joint와 z의 두 토큰을 합쳐 1202×512 sequence로 처리한다. decoder의 k개 고정 positional query가 cross-attention으로 k×14 목표를 생성한다.\n\n05. 학습 목적: 본문 §IV-C는 reconstruction L1과 KL 정규화를 사용한다고 기술한다. Appendix Table III의 β=10, k=100, hidden 512, encoder/decoder 4/7층, 8 heads, batch 8, LR 1e−5. Algorithm 1에는 MSE로 적혀 있어 문구 불일치를 기록한다.\n\n06. 결정적 추론·temporal ensemble: CVAE encoder를 버리고 z=0을 넣는다. 매 step 예측한 chunk를 시간별 buffer에 넣고 같은 시간의 행동 후보를 w_i=exp(−m i)로 가중 평균해 실행한다(Algorithm 2). 100 step은 50Hz에서 약 2초 예측이며 매 2초만 관측하는 방식과 다르다.",
+        "findings": "Cube Transfer 최종: 86% / 50% (Table I; scripted/human, 3 seeds×50 평가, BeT 27/1%.)\nBimanual Insertion 최종: 32% / 20% (Table I; scripted/human, 3 seeds×50 평가. BeT 3/0%.)\nSlide Ziploc 최종: 88% (22/25) (Table I; 실물 1 seed, 25 평가. BeT 최종 0%.)\nSlot Battery 최종: 96% (24/25) (Table I; 실물 1 seed, 25 평가. BeT 최종 0%.)\nOpen Cup / Thread Velcro: 84% / 20% (Table II; Velcro 100 시연, 단계 92→40→20%. 최종 수치와 하위 단계 구분.)\nPrep Tape / Put On Shoe: 64% / 92% (Table II; BeT 최종 0%. Table II caption의 과제 수 3과 실제 네 열 묶음 불일치.)\nChunk ablation: 1→44% (Fig 7(a), k=1→100, 두 sim 작업×두 시연 유형 평균, temporal ensemble 비활성.)\nTemporal ensemble: 44→47.3% (Fig 7(b); ACT +3.3%p, BC-ConvMLP +4%p, VINN은 37→17%.)\nCVAE human data: 35.3→2% (제거) (Fig 7(c); sim 2과제 human data. scripted 59→58%. Figure 7(d)의 50Hz 사용자 연구는 정책 SR 실험 아님.)",
+        "limitations": "Table I의 scripted/human 비교는 별도 시연 유형의 결과이고 실물은 1 seed/25회여서 높은 성공률의 분산을 판단하기 어렵다. Table II 캡션과 §V-C는 남은 3과제라고 적었지만 실제 4과제 행을 제시한다. 결과는 개별 표의 행을 인용한다. Appendix F의 사탕 포장 풀기는 처음 10회 중 마지막 단계 0회이며, 각 사탕에 10번씩 다시 기회를 주는 별도 protocol에서 5개 중 3개만 성공했다. 납작한 지퍼백을 여는 작업도 후반에 실패했다. 50Hz teleoperation 사용자 연구는 6명, 과제·주파수 순서 무작위, 각 3시행이며 5Hz 명령을 50Hz 보간한 사람 제어 비교이지 ACT의 자체 추론 주파수 ablation이 아니다. 별도 과제마다 처음부터 학습하므로 미지 언어 지시를 이해하는 VLA와 동일하게 보지 않는다. 공개 원본 Figure 3/10은 HTML에서 캡션은 확인했으나 이미지 직접 링크가 없어 사용하지 않고 Figure 5·7·9를 사용한다.",
+        "questions": [
+          "시연 다중 모드에 대한 CVAE의 효과와 chunk 자체·temporal ensemble의 효과를 분리한다.",
+          "공개 ALOHA MuJoCo Cube Transfer와 Bimanual Insertion에서 scripted/human 각 50 시연을 고정하고 3 seeds×50회 동일 초기 상태, Appendix Table III 기준 학습. 실물은 낮은 속도에서 재검증한다.",
+          "k=1/10/100/200/400, ensemble on/off, CVAE on/off, β=0/1/10/30, L1 vs MSE, absolute vs delta, 이미지 view별 제거, parameter-matched BC-ConvMLP/VINN.",
+          "최종 strict SR, 각 subtask 성공률, 추론 p95, action jerk, 접촉 전 pose error, 이전 chunk와 새 chunk 차이, seed별 CI.",
+          "카메라 30fps·제어 50Hz의 동기화, episode 단위 train/test 분리, leader 목표와 follower 관측 구분. 가장 좋은 검증 loss checkpoint 규칙을 사전 등록하고 실물 평가 중 충돌 시 즉시 중단한다."
+        ]
+      }
     }
   ]
 }
